@@ -1,0 +1,21 @@
+.tabHolder {
+    width: 100%;
+    height: 100%;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    background-color: white;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.tab {
+    display: inline-block;
+    width: fit-content;
+    font-size: 25px;
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
