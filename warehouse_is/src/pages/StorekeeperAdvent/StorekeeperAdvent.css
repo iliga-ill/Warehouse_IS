@@ -1,0 +1,72 @@
+.page{
+    width: 100%;
+    height: fit-content;
+    display: grid;
+    grid-template-columns: 0% 50% 50%;
+    font-size: 1.25rem;
+}
+
+.shipment_code_block{
+    display: block;
+    height: 100px;
+    width: 100%;
+    border: 1px solid darkgray;
+}
+
+.advent_block{
+    display: block;
+    height: fit-content;
+    width: 100%;
+    border: 1px solid darkgray;
+}
+
+.shipment_innards_block{
+    display: block;
+    height: 100px;
+    width: 100%;
+    border: 1px solid darkgray;
+}
+
+.advent_block_desk{
+    margin: 1rem;
+    height: fit-content;    
+}
+
+.advent_header{
+    font-size: 1.25rem;
+    font-weight: bold;
+    line-height: 1.75rem;
+}
+
+.row_with_field{
+    display: inline-block;
+}
+
+.low_text{
+    font-size: 0.875rem;
+    line-height: 1.125rem;
+}
+
+.table{
+    display: grid;
+    grid-template-columns: max-content max-content max-content max-content;
+}
+
+.border{
+    border: 1px solid darkgray;
+}
+
+.middle{
+    align-items: center;
+}
+
+.inline-block{display: inline-block;}
+
+.green{background-color: green}
+.red{background-color: red}
+.yellow{background-color: yellow}
+.blue{background-color: blue}
+.darkgray{
+    list-style: none;
+    background-color: rgba(228, 228, 228, 0.575);
+}

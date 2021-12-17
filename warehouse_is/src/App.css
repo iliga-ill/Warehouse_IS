@@ -4,6 +4,7 @@
     height: 50px;
     border: 1px solid darkgray;
     background-color: darkgray;
+    font-size: 1.25rem;
 }
 
 .headTabs{
@@ -18,3 +19,8 @@
     align-self: flex-end;
     display: inline-block;
 }
+
+.green{background-color: green}
+.red{background-color: red}
+.yellow{background-color: yellow}
+.blue{background-color: blue}

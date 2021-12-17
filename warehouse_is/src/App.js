@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import TabHolder from './components/TabHolder/TabHolder';
 import AvatarHolder from './components/AvatarHolder/AvatarHolder';
-import StorekeeperAdvent from './pages/test/StorekeeperAdvent/StorekeeperAdvent';
+import StorekeeperAdvent from './pages/StorekeeperAdvent/StorekeeperAdvent';
 import StorekeeperAllocation from './pages/test/StorekeeperAllocation/StorekeeperAllocation';
 //import TodoList from './pages/test/TodoList';
 
