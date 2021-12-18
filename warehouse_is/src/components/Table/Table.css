@@ -1,0 +1,19 @@
+.low_text{
+    font-size: 0.875rem;
+    line-height: 1.125rem;
+    margin-bottom: 0.25rem;
+}
+
+.middle{
+    text-align: center
+}
+
+.table{
+    display: grid;
+    grid-template-columns: max-content max-content max-content max-content;
+    height: max-content;
+}
+
+.border{
+    border: 1px solid darkgray;
+}

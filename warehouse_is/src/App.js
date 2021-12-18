@@ -3,7 +3,7 @@ import './App.css';
 import TabHolder from './components/TabHolder/TabHolder';
 import AvatarHolder from './components/AvatarHolder/AvatarHolder';
 import StorekeeperAdvent from './pages/StorekeeperAdvent/StorekeeperAdvent';
-import StorekeeperAllocation from './pages/test/StorekeeperAllocation/StorekeeperAllocation';
+import StorekeeperAllocation from './pages/StorekeeperAllocation/StorekeeperAllocation';
 //import TodoList from './pages/test/TodoList';
 
 const styles = {
