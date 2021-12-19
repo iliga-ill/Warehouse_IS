@@ -1,0 +1,29 @@
+.page{
+    list-style: none;
+    width: 100%;
+    height: fit-content;
+    font-size: 1.25rem;
+    overflow: scroll;
+}
+
+.block{
+    display: block;
+    height: fit-content;
+    width: fit-content;
+    border: 1px solid darkgray;
+    display: inline-table; 
+}
+
+.block_wrap{
+    margin: 1rem;
+    height: max-content; 
+}
+
+.green{background-color: green}
+.red{background-color: red}
+.yellow{background-color: yellow}
+.blue{background-color: blue}
+.darkgray{
+    list-style: none;
+    background-color: rgba(228, 228, 228, 0.575);
+}

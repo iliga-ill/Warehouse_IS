@@ -1,0 +1,7 @@
+.block{
+    display: block;
+    height: fit-content;
+    width: fit-content;
+    border: 1px solid darkgray;
+    display: inline-table; 
+}

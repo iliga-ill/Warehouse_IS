@@ -2,8 +2,9 @@ import React from "react";
 import './Table.css';
 
 var i=0
+var grid_template_columns=""
 
-const styles = {
+var styles = {
     table: {
         display: "grid",
         gridTemplateColumns: "",
@@ -13,11 +14,11 @@ const styles = {
 
 export default function Table(props){
     //console.log(props.tabs.length)
-    i=0
-    styles.table.gridTemplateColumns = ""
-    props.table_headers.map(item=>{
-        styles.table.gridTemplateColumns += " max-content"
+    grid_template_columns=""
+    props.table_headers.map(function(item, i){
+        grid_template_columns += " max-content"
     })
+    if (styles.table.gridTemplateColumns != grid_template_columns) styles.table.gridTemplateColumns = grid_template_columns
     
     return (
         <div class="low_text middle" style={styles.table}>
@@ -25,9 +26,11 @@ export default function Table(props){
                 return <div class="border">{item}</div>
             })}
             {props.table_list.map(item=>{
-                return item.map(item => {
-                    return <div class="border">{item}</div>
-                })
+                return (<>{
+                    item.map(item => {
+                        return <div class="border">{item}</div>
+                    })
+                }</>)
             })}
             {props.table_headers.map(function(item,i){
                 if (i==0) 
