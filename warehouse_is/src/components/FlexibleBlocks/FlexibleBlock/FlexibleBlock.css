@@ -1,23 +1,22 @@
-.page{
-    list-style: none;
-    width: 100%;
-    height: fit-content;
-    font-size: 1.25rem;
-    overflow: scroll;
-}
-
 .block{
     display: block;
     height: fit-content;
-    width: fit-content;
-    border: 1px solid darkgray;
+    width: max-content;
+    /* border: 1px solid darkgray; */
     display: inline-table; 
 }
 
 .block_wrap{
     margin: 1rem;
-    height: max-content; 
+    border: 1px solid darkgray;
 }
+
+.placeholder{
+    height: 0.5rem;
+}
+
+.pl{padding-left: 1rem;}
+.pr{padding-right: 1rem;}
 
 .green{background-color: green}
 .red{background-color: red}

@@ -1,49 +1,7 @@
-.shipment_code_block{
-    display: block;
-    height: 0px;
-    width: fit-content;
-    border: 1px solid darkgray;
-    display: inline-table;
-}
-
-.advent_block{
-    display: block;
-    height: fit-content;
-    width: fit-content;
-    border: 1px solid darkgray;
-    display: inline-table; 
-}
-
-.shipment_innards_block{
-    display: block;
-    height: 100%;
-    width: fit-content;
-    border: 1px solid darkgray;  
-    display: inline-table;
-}
-
-.advent_block_outer{
-    margin: 1rem;
-    height: max-content; 
-}
-
-.pl{padding-left: 1rem;}
-.pr{padding-right: 1rem;}
-
-.advent_block_inner{
-    list-style: none;
-    height: fit-content;
-}
-
-.advent_header{
+.header_text{
     font-size: 1.25rem;
     font-weight: bold;
     line-height: 1.75rem;
-}
-
-.row_with_field{
-    list-style: none;
-    display: inline-block;
 }
 
 .low_text{
@@ -52,44 +10,33 @@
     margin-bottom: 0.25rem;
 }
 
-.mb{
-    height: fit-content;
-    width: auto;
-    align-items: flex-end;
-}
-
-.border{
-    border: 1px solid darkgray;
-}
-
-.plus_icon{
-    height: 1rem;
-    width: 1rem;
-}
-
 .bt_send{
     width: 5rem;
     height: fit-content;
-    margin-bottom: 1rem;
     align-self: flex-end;
 }
 
 .place_holder{
     width: calc(100% - 5rem);
+    display: inline-block;
 }
 
 .input{
     width: 100%;
 }
 
-.row_with_item{
+.row_with_item_equal{
     display: grid;
     grid-template-columns: auto max-content;
     height: max-content;
+    align-items: center;
 }
 
-.inline-block{
-    display: inline-block;
+.row_with_item_wide{
+    display: grid;
+    grid-template-columns: min-content max-content;
+    height: max-content;
+    align-items: center;
 }
 
 .green{background-color: green}
