@@ -1,7 +1,6 @@
 import React from "react";
 import './Table.css';
 
-var i=0
 var grid_template_columns=""
 
 var styles = {

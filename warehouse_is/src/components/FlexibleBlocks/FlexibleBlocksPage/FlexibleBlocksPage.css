@@ -1,7 +1,4 @@
-.block{
-    display: block;
-    height: fit-content;
-    width: fit-content;
-    border: 1px solid darkgray;
-    display: inline-table; 
-}
+.green{background-color: green}
+.red{background-color: red}
+.yellow{background-color: yellow}
+.blue{background-color: blue}
