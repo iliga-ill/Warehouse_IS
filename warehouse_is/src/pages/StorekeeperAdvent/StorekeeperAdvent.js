@@ -5,6 +5,7 @@ import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPa
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import InputDate from "../../components/InputDate/InputDate";
 import InputFile from "../../components/InputFile/InputFile";
+import InputText from "../../components/InputText/InputText";
 
 const styles = {
 
@@ -15,11 +16,21 @@ const styles = {
   var table_list = [
       [0, "Морковка", "Овощи", 20],
       [0, "Капуста", "Овощи", 10],
+      [0, "Капуста", "Овощи", 10],
+      [0, "Капуста", "Овощи", 10],
     ]
   var i = 0;
 
+  var good_category
+  function set_good_category(value) {good_category = value}
 
 export default function StorekeeperAdvent(){
+    var id=0
+    function getId(){
+        id++
+        return id-1
+    }
+
     i=0
     table_list.map(item=>{
         i++;
@@ -46,6 +57,10 @@ export default function StorekeeperAdvent(){
         console.log("block 3 date: " + date)
     }
 
+    function btn_send() {
+        console.log("good_category = " + good_category)
+    }
+
     return (
         <FlexibleBlocksPage>
             {/* <FlexibleBlock>
@@ -54,13 +69,14 @@ export default function StorekeeperAdvent(){
             </FlexibleBlock> */}
             <FlexibleBlock>
                 <div class="header_text">Прием&nbsp;товаров</div>
-                <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id="1" func={onBlock2DateUploaded}/></div>
-                <div class="low_text"><InputFile Id="1" func={onBlock2FileUploaded}/></div>
-                <Table table_headers={table_headers} table_list={table_list} />
+                <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} func={onBlock2DateUploaded}/></div>
+                <div class="low_text"><InputFile Id={getId()} func={onBlock2FileUploaded}/></div>
+                <Table Id={getId()} table_headers={table_headers} table_list={table_list} />
                 <div class="place_holder"/><button class="bt_send">Отправить</button>
             </FlexibleBlock>
             <FlexibleBlock>
                     <div class="header_text">Заказ 1</div>
+                    <InputText Id={getId()} label="Категория" placeholder="Категория товара" set={set_good_category}/>
                     <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><input class="input" placeholder="Категория товара"/></div>
                     <div class="low_text row_with_item_equal"><div>Товар&nbsp;</div><input class="input" placeholder="Тип товара"/></div>
                     <div class="low_text row_with_item_equal"><div>Суммарное&nbsp;кол-во&nbsp;товара&nbsp;</div><input class="input" placeholder="Кол-во товара"/></div>
@@ -71,7 +87,8 @@ export default function StorekeeperAdvent(){
                     <div class="low_text row_with_item_equal"><div>Вес&nbsp;ед&nbsp;продукции&nbsp;</div><input class="input" placeholder="Вес ед продукции"/></div>
                     <div class="low_text row_with_item_equal"><div>Цена&nbsp;</div><input class="input" placeholder="Цена"/></div>
                     <div class="low_text row_with_item_equal"><div>Поставщик&nbsp;</div><input class="input" placeholder="Поставщик"/></div>
-                    <div class="low_text"><InputFile Id="2" func={onBlock3FileUploaded}/></div>
+                    <div class="low_text"><InputFile Id={getId()} func={onBlock3FileUploaded}/></div>
+                    <div class="place_holder"/><button class="bt_send" onClick={btn_send}>Отправить</button>
             </FlexibleBlock>
         </FlexibleBlocksPage>
     )
