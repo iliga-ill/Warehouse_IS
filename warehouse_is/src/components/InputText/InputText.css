@@ -1,0 +1,16 @@
+.low_text{
+    font-size: 0.875rem;
+    line-height: 1.125rem;
+    margin-bottom: 0.25rem;
+}
+
+.row_with_item_equal{
+    display: grid;
+    grid-template-columns: auto max-content;
+    height: max-content;
+    align-items: center;
+}
+
+.input{
+    width: 100%;
+}
