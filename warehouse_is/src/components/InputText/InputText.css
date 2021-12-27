@@ -11,6 +11,13 @@
     align-items: center;
 }
 
-.input{
+.row_with_item_wide{
+    display: grid;
+    grid-template-columns: min-content max-content;
+    height: max-content;
+    align-items: center;
+}
+
+.inputText{
     width: 100%;
 }

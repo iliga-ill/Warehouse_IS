@@ -21,10 +21,6 @@
     display: inline-block;
 }
 
-.input{
-    width: 100%;
-}
-
 .row_with_item_equal{
     display: grid;
     grid-template-columns: auto max-content;

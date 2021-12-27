@@ -11,6 +11,8 @@ var styles = {
     }
 }
 
+
+
 export default function Table(props){
     //console.log(props.tabs.length)
     grid_template_columns=""
@@ -18,16 +20,29 @@ export default function Table(props){
         grid_template_columns += " max-content"
     })
     if (styles.table.gridTemplateColumns != grid_template_columns) styles.table.gridTemplateColumns = grid_template_columns
+
+    var tableData=props.table_list
+
+    function onInputChange(id, j, i){
+        console.log("id: " + id)
+        if (document.getElementById(id) != null){
+            tableData[j][i]=document.getElementById(id).value
+            props.func(tableData)
+        }
+    }
     
     return (
         <div class="low_text middle" style={styles.table}>
             {props.table_headers.map(item=>{
-                return <div class="border">{item}</div>
+                return <div class="border">{item.title}</div>
             })}
-            {props.table_list.map(item=>{
+            {props.table_list.map(function(item, j){
                 return (<>{
-                    item.map(item => {
-                        return <div class="border">{item}</div>
+                    item.map(function(item, i) {
+                        if (props.table_headers[i].mode == "text")
+                            return <div class="border">{item}</div>
+                        else if (props.table_headers[i].mode == "input")
+                            return <input id={props.Id+"_"+j+"_"+i} class="input" defaultValue={item} onChange={onInputChange(props.Id+"_"+j+"_"+i, j, i)} placeholder={""}/>
                     })
                 }</>)
             })}

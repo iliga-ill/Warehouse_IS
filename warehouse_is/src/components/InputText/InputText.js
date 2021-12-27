@@ -8,7 +8,9 @@ export default function InputText(props){
         props.set(document.getElementById(props.Id).value)
     }
 
+    var style = "low_text " + props.styles
+
     return (
-        <div class="low_text row_with_item_equal"><div>{props.label}</div><input id={props.Id} class="input" placeholder={props.placeholder} onChange={onChange}/></div>
+        <div class={style} ><div>{props.label}</div><input id={props.Id} class="inputText" placeholder={props.placeholder} onChange={onChange}/></div>
     )
 }
