@@ -11,13 +11,8 @@ const styles = {
 
   }
 
-  var table_headers = [
-      {title:"№", mode:"text"}, 
-      {title:"Наименование", mode:"text"}, 
-      {title:"Категория", mode:"text"}, 
-      {title:"Кол-во коробок", mode:"input"}
-    ]
   
+
 export default function StorekeeperAdvent(){
 
     var id=0
@@ -25,14 +20,24 @@ export default function StorekeeperAdvent(){
         id++
         return id-1
     }
+
+    var table_headers = [
+        {title:"№", mode:"text", column_width: "30px"}, 
+        {title:"Наименование", mode:"text", column_width: "100px"}, 
+        {title:"Категория", mode:"text", column_width: "70px"}, 
+        {title:"Кол-во коробок", mode:"input", column_width: "70px"}
+    ]
+
+    var  table_field_height = "100px"
+
+    var table_list = [
+        [0, "Морковкаa aaaaaaaaaaaaa aaaaaaaaa", "Овощи", "20"],
+        [0, "Капуста", "Овощи", "10"],
+        [0, "Капуста", "Овощи", "10"],
+        [0, "Капуста", "Овощи", "10"],
+    ]
     
-    var [table_list, setReload] = React.useState([
-        [0, "Морковка", "Овощи", 20],
-        [0, "Капуста", "Овощи", 10],
-        [0, "Капуста", "Овощи", 10],
-        [0, "Капуста", "Овощи", 10],
-      ])
-    function set_table_list(value) {setReload(table_list = value)}
+    function set_table_list_1(value) {table_list = value}
 
     var provider_1; function set_provider_1(value) {provider_1 = value}
     var date; function set_date(value) {date = value}
@@ -41,11 +46,13 @@ export default function StorekeeperAdvent(){
     function btn_send_1() {
         console.log("date = " + date)
         console.log("provider_1 = " + provider_1)
-        console.log(
-            documents.map(doc=>{
-                console.log("document: " + doc.name)
-            })
-        )
+        if (documents != null) {
+            console.log(
+                documents.map(doc=>{
+                    console.log("document: " + doc.name)
+                })
+            )
+        }
         console.log(table_list)
     }
 
@@ -81,10 +88,8 @@ export default function StorekeeperAdvent(){
     //     console.log("provider_2 = " + provider_2)
     // }
 
-    var i=0
-    table_list.map(item=>{
-        i++;
-        item[0] = i;
+    table_list.map(function(item,i){
+        item[0] = i
     })
 
     return (
@@ -98,7 +103,7 @@ export default function StorekeeperAdvent(){
                 <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} func={set_date}/></div>
                 <InputText styles = "row_with_item_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/>
                 <div class="low_text"><InputFile Id={getId()} func={set_documents}/></div>
-                <Table Id={getId()} table_headers={table_headers} table_list={table_list} func={set_table_list}/>
+                <Table Id={getId()} table_list={table_list} table_headers={table_headers} table_field_height={table_field_height} func={set_table_list_1}/>
                 <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
             </FlexibleBlock>
             {/* //Блок с заказом
