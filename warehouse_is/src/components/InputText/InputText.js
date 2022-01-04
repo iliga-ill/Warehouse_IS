@@ -2,7 +2,18 @@ import React from "react";
 import './InputText.css';
 
 export default function InputText(props){
-    //console.log(props.tabs.length)
+    //requiered data
+    /*
+    function getId(){
+        id++
+        return id-1
+    }
+    var provider_1; function set_provider_1(value) {provider_1 = value}
+    */
+   //pattern
+   /*
+   <InputText styles = "row_with_item_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/>
+   */
 
     function onChange() {
         props.set(document.getElementById(props.Id).value)

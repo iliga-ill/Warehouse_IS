@@ -2,11 +2,23 @@ import React from "react";
 import './InputDate.css';
 
 export default function InputDate(props){
-    //console.log(props.tabs.length)
+    
+    //requiered data
+    /*
+    var id=0
+    function getId(){
+        id++
+        return id-1
+    }
+    var date; function set_date(value) {date = value}
+    */
+   //pattern
+   /*
+   <InputDate Id={getId()} func={set_date}/>
+   */
 
     function onDateChange() {
         var date_input = document.getElementById(props.Id);
-        //list, value, valueAsDate, valueAsNumber.
         props.func(date_input.value)
     }
 

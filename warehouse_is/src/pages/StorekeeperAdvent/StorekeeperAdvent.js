@@ -6,6 +6,7 @@ import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/Flexibl
 import InputDate from "../../components/InputDate/InputDate";
 import InputFile from "../../components/InputFile/InputFile";
 import InputText from "../../components/InputText/InputText";
+import ExpandListInput from "../../components/ExpandListInput/ExpandListInput";
 
 const styles = {
 
@@ -21,23 +22,41 @@ export default function StorekeeperAdvent(){
         return id-1
     }
 
+    var table_list_value = [
+        {value: "Стиральные машины", selected: true},
+        {value: "Пылесосы", selected: false},
+        {value: "Утюги", selected: false},
+        {value: "Вытяжки", selected: false},
+    ]
+
     var table_headers = [
-        {title:"№", mode:"text", column_width: "30px"}, 
-        {title:"Наименование", mode:"text", column_width: "100px"}, 
-        {title:"Категория", mode:"text", column_width: "70px"}, 
-        {title:"Кол-во коробок", mode:"input", column_width: "70px"}
+        {title:"№", mode:"text", column_width: "30px", listValue: []}, 
+        {title:"Наименование", mode:"text", column_width: "100px", listValue: []}, 
+        // {title:"Категория", mode:"text", column_width: "70px", listValue: table_list_value}, 
+        {title:"Категория", mode:"inputList", column_width: "160px", listValue: table_list_value}, 
+        {title:"Кол-во коробок", mode:"input", column_width: "70px", listValue: []}
     ]
 
     var  table_field_height = "100px"
 
     var table_list = [
-        [0, "Морковкаa aaaaaaaaaaaaa aaaaaaaaa", "Овощи", "20"],
-        [0, "Капуста", "Овощи", "10"],
-        [0, "Капуста", "Овощи", "10"],
-        [0, "Капуста", "Овощи", "10"],
+        [0, "Стиральная машина А30", "Стиральные машины", "10"],
+        [0, "Утюг В3000", "Утюги", "10"],
+        [0, "Вытяжка S240", "Вытяжки", "10"],
+        [0, "Утюг Ж510", "Утюги", "10"],
+        [0, "Вытяжка S240", "Вытяжки", "10"],
+        [0, "Пылесос Z2900", "Пылесосы", "10"],
+        [0, "Стиральная машина А30", "Стиральные машины", "10"],
     ]
-    
     function set_table_list_1(value) {table_list = value}
+
+    var expand_imput_list_1 = [
+        {value: "Стиральная машина А30", selected: false},
+        {value: "Утюг В3000", selected: false},
+        {value: "Вытяжка S240", selected: false},
+        {value: "Пылесос Z2900", selected: true},
+    ]
+    function set_expand_list_input_1(value, i, j) {expand_imput_list_1=value}
 
     var provider_1; function set_provider_1(value) {provider_1 = value}
     var date; function set_date(value) {date = value}
@@ -46,6 +65,9 @@ export default function StorekeeperAdvent(){
     function btn_send_1() {
         console.log("date = " + date)
         console.log("provider_1 = " + provider_1)
+        expand_imput_list_1.map(item=>{
+            if (item.selected) console.log("good = " + item.value)
+        })
         if (documents != null) {
             console.log(
                 documents.map(doc=>{
@@ -101,9 +123,10 @@ export default function StorekeeperAdvent(){
             <FlexibleBlock>
                 <div class="header_text">Прием товаров</div>
                 <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} func={set_date}/></div>
+                <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInput Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div>
                 <InputText styles = "row_with_item_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/>
                 <div class="low_text"><InputFile Id={getId()} func={set_documents}/></div>
-                <Table Id={getId()} table_list={table_list} table_headers={table_headers} table_field_height={table_field_height} func={set_table_list_1}/>
+                <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1}/>
                 <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
             </FlexibleBlock>
             {/* //Блок с заказом
