@@ -3,22 +3,15 @@ import './InputFile.css';
 
 export default function InputFile(props){
 
-    // function handleCapture ({ target }) {
-    //     const fileReader = new FileReader();
-    //     //fileReader.
+    //requiered data
+    /*
+    function getId(){
+        id++
+        return id-1
+    }
 
-    //     target.files.map(item=>{
-    //         fileReader.readAsDataURL(target.files[0]);
-    //         fileReader.onload = (e) => {
-    //             props.func(e.target.result)
-    //         };
-    //     })
-    // };
-
-    
-    
-
-    //input.style.opacity = 0;
+    var documents; function set_documents(value) {documents = value}
+    */
 
     function updateImageDisplay() {
         var input = document.getElementById("file_input_" + props.Id);

@@ -6,8 +6,16 @@
 .middle{
     height: auto;
     align-content: center;
+    vertical-align: middle;
+    text-align: center;
 }
 
 .border{
     border: 1px solid darkgray;
+}
+
+.scroll_field{
+    list-style: none;
+    width:min-content;
+    display: block;
 }

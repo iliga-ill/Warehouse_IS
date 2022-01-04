@@ -3,6 +3,14 @@ import './FlexibleBlocksPage.css';
 
 export default function FlexibleBlocksPage(props){
 
+    //pattern
+    /*
+    <FlexibleBlocksPage>
+        <FlexibleBlock>
+        </FlexibleBlock>
+    </FlexibleBlocksPage>
+    */
+
     let [pageStyle, setPageStyle] = React.useState(
         {
             listStyle: "none",
