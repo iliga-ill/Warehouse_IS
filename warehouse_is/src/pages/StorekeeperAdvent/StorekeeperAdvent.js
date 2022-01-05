@@ -7,6 +7,7 @@ import InputDate from "../../components/InputDate/InputDate";
 import InputFile from "../../components/InputFile/InputFile";
 import InputText from "../../components/InputText/InputText";
 import ExpandListInput from "../../components/ExpandListInput/ExpandListInput";
+import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
 
 const styles = {
 
@@ -50,6 +51,18 @@ export default function StorekeeperAdvent(){
     ]
     function set_table_list_1(value) {table_list = value}
 
+    var list_with_search_width = "200px"
+    var list_with_search_height = "300px"
+    var list_with_search_items = [
+        {id: 0, text: "Заказ №1143", selected: false},
+        {id: 0, text: "Заказ №1346", selected: false},
+        {id: 0, text: "Заказ №3543", selected: true},
+        {id: 0, text: "Заказ №3156", selected: false},
+        {id: 0, text: "Заказ №6243", selected: false},
+        {id: 0, text: "Заказ №6546", selected: false},
+    ]
+    function set_list_with_search(value) {list_with_search_items = value}
+
     var expand_imput_list_1 = [
         {value: "Стиральная машина А30", selected: false},
         {value: "Утюг В3000", selected: false},
@@ -76,6 +89,7 @@ export default function StorekeeperAdvent(){
             )
         }
         console.log(table_list)
+        console.log(list_with_search_items)
     }
 
     
@@ -110,16 +124,16 @@ export default function StorekeeperAdvent(){
     //     console.log("provider_2 = " + provider_2)
     // }
 
-    table_list.map(function(item,i){
-        item[0] = i
-    })
+    table_list.map(function(item,i){ item[0] = i })
+    list_with_search_items.map(function(item,i){ item.id = i })
 
     return (
         <FlexibleBlocksPage>
-            {/* <FlexibleBlock>
+            <FlexibleBlock>
                 <div class = "shipment_code_block">
+                    <ListWithSearch Id={getId()} item_list={list_with_search_items} func={set_list_with_search} width={list_with_search_width} height={list_with_search_height}/>
                 </div>
-            </FlexibleBlock> */}
+            </FlexibleBlock>
             <FlexibleBlock>
                 <div class="header_text">Прием товаров</div>
                 <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} func={set_date}/></div>
