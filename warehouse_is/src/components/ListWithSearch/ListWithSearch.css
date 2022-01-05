@@ -1,0 +1,11 @@
+.block_wrap_1{
+    margin-top: 5px;
+    border: 1px solid darkgray;
+    border-radius: 5px;
+}
+
+.white{background-color: white}
+
+.darkgray{
+    background-color: rgba(228, 228, 228, 0.575);
+}
