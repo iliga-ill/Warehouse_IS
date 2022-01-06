@@ -7,6 +7,8 @@ var styles = {
         height: "",
         width:"",
         overflowY: "scroll",
+        border: "1px solid darkgray",
+        borderRadius: "5px"
     }
 }
 
@@ -49,27 +51,25 @@ export default function ListWithSearch(props){
      if (styles.scroll.height != props.height) styles.scroll.height = props.height
    
      return (
-       <div className="App">
-         <input
-           type="text"
-           placeholder="Search"
-           value={searchTerm}
-           onChange={handleChange}
-         />
-         <div style={styles.scroll}>
-            {searchResults.map(item1=>{
-                var selected = false
-                props.item_list.map(function(item2,i){
-                    if (item1 == item2.text) selected = item2.selected
-                })
-                if (selected){
-                    return <div class='block_wrap_1 darkgray' onClick={e=>onItemClick(item1)}>{item1}</div>
-                }else{
-                    return <div class='block_wrap_1 white' onClick={e=>onItemClick(item1)}>{item1}</div>
-                }
-            })}
-          </div>
-       </div>
+         <>
+            <div class="search_wrap">
+                <input type="text" placeholder="Search" value={searchTerm} onChange={handleChange} class="search_field" />
+            </div>
+            <div class="placeholder"/>
+            <div class="white" style={styles.scroll}>
+                {searchResults.map(item1=>{
+                    var selected = false
+                    props.item_list.map(function(item2,i){
+                        if (item1 == item2.text) selected = item2.selected
+                    })
+                    if (selected){
+                        return <div class='block_wrap_1 darkgray' onClick={e=>onItemClick(item1)}>{item1}</div>
+                    }else{
+                        return <div class='block_wrap_1 white' onClick={e=>onItemClick(item1)}>{item1}</div>
+                    }
+                })}
+            </div>
+          </>
      );
 
 }

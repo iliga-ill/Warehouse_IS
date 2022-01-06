@@ -1,7 +1,8 @@
 .header_text{
     font-size: 1.25rem;
     font-weight: bold;
-    line-height: 1.75rem;
+    line-height: 1rem;
+    margin-bottom: 7px;
 }
 
 .low_text{

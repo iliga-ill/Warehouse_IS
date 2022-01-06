@@ -54,8 +54,38 @@ export default function Table(props){
 
     //pattern
     /*
-    <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1}/>
+    <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1} search="true"/>
     */
+
+    const [searchTerm, setSearchTerm] = React.useState("");
+    const [searchResults, setSearchResults] = React.useState([]);
+
+    let [reload, setReload] = React.useState(0)
+
+    function reloadPage(){
+        setReload(reload+1)
+    }
+
+    const handleChange = event => {
+        setSearchTerm(event.target.value);
+      };
+     React.useEffect(() => {
+        var results = []
+        var j=0
+        props.table_list.map(function(item,i){
+            var search=false
+            props.table_headers.map(function(item1,i){
+                if (item[i]!=undefined && item[i].toString().toLowerCase().includes(searchTerm.toLowerCase())) {
+                    search=true
+                }
+            })
+            if (search) {
+                results[j] = item
+                j++
+            }
+        })
+        setSearchResults(results);
+      }, [searchTerm]);
     
     grid_template_columns=""
     props.table_headers.map(function(item, i){
@@ -71,6 +101,7 @@ export default function Table(props){
             tableData[j][i]=document.getElementById(Id).value
             props.func(tableData)
         }
+        reloadPage()
     }
 
     function onListInputChange(value, i, j){
@@ -85,38 +116,86 @@ export default function Table(props){
     
     return (
         <>
-            <div class="low_table_text middle" style={styles.table}>
-                {props.table_headers.map(item=>{
-                    return <div class="border middle">{item.title}</div>
-                })}
-            </div>
-            <div style={styles.scroll} class="scroll_field">
+            {props.table_headers.map(function(item,i){
+                if (props.search == "true" && i==0) {
+                    return (
+                        <div class="table_search_wrap">
+                            <input type="text" placeholder="Search" value={searchTerm} onChange={handleChange} class="table_search_field" />
+                        </div>
+                        )
+                }})
+            }
+            <div class="border">
                 <div class="low_table_text middle" style={styles.table}>
-                    {props.table_list.map(function(item, j){
-                        return (<>{
-                            item.map(function(item, i) {
-                                if (props.table_headers[i].mode == "text")
-                                    return <div class="border middle">{item}</div>
-                                else if (props.table_headers[i].mode == "input")
-                                    return <input id={props.Id+"_"+j+"_"+i} class="middle input" defaultValue={item} onChange={e => onInputChange(e.target.id, j, i)} placeholder={""}/>
-                                else if (props.table_headers[i].mode == "inputList")
-                                    return <ExpandListInput class="border middle" Id={props.Id+"_"+j+"_"+i} defValue={item} list={props.table_headers[i].listValue} i={i} j={j} func={onListInputChange}/>
-                            })
-                        }</>)
+                    {props.table_headers.map(function(item,i){
+
+                        var styles = {
+                            border:{
+                                borderTop: "0px solid darkgray",
+                                borderLeft: "0px solid darkgray",
+                                borderRight: "1px solid darkgray",
+                                borderBottom: "1px solid darkgray",
+                            }
+                        }
+                        //if (i==0) styles.border.borderLeft="0px solid darkgray"
+                        if (i==props.table_headers.length-1) styles.border.borderRight="0px solid darkgray"
+
+                        return <div style={styles.border} class="middle">{item.title}</div>
                     })}
                 </div>
-            </div>
-            <div class="low_table_text middle" style={styles.table}>
-                {props.table_headers.map(function(item,i){
-                    if (i==0) 
-                        return (
-                            <div class="middle border">
-                                <img className="plus_icon" src={`${process.env.PUBLIC_URL}/src/images/plus_icon.png`} alt="plus_icon"/>
-                            </div>
-                            )
-                    else
-                        return <div class="border"></div>
-                })} 
+                <div style={styles.scroll} class="scroll_field">
+                    <div class="low_table_text middle" style={styles.table}>
+                        {searchResults.map(function(item1, j){
+                            return (<>{
+                                item1.map(function(item, i) {
+                                    var styles = {
+                                        border:{
+                                            borderTop: "0px solid darkgray",
+                                            borderLeft: "0px solid darkgray",
+                                            borderRight: "1px solid darkgray",
+                                            borderBottom: "1px solid darkgray",
+                                        }
+                                    }
+                                    if (j==0) styles.border.borderTop="0px solid darkgray"
+                                    //if (j==searchResults.length-1) styles.border.borderBottom="0px solid darkgray"
+                                    //if (i==0) styles.border.borderLeft="0px solid darkgray"
+                                    if (i==item1.length-1) styles.border.borderRight="0px solid darkgray"
+
+                                    if (props.table_headers[i].mode == "text")
+                                        return <div style={styles.border} class="middle">{item}</div>
+                                    else if (props.table_headers[i].mode == "input")
+                                        return <input id={props.Id+"_"+j+"_"+i} class="middle input" defaultValue={item} onChange={e => onInputChange(e.target.id, j, i)} placeholder={""}/>
+                                    else if (props.table_headers[i].mode == "inputList")
+                                        return <ExpandListInput style={styles.border} class="middle" Id={props.Id+"_"+j+"_"+i} defValue={item} list={props.table_headers[i].listValue} i={i} j={j} func={onListInputChange}/>
+                                })
+                            }</>)
+                        })}
+                    </div>
+                </div>
+                <div class="low_table_text middle" style={styles.table}>
+                    {props.table_headers.map(function(item,i){
+
+                    var styles = {
+                        border:{
+                            borderTop: "1px solid darkgray",
+                            borderLeft: "0px solid darkgray",
+                            borderRight: "1px solid darkgray",
+                            borderBottom: "0px solid darkgray",
+                        }
+                    }
+                    //if (i==0) styles.border.borderLeft="0px solid darkgray"
+                    if (i==props.table_headers.length-1) styles.border.borderRight="0px solid darkgray"
+
+                        if (i==0) 
+                            return (
+                                <div style={styles.border} class="middle">
+                                    <img className="plus_icon" src={`${process.env.PUBLIC_URL}/src/images/plus_icon.png`} alt="plus_icon"/>
+                                </div>
+                                )
+                        else
+                            return <div style={styles.border} class="middle"></div>
+                    })} 
+                </div>
             </div>
         </>
     )
