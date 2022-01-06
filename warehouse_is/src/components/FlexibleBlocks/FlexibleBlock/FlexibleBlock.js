@@ -6,6 +6,7 @@ export default function FlexibleBlock(props){
             <div class = "block">
                 <div class = "block_wrap darkgray">
                     <div class = "pl pr">
+                        <div class="placeholder"/>
                         {props.children}
                         <div class="placeholder"/>
                     </div>

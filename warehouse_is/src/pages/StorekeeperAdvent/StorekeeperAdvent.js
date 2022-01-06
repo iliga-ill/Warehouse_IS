@@ -52,7 +52,7 @@ export default function StorekeeperAdvent(){
     function set_table_list_1(value) {table_list = value}
 
     var list_with_search_width = "200px"
-    var list_with_search_height = "300px"
+    var list_with_search_height = "335px"
     var list_with_search_items = [
         {id: 0, text: "Заказ №1143", selected: false},
         {id: 0, text: "Заказ №1346", selected: false},
@@ -60,6 +60,14 @@ export default function StorekeeperAdvent(){
         {id: 0, text: "Заказ №3156", selected: false},
         {id: 0, text: "Заказ №6243", selected: false},
         {id: 0, text: "Заказ №6546", selected: false},
+        {id: 0, text: "Заказ №6547", selected: false},
+        {id: 0, text: "Заказ №6548", selected: false},
+        {id: 0, text: "Заказ №6549", selected: false},
+        {id: 0, text: "Заказ №6540", selected: false},
+        {id: 0, text: "Заказ №6526", selected: false},
+        {id: 0, text: "Заказ №6536", selected: false},
+        {id: 0, text: "Заказ №6556", selected: false},
+        {id: 0, text: "Заказ №6566", selected: false},
     ]
     function set_list_with_search(value) {list_with_search_items = value}
 
@@ -130,9 +138,7 @@ export default function StorekeeperAdvent(){
     return (
         <FlexibleBlocksPage>
             <FlexibleBlock>
-                <div class = "shipment_code_block">
                     <ListWithSearch Id={getId()} item_list={list_with_search_items} func={set_list_with_search} width={list_with_search_width} height={list_with_search_height}/>
-                </div>
             </FlexibleBlock>
             <FlexibleBlock>
                 <div class="header_text">Прием товаров</div>
@@ -140,7 +146,7 @@ export default function StorekeeperAdvent(){
                 <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInput Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div>
                 <InputText styles = "row_with_item_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/>
                 <div class="low_text"><InputFile Id={getId()} func={set_documents}/></div>
-                <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1}/>
+                <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1} search="true"/>
                 <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
             </FlexibleBlock>
             {/* //Блок с заказом

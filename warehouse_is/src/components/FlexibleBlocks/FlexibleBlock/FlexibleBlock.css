@@ -1,8 +1,6 @@
 .block{
-    display: block;
     height: fit-content;
     width: max-content;
-    /* border: 1px solid darkgray; */
     display: inline-table; 
 }
 
@@ -17,6 +15,7 @@
 
 .pl{padding-left: 1rem;}
 .pr{padding-right: 1rem;}
+.mt{margin-top: -5px;}
 
 .green{background-color: green}
 .red{background-color: red}

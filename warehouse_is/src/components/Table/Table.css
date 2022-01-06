@@ -10,7 +10,7 @@
     text-align: center;
 }
 
-.border{
+.border{ 
     border: 1px solid darkgray;
 }
 
@@ -18,4 +18,16 @@
     list-style: none;
     width:min-content;
     display: block;
+    margin-right: -3px;
+}
+
+.table_search_field{
+    display: block;
+    width: max-content;
+    margin-right: -2rem;
+    margin-bottom: 3px;
+}
+
+.table_search_wrap{
+    width: max-content;
 }
