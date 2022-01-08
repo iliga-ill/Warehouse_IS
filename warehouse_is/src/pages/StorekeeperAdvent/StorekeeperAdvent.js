@@ -6,7 +6,7 @@ import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/Flexibl
 import InputDate from "../../components/InputDate/InputDate";
 import InputFile from "../../components/InputFile/InputFile";
 import InputText from "../../components/InputText/InputText";
-import ExpandListInput from "../../components/ExpandListInput/ExpandListInput";
+import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
 
 const styles = {
@@ -23,6 +23,12 @@ export default function StorekeeperAdvent(){
         return id-1
     }
 
+    let [reload, setReload] = React.useState(0)
+
+    function reloadPage(){
+        setReload(reload+1)
+    }
+
     var table_list_value = [
         {value: "Стиральные машины", selected: true},
         {value: "Пылесосы", selected: false},
@@ -35,21 +41,24 @@ export default function StorekeeperAdvent(){
         {title:"Наименование", mode:"text", column_width: "100px", listValue: []}, 
         // {title:"Категория", mode:"text", column_width: "70px", listValue: table_list_value}, 
         {title:"Категория", mode:"inputList", column_width: "160px", listValue: table_list_value}, 
-        {title:"Кол-во коробок", mode:"input", column_width: "70px", listValue: []}
+        {title:"Кол-во коробок", mode:"input", column_width: "70px", listValue: []},
+        {title:"", mode:"remove", column_width: "40px", listValue: []},
     ]
 
     var  table_field_height = "100px"
 
     var table_list = [
-        [0, "Стиральная машина А30", "Стиральные машины", "10"],
-        [0, "Утюг В3000", "Утюги", "10"],
-        [0, "Вытяжка S240", "Вытяжки", "10"],
-        [0, "Утюг Ж510", "Утюги", "10"],
-        [0, "Вытяжка S240", "Вытяжки", "10"],
-        [0, "Пылесос Z2900", "Пылесосы", "10"],
-        [0, "Стиральная машина А30", "Стиральные машины", "10"],
+        [0, "Стиральная машина А30", "Стиральные машины", "10", true],
+        [0, "Утюг В3000", "Утюги", "10", true],
+        [0, "Вытяжка S240", "Вытяжки", "10", true],
+        [0, "Утюг Ж510", "Утюги", "10", true],
+        [0, "Вытяжка S240", "Вытяжки", "10", true],
+        [0, "Пылесос Z2900", "Пылесосы", "10", true],
+        [0, "Стиральная машина А30", "Стиральные машины", "10", true],
     ]
-    function set_table_list_1(value) {table_list = value}
+    function set_table_list_1(value) {
+        table_list =value
+    }
 
     var list_with_search_width = "200px"
     var list_with_search_height = "335px"
@@ -103,36 +112,35 @@ export default function StorekeeperAdvent(){
     
 
     //Блок с заказом
-    // function onBlock3FileUploaded(files){
-    //     files.map(doc=>{
-    //         console.log("block 3 document: " + doc.name)
-    //     })
-    // }
-    // var good_category; function set_good_category(value) {good_category = value}
-    // var good; function set_good(value) {good = value}
-    // var goods_sum; function set_goods_sum(value) {goods_sum = value}
-    // var one_shipment_amount; function set_one_shipment_amount(value) {one_shipment_amount = value}
-    // var warranty_good; function set_warranty_good(value) {warranty_good = value}
-    // var shipment_deadline; function set_shipment_deadline(value) {shipment_deadline = value}
-    // var amount_of_shipments; function set_amount_of_shipments(value) {amount_of_shipments = value}
-    // var good_weight; function set_good_weight(value) {good_weight = value}
-    // var good_cost; function set_good_cost(value) {good_cost = value}
-    // var provider_2; function set_provider_2(value) {provider_2 = value}
+    function onBlock3FileUploaded(files){
+        files.map(doc=>{
+            console.log("block 3 document: " + doc.name)
+        })
+    }
+    var good_category; function set_good_category(value) {good_category = value}
+    var good; function set_good(value) {good = value}
+    var goods_sum; function set_goods_sum(value) {goods_sum = value}
+    var one_shipment_amount; function set_one_shipment_amount(value) {one_shipment_amount = value}
+    var warranty_good; function set_warranty_good(value) {warranty_good = value}
+    var shipment_deadline; function set_shipment_deadline(value) {shipment_deadline = value}
+    var amount_of_shipments; function set_amount_of_shipments(value) {amount_of_shipments = value}
+    var good_weight; function set_good_weight(value) {good_weight = value}
+    var good_cost; function set_good_cost(value) {good_cost = value}
+    var provider_2; function set_provider_2(value) {provider_2 = value}
 
-    // function btn_send_2() {
-    //     console.log("good_category = " + good_category)
-    //     console.log("good = " + good)
-    //     console.log("goods_sum = " + goods_sum)
-    //     console.log("one_shipment_amount = " + one_shipment_amount)
-    //     console.log("warranty_good = " + warranty_good)
-    //     console.log("shipment_deadline = " + shipment_deadline)
-    //     console.log("amount_of_shipments = " + amount_of_shipments)
-    //     console.log("good_weight = " + good_weight)
-    //     console.log("good_cost = " + good_cost)
-    //     console.log("provider_2 = " + provider_2)
-    // }
-
-    table_list.map(function(item,i){ item[0] = i })
+    function btn_send_2() {
+        console.log("good_category = " + good_category)
+        console.log("good = " + good)
+        console.log("goods_sum = " + goods_sum)
+        console.log("one_shipment_amount = " + one_shipment_amount)
+        console.log("warranty_good = " + warranty_good)
+        console.log("shipment_deadline = " + shipment_deadline)
+        console.log("amount_of_shipments = " + amount_of_shipments)
+        console.log("good_weight = " + good_weight)
+        console.log("good_cost = " + good_cost)
+        console.log("provider_2 = " + provider_2)
+    }
+    
     list_with_search_items.map(function(item,i){ item.id = i })
 
     return (
@@ -143,13 +151,12 @@ export default function StorekeeperAdvent(){
             <FlexibleBlock>
                 <div class="header_text">Прием товаров</div>
                 <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} func={set_date}/></div>
-                <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInput Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div>
+                <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div>
                 <InputText styles = "row_with_item_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/>
                 <div class="low_text"><InputFile Id={getId()} func={set_documents}/></div>
                 <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1} search="true"/>
                 <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
             </FlexibleBlock>
-            {/* //Блок с заказом
                 <FlexibleBlock>
                 <div class="header_text">Заказ 1</div>
                 <InputText styles = "row_with_item_equal" Id={getId()} label="Категория" placeholder="Категория товара" set={set_good_category}/>
@@ -161,10 +168,10 @@ export default function StorekeeperAdvent(){
                 <InputText styles = "row_with_item_equal" Id={getId()} label="Кол-во партий товара&nbsp;" placeholder="Кол-во партий товара" set={set_amount_of_shipments}/>
                 <InputText styles = "row_with_item_equal" Id={getId()} label="Вес ед продукции&nbsp;" placeholder="Вес ед продукции" set={set_good_weight}/>
                 <InputText styles = "row_with_item_equal" Id={getId()} label="Цена&nbsp;" placeholder="Цена" set={set_good_cost}/>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider}/>
+                <InputText styles = "row_with_item_equal" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_2}/>
                 <div class="low_text"><InputFile Id={getId()} func={onBlock3FileUploaded}/></div>
                 <div class="place_holder"/><button class="bt_send" onClick={btn_send_2}>Отправить</button>
-            </FlexibleBlock> */}
+            </FlexibleBlock>
         </FlexibleBlocksPage>
     )
 }

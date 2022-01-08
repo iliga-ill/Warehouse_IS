@@ -10,10 +10,6 @@
     text-align: center;
 }
 
-.border{ 
-    border: 1px solid darkgray;
-}
-
 .scroll_field{
     list-style: none;
     width:min-content;
@@ -30,4 +26,26 @@
 
 .table_search_wrap{
     width: max-content;
+}
+
+.plus_icon{
+    height: 40px;
+    width: 40px;
+    margin-left: -6px;
+    margin-top: -7px;
+}
+
+.plus_icon_wrap{
+    height: 26px;
+}
+
+.minus_icon{
+    height: 16px;
+    width: 16px;
+    align-self: center;
+}
+
+.minus_icon_wrap{
+    height: 100%;
+    align-items: center;
 }

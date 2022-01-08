@@ -1,7 +1,7 @@
 import React from "react";
-import './ExpandListInput.css';
+import './ExpandListInputTable.css';
 
-export default function ExpandListInput(props){
+export default function ExpandListInputTable(props){
 
     //requiered data
     /*
@@ -41,7 +41,7 @@ export default function ExpandListInput(props){
     props.func(itemList)
 
     return (
-           <select id={"expand_list_"+props.Id} defaultValue={props.defValue} onChange={e => option_selected("expand_list_"+props.Id, props.i, props.j)}>
+           <select id={props.Id} onMouseOver={props.onMouseOver} onMouseLeave={props.onMouseLeave} defaultValue={props.defValue} onChange={e => option_selected("expand_list_"+props.Id, props.i, props.j)}>
             {
                props.list.map(function(item, i){
                   return <option value={item.value}>{item.value}</option>

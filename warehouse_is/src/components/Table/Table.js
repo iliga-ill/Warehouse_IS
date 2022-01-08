@@ -1,6 +1,8 @@
 import React from "react";
 import './Table.css';
-import ExpandListInput from "../ExpandListInput/ExpandListInput";
+import ExpandListInputTable from "../ExpandListInput/ExpandListInputTable/ExpandListInputTable";
+import PlusIcon from '../../images/PlusIcon.svg'
+import MinusIcon from '../../images/MinusIcon.svg'
 
 var grid_template_columns=""
 
@@ -15,6 +17,8 @@ var styles = {
         overflowY: "scroll",
     }
 }
+
+var tableData = null
 
 export default function Table(props){
 
@@ -66,13 +70,17 @@ export default function Table(props){
         setReload(reload+1)
     }
 
+    if (tableData == null)
+    tableData=props.table_list
+
     const handleChange = event => {
         setSearchTerm(event.target.value);
       };
+
      React.useEffect(() => {
         var results = []
         var j=0
-        props.table_list.map(function(item,i){
+        tableData.map(function(item,i){
             var search=false
             props.table_headers.map(function(item1,i){
                 if (item[i]!=undefined && item[i].toString().toLowerCase().includes(searchTerm.toLowerCase())) {
@@ -91,10 +99,9 @@ export default function Table(props){
     props.table_headers.map(function(item, i){
         grid_template_columns += " " + props.table_headers[i].column_width
     })
+
     if (styles.table.gridTemplateColumns != grid_template_columns) styles.table.gridTemplateColumns = grid_template_columns
     if (styles.scroll.height != props.table_field_height) styles.scroll.height = props.table_field_height
-
-    var tableData=props.table_list
 
     function onInputChange(Id, j, i){
         if (document.getElementById(Id) != null){
@@ -113,7 +120,42 @@ export default function Table(props){
             props.func(tableData)
         }
     }
+
+    var lastItem = props.Id+"_"+0
+
+    function onMouseEnterRow(id){
+        if (document.getElementById(lastItem) != null)
+            document.getElementById(lastItem).hidden = true
+        document.getElementById(id).hidden = false
+        lastItem = id
+    }
+
+    function removeItem(j){
+        var newList = []
+        var counter = 0
+        tableData.map(function(item,i){
+            if (i != j) {
+                newList[counter] = item
+                counter++
+            }
+        })
+        tableData = newList
+        tableData.map(function(item,i){ 
+            tableData[i][0] = i 
+        })
+        console.log(tableData)
+
+        props.table_headers.map(function(item1,i){
+            document.getElementById(props.Id+"_"+j+"_"+i).remove()
+        })
+        
+        props.func(tableData)
+    }
     
+    tableData.map(function(item,i){ 
+        item[0] = i
+    })
+
     return (
         <>
             {props.table_headers.map(function(item,i){
@@ -125,26 +167,31 @@ export default function Table(props){
                         )
                 }})
             }
-            <div class="border">
+            <div>
                 <div class="low_table_text middle" style={styles.table}>
                     {props.table_headers.map(function(item,i){
 
                         var styles = {
                             border:{
-                                borderTop: "0px solid darkgray",
+                                borderTop: "1px solid darkgray",
                                 borderLeft: "0px solid darkgray",
                                 borderRight: "1px solid darkgray",
                                 borderBottom: "1px solid darkgray",
                             }
                         }
-                        //if (i==0) styles.border.borderLeft="0px solid darkgray"
-                        if (i==props.table_headers.length-1) styles.border.borderRight="0px solid darkgray"
+                        if (i==0) styles.border.borderLeft="1px solid darkgray"
+                        if (i==props.table_headers.length-2) styles.border.borderRight="1px solid darkgray"
+                        if (i==props.table_headers.length-1) {
+                            styles.border.borderRight="0px solid darkgray"
+                            styles.border.borderTop="0px solid darkgray"
+                            styles.border.borderBottom="0px solid darkgray"
+                        }
 
                         return <div style={styles.border} class="middle">{item.title}</div>
                     })}
                 </div>
                 <div style={styles.scroll} class="scroll_field">
-                    <div class="low_table_text middle" style={styles.table}>
+                    <div id={props.Id + "_holder"} class="low_table_text middle" style={styles.table}>
                         {searchResults.map(function(item1, j){
                             return (<>{
                                 item1.map(function(item, i) {
@@ -158,15 +205,19 @@ export default function Table(props){
                                     }
                                     if (j==0) styles.border.borderTop="0px solid darkgray"
                                     //if (j==searchResults.length-1) styles.border.borderBottom="0px solid darkgray"
-                                    //if (i==0) styles.border.borderLeft="0px solid darkgray"
-                                    if (i==item1.length-1) styles.border.borderRight="0px solid darkgray"
+                                    if (i==0) styles.border.borderLeft="1px solid darkgray"
+                                    if (i==item1.length-2) styles.border.borderRight="1px solid darkgray"
 
                                     if (props.table_headers[i].mode == "text")
-                                        return <div style={styles.border} class="middle">{item}</div>
+                                        return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{item}</div>
                                     else if (props.table_headers[i].mode == "input")
-                                        return <input id={props.Id+"_"+j+"_"+i} class="middle input" defaultValue={item} onChange={e => onInputChange(e.target.id, j, i)} placeholder={""}/>
+                                        return <input id={props.Id+"_"+j+"_"+i} class="middle input" onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)} defaultValue={item} onChange={e => onInputChange(e.target.id, j, i)} placeholder={""}/>
                                     else if (props.table_headers[i].mode == "inputList")
-                                        return <ExpandListInput style={styles.border} class="middle" Id={props.Id+"_"+j+"_"+i} defValue={item} list={props.table_headers[i].listValue} i={i} j={j} func={onListInputChange}/>
+                                        return <ExpandListInputTable style={styles.border} class="middle" onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)} Id={props.Id+"_"+j+"_"+i} defValue={item} list={props.table_headers[i].listValue} i={i} j={j} func={onListInputChange}/>
+                                    else if (props.table_headers[i].mode == "remove")
+                                        return (<div class="middle minus_icon_wrap" id={props.Id+"_"+j+"_"+i} onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)}>
+                                                    <img Id={props.Id+"_"+j} className="minus_icon" src={MinusIcon} alt="minus_icon" hidden="true" onClick={e=>removeItem(j)}/>
+                                                </div>)
                                 })
                             }</>)
                         })}
@@ -180,16 +231,21 @@ export default function Table(props){
                             borderTop: "1px solid darkgray",
                             borderLeft: "0px solid darkgray",
                             borderRight: "1px solid darkgray",
-                            borderBottom: "0px solid darkgray",
+                            borderBottom: "1px solid darkgray",
                         }
                     }
-                    //if (i==0) styles.border.borderLeft="0px solid darkgray"
-                    if (i==props.table_headers.length-1) styles.border.borderRight="0px solid darkgray"
+                    if (i==0) styles.border.borderLeft="1px solid darkgray"
+                    if (i==props.table_headers.length-2) styles.border.borderRight="1px solid darkgray"
+                    if (i==props.table_headers.length-1) {
+                        styles.border.borderRight="0px solid darkgray"
+                        styles.border.borderTop="0px solid darkgray"
+                        styles.border.borderBottom="0px solid darkgray"
+                    }
 
                         if (i==0) 
                             return (
-                                <div style={styles.border} class="middle">
-                                    <img className="plus_icon" src={`${process.env.PUBLIC_URL}/src/images/plus_icon.png`} alt="plus_icon"/>
+                                <div style={styles.border} class="middle plus_icon_wrap">
+                                    <img className="plus_icon" src={PlusIcon} alt="plus_icon"/>
                                 </div>
                                 )
                         else
