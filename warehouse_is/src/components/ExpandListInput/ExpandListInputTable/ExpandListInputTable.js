@@ -26,12 +26,12 @@ export default function ExpandListInputTable(props){
     
     var itemList = props.list
 
-    function option_selected(Id, i, j) {
+    function option_selected(Id, item_id, i) {
         itemList.map(item=>{
             if (item.value==document.getElementById(Id).value) item.selected = true
             else item.selected = false
         })
-        props.func(itemList, i, j)
+        props.func(itemList, item_id, i)
     }
 
     props.list.map(item=>{
@@ -40,8 +40,26 @@ export default function ExpandListInputTable(props){
     })
     props.func(itemList)
 
+    var defVal = props.defValue
+    var check = false
+    itemList.map(item=>{
+        if (defVal == item.value) check=true
+    })
+    if (!check) {
+        defVal = props.list[0].value
+        changeDef(props.item_id, props.i)
+    }
+
+    function changeDef(item_id, i) {
+        itemList.map(item=>{
+            if (item.value==defVal) item.selected = true
+            else item.selected = false
+        })
+        props.func(itemList, item_id, i)
+    }
+
     return (
-           <select id={props.Id} onMouseOver={props.onMouseOver} onMouseLeave={props.onMouseLeave} defaultValue={props.defValue} onChange={e => option_selected("expand_list_"+props.Id, props.i, props.j)}>
+           <select id={props.Id} onMouseOver={props.onMouseOver} onMouseLeave={props.onMouseLeave} defaultValue={defVal} onChange={e => option_selected(props.Id, props.item_id, props.i)}>
             {
                props.list.map(function(item, i){
                   return <option value={item.value}>{item.value}</option>
