@@ -3,6 +3,9 @@ import './Table.css';
 import ExpandListInputTable from "../ExpandListInput/ExpandListInputTable/ExpandListInputTable";
 import PlusIcon from '../../images/PlusIcon.svg'
 import MinusIcon from '../../images/MinusIcon.svg'
+import EditIcon from '../../images/EditIcon.svg'
+import ConfirmIcon from '../../images/ConfirmIcon.svg'
+import WarnIcon from '../../images/WarnIcon.svg'
 
 var grid_template_columns=""
 
@@ -15,10 +18,12 @@ var styles = {
     scroll: {
         height: "",
         overflowY: "scroll",
-    }
+    },
 }
 
 var tableData = null
+var innerList = []
+var showWarn = false
 
 export default function Table(props){
 
@@ -70,20 +75,53 @@ export default function Table(props){
         setReload(reload+1)
     }
 
-    if (tableData == null)
-    tableData=props.table_list
+    if (tableData == null) {
+        tableData=props.table_list
+        props.table_list.map(function(item,i){
+            innerList[i]={id: item[0], number: i, onChange: false, onCreate: false}
+        })
+    }
+
+    function recountInnerList(){
+        var counter=1
+        innerList.map(item=>{
+            tableData.map(function(item2,i){
+                if (item.id == item2[0]){
+                    item.number=counter
+                    counter++
+                }
+            })
+        })
+    }
+
+    function checkShowWarn(){
+        tableData.map(item=>{
+            if (item[item.length-1]){
+                showWarn=true
+            }
+        })
+    }
 
     const handleChange = event => {
         setSearchTerm(event.target.value);
       };
 
      React.useEffect(() => {
+        sort()
+      }, [searchTerm]);
+
+    function sort(){
         var results = []
         var j=0
-        tableData.map(function(item,i){
+        tableData.map(function(item,k){
             var search=false
-            props.table_headers.map(function(item1,i){
-                if (item[i]!=undefined && item[i].toString().toLowerCase().includes(searchTerm.toLowerCase())) {
+            item.map(function(item1,i){
+                if (i==0){
+                    if(item1!==undefined && innerList[k].number.toString().toLowerCase().includes(searchTerm.toLowerCase())) {
+                        search=true
+                    }
+                }
+                else if (item1!==undefined && item1.toString().toLowerCase().includes(searchTerm.toLowerCase())) {
                     search=true
                 }
             })
@@ -93,8 +131,15 @@ export default function Table(props){
             }
         })
         setSearchResults(results);
-      }, [searchTerm]);
-    
+    }
+
+    function reloadTable(){
+        document.getElementById(props.Id+"_input").value=" "
+        sort()
+        document.getElementById(props.Id+"_input").value=""
+        sort()
+    }
+
     grid_template_columns=""
     props.table_headers.map(function(item, i){
         grid_template_columns += " " + props.table_headers[i].column_width
@@ -103,19 +148,27 @@ export default function Table(props){
     if (styles.table.gridTemplateColumns != grid_template_columns) styles.table.gridTemplateColumns = grid_template_columns
     if (styles.scroll.height != props.table_field_height) styles.scroll.height = props.table_field_height
 
-    function onInputChange(Id, j, i){
+    function onInputChange(Id, id, i){
         if (document.getElementById(Id) != null){
-            tableData[j][i]=document.getElementById(Id).value
+            tableData.map(item1=>{
+                if(item1[0] == id)
+                    item1[i]=document.getElementById(Id).value
+            })
             props.func(tableData)
         }
         reloadPage()
     }
 
-    function onListInputChange(value, i, j){
-        if (value != null && i!=undefined && j!= undefined){
+    function onListInputChange(value, id, i){
+        if (value != null && i!=undefined && id!= undefined){
             value.map(item=>{
-                if (item.selected) 
-                tableData[j][i]=item.value
+                if (item.selected) {
+                    tableData.map(item1=>{
+                        if(item1[0] == id)
+                            item1[i]=item.value
+                    })
+                    
+                }
             })
             props.func(tableData)
         }
@@ -127,34 +180,61 @@ export default function Table(props){
         if (document.getElementById(lastItem) != null)
             document.getElementById(lastItem).hidden = true
         document.getElementById(id).hidden = false
+        document.getElementById(id).hidden = false
         lastItem = id
     }
 
-    function removeItem(j){
+    function removeItem(j, id){
         var newList = []
         var counter = 0
+        console.log(j)
         tableData.map(function(item,i){
-            if (i != j) {
+            if (item[0] != id) {
                 newList[counter] = item
                 counter++
             }
         })
         tableData = newList
-        tableData.map(function(item,i){ 
-            tableData[i][0] = i 
+
+        // props.table_headers.map(function(item1,i){
+        //     document.getElementById(props.Id+"_"+j+"_"+i).remove()
+        // })
+        reloadTable()
+
+        props.func(tableData)
+        reloadPage()
+    }
+
+    function changeItem(id){
+        innerList.map(item=>{
+            if (item.id==id) item.onChange=true
+        })
+        reloadTable()
+    }
+
+    function confirmItem(id){
+        innerList.map(item=>{
+            if (item.id==id) item.onChange=false
+        })
+        reloadTable()
+    }
+
+    function addItem(){
+        var tableString=[]
+        tableData[0].map(function(item,i){
+            if (i==0){
+                tableString[i]=tableData[tableData.length-1][0]+1
+            }
+            else if (i==tableData[0].length-1)
+                tableString[i]=true
+            else
+                tableString[i]=""
         })
         console.log(tableData)
-
-        props.table_headers.map(function(item1,i){
-            document.getElementById(props.Id+"_"+j+"_"+i).remove()
-        })
-        
-        props.func(tableData)
+        tableData[tableData.length] = tableString
+        innerList[innerList.length] = {id: innerList[innerList.length-1].id+1, number: innerList[innerList.length-1].number+1, onChange: true, onCreate: true}
+        reloadTable()
     }
-    
-    tableData.map(function(item,i){ 
-        item[0] = i
-    })
 
     return (
         <>
@@ -162,7 +242,7 @@ export default function Table(props){
                 if (props.search == "true" && i==0) {
                     return (
                         <div class="table_search_wrap">
-                            <input type="text" placeholder="Search" value={searchTerm} onChange={handleChange} class="table_search_field" />
+                            <input id={props.Id+"_input"} type="text" placeholder="Search" value={searchTerm} onChange={handleChange} class="table_search_field" />
                         </div>
                         )
                 }})
@@ -208,16 +288,82 @@ export default function Table(props){
                                     if (i==0) styles.border.borderLeft="1px solid darkgray"
                                     if (i==item1.length-2) styles.border.borderRight="1px solid darkgray"
 
-                                    if (props.table_headers[i].mode == "text")
-                                        return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{item}</div>
-                                    else if (props.table_headers[i].mode == "input")
-                                        return <input id={props.Id+"_"+j+"_"+i} class="middle input" onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)} defaultValue={item} onChange={e => onInputChange(e.target.id, j, i)} placeholder={""}/>
-                                    else if (props.table_headers[i].mode == "inputList")
-                                        return <ExpandListInputTable style={styles.border} class="middle" onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)} Id={props.Id+"_"+j+"_"+i} defValue={item} list={props.table_headers[i].listValue} i={i} j={j} func={onListInputChange}/>
-                                    else if (props.table_headers[i].mode == "remove")
-                                        return (<div class="middle minus_icon_wrap" id={props.Id+"_"+j+"_"+i} onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)}>
-                                                    <img Id={props.Id+"_"+j} className="minus_icon" src={MinusIcon} alt="minus_icon" hidden="true" onClick={e=>removeItem(j)}/>
-                                                </div>)
+                                    if (document.getElementById(props.Id+"_"+j+"_"+i) != null){
+                                        document.getElementById(props.Id+"_"+j+"_"+i).value=item
+                                    }
+
+                                    recountInnerList()
+                                    checkShowWarn()
+                                    var obj
+                                    innerList.map(item3=>{
+                                        if (item3.id==item1[0]) obj=item3
+                                    })
+
+                                    if (obj.onChange && item1[item1.length-1] && !obj.onCreate){
+                                        if (props.table_headers[i].mode == "text" && i==0)
+                                            return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{obj.number}</div>
+                                        else if (props.table_headers[i].mode == "text")
+                                            return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{item}</div>
+                                        else if (props.table_headers[i].mode == "input")
+                                            return <input id={props.Id+"_"+j+"_"+i} class="middle input" onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)} defaultValue={item} onChange={e => onInputChange(e.target.id, item1[0], i)} placeholder={""}/>
+                                        else if (props.table_headers[i].mode == "inputList")
+                                            return <ExpandListInputTable style={styles.border} class="middle" onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)} Id={props.Id+"_"+j+"_"+i} defValue={item} list={props.table_headers[i].listValue} item_id={item1[0]} i={i} func={onListInputChange}/>
+                                        else if (props.table_headers[i].mode == "remove")
+                                            return (<div class="middle icon_wrap" id={props.Id+"_"+j+"_"+i} onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)}>
+                                                        <div id={props.Id+"_"+j} class="image_wrap" hidden="true">
+                                                            <img className="minus_icon" src={MinusIcon} alt="minus_icon" onClick={e=>removeItem(j, item1[0])}/>
+                                                            <img className="confirm_icon" src={ConfirmIcon} alt="confirm_icon" onClick={e=>confirmItem(item1[0])}/>
+                                                        </div>
+                                                    </div>)
+
+
+                                    } else if (obj.onChange && obj.onCreate) {
+                                        if (props.table_headers[i].mode == "inputList")
+                                            return <ExpandListInputTable style={styles.border} class="middle" onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)} Id={props.Id+"_"+j+"_"+i} defValue={item} list={props.table_headers[i].listValue} item_id={item1[0]} i={i} func={onListInputChange}/>
+                                        else if (props.table_headers[i].mode == "remove")
+                                            return (<div class="middle icon_wrap" id={props.Id+"_"+j+"_"+i} onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)}>
+                                                        <div id={props.Id+"_"+j} class="image_wrap" hidden="true">
+                                                            <img className="minus_icon" src={MinusIcon} alt="minus_icon" onClick={e=>removeItem(j, item1[0])}/>
+                                                            <img className="confirm_icon" src={ConfirmIcon} alt="confirm_icon" onClick={e=>confirmItem(item1[0])}/>
+                                                        </div>
+                                                    </div>)
+                                        else if (i!=0)
+                                            return <input id={props.Id+"_"+j+"_"+i} class="middle input" onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)} defaultValue={item} onChange={e => onInputChange(e.target.id, item1[0], i)} placeholder={""}/>
+                                        else 
+                                            return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{obj.number}</div>
+                                    
+                                    
+                                    } else if (!item1[item1.length-1]) {
+                                        if (props.table_headers[i].mode != "remove" && i==0)
+                                            return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{obj.number}</div>
+                                        else if (props.table_headers[i].mode != "remove")
+                                            return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{item}</div>
+                                        else if (props.table_headers[i].mode == "remove"){
+                                            if (showWarn)
+                                                return (<div class="middle icon_wrap" id={props.Id+"_"+j+"_"+i} onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)}>
+                                                            <div id={props.Id+"_"+j} class="image_wrap" hidden="true">
+                                                                <img className="warn_icon" src={WarnIcon} alt="warn_icon"/>
+                                                            </div>
+                                                        </div>)
+                                            else
+                                                return (<div class="middle icon_wrap" id={props.Id+"_"+j+"_"+i} onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)}>
+                                                            <div id={props.Id+"_"+j} class="image_wrap" hidden="true">
+                                                            </div>
+                                                        </div>)
+                                            
+                                        }
+                                    } else {
+                                        if (props.table_headers[i].mode != "remove" && i==0)
+                                            return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{obj.number}</div>
+                                        else if (props.table_headers[i].mode != "remove")
+                                            return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{item}</div>
+                                        else if (props.table_headers[i].mode == "remove")
+                                            return (<div class="middle icon_wrap" id={props.Id+"_"+j+"_"+i} onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)}>
+                                                        <div id={props.Id+"_"+j} class="image_wrap" hidden="true">
+                                                            <img className="edit_icon" src={EditIcon} alt="edit_icon" onClick={e=>changeItem(item1[0])}/>
+                                                        </div>
+                                                    </div>)
+                                    }
                                 })
                             }</>)
                         })}
@@ -242,10 +388,10 @@ export default function Table(props){
                         styles.border.borderBottom="0px solid darkgray"
                     }
 
-                        if (i==0) 
+                        if (i==0 && props.add=="true")  
                             return (
                                 <div style={styles.border} class="middle plus_icon_wrap">
-                                    <img className="plus_icon" src={PlusIcon} alt="plus_icon"/>
+                                    <img className="plus_icon" src={PlusIcon} alt="plus_icon" onClick={e=>addItem()}/>
                                 </div>
                                 )
                         else

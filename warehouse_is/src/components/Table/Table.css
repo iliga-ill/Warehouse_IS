@@ -28,6 +28,11 @@
     width: max-content;
 }
 
+.icon_wrap{
+    height: 100%;
+    align-items: center;
+}
+
 .plus_icon{
     height: 40px;
     width: 40px;
@@ -35,17 +40,42 @@
     margin-top: -7px;
 }
 
-.plus_icon_wrap{
-    height: 26px;
-}
-
 .minus_icon{
     height: 16px;
     width: 16px;
     align-self: center;
+    vertical-align: middle;
+    margin-top: -5px;
 }
 
-.minus_icon_wrap{
+.confirm_icon{
+    height: 16px;
+    width: 16px;
+    align-self: center;
+    vertical-align: middle;
+    margin-left: 5px;
+    margin-top: -5px;
+}
+
+.edit_icon{
+    height: 16px;
+    width: 16px;
+    align-self: center;
+    vertical-align: middle;
+    margin-top: -5px;
+}
+
+.warn_icon{
+    height: 16px;
+    width: 16px;
+    align-self: center;
+    vertical-align: middle;
+    margin-top: -5px;
+}
+
+.image_wrap{
+    width: 50px;
     height: 100%;
-    align-items: center;
+    align-self: center;
+    vertical-align: middle;
 }
