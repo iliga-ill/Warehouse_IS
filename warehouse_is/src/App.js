@@ -1,10 +1,9 @@
 import React from 'react';
 import './App.css';
 import TabHolder from './components/TabHolder/TabHolder';
-import AvatarHolder from './components/AvatarHolder/AvatarHolder';
 import StorekeeperAdvent from './pages/StorekeeperAdvent/StorekeeperAdvent';
 import StorekeeperAllocation from './pages/StorekeeperAllocation/StorekeeperAllocation';
-//import TodoList from './pages/test/TodoList';
+import AvatarHolder from './components/AvatarHolder/AvatarHolder';
 
 const styles = {
   headTabs: {

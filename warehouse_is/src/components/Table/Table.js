@@ -6,6 +6,7 @@ import MinusIcon from '../../images/MinusIcon.svg'
 import EditIcon from '../../images/EditIcon.svg'
 import ConfirmIcon from '../../images/ConfirmIcon.svg'
 import WarnIcon from '../../images/WarnIcon.svg'
+import TableInputDate from "../InputDate/TableInputDate/TableInputDate";
 
 var grid_template_columns=""
 
@@ -174,6 +175,16 @@ export default function Table(props){
         }
     }
 
+    function onInputDateChange(value, id, i){
+        if (value != null && i!=undefined && id!= undefined){
+            tableData.map(item1=>{
+                if(item1[0] == id)
+                    item1[i]=value
+            })
+            props.func(tableData)
+        }
+    }
+
     var lastItem = props.Id+"_"+0
 
     function onMouseEnterRow(id){
@@ -308,6 +319,8 @@ export default function Table(props){
                                             return <input id={props.Id+"_"+j+"_"+i} class="middle input" onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)} defaultValue={item} onChange={e => onInputChange(e.target.id, item1[0], i)} placeholder={""}/>
                                         else if (props.table_headers[i].mode == "inputList")
                                             return <ExpandListInputTable style={styles.border} class="middle" onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)} Id={props.Id+"_"+j+"_"+i} defValue={item} list={props.table_headers[i].listValue} item_id={item1[0]} i={i} func={onListInputChange}/>
+                                        else if (props.table_headers[i].mode == "inputDate")
+                                            return <TableInputDate Id={props.Id+"_"+j+"_"+i} defValue={item} item_id={item1[0]} i={i} func={onInputDateChange}/>
                                         else if (props.table_headers[i].mode == "remove")
                                             return (<div class="middle icon_wrap" id={props.Id+"_"+j+"_"+i} onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)}>
                                                         <div id={props.Id+"_"+j} class="image_wrap" hidden="true">
@@ -320,6 +333,8 @@ export default function Table(props){
                                     } else if (obj.onChange && obj.onCreate) {
                                         if (props.table_headers[i].mode == "inputList")
                                             return <ExpandListInputTable style={styles.border} class="middle" onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)} Id={props.Id+"_"+j+"_"+i} defValue={item} list={props.table_headers[i].listValue} item_id={item1[0]} i={i} func={onListInputChange}/>
+                                        else if (props.table_headers[i].mode == "inputDate")
+                                            return <TableInputDate Id={props.Id+"_"+j+"_"+i} defValue={item} item_id={item1[0]} i={i} func={onInputDateChange}/>
                                         else if (props.table_headers[i].mode == "remove")
                                             return (<div class="middle icon_wrap" id={props.Id+"_"+j+"_"+i} onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)}>
                                                         <div id={props.Id+"_"+j} class="image_wrap" hidden="true">
@@ -336,6 +351,8 @@ export default function Table(props){
                                     } else if (!item1[item1.length-1]) {
                                         if (props.table_headers[i].mode != "remove" && i==0)
                                             return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{obj.number}</div>
+                                        else if (props.table_headers[i].mode == "inputDate")
+                                            return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{item.toString().replace(/-/, '.').replace(/-/, '.')}</div>
                                         else if (props.table_headers[i].mode != "remove")
                                             return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{item}</div>
                                         else if (props.table_headers[i].mode == "remove"){
@@ -355,6 +372,8 @@ export default function Table(props){
                                     } else {
                                         if (props.table_headers[i].mode != "remove" && i==0)
                                             return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{obj.number}</div>
+                                        else if (props.table_headers[i].mode == "inputDate")
+                                            return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{item.toString().replace(/-/, '.').replace(/-/, '.')}</div>
                                         else if (props.table_headers[i].mode != "remove")
                                             return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{item}</div>
                                         else if (props.table_headers[i].mode == "remove")
