@@ -23,6 +23,6 @@ export default function InputDate(props){
     }
 
     return (
-       <input class="input_date" type="date" id={props.Id} onChange={onDateChange} required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"/>
+       <input class="input_date" type="date" id={props.Id} defaultValue={props.defValue} onChange={onDateChange} required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"/>
     )
 }

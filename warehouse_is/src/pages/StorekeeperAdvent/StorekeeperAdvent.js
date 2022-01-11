@@ -42,19 +42,20 @@ export default function StorekeeperAdvent(){
         // {title:"Категория", mode:"text", column_width: "70px", listValue: table_list_value}, 
         {title:"Категория", mode:"inputList", column_width: "160px", listValue: table_list_value}, 
         {title:"Кол-во коробок", mode:"input", column_width: "70px", listValue: []},
+        {title:"Дата", mode:"inputDate", column_width: "150px", listValue: []},
         {title:"", mode:"remove", column_width: "50px", listValue: []},
     ]
 
     var  table_field_height = "100px"
 
     var table_list = [
-        [0, "Стиральная машина А30", "Стиральные машины", "10", false],
-        [1, "Утюг В3000", "Утюги", "10", false],
-        [2, "Вытяжка S240", "Вытяжки", "10", true],
-        [3, "Утюг Ж510", "Утюги", "10", true],
-        [4, "Вытяжка S240", "Вытяжки", "10", true],
-        [5, "Пылесос Z2900", "Пылесосы", "10", true],
-        [7, "Стиральная машина А30", "Стиральные машины", "10", true],
+        [0, "Стиральная машина А30", "Стиральные машины", "10", "2022-01-14", false],
+        [1, "Утюг В3000", "Утюги", "10", "2022-01-14", false],
+        [2, "Вытяжка S240", "Вытяжки", "10", "2022-01-14", true],
+        [3, "Утюг Ж510", "Утюги", "10", "2022-01-14", true],
+        [4, "Вытяжка S240", "Вытяжки", "10", "2022-01-14", true],
+        [5, "Пылесос Z2900", "Пылесосы", "10", "2022-01-14", true],
+        [7, "Стиральная машина А30", "Стиральные машины", "10", "2022-01-14", true],
     ]
     function set_table_list_1(value) {
         table_list =value
@@ -152,11 +153,11 @@ export default function StorekeeperAdvent(){
             </FlexibleBlock>
             <FlexibleBlock>
                 <div class="header_text">Прием товаров</div>
-                <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} func={set_date}/></div>
+                <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={"2022-01-14"} func={set_date}/></div>
                 <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div>
                 <InputText styles = "row_with_item_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/>
                 <div class="low_text"><InputFile Id={getId()} func={set_documents}/></div>
-                <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1} search="true" add="false"/>
+                <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1} search="true" add="true"/>
                 <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
             </FlexibleBlock>
                 <FlexibleBlock>
