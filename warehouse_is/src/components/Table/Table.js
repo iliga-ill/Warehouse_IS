@@ -8,29 +8,31 @@ import ConfirmIcon from '../../images/ConfirmIcon.svg'
 import WarnIcon from '../../images/WarnIcon.svg'
 import TableInputDate from "../InputDate/TableInputDate/TableInputDate";
 
-var grid_template_columns=""
-
-var styles = {
-    table: {
-        display: "grid",
-        gridTemplateColumns: "",
-        height: "max-content",
-    },
-    scroll: {
-        height: "",
-        overflowY: "scroll",
-    },
-}
-
-var tableData = null
-var innerList = []
-var showWarn = false
+var innerList = [[]]
+var tableData = [[]]
 
 export default function Table(props){
 
+    var grid_template_columns=""
+
+    var styles = {
+        table: {
+            display: "grid",
+            gridTemplateColumns: "",
+            height: "max-content",
+        },
+        scroll: {
+            height: "",
+            overflowY: "scroll",
+        },
+    }
+
+    
+    var showWarn = false
+
     //requiered data
     /*
-    var id=0
+        var id=0
     function getId(){
         id++
         return id-1
@@ -48,23 +50,30 @@ export default function Table(props){
         {title:"Наименование", mode:"text", column_width: "100px", listValue: []}, 
         // {title:"Категория", mode:"text", column_width: "70px", listValue: table_list_value}, 
         {title:"Категория", mode:"inputList", column_width: "160px", listValue: table_list_value}, 
-        {title:"Кол-во коробок", mode:"input", column_width: "70px", listValue: []}
+        {title:"Кол-во коробок", mode:"input", column_width: "70px", listValue: []},
+        {title:"Дата", mode:"inputDate", column_width: "150px", listValue: []},
+        {title:"", mode:"remove", column_width: "50px", listValue: []},
     ]
 
     var  table_field_height = "100px"
 
     var table_list = [
-        [0, "Стиральная машина А30", "Стиральные машины", "20"],
-        [0, "Утюг В3000", "Утюги", "10"],
-        [0, "Вытяжка S240", "Вытяжки", "10"],
-        [0, "Утюг Ж510", "Утюги", "10"],
+        [0, "Стиральная машина А30", "Стиральные машины", "10", "2022-01-14", false],
+        [1, "Утюг В3000", "Утюги", "10", "2022-01-14", false],
+        [2, "Вытяжка S240", "Вытяжки", "10", "2022-01-14", true],
+        [3, "Утюг Ж510", "Утюги", "10", "2022-01-14", true],
+        [4, "Вытяжка S240", "Вытяжки", "10", "2022-01-14", true],
+        [5, "Пылесос Z2900", "Пылесосы", "10", "2022-01-14", true],
+        [7, "Стиральная машина А30", "Стиральные машины", "10", "2022-01-14", true],
     ]
-    function set_table_list_1(value) {table_list = value}
+    function set_table_list_1(value) {
+        table_list =value
+    }
     */
 
     //pattern
     /*
-    <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1} search="true"/>
+        <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1} numb={0} search="true" add="true" delete="true"/>
     */
 
     const [searchTerm, setSearchTerm] = React.useState("");
@@ -76,17 +85,21 @@ export default function Table(props){
         setReload(reload+1)
     }
 
-    if (tableData == null) {
-        tableData=props.table_list
+    
+    if (document.getElementById(props.Id+"_input")==null){
+        tableData[props.numb]=props.table_list
+        var bufList = []
         props.table_list.map(function(item,i){
-            innerList[i]={id: item[0], number: i, onChange: false, onCreate: false}
+            bufList[i]={id: item[0], number: i, onChange: false, onCreate: false}
         })
+        innerList[props.numb] = bufList
     }
+        
 
     function recountInnerList(){
         var counter=1
-        innerList.map(item=>{
-            tableData.map(function(item2,i){
+        innerList[props.numb].map(item=>{
+            tableData[props.numb].map(function(item2,i){
                 if (item.id == item2[0]){
                     item.number=counter
                     counter++
@@ -96,7 +109,7 @@ export default function Table(props){
     }
 
     function checkShowWarn(){
-        tableData.map(item=>{
+        tableData[props.numb].map(item=>{
             if (item[item.length-1]){
                 showWarn=true
             }
@@ -114,11 +127,11 @@ export default function Table(props){
     function sort(){
         var results = []
         var j=0
-        tableData.map(function(item,k){
+        tableData[props.numb].map(function(item,k){
             var search=false
             item.map(function(item1,i){
                 if (i==0){
-                    if(item1!==undefined && innerList[k].number.toString().toLowerCase().includes(searchTerm.toLowerCase())) {
+                    if(item1!==undefined && innerList[props.numb][k].number.toString().toLowerCase().includes(searchTerm.toLowerCase())) {
                         search=true
                     }
                 }
@@ -151,11 +164,11 @@ export default function Table(props){
 
     function onInputChange(Id, id, i){
         if (document.getElementById(Id) != null){
-            tableData.map(item1=>{
+            tableData[props.numb].map(item1=>{
                 if(item1[0] == id)
                     item1[i]=document.getElementById(Id).value
             })
-            props.func(tableData)
+            props.func(tableData[props.numb])
         }
         reloadPage()
     }
@@ -164,24 +177,24 @@ export default function Table(props){
         if (value != null && i!=undefined && id!= undefined){
             value.map(item=>{
                 if (item.selected) {
-                    tableData.map(item1=>{
+                    tableData[props.numb].map(item1=>{
                         if(item1[0] == id)
                             item1[i]=item.value
                     })
                     
                 }
             })
-            props.func(tableData)
+            props.func(tableData[props.numb])
         }
     }
 
     function onInputDateChange(value, id, i){
         if (value != null && i!=undefined && id!= undefined){
-            tableData.map(item1=>{
+            tableData[props.numb].map(item1=>{
                 if(item1[0] == id)
                     item1[i]=value
             })
-            props.func(tableData)
+            props.func(tableData[props.numb])
         }
     }
 
@@ -198,33 +211,32 @@ export default function Table(props){
     function removeItem(j, id){
         var newList = []
         var counter = 0
-        console.log(j)
-        tableData.map(function(item,i){
+        tableData[props.numb].map(function(item,i){
             if (item[0] != id) {
                 newList[counter] = item
                 counter++
             }
         })
-        tableData = newList
+        tableData[props.numb] = newList
 
         // props.table_headers.map(function(item1,i){
         //     document.getElementById(props.Id+"_"+j+"_"+i).remove()
         // })
         reloadTable()
 
-        props.func(tableData)
+        props.func(tableData[props.numb])
         reloadPage()
     }
 
     function changeItem(id){
-        innerList.map(item=>{
+        innerList[props.numb].map(item=>{
             if (item.id==id) item.onChange=true
         })
         reloadTable()
     }
 
     function confirmItem(id){
-        innerList.map(item=>{
+        innerList[props.numb].map(item=>{
             if (item.id==id) item.onChange=false
         })
         reloadTable()
@@ -232,18 +244,17 @@ export default function Table(props){
 
     function addItem(){
         var tableString=[]
-        tableData[0].map(function(item,i){
+        tableData[props.numb][0].map(function(item,i){
             if (i==0){
-                tableString[i]=tableData[tableData.length-1][0]+1
+                tableString[i]=tableData[props.numb][tableData[props.numb].length-1][0]+1
             }
-            else if (i==tableData[0].length-1)
+            else if (i==tableData[props.numb][0].length-1)
                 tableString[i]=true
             else
                 tableString[i]=""
         })
-        console.log(tableData)
-        tableData[tableData.length] = tableString
-        innerList[innerList.length] = {id: innerList[innerList.length-1].id+1, number: innerList[innerList.length-1].number+1, onChange: true, onCreate: true}
+        tableData[props.numb][tableData[props.numb].length] = tableString
+        innerList[props.numb][innerList[props.numb].length] = {id: innerList[props.numb][innerList[props.numb].length-1].id+1, number: innerList[props.numb][innerList[props.numb].length-1].number+1, onChange: true, onCreate: true}
         reloadTable()
     }
 
@@ -306,11 +317,12 @@ export default function Table(props){
                                     recountInnerList()
                                     checkShowWarn()
                                     var obj
-                                    innerList.map(item3=>{
+                                    innerList[props.numb].map(item3=>{
                                         if (item3.id==item1[0]) obj=item3
                                     })
 
-                                    if (obj.onChange && item1[item1.length-1] && !obj.onCreate){
+                                    
+                                    if (props.table_headers[i] != undefined && obj.onChange && item1[item1.length-1] && !obj.onCreate){
                                         if (props.table_headers[i].mode == "text" && i==0)
                                             return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{obj.number}</div>
                                         else if (props.table_headers[i].mode == "text")
@@ -324,13 +336,17 @@ export default function Table(props){
                                         else if (props.table_headers[i].mode == "remove")
                                             return (<div class="middle icon_wrap" id={props.Id+"_"+j+"_"+i} onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)}>
                                                         <div id={props.Id+"_"+j} class="image_wrap" hidden="true">
-                                                            <img className="minus_icon" src={MinusIcon} alt="minus_icon" onClick={e=>removeItem(j, item1[0])}/>
+                                                            {props.table_headers.map(function(item,i){
+                                                                if (i==0 && props.delete=="true"){
+                                                                    return <img className="minus_icon" src={MinusIcon} alt="minus_icon" onClick={e=>removeItem(j, item1[0])}/>
+                                                                }
+                                                            })}
                                                             <img className="confirm_icon" src={ConfirmIcon} alt="confirm_icon" onClick={e=>confirmItem(item1[0])}/>
                                                         </div>
                                                     </div>)
 
 
-                                    } else if (obj.onChange && obj.onCreate) {
+                                    } else if (props.table_headers[i] != undefined && obj.onChange && obj.onCreate) {
                                         if (props.table_headers[i].mode == "inputList")
                                             return <ExpandListInputTable style={styles.border} class="middle" onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)} Id={props.Id+"_"+j+"_"+i} defValue={item} list={props.table_headers[i].listValue} item_id={item1[0]} i={i} func={onListInputChange}/>
                                         else if (props.table_headers[i].mode == "inputDate")
@@ -338,7 +354,11 @@ export default function Table(props){
                                         else if (props.table_headers[i].mode == "remove")
                                             return (<div class="middle icon_wrap" id={props.Id+"_"+j+"_"+i} onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)}>
                                                         <div id={props.Id+"_"+j} class="image_wrap" hidden="true">
-                                                            <img className="minus_icon" src={MinusIcon} alt="minus_icon" onClick={e=>removeItem(j, item1[0])}/>
+                                                            {props.table_headers.map(function(item,i){
+                                                                if (i==0 && props.delete=="true"){
+                                                                    return <img className="minus_icon" src={MinusIcon} alt="minus_icon" onClick={e=>removeItem(j, item1[0])}/>
+                                                                }
+                                                            })}
                                                             <img className="confirm_icon" src={ConfirmIcon} alt="confirm_icon" onClick={e=>confirmItem(item1[0])}/>
                                                         </div>
                                                     </div>)
@@ -348,7 +368,8 @@ export default function Table(props){
                                             return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{obj.number}</div>
                                     
                                     
-                                    } else if (!item1[item1.length-1]) {
+                                    } else if (props.table_headers[i] != undefined && !item1[item1.length-1]) {
+                                        
                                         if (props.table_headers[i].mode != "remove" && i==0)
                                             return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{obj.number}</div>
                                         else if (props.table_headers[i].mode == "inputDate")
@@ -369,17 +390,22 @@ export default function Table(props){
                                                         </div>)
                                             
                                         }
-                                    } else {
+                                    } else if (props.table_headers[i] != undefined) {
                                         if (props.table_headers[i].mode != "remove" && i==0)
                                             return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{obj.number}</div>
                                         else if (props.table_headers[i].mode == "inputDate")
                                             return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{item.toString().replace(/-/, '.').replace(/-/, '.')}</div>
                                         else if (props.table_headers[i].mode != "remove")
                                             return <div id={props.Id+"_"+j+"_"+i} style={styles.border} class="middle" onMouseEnter={e=>onMouseEnterRow(props.Id+"_"+j)} >{item}</div>
-                                        else if (props.table_headers[i].mode == "remove")
+                                        else if (props.table_headers[i].mode == "remove" && showWarn)
                                             return (<div class="middle icon_wrap" id={props.Id+"_"+j+"_"+i} onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)}>
                                                         <div id={props.Id+"_"+j} class="image_wrap" hidden="true">
                                                             <img className="edit_icon" src={EditIcon} alt="edit_icon" onClick={e=>changeItem(item1[0])}/>
+                                                        </div>
+                                                    </div>)
+                                        else if (props.table_headers[i].mode == "remove" && !showWarn)
+                                            return (<div class="middle icon_wrap" id={props.Id+"_"+j+"_"+i} onMouseOver={e=>onMouseEnterRow(props.Id+"_"+j)}>
+                                                        <div id={props.Id+"_"+j} class="image_wrap" hidden="true">
                                                         </div>
                                                     </div>)
                                     }
@@ -406,10 +432,16 @@ export default function Table(props){
                         styles.border.borderTop="0px solid darkgray"
                         styles.border.borderBottom="0px solid darkgray"
                     }
+                    if (props.add=="false"){
+                        styles.border.borderRight="0px solid darkgray"
+                        styles.border.borderLeft="0px solid darkgray"
+                        styles.border.borderTop="1px solid darkgray"
+                        styles.border.borderBottom="0px solid darkgray"
+                    }
 
                         if (i==0 && props.add=="true")  
                             return (
-                                <div style={styles.border} class="middle plus_icon_wrap">
+                                <div style={styles.border} class="middle plus_icon_wrap plus_height">
                                     <img className="plus_icon" src={PlusIcon} alt="plus_icon" onClick={e=>addItem()}/>
                                 </div>
                                 )
