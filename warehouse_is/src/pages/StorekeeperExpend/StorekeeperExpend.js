@@ -1,12 +1,11 @@
 import React, { Component, Fragment } from "react";
-import './StorekeeperAdvent.css';
+import './StorekeeperExpend.css';
 import Table from "../../components/Table/Table";
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import InputDate from "../../components/InputDate/InputDate";
 import InputFile from "../../components/InputFile/InputFile";
 import InputText from "../../components/InputText/InputText";
-import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
 
 const styles = {
@@ -15,7 +14,7 @@ const styles = {
 
   
 
-export default function StorekeeperAdvent(props){
+export default function StorekeeperExpend(props){
 
     var id=props.Id
     function getId(){
@@ -57,43 +56,6 @@ export default function StorekeeperAdvent(props){
 
     //-------------------------------------------------------------------------Блок 2
     //-------------------------------------стол 1
-    var table_list_value = [
-        {value: "Встраиваемая техника", selected: true},
-        {value: "Стиральные машины", selected: false},
-        {value: "Сушильные машины", selected: false},
-        {value: "Холодильники", selected: false},
-        {value: "Морозильные камеры", selected: false},
-        {value: "Винные шкафы", selected: false},
-        {value: "Вытяжки", selected: false},
-        {value: "Плиты", selected: false},
-        {value: "Посудомоечные машины", selected: false},
-        {value: "Мелкая бытовая техника", selected: false},
-        {value: "Микроволновые печи", selected: false},
-        {value: "Электродуховки", selected: false},
-        {value: "Пылесосы", selected: false},
-        {value: "Водонагреватели", selected: false},
-        {value: "Кулеры и пурифайеры", selected: false},
-        {value: "Швейные машины, оверлоки", selected: false}
-    ]
-
-    var table_list_value_2 = [
-        {value: "Варочные поверхности", selected: true},
-        {value: "Духовые шкафы", selected: false},
-        {value: "Вытяжки", selected: false},
-        {value: "Встраиваемые посудомоечные машины", selected: false},
-        {value: "Встраиваемые холодильники", selected: false},
-        {value: "Встраиваемые морозильные камеры", selected: false},
-        {value: "Встраиваемые микроволновые печи", selected: false},
-        {value: "Кухонные мойки", selected: false},
-        {value: "Измельчители отходов", selected: false},
-        {value: "Кухня", selected: false},
-        {value: "Бытовые приборы для дома", selected: false},
-        {value: "Красота и гигиена", selected: false},
-        {value: "Косметические приборы", selected: false},
-        {value: "Медицина и реабилитация", selected: false},
-
-    ]
-
     var table_headers = [
         {title:"№", mode:"text", column_width: "30px", listValue: []}, 
     {title:"Категория", mode:"text", column_width: "110px", listValue: [/*"table_list_value*/]}, 
@@ -113,10 +75,10 @@ export default function StorekeeperAdvent(props){
         [3, "Холодильники", "", "Холодильник №654", "17", "17", true],
         [4, "Плиты", "", "Плита №123", "5", "5", true],
         [5, "Электродуховки", "Бытовые приборы для дома", "Электродуховка №323", "15", "15", true],
-        [7, "Электродуховки", "Бытовые приборы для дома", "Электродуховка №345", "16", "11", true],
+        [7, "Электродуховки", "Бытовые приборы для дома", "Электродуховка №345", "16", "16", true],
     ]
     function set_table_list_1(value) {
-        table_list =value
+        table_list=value
     }
     //-------------------------------------стол 1 конец
 
@@ -166,7 +128,7 @@ export default function StorekeeperAdvent(props){
     var table_list_2 = [
         [0, "Встраиваемая техника №5", "10/50", "50",  false],
         [1, "Встраиваемая техника №6", "15/50", "40",  false],
-        [2, "Встраиваемая техника №7", "8/50", "71",  false],
+        [2, "Встраиваемая техника №7", "8/50", "70",  false],
 
     ]
     function set_table_list_2(value) {
@@ -186,9 +148,6 @@ export default function StorekeeperAdvent(props){
 
     }
     list_with_search_items.map(function(item,i){ item.id = i })
-
-
-
     //-------------------------------------------------------------------------Блок 3 конец
 
     return (
@@ -197,7 +156,7 @@ export default function StorekeeperAdvent(props){
                     <ListWithSearch Id={getId()} item_list={list_with_search_items} func={set_list_with_search} width={list_with_search_width} height={list_with_search_height}/>
             </FlexibleBlock>
             <FlexibleBlock>
-                <div class="header_text">Прием товаров</div>
+                <div class="header_text">Списывание товаров</div>
                 <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={"2022-01-14"} func={set_date}/></div>
                 {/* <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div> */}
                 {/* <InputText styles = "row_with_ite   m_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/> */}
@@ -205,7 +164,7 @@ export default function StorekeeperAdvent(props){
                 <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1} numb={0} search="true" add="true" delete="false"/>
                 <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
             </FlexibleBlock>
-                <FlexibleBlock>
+            <FlexibleBlock>
                 <div class="header_text">Заказ 1</div>
                 <InputText styles = "row_with_item_equal" Id={getId()} label="Категория" placeholder="Категория товара" set={set_good_category}/>
                 <InputText styles = "row_with_item_equal" Id={getId()} label="Кол-во товара в поставке&nbsp;" placeholder="Кол-во товара в поставке" set={set_one_shipment_amount}/>
