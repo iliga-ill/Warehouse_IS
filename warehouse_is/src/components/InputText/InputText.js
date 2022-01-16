@@ -22,6 +22,6 @@ export default function InputText(props){
     var style = "low_text " + props.styles
 
     return (
-        <div class={style} ><div>{props.label}</div><input id={props.Id} class="inputText" placeholder={props.placeholder} onChange={onChange}/></div>
+        <div class={style} ><div>{props.label}</div><input id={props.Id} defaultValue={props.defValue} placeholder={props.placeholder} onChange={onChange}/></div>
     )
 }
