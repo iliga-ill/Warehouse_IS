@@ -6,6 +6,7 @@ import StorekeeperAllocation from './pages/StorekeeperAllocation/StorekeeperAllo
 import StorekeeperExpend from './pages/StorekeeperExpend/StorekeeperExpend';
 import AvatarHolder from './components/AvatarHolder/AvatarHolder';
 import StorekeeperInventory from './pages/StorekeeperInventory/StorekeeperInventory';
+import ManagerProducts from './pages/ManagerProducts/ManagerProducts';
 
 const styles = {
   headTabs: {
@@ -64,22 +65,22 @@ function App() {
       {id:2, selected: false, title: "Расстановка товаров", page: <StorekeeperAllocation Id={2}/>},
       {id:3, selected: false, title: "Инвентаризация", page: <StorekeeperInventory Id={3}/>},
     ],[
-      {id:4, selected: true, title: "Заказы", page: <StorekeeperAdvent Id={4}/>},
-      {id:5, selected: false, title: "Товары", page: <StorekeeperAdvent Id={5}/>},
-      {id:6, selected: false, title: "Счета на оплату", page: <StorekeeperAdvent Id={6}/>},
+      {id:0, selected: true, title: "Заказы", page: <StorekeeperAdvent Id={4}/>},
+      {id:1, selected: false, title: "Товары", page: <ManagerProducts Id={5}/>},
+      {id:2, selected: false, title: "Счета на оплату", page: <StorekeeperAdvent Id={6}/>},
     ],[
-      {id:7, selected: true, title: "Товары", page: <StorekeeperAdvent Id={7}/>},
-      {id:8, selected: false, title: "Создание заказа", page: <StorekeeperAdvent Id={8}/>},
-      {id:9, selected: false, title: "Заказы на продажу", page: <StorekeeperAdvent Id={9}/>},
-      {id:10, selected: false, title: "Заказы на поставку", page: <StorekeeperAdvent Id={10}/>},
-      {id:11, selected: false, title: "Счета на оплату", page: <StorekeeperAdvent Id={11}/>},
+      {id:0, selected: true, title: "Товары", page: <StorekeeperAdvent Id={7}/>},
+      {id:1, selected: false, title: "Создание заказа", page: <StorekeeperAdvent Id={8}/>},
+      {id:2, selected: false, title: "Заказы на продажу", page: <StorekeeperAdvent Id={9}/>},
+      {id:3, selected: false, title: "Заказы на поставку", page: <StorekeeperAdvent Id={10}/>},
+      {id:4, selected: false, title: "Счета на оплату", page: <StorekeeperAdvent Id={11}/>},
     ],[
-      {id:12, selected: true, title: "Товары", page: <StorekeeperAdvent Id={12}/>},
-      {id:13, selected: false, title: "Накладные", page: <StorekeeperAdvent Id={13}/>},
-      {id:14, selected: false, title: "Отчеты", page: <StorekeeperAdvent Id={14}/>},
-      {id:15, selected: false, title: "Счета на оплату", page: <StorekeeperAdvent Id={15}/>},
+      {id:0, selected: true, title: "Товары", page: <StorekeeperAdvent Id={12}/>},
+      {id:1, selected: false, title: "Накладные", page: <StorekeeperAdvent Id={13}/>},
+      {id:2, selected: false, title: "Отчеты", page: <StorekeeperAdvent Id={14}/>},
+      {id:3, selected: false, title: "Счета на оплату", page: <StorekeeperAdvent Id={15}/>},
     ],[
-      {id:16, selected: true, title: "Аккаунты", page: <StorekeeperAdvent Id={16}/>},
+      {id:0, selected: true, title: "Аккаунты", page: <StorekeeperAdvent Id={16}/>},
     ]
   ])
 

@@ -96,7 +96,7 @@ export default function StorekeeperAdvent(props){
 
     var table_headers = [
         {title:"№", mode:"text", column_width: "30px", listValue: []}, 
-    {title:"Категория", mode:"text", column_width: "110px", listValue: [/*"table_list_value*/]}, 
+        {title:"Категория", mode:"text", column_width: "110px", listValue: [/*"table_list_value*/]}, 
         {title:"Подкатегория", mode:"text", column_width: "100px", listValue: [/*table_list_value_2*/]}, 
         {title:"Наименование", mode:"text", column_width: "110px", listValue: []}, 
         {title:"Кол-во ожидаемое", mode:"text", column_width: "90px", listValue: []},
