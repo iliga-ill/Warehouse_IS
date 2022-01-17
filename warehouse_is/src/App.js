@@ -7,12 +7,14 @@ import StorekeeperExpend from './pages/StorekeeperExpend/StorekeeperExpend';
 import AvatarHolder from './components/AvatarHolder/AvatarHolder';
 import StorekeeperInventory from './pages/StorekeeperInventory/StorekeeperInventory';
 import ManagerProducts from './pages/ManagerProducts/ManagerProducts';
+import Authorization from './pages/Authorization/Authorization';
 
 const styles = {
   headTabs: {
   }
 }
 
+var authorizated = false
 
 function App() {
 
@@ -31,11 +33,11 @@ function App() {
   }
   
   let [mainTabs, setMainTab] = React.useState([
-    {id:0, selected: true, title: "АРМ Кладовщика"},
+    {id:0, selected: true, title: "АРМ Кладовщика"},/*
     {id:1, selected: false, title: "АРМ Менеджера"},
     {id:2, selected: false, title: "АРМ Логиста"},
     {id:3, selected: false, title: "АРМ Бухгалтера"},
-    {id:4, selected: false, title: "KeyCloak"},
+    {id:4, selected: false, title: "KeyCloak"},*/
   ])
 
   function getSelectedTabId(){
@@ -105,22 +107,26 @@ function App() {
     reloadPage()
   }
 
-  return (
-    <div>
-      <div class="header">
-        <div class="headTabs">
-          <TabHolder tabs={mainTabs} onTabClick={onTabClick}/>
+  if (authorizated){
+    return (
+      <div>
+        <div class="header">
+          <div class="headTabs">
+            <TabHolder tabs={mainTabs} onTabClick={onTabClick}/>
+          </div>
+          <div class="userAvatar">
+            <AvatarHolder/>
+          </div>
         </div>
-        <div class="userAvatar">
-          <AvatarHolder/>
+        <div class="header">
+          <TabHolder tabs={subTabs[getSelectedTabId()]} onTabClick={onSubTabClick}/>
         </div>
+          {subTabs[getSelectedTabId()][getSelectedSubTabId()].page}
       </div>
-      <div class="header">
-        <TabHolder tabs={subTabs[getSelectedTabId()]} onTabClick={onSubTabClick}/>
-      </div>
-        {subTabs[getSelectedTabId()][getSelectedSubTabId()].page}
-    </div>
-  );
+    );
+  } else {
+    return <Authorization/>
+  }
 }
 
 export default App;
