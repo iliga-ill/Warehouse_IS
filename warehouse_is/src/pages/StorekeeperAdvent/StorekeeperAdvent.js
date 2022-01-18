@@ -36,7 +36,7 @@ export default function StorekeeperAdvent(props){
     var list_with_search_items = [
         {id: 0, text: "Заказ №1143", selected: false},
         {id: 0, text: "Заказ №1346", selected: false},
-        {id: 0, text: "Заказ №3543", selected: true},
+        {id: 0, text: "Заказ №3543", selected: false},
         {id: 0, text: "Заказ №3156", selected: false},
         {id: 0, text: "Заказ №6243", selected: false},
         {id: 0, text: "Заказ №6546", selected: false},
