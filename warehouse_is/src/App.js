@@ -1,4 +1,3 @@
-import React from 'react';
 import './App.css';
 import TabHolder from './components/TabHolder/TabHolder';
 import StorekeeperAdvent from './pages/StorekeeperAdvent/StorekeeperAdvent';
@@ -7,14 +6,16 @@ import StorekeeperExpend from './pages/StorekeeperExpend/StorekeeperExpend';
 import AvatarHolder from './components/AvatarHolder/AvatarHolder';
 import StorekeeperInventory from './pages/StorekeeperInventory/StorekeeperInventory';
 import ManagerProducts from './pages/ManagerProducts/ManagerProducts';
-import Authorization from './pages/Authorization/Authorization';
+//import Authorization from './pages/Authorization/Authorization';
+import React, { useState } from 'react';
+//import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 const styles = {
   headTabs: {
   }
 }
 
-var authorizated = false
+var authorizated = true
 
 function App() {
 
@@ -125,7 +126,27 @@ function App() {
       </div>
     );
   } else {
-    return <Authorization/>
+    // const [token, setToken] = useState();
+
+    // if(!token) {
+    //   return <Login setToken={setToken} />
+    // }
+
+    // return (
+    //   <div className="wrapper">
+    //     <h1>Application</h1>
+    //     <BrowserRouter>
+    //       <Switch>
+    //         <Route path="/dashboard">
+    //           <Dashboard />
+    //         </Route>
+    //         <Route path="/preferences">
+    //           <Preferences />
+    //         </Route>
+    //       </Switch>
+    //     </BrowserRouter>
+    //   </div>
+    // )
   }
 }
 
