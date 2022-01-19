@@ -301,36 +301,6 @@ function App() {
     xhr.send(null);
   }
 
-  //#endregion Страница 1 подстраница 1 конец
-  
-
-  if (isFirstTime) { 
-     isFirstTime = false
-     apiGetOrders()
-  }
-
-
-  if (authorizated){
-    return (
-      <div>
-        <div class="header">
-          <div class="headTabs">
-            <TabHolder tabs={mainTabs} onTabClick={onTabClick}/>
-          </div>
-          <div class="userAvatar">
-            <AvatarHolder/>
-          </div>
-        </div>
-        <div class="header">
-          <TabHolder tabs={subTabs[getSelectedTabId()]} onTabClick={onSubTabClick}/>
-        </div>
-          {subTabs[getSelectedTabId()][getSelectedSubTabId()].page}
-      </div>
-    );
-  } else {
-    return <Authorization func={onAuthorized} accounts={accounts}/> 
-  }
-
   function apiGetGoodsType() {
     var iter = 0;
  
@@ -351,6 +321,35 @@ function App() {
       
       xhr.send(null);
     })
+  }
+
+  //#endregion Страница 1 подстраница 1 конец
+  
+
+  if (isFirstTime) { 
+     isFirstTime = false
+     apiGetOrders()
+  }
+
+  if (authorizated){
+    return (
+      <div>
+        <div class="header">
+          <div class="headTabs">
+            <TabHolder tabs={mainTabs} onTabClick={onTabClick}/>
+          </div>
+          <div class="userAvatar">
+            <AvatarHolder/>
+          </div>
+        </div>
+        <div class="header">
+          <TabHolder tabs={subTabs[getSelectedTabId()]} onTabClick={onSubTabClick}/>
+        </div>
+          {subTabs[getSelectedTabId()][getSelectedSubTabId()].page}
+      </div>
+    );
+  } else {
+    return <Authorization func={onAuthorized} accounts={accounts}/> 
   }
 }
 
