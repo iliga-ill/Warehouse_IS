@@ -1,19 +1,19 @@
 const Pool = require('pg').Pool
-const pool = new Pool({
-  user: 'ekwzgehq',
-  host: 'abul.db.elephantsql.com',
-  database: 'ekwzgehq',
-  password: 'wb2N6g8H5bJmREhfVMATYNom4V0xN3tn',
-  port: 5432,
-})
-
 // const pool = new Pool({
-//   user: 'postgres',
-//   host: 'localhost',
-//   database: 'warehouse',
-//   password: 'admin',
+//   user: 'ekwzgehq',
+//   host: 'abul.db.elephantsql.com',
+//   database: 'ekwzgehq',
+//   password: 'wb2N6g8H5bJmREhfVMATYNom4V0xN3tn',
 //   port: 5432,
 // })
+
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'warehouse',
+  password: 'admin',
+  port: 5432,
+})
 
 pool.connect((err, client, release) => {
     if (err) {
@@ -120,8 +120,17 @@ const getClients = (request, response) => {
   })
 }
 
-const getGoodsType = (request, response) => {
+const getGoodsTypeByCode = (request, response) => {
   pool.query(`SELECT * FROM goods_type WHERE code=${request.query.code} ORDER BY code ASC`, (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getGoodsType = (request, response) => {
+  pool.query(`SELECT * FROM goods_type ORDER BY code ASC`, (error, results) => {
     if (error) {
       throw error
     }
@@ -219,6 +228,7 @@ module.exports = {
   getOrderGoodsByOrder,
   getOrders,
   getClients,
+  getGoodsTypeByCode,
   getGoodsType,
   getCategories,
   getSubCategories2,

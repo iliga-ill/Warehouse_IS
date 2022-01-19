@@ -46,10 +46,13 @@ function apiGetClients() {
 var goods_by_order = []
 //#endregion получение заказов конец
 //#region категории с первой вкладки
-var goods_categories = []
+var goods_categories = [
+  {id:0, text: "Крупная бытовая техника"}
+]
 var goods_categories2 = []
 var goods_categories3 = []
 var goods_categories4 = []
+var goods_type_list = []
 
 function apiGetGoodsCat() {
   var xhr = new XMLHttpRequest();
@@ -113,11 +116,29 @@ function apiGetGoodsSubCat4() {
   
   xhr.send(null);
 }
+
+function apiGetGoodsType() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', host+'/goods_type', true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      var answer = JSON.parse(this.response)
+      answer.map( function(item, i) {
+        goods_type_list[i] = {id:i, text: item.name, category: item.category, sub_category: item.sub_category, ordered: item.amount_ordered, amount: item.amount, code: item.code}
+      })
+      console.log(goods_type_list)
+    }
+  }
+  
+  xhr.send(null);
+}
 //#endregion категории с первой вкладки конец
 //#region запросы со старта
 function onStart() {
   apiGetGoodsSubCat2()
   apiGetGoodsSubCat3()
+  apiGetGoodsType()
 }
 
 onStart()
@@ -184,7 +205,7 @@ function App() {
 
   let [subTabs, setSubTab] = React.useState([
     [
-      {id:0, selected: true, title: "Приход", page: <StorekeeperAdvent Id={100} list={temp} func={setTemp}/>},
+      {id:0, selected: true, title: "Приход", page: <StorekeeperAdvent Id={100} list={temp} func={setTemp} order_list={goods_by_order} func2={setGoodByOrder}/>},
       {id:1, selected: false, title: "Расход", page: <StorekeeperExpend Id={200}/>},
       {id:2, selected: false, title: "Расстановка товаров", page: <StorekeeperAllocation Id={300}/>},
       {id:3, selected: false, title: "Инвентаризация", page: <StorekeeperInventory Id={400}/>},
@@ -289,38 +310,63 @@ function App() {
     xhr.onreadystatechange = function() {
       if (xhr.readyState == XMLHttpRequest.DONE) {
         var answer = JSON.parse(this.response)
+        console.log("------------")
         console.log(answer)
-
+        console.log("------------")
+        goods_by_order = []
         answer.map( function(item, i) {
-          goods_by_order[i] = {id:i, text: "", code: item.goods}
+          var foo = item.goods
+          goods_by_order[i] = {id:i, category: "goods_categories[answer.category-1]", sub_category: "goods_categories2[answer.sub_category_2-1]",  text: "answer.name", amount_ordered: "answer.amount_ordered", amount: "answer.amount", code: foo}
+
+          goods_type_list.map (function(item2, i) {
+            console.log(`item2: ${JSON.stringify(item2.code)} | item: ${JSON.stringify(item.goods)}`)
+            var it = parseInt(item2.code)
+            console.log(goods_categories2)
+            if (it == item.goods) 
+              goods_by_order[i] = {id:i, category: goods_categories[0].text, sub_category: goods_categories2[it.sub_category_2-1],  text: it.name, amount_ordered: it.amount_ordered, amount: it.amount, code: foo}
+          })
         })
-        apiGetGoodsType()
+        console.log(JSON.stringify(goods_by_order))
+        //apiGetGoodsType()
       }
     }
+  
     
     xhr.send(null);
   }
 
-  function apiGetGoodsType() {
-    var iter = 0;
- 
-    goods_by_order.forEach( element => {
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', host+'/goods_type'+'?'+`code=${element.code}`, true);
+  // function apiGetGoodsType() {
+  //   var size = goods_by_order.length;
+  //   console.log(goods_by_order)
+  //   goods_by_order.forEach( function(element, i) {
+  //     console.log(`element = ${element.code}`)
+  //     var xhr = new XMLHttpRequest();
+  //     var elm = i
+  //     xhr.open('GET', host+'/goods_type'+'?'+`code=${goods_by_order[elm].code}`, true);
       
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-          var id = element.id
-          var answer = JSON.parse(this.response)
-          console.log(answer)
-          element = {id:id, text: answer.name, code: answer.goods}
+  //     xhr.onreadystatechange = function() {
+  //       if (xhr.readyState == XMLHttpRequest.DONE) {
+  //         var id = goods_by_order[elm].id
+          
+  //         var answer = JSON.parse(this.response)
+  //         console.log(`answer: ${answer}`)
+  //         console.log(`Element before: ${goods_by_order[elm].text}`)
+  //         element = {id:id, category: goods_categories[answer.category-1], sub_category: goods_categories2[answer.sub_category_2-1],  text: answer.name, amount_ordered: answer.amount_ordered, amount: answer.amount, code: answer.code}
+  //         goods_by_order[elm] = element
+  //         console.log(`Element: ${goods_by_order[elm].text}`)
+       
+  //         if (i == size-1) reloadPage()
+  //       }
+  //     }
+      
+  //     xhr.send(null);
+  //   })
+    
+  //}
 
-          reloadPage()
-        }
-      }
-      
-      xhr.send(null);
-    })
+  function setGoodByOrder(value) {
+    goods_by_order = value
+    console.log(`Goods: ${goods_by_order}`)
   }
 
   //#endregion Страница 1 подстраница 1 конец
