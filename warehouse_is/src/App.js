@@ -9,6 +9,8 @@ import ManagerProducts from './pages/ManagerProducts/ManagerProducts';
 import Authorization from './pages/Authorization/Authorization';
 import AdministratorAccounts from './pages/AdministratorAccounts/AdministratorAccounts';
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
+
 //import API from './api/api.js';
 //import { BrowserRouter, Route, Switch } from 'react-router-dom';
 const host = 'http://localhost:5000';
@@ -36,6 +38,7 @@ function apiGetClients() {
       answer.map( function(item, i) {
         accounts[i] = {login: item.login, password: item.password, user_name: item.name, user_surname: item.surname}
       })
+      onStart()
     }
   }
   
@@ -43,7 +46,7 @@ function apiGetClients() {
 }
 //#endregion авторизация конец
 //#region получение заказов
-var goods_by_order = []
+// var goods_by_order = []
 //#endregion получение заказов конец
 //#region категории с первой вкладки
 var goods_categories = [
@@ -125,7 +128,7 @@ function apiGetGoodsType() {
     if (xhr.readyState == XMLHttpRequest.DONE) {
       var answer = JSON.parse(this.response)
       answer.map( function(item, i) {
-        goods_type_list[i] = {id:i, text: item.name, category: item.category, sub_category: item.sub_category, ordered: item.amount_ordered, amount: item.amount, code: item.code}
+        goods_type_list[i] = {id:i, text: item.name, category: item.category, sub_category: item.subcategory_2, ordered: item.amount_ordered, amount: item.amount, code: item.code}
       })
       console.log(goods_type_list)
     }
@@ -141,14 +144,12 @@ function onStart() {
   apiGetGoodsType()
 }
 
-onStart()
 apiGetClients()
+
 
 var temp = []
 var isFirstTime = true
 //#endregion запросы со старта конец
-
-
 
 function App() {
 
@@ -158,8 +159,12 @@ function App() {
   function reloadPage(){
     setReload(reload+1)
   }
+  var [goods_by_order, setGoodsByOrder] = React.useState([])
   //#endregion reloadPage конец
 
+//   function rerender() {
+//     forceUpdate()
+// }
   //#region авторизация
   function onAuthorized(){
     authorizated=true
@@ -262,10 +267,10 @@ function App() {
   //#endregion верхние табы конец
 
   //#region Страница 1 подстраница 1
-  function setTemp(value) {
+  function setTemp(value, tab_id) {
     temp = value
     console.log(temp)
-    apiGetGoodsByOrder(temp)
+    apiGetGoodsByOrder(temp, tab_id)
   }
 
   function apiGetOrders(tab_id) {
@@ -289,6 +294,7 @@ function App() {
         //     list_with_search_items.add({id:0, text: element.name, selected: false})
         // });
         console.log(temp)
+        //setTemp(temp, tab_id)
         changeSubTab(tab_id)
         reloadPage()
       }
@@ -297,7 +303,7 @@ function App() {
     xhr.send(null);
   }   
 
-  function apiGetGoodsByOrder(orders_array) {
+  function apiGetGoodsByOrder(orders_array, tab_id) {
     var xhr = new XMLHttpRequest();
     var order = ''
     orders_array.forEach(element => {
@@ -313,20 +319,35 @@ function App() {
         console.log("------------")
         console.log(answer)
         console.log("------------")
-        goods_by_order = []
+        var bar = []
+        //console.log(goods_type_list)
         answer.map( function(item, i) {
           var foo = item.goods
-          goods_by_order[i] = {id:i, category: "goods_categories[answer.category-1]", sub_category: "goods_categories2[answer.sub_category_2-1]",  text: "answer.name", amount_ordered: "answer.amount_ordered", amount: "answer.amount", code: foo}
-
-          goods_type_list.map (function(item2, i) {
-            console.log(`item2: ${JSON.stringify(item2.code)} | item: ${JSON.stringify(item.goods)}`)
+          //goods_by_order[i] = {id:i, category: "goods_categories[answer.category-1]", sub_category: "goods_categories2[answer.sub_category_2-1]",  text: "answer.name", amount_ordered: "answer.amount_ordered", amount: "answer.amount", code: foo}
+          goods_type_list.forEach (function(item2, j) {
             var it = parseInt(item2.code)
-            console.log(goods_categories2)
-            if (it == item.goods) 
-              goods_by_order[i] = {id:i, category: goods_categories[0].text, sub_category: goods_categories2[it.sub_category_2-1],  text: it.name, amount_ordered: it.amount_ordered, amount: it.amount, code: foo}
+            if (it == item.goods) {
+              bar[i] = {id:i, category: goods_categories[0].text, sub_category: goods_categories2[item2.sub_category-1].text,  text: item2.text, amount_ordered: item2.ordered, amount: item2.amount, code: foo}
+            }
+              
           })
         })
-        console.log(JSON.stringify(goods_by_order))
+        console.log(bar)
+        // changeSubTab(1)
+        // changeSubTab(0)
+        // if (tab_id == 0) {
+        //   ReactDOM.render(
+        //     <StorekeeperAdvent Id={100} list={temp} func={setTemp} order_list={goods_by_order} func2={setGoodByOrder}/>,
+        //     document.getElementById('page_container')
+        //   )
+        // }
+        //subTabs[0][0].page.setReload()
+        document.getElementById('page_container').removeChild(document.getElementById('100'))
+        
+        setGoodByOrder(bar)
+        document.getElementById('page_container').appendChild(subTabs[getSelectedTabId()][getSelectedSubTabId()].page)
+        reloadPage()
+        // changeSubTab(tab_id)
         //apiGetGoodsType()
       }
     }
@@ -365,16 +386,15 @@ function App() {
   //}
 
   function setGoodByOrder(value) {
-    goods_by_order = value
+    setGoodsByOrder(value)
     console.log(`Goods: ${goods_by_order}`)
   }
 
   //#endregion Страница 1 подстраница 1 конец
-  
 
-  if (isFirstTime) { 
-     isFirstTime = false
-     apiGetOrders()
+  if (isFirstTime) {
+    isFirstTime = false
+    apiGetOrders()
   }
 
   if (authorizated){
@@ -391,7 +411,9 @@ function App() {
         <div class="header">
           <TabHolder tabs={subTabs[getSelectedTabId()]} onTabClick={onSubTabClick}/>
         </div>
-          {subTabs[getSelectedTabId()][getSelectedSubTabId()].page}
+          <div id='page_container'>
+             {subTabs[getSelectedTabId()][getSelectedSubTabId()].page} 
+          </div>
       </div>
     );
   } else {

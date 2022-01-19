@@ -15,6 +15,7 @@ const styles = {
 
 }
 
+
 const apiGetRacksByZones = function apiGetRacksByZones() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', host+'/racks_by_zone', true);
@@ -64,7 +65,7 @@ export default function StorekeeperAdvent(props){
 
     function set_list_with_search(value) {
         list_with_search_items = value
-        props.func(value)
+        props.func(value, 0)
         console.log(list_with_search_items)
     }
     //-------------------------------------------------------------------------Блок 1 конец
@@ -119,7 +120,9 @@ export default function StorekeeperAdvent(props){
     ]
 
     var  table_field_height = "100px"
-
+    console.log("===================-")
+    console.log(props.order_list)
+    console.log("====================")
      var table_list = []
      props.order_list.map(function(item,i){
         var counter=0;
@@ -135,6 +138,7 @@ export default function StorekeeperAdvent(props){
         str[counter++] = true
         table_list[i]=str
     })
+    console.log(table_list)
     // var table_list = [
     //     [0, "Встраиваемая техника", "Варочные поверхности", "Встраиваемая техника №34", "10", "10", true],
     //     [1, "Холодильники", "Встраиваемые холодильники", "Холодильники №323", "15", "15", true],
@@ -229,7 +233,7 @@ export default function StorekeeperAdvent(props){
     //-------------------------------------------------------------------------Блок 3 конец
 
     return (
-        <FlexibleBlocksPage>
+        <FlexibleBlocksPage Id={getId()}>
             <FlexibleBlock>
                 <ListWithSearch Id={getId()} item_list={list_with_search_items} func={set_list_with_search} width={list_with_search_width} height={list_with_search_height}/>
             </FlexibleBlock>
@@ -257,5 +261,8 @@ export default function StorekeeperAdvent(props){
         </FlexibleBlocksPage>
     )
 
+    function rerender() {
+        this.forceUpdate()
+    }
+    
 }
-
