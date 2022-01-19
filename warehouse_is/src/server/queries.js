@@ -1,11 +1,19 @@
 const Pool = require('pg').Pool
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'warehouse',
-  password: 'admin',
+  user: 'ekwzgehq',
+  host: 'abul.db.elephantsql.com',
+  database: 'ekwzgehq',
+  password: 'wb2N6g8H5bJmREhfVMATYNom4V0xN3tn',
   port: 5432,
 })
+
+// const pool = new Pool({
+//   user: 'postgres',
+//   host: 'localhost',
+//   database: 'warehouse',
+//   password: 'admin',
+//   port: 5432,
+// })
 
 pool.connect((err, client, release) => {
     if (err) {
@@ -95,15 +103,6 @@ const getOrderGoodsByOrder = (request, response) => {
 }
 
 const getOrders = (request, response) => {
-  pool.query('SELECT * FROM accounts ORDER BY code ASC', (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(200).json(results.rows)
-  })
-}
-
-const getClients = (request, response) => {
   pool.query('SELECT * FROM shipment_order ORDER BY code ASC', (error, results) => {
     if (error) {
       throw error
@@ -112,6 +111,59 @@ const getClients = (request, response) => {
   })
 }
 
+const getClients = (request, response) => {
+  pool.query('SELECT * FROM accounts ORDER BY code ASC', (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getGoodsType = (request, response) => {
+  pool.query(`SELECT * FROM goods_type WHERE code=${request.query.code} ORDER BY code ASC`, (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getCategories = (request, response) => {
+  pool.query('SELECT * FROM goods_categories ORDER BY code ASC', (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getSubCategories2 = (request, response) => {
+  pool.query('SELECT * FROM goods_subcategories_2 ORDER BY code ASC', (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getSubCategories3 = (request, response) => {
+  pool.query('SELECT * FROM goods_subcategories_3 ORDER BY code ASC', (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getSubCategories4 = (request, response) => {
+  pool.query('SELECT * FROM goods_subcategories_4 ORDER BY code ASC', (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
 
 
 const setShelfs = (request, response) => {
@@ -167,6 +219,11 @@ module.exports = {
   getOrderGoodsByOrder,
   getOrders,
   getClients,
+  getGoodsType,
+  getCategories,
+  getSubCategories2,
+  getSubCategories3,
+  getSubCategories4,
   setShelfs,
   updateInventory,
   updateOrder,

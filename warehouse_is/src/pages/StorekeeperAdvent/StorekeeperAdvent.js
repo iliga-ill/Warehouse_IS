@@ -120,6 +120,7 @@ export default function StorekeeperAdvent(props){
 
     var  table_field_height = "100px"
 
+    // var table_list = props.table_list
     var table_list = [
         [0, "Встраиваемая техника", "Варочные поверхности", "Встраиваемая техника №34", "10", "10", true],
         [1, "Холодильники", "Встраиваемые холодильники", "Холодильники №323", "15", "15", true],
@@ -129,8 +130,11 @@ export default function StorekeeperAdvent(props){
         [5, "Электродуховки", "Бытовые приборы для дома", "Электродуховка №323", "15", "15", true],
         [7, "Электродуховки", "Бытовые приборы для дома", "Электродуховка №345", "16", "11", true],
     ]
+        
     function set_table_list_1(value) {
-        table_list =value
+        table_list = value
+        // props.func(value)
+        // console.log(table_list)
     }
     //-------------------------------------стол 1 конец
 
@@ -219,7 +223,7 @@ export default function StorekeeperAdvent(props){
                 <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1} numb={0} search="true" add="true" delete="false"/>
                 <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
             </FlexibleBlock>
-                <FlexibleBlock>
+                {/* <FlexibleBlock>
                 <div class="header_text">Заказ 1</div>
                 <InputText styles = "row_with_item_equal" Id={getId()} label="Категория" placeholder="Категория товара" set={set_good_category}/>
                 <InputText styles = "row_with_item_equal" Id={getId()} label="Кол-во товара в поставке&nbsp;" placeholder="Кол-во товара в поставке" set={set_one_shipment_amount}/>
@@ -230,7 +234,7 @@ export default function StorekeeperAdvent(props){
                 <InputText styles = "row_with_item_equal" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_2}/>
                 <div class="low_text"><InputFile Id={getId()} func={onBlock3FileUploaded}/></div>
                 <Table Id={getId()} table_headers={table_headers_2} table_field_height={table_field_height_2} table_list={table_list_2} func={set_table_list_2} numb={1} search="true" add="false" delete="false"/>
-            </FlexibleBlock>
+            </FlexibleBlock> */}
         </FlexibleBlocksPage>
     )
 

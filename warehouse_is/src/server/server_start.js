@@ -26,7 +26,12 @@ app.get('/order_goods', db.getOrderGoods)
 app.get('/order_goods_by_order', db.getOrderGoodsByOrder)
 app.get('/orders', db.getOrders)
 app.get('/clients', db.getClients)
-app.post('/shelfs', db.setShelfs)
+app.get('/goods_type', db.getGoodsType)
+app.get('/goods_cat', db.getCategories)
+app.get('/goods_subcat2', db.getSubCategories2)
+app.get('/goods_subcat3', db.getSubCategories3)
+app.get('/goods_subcat4', db.getSubCategories4)
+app.post('/shelf_set', db.setShelfs)
 app.put('/update_inventory', db.updateInventory)
 app.put('/update_order', db.updateOrder)
 app.put('/update_order_goods', db.updateOrderGoods)
@@ -174,6 +179,72 @@ function apiGetClients() {
   
   xhr.send(null);
 }
+
+function apiGetGoodsType() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', host+'/goods_type'+'?'+"code=1", true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log(this.responseText);
+    }
+  }
+  
+  xhr.send(null);
+}
+
+function apiGetGoodsCat() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', host+'/goods_cat', true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log(this.responseText);
+    }
+  }
+  
+  xhr.send(null);
+}
+
+function apiGetGoodsSubCat2() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', host+'/goods_subcat2', true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log(this.responseText);
+    }
+  }
+  
+  xhr.send(null);
+}
+
+function apiGetGoodsSubCat3() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', host+'/goods_subcat3', true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log(this.responseText);
+    }
+  }
+  
+  xhr.send(null);
+}
+
+function apiGetGoodsSubCat4() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', host+'/goods_subcat4', true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log(this.responseText);
+    }
+  }
+  
+  xhr.send(null);
+}
+
 
 function apiSetShelf() {
   var xhr = new XMLHttpRequest();
