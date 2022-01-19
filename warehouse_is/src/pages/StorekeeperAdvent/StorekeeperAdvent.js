@@ -8,12 +8,25 @@ import InputFile from "../../components/InputFile/InputFile";
 import InputText from "../../components/InputText/InputText";
 import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
+//const API = require('../../api/api.js');
+const host = 'http://localhost:5000';
 
 const styles = {
 
-  }
+}
 
-  
+const apiGetRacksByZones = function apiGetRacksByZones() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', host+'/racks_by_zone', true);
+    
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+        console.log(this.responseText);
+      }
+    }
+    
+    xhr.send("code=2");
+}  
 
 export default function StorekeeperAdvent(props){
 
@@ -29,28 +42,29 @@ export default function StorekeeperAdvent(props){
         setReload(reload+1)
     }
 
-
     //-------------------------------------------------------------------------Блок 1
+   
     var list_with_search_width = "200px"
     var list_with_search_height = "335px"
-    var list_with_search_items = [
-        {id: 0, text: "Заказ №1143", selected: false},
-        {id: 0, text: "Заказ №1346", selected: false},
-        {id: 0, text: "Заказ №3543", selected: false},
-        {id: 0, text: "Заказ №3156", selected: false},
-        {id: 0, text: "Заказ №6243", selected: false},
-        {id: 0, text: "Заказ №6546", selected: false},
-        {id: 0, text: "Заказ №6547", selected: false},
-        {id: 0, text: "Заказ №6548", selected: false},
-        {id: 0, text: "Заказ №6549", selected: false},
-        {id: 0, text: "Заказ №6540", selected: false},
-        {id: 0, text: "Заказ №6526", selected: false},
-        {id: 0, text: "Заказ №6536", selected: false},
-        {id: 0, text: "Заказ №6556", selected: false},
-        {id: 0, text: "Заказ №6566", selected: false},
-    ]
+    var list_with_search_items = props.list;
+     // {id: 0, text: "Заказ №1143", selected: false},
+        // {id: 0, text: "Заказ №1346", selected: false},
+        // {id: 0, text: "Заказ №3543", selected: false},
+        // {id: 0, text: "Заказ №3156", selected: false},
+        // {id: 0, text: "Заказ №6243", selected: false},
+        // {id: 0, text: "Заказ №6546", selected: false},
+        // {id: 0, text: "Заказ №6547", selected: false},
+        // {id: 0, text: "Заказ №6548", selected: false},
+        // {id: 0, text: "Заказ №6549", selected: false},
+        // {id: 0, text: "Заказ №6540", selected: false},
+        // {id: 0, text: "Заказ №6526", selected: false},
+        // {id: 0, text: "Заказ №6536", selected: false},
+        // {id: 0, text: "Заказ №6556", selected: false},
+        // {id: 0, text: "Заказ №6566", selected: false},
+
     function set_list_with_search(value) {
         list_with_search_items = value
+        props.func(value)
         console.log(list_with_search_items)
     }
     //-------------------------------------------------------------------------Блок 1 конец
@@ -194,7 +208,7 @@ export default function StorekeeperAdvent(props){
     return (
         <FlexibleBlocksPage>
             <FlexibleBlock>
-                    <ListWithSearch Id={getId()} item_list={list_with_search_items} func={set_list_with_search} width={list_with_search_width} height={list_with_search_height}/>
+                <ListWithSearch Id={getId()} item_list={list_with_search_items} func={set_list_with_search} width={list_with_search_width} height={list_with_search_height}/>
             </FlexibleBlock>
             <FlexibleBlock>
                 <div class="header_text">Прием товаров</div>
@@ -219,4 +233,6 @@ export default function StorekeeperAdvent(props){
             </FlexibleBlock>
         </FlexibleBlocksPage>
     )
+
 }
+
