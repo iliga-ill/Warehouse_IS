@@ -12,18 +12,109 @@ import React, { useState } from 'react';
 //import { BrowserRouter, Route, Switch } from 'react-router-dom';
 const host = 'http://localhost:5000';
 
-
 const styles = {
   headTabs: {
   }
 }
 
+
+var goods_by_order = []
 var authorizated = false
 var accounts = [
-  {name: "Владимир", password:"Путин"},
-  {name: "Николай", password:"111"},
-  {name: "Сергей", password:"3"}
+  // {name: "Владимир", password:"Путин"},
+  // {name: "Николай", password:"111"},
+  // {name: "Сергей", password:"3"}
 ]
+var goods_categories = []
+var goods_categories2 = []
+var goods_categories3 = []
+var goods_categories4 = []
+
+function onStart() {
+  function apiGetGoodsCat() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', host+'/goods_cat', true);
+    
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+        var answer = JSON.parse(this.response)
+        answer.map( function(item, i) {
+          console.log(this.responseText);
+        })
+      }
+    }
+    
+    xhr.send(null);
+  }
+  
+  function apiGetGoodsSubCat2() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', host+'/goods_subcat2', true);
+    
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+        var answer = JSON.parse(this.response)
+        answer.map( function(item, i) {
+          goods_categories2[i] = {id:i, text: item.name, code: item.code}
+        })
+        console.log(goods_categories2)
+      }
+    }
+    
+    xhr.send(null);
+  }
+  
+  function apiGetGoodsSubCat3() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', host+'/goods_subcat3', true);
+    
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+        var answer = JSON.parse(this.response)
+        answer.map( function(item, i) {
+          goods_categories3[i] = {id:i, text: item.name, code: item.code}
+        })
+        console.log(goods_categories3)
+      }
+    }
+    
+    xhr.send(null);
+  }
+  
+  function apiGetGoodsSubCat4() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', host+'/goods_subcat4', true);
+    
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+        console.log(this.responseText);
+      }
+    }
+    
+    xhr.send(null);
+  }
+
+  apiGetGoodsSubCat2()
+  apiGetGoodsSubCat3()
+}
+onStart()
+
+function apiGetClients() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', host+'/clients', true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      var answer = JSON.parse(this.response)
+      answer.map( function(item, i) {
+        accounts[i] = {name: item.login, password: item.password, user_name: item.name, user_surname: item.surname}
+      })
+    }
+  }
+  
+  xhr.send(null);
+}
+apiGetClients()
 
 var temp = []
 var isFirstTime = true
@@ -89,6 +180,11 @@ function App() {
       if (xhr.readyState == XMLHttpRequest.DONE) {
         var answer = JSON.parse(this.response)
         console.log(answer)
+
+        answer.map( function(item, i) {
+          goods_by_order[i] = {id:i, text: "", code: item.goods}
+        })
+        apiGetGoodsType()
       }
     }
     
@@ -116,7 +212,9 @@ function App() {
     }
 
   let [mainTabs, setMainTab] = React.useState([
-    {id:0, selected: true, title: "АРМ Кладовщика"},/*
+    {id:0, selected: true, title: "АРМ Кладовщика"},
+    {id:1, selected: false, title: "АРМ Администратора"},
+    /*
     {id:1, selected: false, title: "АРМ Менеджера"},
     {id:2, selected: false, title: "АРМ Логиста"},
     {id:3, selected: false, title: "АРМ Бухгалтера"},
@@ -217,6 +315,28 @@ function App() {
     );
   } else {
     return <Authorization func={onAuthorized} accounts={accounts}/> 
+  }
+
+  function apiGetGoodsType() {
+    var iter = 0;
+ 
+    goods_by_order.forEach( element => {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', host+'/goods_type'+'?'+`code=${element.code}`, true);
+      
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+          var id = element.id
+          var answer = JSON.parse(this.response)
+          console.log(answer)
+          element = {id:id, text: answer.name, code: answer.goods}
+
+          reloadPage()
+        }
+      }
+      
+      xhr.send(null);
+    })
   }
 }
 
