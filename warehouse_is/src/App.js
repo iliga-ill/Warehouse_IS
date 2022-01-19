@@ -8,7 +8,10 @@ import StorekeeperInventory from './pages/StorekeeperInventory/StorekeeperInvent
 import ManagerProducts from './pages/ManagerProducts/ManagerProducts';
 //import Authorization from './pages/Authorization/Authorization';
 import React, { useState } from 'react';
+//import API from './api/api.js';
 //import { BrowserRouter, Route, Switch } from 'react-router-dom';
+const host = 'http://localhost:5000';
+
 
 const styles = {
   headTabs: {
@@ -16,8 +19,73 @@ const styles = {
 }
 
 var authorizated = true
+var temp = []
+var isFirstTime = true
 
 function App() {
+  function setTemp(value) {
+    temp = value
+    console.log(temp)
+    apiGetGoodsByOrder(temp)
+  }
+
+
+  function apiGetOrders(tab_id) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', host+'/orders', true);
+    
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+          var answer = JSON.parse(this.response)
+          
+          //console.log(answer)
+          //console.log(this.request.response)
+      
+        //var array = this.response
+        answer.map( function(item, i) {
+            if (i === 0)  temp[i] = {id:i, text: item.name, selected: true, code: item.code}
+            else  temp[i] = {id:i, text: item.name, selected: false, code: item.code}
+        })
+        // answer.forEach(element => {
+        //     list_with_search_items.add({id:0, text: element.name, selected: false})
+        // });
+        console.log(temp)
+        subTabs[getSelectedTabId()].map(tab => {
+          let mainTabId=getSelectedTabId();
+          if (tab.id != tab_id){
+            subTabs[mainTabId][tab.id].selected = false
+            //console.log(tabs[tab_id-1].selected + " " + tab_id)
+          }
+          else {
+            subTabs[mainTabId][tab.id].selected = true
+          }
+          return tab
+        })
+        reloadPage()
+      }
+    }
+    
+    xhr.send(null);
+  }   
+
+  function apiGetGoodsByOrder(orders_array) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', host+'/order_goods_by_order', true);
+
+    var order = ''
+    orders_array.forEach(element => {
+      if (element.selected == true) order = element
+    });
+    
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+        var answer = JSON.parse(this.response)
+        console.log(answer)
+      }
+    }
+    
+    xhr.send(`code=${order.code}`);
+ }
 
   // const todos = [
   //   {id:1, completed: false, title: "Купить хлеб"},
@@ -32,7 +100,7 @@ function App() {
   function reloadPage(){
     setReload(reload+1)
   }
-  
+
   let [mainTabs, setMainTab] = React.useState([
     {id:0, selected: true, title: "АРМ Кладовщика"},/*
     {id:1, selected: false, title: "АРМ Менеджера"},
@@ -63,10 +131,10 @@ function App() {
 
   let [subTabs, setSubTab] = React.useState([
     [
-      {id:0, selected: true, title: "Приход", page: <StorekeeperAdvent Id={0}/>},
-      {id:1, selected: false, title: "Расход", page: <StorekeeperExpend Id={1}/>},
-      {id:2, selected: false, title: "Расстановка товаров", page: <StorekeeperAllocation Id={2}/>},
-      {id:3, selected: false, title: "Инвентаризация", page: <StorekeeperInventory Id={3}/>},
+      {id:0, selected: true, title: "Приход", page: <StorekeeperAdvent Id={100} list={temp} func={setTemp}/>},
+      {id:1, selected: false, title: "Расход", page: <StorekeeperExpend Id={200}/>},
+      {id:2, selected: false, title: "Расстановка товаров", page: <StorekeeperAllocation Id={300}/>},
+      {id:3, selected: false, title: "Инвентаризация", page: <StorekeeperInventory Id={400}/>},
     ],[
       {id:0, selected: true, title: "Заказы", page: <StorekeeperAdvent Id={4}/>},
       {id:1, selected: false, title: "Товары", page: <ManagerProducts Id={5}/>},
@@ -94,19 +162,27 @@ function App() {
   }
 
   function onSubTabClick(tab_id){
-    subTabs[getSelectedTabId()].map(tab => {
-      let mainTabId=getSelectedTabId();
-      if (tab.id != tab_id){
-        subTabs[mainTabId][tab.id].selected = false
-        //console.log(tabs[tab_id-1].selected + " " + tab_id)
-      }
-      else {
-        subTabs[mainTabId][tab.id].selected = true
-      }
-      return tab
-    })
-    reloadPage()
+    console.log("Click")
+    apiGetOrders(tab_id)
+    // subTabs[getSelectedTabId()].map(tab => {
+    //   let mainTabId=getSelectedTabId();
+    //   if (tab.id != tab_id){
+    //     subTabs[mainTabId][tab.id].selected = false
+    //     //console.log(tabs[tab_id-1].selected + " " + tab_id)
+    //   }
+    //   else {
+    //     subTabs[mainTabId][tab.id].selected = true
+    //   }
+    //   return tab
+    // })
+    // reloadPage()
   }
+
+  if (isFirstTime) { 
+     isFirstTime = false
+     apiGetOrders()
+  }
+
 
   if (authorizated){
     return (

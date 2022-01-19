@@ -4,10 +4,9 @@ import './index.css';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-const elm =  <React.StrictMode><App /></React.StrictMode>;
 
 ReactDOM.render(
-  elm,
+  <React.StrictMode><App /></React.StrictMode>,
   document.getElementById('root')
 )
 
