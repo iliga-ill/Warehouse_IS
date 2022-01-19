@@ -7,6 +7,7 @@ import AvatarHolder from './components/AvatarHolder/AvatarHolder';
 import StorekeeperInventory from './pages/StorekeeperInventory/StorekeeperInventory';
 import ManagerProducts from './pages/ManagerProducts/ManagerProducts';
 import Authorization from './pages/Authorization/Authorization';
+import AdministratorAccounts from './pages/AdministratorAccounts/AdministratorAccounts';
 import React, { useState } from 'react';
 //import API from './api/api.js';
 //import { BrowserRouter, Route, Switch } from 'react-router-dom';
@@ -17,87 +18,13 @@ const styles = {
   }
 }
 
-
-var goods_by_order = []
+//#region авторизация
 var authorizated = false
 var accounts = [
-  // {name: "Владимир", password:"Путин"},
+   {login: "user", password: "1", user_name: "Владимир", user_surname: "Владимирович", user_patronymic:"Путин", telephone:"+8 495 606 36 02", duty:"Кладовщик"},
   // {name: "Николай", password:"111"},
   // {name: "Сергей", password:"3"}
 ]
-var goods_categories = []
-var goods_categories2 = []
-var goods_categories3 = []
-var goods_categories4 = []
-
-function onStart() {
-  function apiGetGoodsCat() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', host+'/goods_cat', true);
-    
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        var answer = JSON.parse(this.response)
-        answer.map( function(item, i) {
-          console.log(this.responseText);
-        })
-      }
-    }
-    
-    xhr.send(null);
-  }
-  
-  function apiGetGoodsSubCat2() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', host+'/goods_subcat2', true);
-    
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        var answer = JSON.parse(this.response)
-        answer.map( function(item, i) {
-          goods_categories2[i] = {id:i, text: item.name, code: item.code}
-        })
-        console.log(goods_categories2)
-      }
-    }
-    
-    xhr.send(null);
-  }
-  
-  function apiGetGoodsSubCat3() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', host+'/goods_subcat3', true);
-    
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        var answer = JSON.parse(this.response)
-        answer.map( function(item, i) {
-          goods_categories3[i] = {id:i, text: item.name, code: item.code}
-        })
-        console.log(goods_categories3)
-      }
-    }
-    
-    xhr.send(null);
-  }
-  
-  function apiGetGoodsSubCat4() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', host+'/goods_subcat4', true);
-    
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        console.log(this.responseText);
-      }
-    }
-    
-    xhr.send(null);
-  }
-
-  apiGetGoodsSubCat2()
-  apiGetGoodsSubCat3()
-}
-onStart()
 
 function apiGetClients() {
   var xhr = new XMLHttpRequest();
@@ -107,109 +34,123 @@ function apiGetClients() {
     if (xhr.readyState == XMLHttpRequest.DONE) {
       var answer = JSON.parse(this.response)
       answer.map( function(item, i) {
-        accounts[i] = {name: item.login, password: item.password, user_name: item.name, user_surname: item.surname}
+        accounts[i] = {login: item.login, password: item.password, user_name: item.name, user_surname: item.surname}
       })
     }
   }
   
   xhr.send(null);
 }
+//#endregion авторизация конец
+//#region получение заказов
+var goods_by_order = []
+//#endregion получение заказов конец
+//#region категории с первой вкладки
+var goods_categories = []
+var goods_categories2 = []
+var goods_categories3 = []
+var goods_categories4 = []
+
+function apiGetGoodsCat() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', host+'/goods_cat', true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      var answer = JSON.parse(this.response)
+      answer.map( function(item, i) {
+        console.log(this.responseText);
+      })
+    }
+  }
+  
+  xhr.send(null);
+}
+
+function apiGetGoodsSubCat2() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', host+'/goods_subcat2', true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      var answer = JSON.parse(this.response)
+      answer.map( function(item, i) {
+        goods_categories2[i] = {id:i, text: item.name, code: item.code}
+      })
+      console.log(goods_categories2)
+    }
+  }
+  
+  xhr.send(null);
+}
+
+function apiGetGoodsSubCat3() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', host+'/goods_subcat3', true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      var answer = JSON.parse(this.response)
+      answer.map( function(item, i) {
+        goods_categories3[i] = {id:i, text: item.name, code: item.code}
+      })
+      console.log(goods_categories3)
+    }
+  }
+  
+  xhr.send(null);
+}
+
+function apiGetGoodsSubCat4() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', host+'/goods_subcat4', true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log(this.responseText);
+    }
+  }
+  
+  xhr.send(null);
+}
+//#endregion категории с первой вкладки конец
+//#region запросы со старта
+function onStart() {
+  apiGetGoodsSubCat2()
+  apiGetGoodsSubCat3()
+}
+
+onStart()
 apiGetClients()
 
 var temp = []
 var isFirstTime = true
+//#endregion запросы со старта конец
+
+
 
 function App() {
-  function setTemp(value) {
-    temp = value
-    console.log(temp)
-    apiGetGoodsByOrder(temp)
-  }
 
-
-  function apiGetOrders(tab_id) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', host+'/orders', true);
-    
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-          var answer = JSON.parse(this.response)
-          
-          //console.log(answer)
-          //console.log(this.request.response)
-      
-        //var array = this.response
-        var counter = 0
-        answer.map( function(item, i) {
-            if (i === 0 & item.status != "closed")  temp[i] = {id:counter++, text: item.name, selected: true, code: item.code}
-            else if (item.status != "closed") temp[i] = {id:counter++, text: item.name, selected: false, code: item.code}
-        })
-        // answer.forEach(element => {
-        //     list_with_search_items.add({id:0, text: element.name, selected: false})
-        // });
-        console.log(temp)
-        subTabs[getSelectedTabId()].map(tab => {
-          let mainTabId=getSelectedTabId();
-          if (tab.id != tab_id){
-            subTabs[mainTabId][tab.id].selected = false
-            //console.log(tabs[tab_id-1].selected + " " + tab_id)
-          }
-          else {
-            subTabs[mainTabId][tab.id].selected = true
-          }
-          return tab
-        })
-        reloadPage()
-      }
-    }
-    
-    xhr.send(null);
-  }   
-
-  function apiGetGoodsByOrder(orders_array) {
-    var xhr = new XMLHttpRequest();
-    var order = ''
-    orders_array.forEach(element => {
-      if (element.selected == true) order = element
-    });
-
-    console.log("Selected order " + order.code)
-    xhr.open('GET', host+'/order_goods_by_order'+'?'+`code=${order.code}`, true);
-    
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        var answer = JSON.parse(this.response)
-        console.log(answer)
-
-        answer.map( function(item, i) {
-          goods_by_order[i] = {id:i, text: "", code: item.goods}
-        })
-        apiGetGoodsType()
-      }
-    }
-    
-    xhr.send(null);
- }
-
-  // const todos = [
-  //   {id:1, completed: false, title: "Купить хлеб"},
-  //   {id:2, completed: false, title: "Купить масло"},
-  //   {id:3, completed: false, title: "Купить молоко"}
-  // ]
-/* <h1>title</h1>
-      <TodoList todos={todos} /> */
-
+  //#region reloadPage
   let [reload, setReload] = React.useState(0)
 
   function reloadPage(){
     setReload(reload+1)
   }
+  //#endregion reloadPage конец
 
- 
+  //#region авторизация
   function onAuthorized(){
-      authorizated=true
-      reloadPage()
-    }
+    authorizated=true
+    reloadPage()
+  }
+
+  function setAccounts(value){
+    accounts=value
+  }
+  //#endregion авторизация конец
+
+  //#region верхние табы
 
   let [mainTabs, setMainTab] = React.useState([
     {id:0, selected: true, title: "АРМ Кладовщика"},
@@ -248,6 +189,8 @@ function App() {
       {id:2, selected: false, title: "Расстановка товаров", page: <StorekeeperAllocation Id={300}/>},
       {id:3, selected: false, title: "Инвентаризация", page: <StorekeeperInventory Id={400}/>},
     ],[
+      {id:0, selected: true, title: "Аккаунты", page: <AdministratorAccounts accounts={accounts} func={setAccounts} Id={500}/>},
+    ],[
       {id:0, selected: true, title: "Заказы", page: <StorekeeperAdvent Id={4}/>},
       {id:1, selected: false, title: "Товары", page: <ManagerProducts Id={5}/>},
       {id:2, selected: false, title: "Счета на оплату", page: <StorekeeperAdvent Id={6}/>},
@@ -273,22 +216,93 @@ function App() {
     if (subTabs[tabId][i].selected) return i
   }
 
-  function onSubTabClick(tab_id){
-    console.log("Click")
-    apiGetOrders(tab_id)
-    // subTabs[getSelectedTabId()].map(tab => {
-    //   let mainTabId=getSelectedTabId();
-    //   if (tab.id != tab_id){
-    //     subTabs[mainTabId][tab.id].selected = false
-    //     //console.log(tabs[tab_id-1].selected + " " + tab_id)
-    //   }
-    //   else {
-    //     subTabs[mainTabId][tab.id].selected = true
-    //   }
-    //   return tab
-    // })
-    // reloadPage()
+  function changeSubTab(tab_id){
+    subTabs[getSelectedTabId()].map(tab => {
+      let mainTabId=getSelectedTabId();
+      if (tab.id != tab_id){
+        subTabs[mainTabId][tab.id].selected = false
+        //console.log(tabs[tab_id-1].selected + " " + tab_id)
+      }
+      else {
+        subTabs[mainTabId][tab.id].selected = true
+      }
+      return tab
+    })
+    reloadPage()
   }
+
+  function onSubTabClick(tab_id){
+    if (tab_id==0) {
+      apiGetOrders(tab_id)
+    } else {
+      changeSubTab(tab_id)
+    }
+  }
+  //#endregion верхние табы конец
+
+  //#region Страница 1 подстраница 1
+  function setTemp(value) {
+    temp = value
+    console.log(temp)
+    apiGetGoodsByOrder(temp)
+  }
+
+  function apiGetOrders(tab_id) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', host+'/orders', true);
+    
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+          var answer = JSON.parse(this.response)
+          
+          //console.log(answer)
+          //console.log(this.request.response)
+      
+        //var array = this.response
+        var counter = 0
+        answer.map( function(item, i) {
+            if (i === 0 & item.status != "closed")  temp[i] = {id:counter++, text: item.name, selected: true, code: item.code}
+            else if (item.status != "closed") temp[i] = {id:counter++, text: item.name, selected: false, code: item.code}
+        })
+        // answer.forEach(element => {
+        //     list_with_search_items.add({id:0, text: element.name, selected: false})
+        // });
+        console.log(temp)
+        changeSubTab(tab_id)
+        reloadPage()
+      }
+    }
+    
+    xhr.send(null);
+  }   
+
+  function apiGetGoodsByOrder(orders_array) {
+    var xhr = new XMLHttpRequest();
+    var order = ''
+    orders_array.forEach(element => {
+      if (element.selected == true) order = element
+    });
+
+    console.log("Selected order " + order.code)
+    xhr.open('GET', host+'/order_goods_by_order'+'?'+`code=${order.code}`, true);
+    
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+        var answer = JSON.parse(this.response)
+        console.log(answer)
+
+        answer.map( function(item, i) {
+          goods_by_order[i] = {id:i, text: "", code: item.goods}
+        })
+        apiGetGoodsType()
+      }
+    }
+    
+    xhr.send(null);
+  }
+
+  //#endregion Страница 1 подстраница 1 конец
+  
 
   if (isFirstTime) { 
      isFirstTime = false

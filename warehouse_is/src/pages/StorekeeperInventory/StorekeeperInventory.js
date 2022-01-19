@@ -3,6 +3,7 @@ import './StorekeeperInventory.css';
 import Table from "../../components/Table/Table";
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
+import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
 
 const styles = {
 
@@ -53,11 +54,43 @@ export default function StorekeeperInventory(props){
         table_list_1=value
     }
     //-------------------------------------стол 1 конец
+    //-------------------------------------выпадающий список приходной накладной 1
+    var expand_imput_list_1 = [
+        {id: 0, value: "Зона 1", selected: true},
+        {id: 1, value: "Зона 2", selected: false},
+        {id: 2, value: "Зона 3", selected: false},
+        {id: 3, value: "Зона 4", selected: false},
+    ]
+    function set_expand_list_input_1(value) {expand_imput_list_1=value}
+    //-------------------------------------выпадающий список приходной накладной 1 конец
+    //-------------------------------------выпадающий список приходной накладной 1
+    var expand_imput_list_2 = [
+        {id: 0, value: "Стеллаж 1", selected: true},
+        {id: 1, value: "Стеллаж 2", selected: false},
+        {id: 2, value: "Стеллаж 3", selected: false},
+        {id: 3, value: "Стеллаж 4", selected: false},
+    ]
+    function set_expand_list_input_2(value) {expand_imput_list_2=value}
+    //-------------------------------------выпадающий список приходной накладной 1 конец
+    //-------------------------------------выпадающий список приходной накладной 1
+    var expand_imput_list_3 = [
+        {id: 0, value: "Полка 1", selected: true},
+        {id: 1, value: "Полка 2", selected: false},
+        {id: 2, value: "Полка 3", selected: false},
+        {id: 3, value: "Полка 4", selected: false},
+    ]
+    function set_expand_list_input_3(value) {expand_imput_list_3=value}
+    //-------------------------------------выпадающий список приходной накладной 1 конец
     //-------------------------------------------------------------------------Блок 1 конец
 
     return (
         <FlexibleBlocksPage>
             <FlexibleBlock>
+            <div class="low_text row_with_item_wide_storekeeperInventory">
+                <div class="low_text row_with_item_wide"><div>Зона&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[0].value} list={expand_imput_list_1} func={set_expand_list_input_1}/></div>
+                <div class="low_text row_with_item_wide ml_storekeeperInventory"><div>Стеллаж&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_2[0].value} list={expand_imput_list_2} func={set_expand_list_input_2}/></div>
+                <div class="low_text row_with_item_wide ml_storekeeperInventory"><div>Полка&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_3[0].value} list={expand_imput_list_3} func={set_expand_list_input_3}/></div>
+            </div>
                 <Table Id={getId()} table_headers={table_headers_1} table_field_height={table_field_height_1} table_list={table_list_1} func={set_table_list_1} numb={0} search="true" add="true" delete="false"/>
             </FlexibleBlock>
         </FlexibleBlocksPage>

@@ -11,14 +11,14 @@
     margin-bottom: 0.25rem;
 }
 
-.bt_send{
-    width: 5rem;
+.bt_send_administrator{
+    width: 7rem;
     height: fit-content;
     align-self: flex-end;
 }
 
-.place_holder{
-    width: calc(100% - 5rem);
+.place_holder_administrator{
+    width: calc(100% - 10rem);
     display: inline-block;
 }
 
@@ -27,17 +27,6 @@
     grid-template-columns: auto max-content;
     height: max-content;
     align-items: center;
-}
-
-.row_with_item_wide_storekeeperInventory{
-    display: grid;
-    grid-template-columns: min-content max-content max-content;
-    height: max-content;
-    align-items: center;
-}
-
-.ml_storekeeperInventory{
-    margin-left: 10px;
 }
 
 .row_with_item_wide{
