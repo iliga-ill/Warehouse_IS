@@ -120,16 +120,30 @@ export default function StorekeeperAdvent(props){
 
     var  table_field_height = "100px"
 
-    // var table_list = props.table_list
-    var table_list = [
-        [0, "Встраиваемая техника", "Варочные поверхности", "Встраиваемая техника №34", "10", "10", true],
-        [1, "Холодильники", "Встраиваемые холодильники", "Холодильники №323", "15", "15", true],
-        [2, "Плиты", "Кухонные мойки", "Плита №452", "12", "12", true],
-        [3, "Холодильники", "", "Холодильник №654", "17", "17", true],
-        [4, "Плиты", "", "Плита №123", "5", "5", true],
-        [5, "Электродуховки", "Бытовые приборы для дома", "Электродуховка №323", "15", "15", true],
-        [7, "Электродуховки", "Бытовые приборы для дома", "Электродуховка №345", "16", "11", true],
-    ]
+     var table_list = []
+     props.order_list.map(function(item,i){
+        var counter=0;
+        var str=[]
+
+        str[counter++] = i
+        str[counter++] = item.category
+        str[counter++] = item.sub_category
+        str[counter++] = item.text
+        str[counter++] = item.amount_ordered
+        str[counter++] = item.amount
+        str[counter++] = item.code
+        str[counter++] = true
+        table_list[i]=str
+    })
+    // var table_list = [
+    //     [0, "Встраиваемая техника", "Варочные поверхности", "Встраиваемая техника №34", "10", "10", true],
+    //     [1, "Холодильники", "Встраиваемые холодильники", "Холодильники №323", "15", "15", true],
+    //     [2, "Плиты", "Кухонные мойки", "Плита №452", "12", "12", true],
+    //     [3, "Холодильники", "", "Холодильник №654", "17", "17", true],
+    //     [4, "Плиты", "", "Плита №123", "5", "5", true],
+    //     [5, "Электродуховки", "Бытовые приборы для дома", "Электродуховка №323", "15", "15", true],
+    //     [7, "Электродуховки", "Бытовые приборы для дома", "Электродуховка №345", "16", "11", true],
+    // ]
         
     function set_table_list_1(value) {
         table_list = value
@@ -150,7 +164,12 @@ export default function StorekeeperAdvent(props){
                 })
             )
         }
-        console.log(table_list)
+        var temp_table_list=[]
+        table_list.map(function(item,i){
+            temp_table_list[i] = {id: item[0], category: item[1], sub_category: item[2],  text: item[3], amount_ordered: item[4], amount: item[5], code: item[6]}
+        })
+        props.func2(temp_table_list)
+        console.log(temp_table_list)
     }
     //-------------------------------------------------------------------------Блок 2 конец
 

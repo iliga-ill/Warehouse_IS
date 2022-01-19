@@ -26,6 +26,7 @@ app.get('/order_goods', db.getOrderGoods)
 app.get('/order_goods_by_order', db.getOrderGoodsByOrder)
 app.get('/orders', db.getOrders)
 app.get('/clients', db.getClients)
+app.get('/goods_type_code', db.getGoodsTypeByCode)
 app.get('/goods_type', db.getGoodsType)
 app.get('/goods_cat', db.getCategories)
 app.get('/goods_subcat2', db.getSubCategories2)
@@ -180,9 +181,23 @@ function apiGetClients() {
   xhr.send(null);
 }
 
+function apiGetGoodsTypeByCode() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', host+'/goods_type_code'+'?'+"code=1", true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log(this.responseText);
+    }
+  }
+  
+  xhr.send(null);
+}
+
+
 function apiGetGoodsType() {
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', host+'/goods_type'+'?'+"code=1", true);
+  xhr.open('GET', host+'/goods_type', true);
   
   xhr.onreadystatechange = function() {
     if (xhr.readyState == XMLHttpRequest.DONE) {
