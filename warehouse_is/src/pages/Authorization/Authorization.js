@@ -2,20 +2,23 @@ import React, { Component, Fragment } from "react";
 import './Authorization.css';
 import Table from "../../components/Table/Table";
 
+
 export default function Authorization(props){
 
   var accounts = props.accounts
-
-
   function submitClicked(){
     var login = document.getElementById("inputName").value
     var password = document.getElementById("inputPassword").value
+    var passCheck=true
     accounts.map(item=>{
-      if (item.name==login && item.password==password){
+      if (item.login==login && item.password==password){
+        passCheck=false
         props.func()
       }
     })
-
+    if (passCheck) {
+      alert("Ошибка, введенны некорректные данные");
+    }
   }
 
     return (
