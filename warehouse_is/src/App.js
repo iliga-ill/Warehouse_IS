@@ -6,7 +6,7 @@ import StorekeeperExpend from './pages/StorekeeperExpend/StorekeeperExpend';
 import AvatarHolder from './components/AvatarHolder/AvatarHolder';
 import StorekeeperInventory from './pages/StorekeeperInventory/StorekeeperInventory';
 import ManagerProducts from './pages/ManagerProducts/ManagerProducts';
-//import Authorization from './pages/Authorization/Authorization';
+import Authorization from './pages/Authorization/Authorization';
 import React, { useState } from 'react';
 //import API from './api/api.js';
 //import { BrowserRouter, Route, Switch } from 'react-router-dom';
@@ -18,7 +18,13 @@ const styles = {
   }
 }
 
-var authorizated = true
+var authorizated = false
+var accounts = [
+  {name: "Владимир", password:"Путин"},
+  {name: "Николай", password:"111"},
+  {name: "Сергей", password:"3"}
+]
+
 var temp = []
 var isFirstTime = true
 
@@ -42,9 +48,10 @@ function App() {
           //console.log(this.request.response)
       
         //var array = this.response
+        var counter = 0
         answer.map( function(item, i) {
-            if (i === 0)  temp[i] = {id:i, text: item.name, selected: true, code: item.code}
-            else  temp[i] = {id:i, text: item.name, selected: false, code: item.code}
+            if (i === 0 & item.status != "closed")  temp[i] = {id:counter++, text: item.name, selected: true, code: item.code}
+            else if (item.status != "closed") temp[i] = {id:counter++, text: item.name, selected: false, code: item.code}
         })
         // answer.forEach(element => {
         //     list_with_search_items.add({id:0, text: element.name, selected: false})
@@ -70,12 +77,13 @@ function App() {
 
   function apiGetGoodsByOrder(orders_array) {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', host+'/order_goods_by_order', true);
-
     var order = ''
     orders_array.forEach(element => {
       if (element.selected == true) order = element
     });
+
+    console.log("Selected order " + order.code)
+    xhr.open('GET', host+'/order_goods_by_order'+'?'+`code=${order.code}`, true);
     
     xhr.onreadystatechange = function() {
       if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -84,7 +92,7 @@ function App() {
       }
     }
     
-    xhr.send(`code=${order.code}`);
+    xhr.send(null);
  }
 
   // const todos = [
@@ -100,6 +108,12 @@ function App() {
   function reloadPage(){
     setReload(reload+1)
   }
+
+ 
+  function onAuthorized(){
+      authorizated=true
+      reloadPage()
+    }
 
   let [mainTabs, setMainTab] = React.useState([
     {id:0, selected: true, title: "АРМ Кладовщика"},/*
@@ -202,27 +216,7 @@ function App() {
       </div>
     );
   } else {
-    // const [token, setToken] = useState();
-
-    // if(!token) {
-    //   return <Login setToken={setToken} />
-    // }
-
-    // return (
-    //   <div className="wrapper">
-    //     <h1>Application</h1>
-    //     <BrowserRouter>
-    //       <Switch>
-    //         <Route path="/dashboard">
-    //           <Dashboard />
-    //         </Route>
-    //         <Route path="/preferences">
-    //           <Preferences />
-    //         </Route>
-    //       </Switch>
-    //     </BrowserRouter>
-    //   </div>
-    // )
+    return <Authorization func={onAuthorized} accounts={accounts}/> 
   }
 }
 

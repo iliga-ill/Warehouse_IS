@@ -49,7 +49,7 @@ const getRacks = (request, response) => {
 }
 
 const getRacksByZone = (request, response) => {
-  pool.query('SELECT * FROM racks WHERE zone_num=$1 ORDER BY code ASC', (request.code), (error, results) => {
+  pool.query('SELECT * FROM racks WHERE zone_num=$1 ORDER BY code ASC', (request.query.code), (error, results) => {
     if (error) {
       throw error
     }
@@ -67,7 +67,7 @@ const getShelfs = (request, response) => {
 }
 
 const getShelfsByRacks = (request, response) => {
-  pool.query('SELECT * FROM shelfs WHERE rack_num=$1 ORDER BY code ASC', (request.code), (error, results) => {
+  pool.query('SELECT * FROM shelfs WHERE rack_num=$1 ORDER BY code ASC', (request.query.code), (error, results) => {
     if (error) {
       throw error
     }
@@ -95,6 +95,15 @@ const getOrderGoodsByOrder = (request, response) => {
 }
 
 const getOrders = (request, response) => {
+  pool.query('SELECT * FROM accounts ORDER BY code ASC', (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getClients = (request, response) => {
   pool.query('SELECT * FROM shipment_order ORDER BY code ASC', (error, results) => {
     if (error) {
       throw error
@@ -121,7 +130,7 @@ const setShelfs = (request, response) => {
 }
 
 const updateInventory = (request, response) => {
-    pool.query('UPDATE goods_type SET status = $1', [request.status_text], (error, results) => {
+    pool.query('UPDATE goods_type SET status = $1', [request.query.status_text], (error, results) => {
       if (error) {
         throw error
       }
@@ -130,7 +139,16 @@ const updateInventory = (request, response) => {
 }
 
 const updateOrder = (request, response) => {
-  pool.query('UPDATE shipment_order SET status = $1', [request.status_text], (error, results) => {
+  pool.query('UPDATE shipment_order SET status = $1', [request.query.status_text], (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(201).send(`User added with ID: ${results.insertId}`)
+  })
+}
+
+const updateOrderGoods = (request, response) => {
+  pool.query('UPDATE shipment_order SET amount_real=$1', [request.query.amount], (error, results) => {
     if (error) {
       throw error
     }
@@ -148,7 +166,9 @@ module.exports = {
   getOrderGoods,
   getOrderGoodsByOrder,
   getOrders,
+  getClients,
   setShelfs,
   updateInventory,
-  updateOrder
+  updateOrder,
+  updateOrderGoods
 }

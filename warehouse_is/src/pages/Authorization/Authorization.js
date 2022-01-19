@@ -2,50 +2,38 @@ import React, { Component, Fragment } from "react";
 import './Authorization.css';
 import Table from "../../components/Table/Table";
 
-async function loginUser(credentials) {
-  return fetch('http://localhost:8080/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(credentials)
-  })
-    .then(data => data.json())
- }
-  
-export default function Authorization({ setToken }){
-  const [username, setUserName] = useState();
-  const [password, setPassword] = useState();
+export default function Authorization(props){
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    const token = await loginUser({
-      username,
-      password
-    });
-    setToken(token);
+  var accounts = props.accounts
+
+
+  function submitClicked(){
+    var login = document.getElementById("inputName").value
+    var password = document.getElementById("inputPassword").value
+    accounts.map(item=>{
+      if (item.name==login && item.password==password){
+        props.func()
+      }
+    })
+
   }
 
-  return (
-    <div className="login-wrapper">
-    <h1>Авторизируйтесь</h1>
-    <form onSubmit={handleSubmit}>
-      <label>
-        <p>Username</p>
-        <input type="text" onChange={e => setUserName(e.target.value)} />
-      </label>
-      <label>
-        <p>Password</p>
-        <input type="password" onChange={e => setPassword(e.target.value)} />
-      </label>
-      <div>
-        <button type="submit">Submit</button>
+    return (
+      <div className="login-wrapper">
+        <h1>Пожалуйста авторизируйтесь</h1>
+        <form>
+          <label>
+            <p>Имя пользователя</p>
+            <input id="inputName" type="text" />
+          </label>
+          <label>
+            <p>Пароль</p>
+            <input id="inputPassword" type="password" />
+          </label>
+          <div>
+            <button type="submit" onClick={submitClicked}>Submit</button>
+          </div>
+        </form>
       </div>
-    </form>
-  </div>
-  )
-}
-
-Authorization.propTypes = {
-  setToken: PropTypes.func.isRequired
-};
+    )
+} 
