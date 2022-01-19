@@ -25,9 +25,11 @@ app.get('/shelfs_by_racks', db.getShelfsByRacks)
 app.get('/order_goods', db.getOrderGoods)
 app.get('/order_goods_by_order', db.getOrderGoodsByOrder)
 app.get('/orders', db.getOrders)
+app.get('/clients', db.getClients)
 app.post('/shelfs', db.setShelfs)
 app.put('/update_inventory', db.updateInventory)
 app.put('/update_order', db.updateOrder)
+app.put('/update_order_goods', db.updateOrderGoods)
 
 app.use('/login', (req, res) => {
   res.send({
@@ -81,7 +83,7 @@ function apiGetRacks() {
 
 function apiGetRacksByZones() {
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', host+'/racks_by_zone', true);
+  xhr.open('GET', host+'/racks_by_zone'+"?"+"code=1", true);
   
   xhr.onreadystatechange = function() {
     if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -89,7 +91,7 @@ function apiGetRacksByZones() {
     }
   }
   
-  xhr.send("code=1");
+  xhr.send(null);
 }
 
 function apiGetShelfs() {
@@ -107,7 +109,7 @@ function apiGetShelfs() {
 
 function apiGetShelfsByRacks() {
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', host+'/shelfs_by_racks', true);
+  xhr.open('GET', host+'/shelfs_by_racks'+"?"+"code=1", true);
   
   xhr.onreadystatechange = function() {
     if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -115,7 +117,7 @@ function apiGetShelfsByRacks() {
     }
   }
   
-  xhr.send("code=1");
+  xhr.send(null);
 }
 
 function apiGetGoods() {
@@ -145,11 +147,24 @@ function apiGetGoodsByOrder() {
   xhr.send(null);
 }
 
-apiGetGoodsByOrder()
+//apiGetGoodsByOrder()
 
 function apiGetOrders() {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', host+'/orders', true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log(this.responseText);
+    }
+  }
+  
+  xhr.send(null);
+}
+
+function apiGetClients() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', host+'/clients', true);
   
   xhr.onreadystatechange = function() {
     if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -178,7 +193,7 @@ function apiSetShelf() {
 
 function apiUpdateInventory() {
   var xhr = new XMLHttpRequest();
-  xhr.open('PUT', host+'/update_inventory', true);
+  xhr.open('PUT', host+'/update_inventory'+'?'+'status_text=1', true);
 
   //Send the proper header information along with the request
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -189,12 +204,12 @@ function apiUpdateInventory() {
     }
   }
   
-  xhr.send("status_text=1");
+  xhr.send(null);
 }
 
 function apiUpdateOrder() {
   var xhr = new XMLHttpRequest();
-  xhr.open('PUT', host+'/update_order', true);
+  xhr.open('PUT', host+'/update_order'+'?'+'"status_text=1"', true);
 
   //Send the proper header information along with the request
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -205,7 +220,23 @@ function apiUpdateOrder() {
     }
   }
   
-  xhr.send("status_text=1");
+  xhr.send(null);
+}
+
+function apiUpdateOrderGoods() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('PUT', host+'/update_order_goods'+'?'+'"amount=1"', true);
+
+  //Send the proper header information along with the request
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log(this.responseText);
+    }
+  }
+  
+  xhr.send(null);
 }
 
 //apiGetZones()
