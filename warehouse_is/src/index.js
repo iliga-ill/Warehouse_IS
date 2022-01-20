@@ -29,7 +29,7 @@ var goods_by_order = []
 function set_goods_by_order(value){ goods_by_order = value; }
 
 var accounts = [
-   {login: "user", password: "1", user_name: "Владимир", user_surname: "Владимирович", user_patronymic:"Путин", telephone:"+8 495 606 36 02", duty:"Кладовщик"},
+   {name: "Владимир", surname: "Владимирович", patronymic:"Путин", login: "user", password: "1", phone_num:"+8 495 606 36 02", duty:"Кладовщик"},
   // {name: "Николай", password:"111"},
   // {name: "Сергей", password:"3"}
 ]

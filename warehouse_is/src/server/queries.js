@@ -174,6 +174,15 @@ const getSubCategories4 = (request, response) => {
   })
 }
 
+const getShelfSpace = (request, response) => {
+  pool.query('SELECT * FROM shelf_space ORDER BY code ASC', (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
 
 const setShelfs = (request, response) => {
     const text = 'INSERT INTO shelfs (name, shelf_num, rack_num, capacity, shelf_space) VALUES ($1, $2, $3, $4, $5)'
@@ -188,6 +197,34 @@ const setShelfs = (request, response) => {
       }
       response.status(201).send(`User added with ID: ${results.insertId}`)
     })
+}
+
+const postNewUser = (request, response) => {
+  const text = 'INSERT INTO accounts (name, surname, patronymic, login, password, phone_num, duty) VALUES ($1, $2, $3, $4, $5, $6, $7)'
+ 
+  const values = [request.body.name, request.body.surname, request.body.patronymic, request.body.login, request.body.password, parseInt(request.body.phone_num), request.body.duty]
+  console.log(values)
+
+  pool.query(text, values, (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(201).send(`User added with ID: ${results.insertId}`)
+  })
+}
+
+const postGoodsToShelfSpace = (request, response) => {
+  const text = 'INSERT INTO accounts (good, amount, shelf_num) VALUES ($1, $2, $3)'
+ 
+  const values = [request.body.good, request.body.amount, request.body.shelf_num]
+  console.log(values)
+
+  pool.query(text, values, (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(201).send(`User added with ID: ${results.insertId}`)
+  })
 }
 
 const updateInventory = (request, response) => {
@@ -234,7 +271,10 @@ module.exports = {
   getSubCategories2,
   getSubCategories3,
   getSubCategories4,
+  getShelfSpace,
   setShelfs,
+  postNewUser,
+  postGoodsToShelfSpace,
   updateInventory,
   updateOrder,
   updateOrderGoods

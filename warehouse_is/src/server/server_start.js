@@ -32,7 +32,10 @@ app.get('/goods_cat', db.getCategories)
 app.get('/goods_subcat2', db.getSubCategories2)
 app.get('/goods_subcat3', db.getSubCategories3)
 app.get('/goods_subcat4', db.getSubCategories4)
+api.get('/shelf_space', db.getShelfSpace)
 app.post('/shelf_set', db.setShelfs)
+app.post('/post_user', db.postNewUser)
+api.post('/post_goods_to_shelfs', db.postGoodsToShelfSpace)
 app.put('/update_inventory', db.updateInventory)
 app.put('/update_order', db.updateOrder)
 app.put('/update_order_goods', db.updateOrderGoods)
@@ -260,6 +263,20 @@ function apiGetGoodsSubCat4() {
   xhr.send(null);
 }
 
+function apiGetShelfSpace() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', host+'/shelf_space', true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log(this.responseText);
+    }
+  }
+  
+  xhr.send(null);
+}
+
+
 
 function apiSetShelf() {
   var xhr = new XMLHttpRequest();
@@ -275,6 +292,22 @@ function apiSetShelf() {
       }
   }
   xhr.send("name=полка 1&shelf_num=1&rack_num=1&capacity=100&shelf_space=");
+}
+
+function apiPostNewUser() {
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", host+'/post_user', true);
+
+  //Send the proper header information along with the request
+  xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+  xhr.onreadystatechange = function() { // Call a function when the state changes.
+      if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+          // Request finished. Do processing here.
+          console.log("New shelf set")
+      }
+  }
+  xhr.send("name=Имя&surname=Фамилия&patronymic=Отчество&login=Логин&password=Пароль&phone_num=Телефон&duty=Должность");
 }
 
 function apiUpdateInventory() {
@@ -295,7 +328,7 @@ function apiUpdateInventory() {
 
 function apiUpdateOrder() {
   var xhr = new XMLHttpRequest();
-  xhr.open('PUT', host+'/update_order'+'?'+'"status_text=1"', true);
+  xhr.open('PUT', host+'/update_order'+'?'+"status_text=1", true);
 
   //Send the proper header information along with the request
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
