@@ -28,8 +28,9 @@ export default function Table(props){
         },
     }
 
-    
+ 
     var showWarn = false
+  
 
     //requiered data
     /*
@@ -109,7 +110,7 @@ export default function Table(props){
     const [searchTerm, setSearchTerm] = React.useState("");
     const [searchResults, setSearchResults] = React.useState([]);
 
-    let [reload, setReload] = React.useState(0)
+    const [reload, setReload] = React.useState(0)
 
     function reloadPage(){
         setReload(reload+1)
@@ -167,17 +168,52 @@ export default function Table(props){
     }
 
     function reloadTable(){
-        document.getElementById(props.Id+"_input").value=" "
+        document.getElementById(props.Id+"_input").value="fff"
         sort()
         document.getElementById(props.Id+"_input").value=""
         sort()
     }
 
-    console.log()
+    //console.log()
     grid_template_columns=""
     tableHeaders[props.numb].map(function(item, i){
         grid_template_columns += " " + tableHeaders[props.numb][i].column_width
     })
+    console.log(JSON.stringify(tableData[props.numb]))
+    console.log(JSON.stringify(props.table_list))
+    //if (tableData[props.numb][0][3] != props.table_list[0][3]) {
+    if (JSON.stringify(tableData[props.numb]) != JSON.stringify(props.table_list)) {
+        console.log("2222")
+  
+       
+        if (props.table_list.length >= 2) {
+            tableData[props.numb] = props.table_list
+            //reloadPage()
+            var bufList = []
+            props.table_list.map(function(item,i){
+                bufList[i]={id: item[0], number: i, onChange: false, onCreate: false}
+            })
+            innerList[props.numb] = bufList
+            recountInnerList()
+            setSearchTerm(tableData[props.numb])
+            reloadTable()
+            reloadPage()
+            setSearchTerm([])
+            
+            //window.location.reload(true);
+            // React.useEffect(() => {
+            //     sort()
+            //   }, [searchTerm]);
+        }
+     
+    } else {
+        console.log("1111")
+        if (props.table_list.length >= 2) {
+            //reloadPage()
+           
+        }
+       
+    }
 
     if (styles.table.gridTemplateColumns != grid_template_columns) styles.table.gridTemplateColumns = grid_template_columns
     if (styles.scroll.height != props.table_field_height) styles.scroll.height = props.table_field_height
