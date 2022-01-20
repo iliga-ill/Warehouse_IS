@@ -66,10 +66,35 @@ export default function AdministratorAccounts(props){
             iter++;
             accountss[i] = {login: item[6], password: item[7], name: item[2], surname: item[1], patronymic: item[3], phone_num: item[4], duty: item[5]}
         })
+        var check=true
+        accountss.map(function(item,i){
+            if (item.login == ""){
+                check=false
+                alert("Ошибка, логин не может быть пустым");
+            }
+            if (item.password == ""){
+                check=false
+                alert("Ошибка, пароль не может быть пустым");
+            }
+            if (item.name == ""){
+                check=false
+                alert("Ошибка, наименование не может быть пустым");
+            }
+            if (item.surname == ""){
+                check=false
+                alert("Ошибка, фамилия не может быть пустым");
+            }
+            if (item.patronymic == ""){
+                check=false
+                alert("Ошибка, отчество не может быть пустым");
+            }
+            if (item.phone_num == ""){
+                check=false
+                alert("Ошибка, телефон не может быть пустым");
+            }
+        })
 
-        if (typeof(accountss[iter].name) == null || typeof(accountss[iter].surname) == null || typeof(accountss[iter].login) == null || typeof(accountss[iter].password) == null || typeof(accountss[iter].phone_num) == null) {
-            alert("Ошибка, некоторые поля незаполнены")
-        } else {
+        if (check) {
             props.func(accountss)
             apiPostNewUser(accountss[accountss.length-1])
         }
