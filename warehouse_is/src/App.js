@@ -28,6 +28,7 @@ var goods_categories;
 var goods_categories2
 var goods_by_order;
 var goods_type_list;
+var accounts;
 var temp = []
 var isFirstTime = true
 //#endregion запросы со старта конец
@@ -39,6 +40,7 @@ export default function App(props) {
   goods_categories2 = props.goods_categories2
   goods_by_order = props.goods_by_order;
   goods_type_list = props.goods_type_list;
+  accounts = props.accounts;
   console.log("-------------=-")
   console.log(goods_type_list)
 
@@ -55,13 +57,12 @@ export default function App(props) {
           accounts[i] = {name: item.name, surname: item.surname, patronymic: item.patronymic, login: item.login, password: item.password, phone_num: item.phone_num, duty: item.duty}
         })
         props.set_accounts(accounts)
-        onStart()
         
+        onStart()
 
         if (accounts[0].login != props.accounts[0].login) {
-          
+          console.log(accounts)
           props.rerender()
-          
         }
       
       }
@@ -236,14 +237,14 @@ export default function App(props) {
     )
   }
 
-  let subTabs = [
+  let [subTabs, setsubTabs] = React.useState([
     [
       {id:0, selected: true, title: "Приход", page: <StorekeeperAdvent Id={100} list={temp} func={setTemp} order_list={goods_by_order} func2={setGoodByOrder} />},
       {id:1, selected: false, title: "Расход", page: <StorekeeperExpend Id={200}/>},
       {id:2, selected: false, title: "Расстановка товаров", page: <StorekeeperAllocation Id={300}/>},
       {id:3, selected: false, title: "Инвентаризация", page: <StorekeeperInventory Id={400}/>},
     ],[
-      {id:0, selected: true, title: "Аккаунты", page: <AdministratorAccounts accounts={props.accounts} func={setAccounts} Id={500}/>},
+      {id:0, selected: true, title: "Аккаунты", page: <AdministratorAccounts accounts={accounts} func={setAccounts} Id={500}/>},
     ],[
       {id:0, selected: true, title: "Заказы", page: <StorekeeperAdvent Id={4}/>},
       {id:1, selected: false, title: "Товары", page: <ManagerProducts Id={5}/>},
@@ -262,7 +263,7 @@ export default function App(props) {
     ],[
       {id:0, selected: true, title: "Аккаунты", page: <StorekeeperAdvent Id={16}/>},
     ]
-  ]
+  ])
 
   function getSelectedSubTabId(){
     let tabId = getSelectedTabId();
@@ -271,17 +272,18 @@ export default function App(props) {
   }
 
   function changeSubTab(tab_id){
+    setsubTabs(
     subTabs[getSelectedTabId()].map(tab => {
       let mainTabId=getSelectedTabId();
       if (tab.id != tab_id){
         subTabs[mainTabId][tab.id].selected = false
         //console.log(tabs[tab_id-1].selected + " " + tab_id)
-      }
-      else {
+      }else {
         subTabs[mainTabId][tab.id].selected = true
       }
       return tab
     })
+    )
     reloadPage()
   }
 
@@ -447,9 +449,7 @@ export default function App(props) {
         <div class="header">
           <TabHolder tabs={subTabs[getSelectedTabId()]} onTabClick={onSubTabClick}/>
         </div>
-          <div id='page_container'>
              {subTabs[getSelectedTabId()][getSelectedSubTabId()].page} 
-          </div>
       </div>
     );
   } else {
