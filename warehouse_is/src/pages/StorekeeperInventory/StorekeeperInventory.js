@@ -58,8 +58,8 @@ export default function StorekeeperInventory(props){
     var expand_imput_list_1 = [
         {id: 0, value: "Зона 1", selected: true},
         {id: 1, value: "Зона 2", selected: false},
-        {id: 2, value: "Зона 3", selected: false},
-        {id: 3, value: "Зона 4", selected: false},
+        // {id: 2, value: "Зона 3", selected: false},
+        // {id: 3, value: "Зона 4", selected: false},
     ]
     function set_expand_list_input_1(value) {expand_imput_list_1=value}
     //-------------------------------------выпадающий список приходной накладной 1 конец
@@ -69,6 +69,12 @@ export default function StorekeeperInventory(props){
         {id: 1, value: "Стеллаж 2", selected: false},
         {id: 2, value: "Стеллаж 3", selected: false},
         {id: 3, value: "Стеллаж 4", selected: false},
+        {id: 4, value: "Стеллаж 5", selected: false},
+        {id: 5, value: "Стеллаж 6", selected: false},
+        {id: 6, value: "Стеллаж 7", selected: false},
+        {id: 7, value: "Стеллаж 8", selected: false},
+        {id: 8, value: "Стеллаж 9", selected: false},
+        {id: 9, value: "Стеллаж 10", selected: false},
     ]
     function set_expand_list_input_2(value) {expand_imput_list_2=value}
     //-------------------------------------выпадающий список приходной накладной 1 конец
@@ -76,8 +82,7 @@ export default function StorekeeperInventory(props){
     var expand_imput_list_3 = [
         {id: 0, value: "Полка 1", selected: true},
         {id: 1, value: "Полка 2", selected: false},
-        {id: 2, value: "Полка 3", selected: false},
-        {id: 3, value: "Полка 4", selected: false},
+        {id: 2, value: "Полка 3", selected: false}
     ]
     function set_expand_list_input_3(value) {expand_imput_list_3=value}
     //-------------------------------------выпадающий список приходной накладной 1 конец

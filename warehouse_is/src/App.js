@@ -52,7 +52,7 @@ export default function App(props) {
         var answer = JSON.parse(this.response)
         var accounts = []
         answer.map( function(item, i) {
-          accounts[i] = {login: item.login, password: item.password, user_name: item.name, user_surname: item.surname}
+          accounts[i] = {name: item.name, surname: item.surname, patronymic: item.patronymic, login: item.login, password: item.password, phone_num: item.phone_num, duty: item.duty}
         })
         props.set_accounts(accounts)
         onStart()
@@ -165,6 +165,7 @@ export default function App(props) {
     
     xhr.send(null);
   }
+  
   //#endregion категории с первой вкладки конец
   //#region запросы со старта
   function onStart() {
@@ -198,7 +199,7 @@ export default function App(props) {
   }
 
   function setAccounts(value){
-    props.set_accounts=value
+    props.set_accounts(value)
  
   }
   //#endregion авторизация конец
