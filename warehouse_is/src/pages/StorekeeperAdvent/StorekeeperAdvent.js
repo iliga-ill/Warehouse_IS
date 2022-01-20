@@ -8,6 +8,7 @@ import InputFile from "../../components/InputFile/InputFile";
 import InputText from "../../components/InputText/InputText";
 import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
+import { render } from "react-dom";
 //const API = require('../../api/api.js');
 const host = 'http://localhost:5000';
 
@@ -29,20 +30,24 @@ const apiGetRacksByZones = function apiGetRacksByZones() {
     xhr.send("code=2");
 }  
 
-export default function StorekeeperAdvent(props){
+var table_list = [[
+    0,'','','','','', true
+]]
 
+export default function StorekeeperAdvent(props){
+     
     var id=props.Id
     function getId(){
         id++
         return id-1
     }
 
-    let [reload, setReload] = React.useState(0)
+    const [reload, setReload] = React.useState(0)
+  
 
     function reloadPage(){
         setReload(reload+1)
     }
-
     //-------------------------------------------------------------------------Блок 1
    
     var list_with_search_width = "200px"
@@ -65,7 +70,7 @@ export default function StorekeeperAdvent(props){
 
     function set_list_with_search(value) {
         list_with_search_items = value
-        props.func(value, 0)
+        props.func(value)
         console.log(list_with_search_items)
     }
     //-------------------------------------------------------------------------Блок 1 конец
@@ -123,8 +128,9 @@ export default function StorekeeperAdvent(props){
     console.log("===================-")
     console.log(props.order_list)
     console.log("====================")
-     var table_list = []
-     props.order_list.map(function(item,i){
+    var temp_table_list = [];
+
+    props.order_list.map(function(item,i){
         var counter=0;
         var str=[]
 
@@ -134,11 +140,20 @@ export default function StorekeeperAdvent(props){
         str[counter++] = item.text
         str[counter++] = item.amount_ordered
         str[counter++] = item.amount
-        str[counter++] = item.code
         str[counter++] = true
-        table_list[i]=str
+        temp_table_list[i]=str
     })
-    console.log(table_list)
+  
+    console.log(temp_table_list[0][1])
+    console.log("--------------")
+    console.log(table_list[0][1])
+    if ( temp_table_list[0][1] != table_list[0][1]) {
+        table_list = temp_table_list
+        //render()
+        //reloadPage()
+    }
+       
+    
     // var table_list = [
     //     [0, "Встраиваемая техника", "Варочные поверхности", "Встраиваемая техника №34", "10", "10", true],
     //     [1, "Холодильники", "Встраиваемые холодильники", "Холодильники №323", "15", "15", true],
@@ -227,11 +242,8 @@ export default function StorekeeperAdvent(props){
 
     }
     list_with_search_items.map(function(item,i){ item.id = i })
-
-
-
+    
     //-------------------------------------------------------------------------Блок 3 конец
-
     return (
         <FlexibleBlocksPage Id={getId()}>
             <FlexibleBlock>
@@ -264,5 +276,5 @@ export default function StorekeeperAdvent(props){
     function rerender() {
         this.forceUpdate()
     }
-    
+
 }
