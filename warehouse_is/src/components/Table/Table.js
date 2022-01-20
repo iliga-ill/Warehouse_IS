@@ -189,16 +189,16 @@ export default function Table(props){
         if (props.table_list.length >= 2) {
             tableData[props.numb] = props.table_list
             //reloadPage()
-            var bufList = []
-            props.table_list.map(function(item,i){
-                bufList[i]={id: item[0], number: i, onChange: false, onCreate: false}
-            })
-            innerList[props.numb] = bufList
-            recountInnerList()
-            setSearchTerm(tableData[props.numb])
+            //var bufList = []
+            // props.table_list.map(function(item,i){
+            //     bufList[i]={id: item[0], number: i, onChange: false, onCreate: false}
+            // })
+            // innerList[props.numb] = bufList
+            // recountInnerList()
+            // setSearchTerm(tableData[props.numb])
             reloadTable()
-            reloadPage()
-            setSearchTerm([])
+            // reloadPage()
+            // setSearchTerm([])
             
             //window.location.reload(true);
             // React.useEffect(() => {

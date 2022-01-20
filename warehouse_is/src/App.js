@@ -27,6 +27,7 @@ var goods_type_list;
 var goods_categories;
 var goods_categories2
 var goods_by_order;
+var goods_type_list;
 var temp = []
 var isFirstTime = true
 //#endregion запросы со старта конец
@@ -37,6 +38,9 @@ export default function App(props) {
   goods_categories = props.goods_categories
   goods_categories2 = props.goods_categories2
   goods_by_order = props.goods_by_order;
+  goods_type_list = props.goods_type_list;
+  console.log("-------------=-")
+  console.log(goods_type_list)
 
   console.log(props.authorizated)
   function apiGetClients() {
@@ -52,9 +56,12 @@ export default function App(props) {
         })
         props.set_accounts(accounts)
         onStart()
-   
+        
+
         if (accounts[0].login != props.accounts[0].login) {
+          
           props.rerender()
+          
         }
       
       }
@@ -149,9 +156,8 @@ export default function App(props) {
         })
         props.set_goods_type_list(goods_type_list)
         // console.log(goods_type_list[0].text)
-        // console.log(props.goods_type_list[0].text)
         
-        if (goods_type_list[0].text != props.goods_type_list[0].text) {
+        if (goods_type_list.length!=0 && goods_type_list[0].text != props.goods_type_list[0].text) {
           props.rerender()
         }
       }
@@ -293,8 +299,8 @@ export default function App(props) {
   function setTemp(value) {
     temp = value
     //console.log(goods_type_list)
-    apiGetGoodsByOrder(temp)
-    props.rerender()
+    //apiGetGoodsByOrder(temp)
+    //props.rerender()
   }
 
   function apiGetOrders(tab_id) {

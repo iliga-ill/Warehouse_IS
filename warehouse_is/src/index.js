@@ -25,7 +25,7 @@ function set_goods_type_list(value){ goods_type_list = value}
 var authorizated = false
 function set_authorizated(value){ authorizated = value}
 
-var goods_by_order = [{id:0, category: "", sub_category: "", text: "", ordered: 0, amount: 0, selected: true}]
+var goods_by_order = []
 function set_goods_by_order(value){ goods_by_order = value; }
 
 var accounts = [
@@ -35,22 +35,7 @@ var accounts = [
 ]
 function set_accounts(value){ accounts = value}
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App 
-      goods_categories={goods_categories} set_goods_categories={set_goods_categories}
-      goods_categories2 = {goods_categories2} set_goods_categories2={set_goods_categories2}
-      goods_categories3  = {goods_categories3} set_goods_categories3={set_goods_categories3}
-      goods_categories4 = {goods_categories4} set_goods_categories4={set_goods_categories4}
-      goods_type_list = {goods_type_list} set_goods_type_list={set_goods_type_list}
-      authorizated = {authorizated} set_authorizated={set_authorizated}
-      accounts = {accounts} set_accounts={set_accounts}
-      goods_by_order = {goods_by_order} set_goods_by_order={set_goods_by_order}
-      rerender={rerender}
-    />
-  </React.StrictMode>,
-  document.getElementById('root')
-)
+
 
 function rerender(){
   ReactDOM.render(
@@ -70,6 +55,8 @@ function rerender(){
     document.getElementById('root')
   )
 }
+
+rerender()
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

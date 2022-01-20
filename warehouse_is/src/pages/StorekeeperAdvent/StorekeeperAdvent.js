@@ -30,9 +30,9 @@ const apiGetRacksByZones = function apiGetRacksByZones() {
     xhr.send("code=2");
 }  
 
-var table_list = [[
-    0,'','','','','', true
-]]
+var table_list = [
+    [0,'','','','','', true],
+]
 
 export default function StorekeeperAdvent(props){
      
@@ -111,47 +111,55 @@ export default function StorekeeperAdvent(props){
         {value: "Красота и гигиена", selected: false},
         {value: "Косметические приборы", selected: false},
         {value: "Медицина и реабилитация", selected: false},
+    ]
 
+    var goods_type_list = [
+        {value: "Варочная поверхность Bosch PKE 645 B17E", selected: true},
+        {value: "Варочная поверхность Bosch PKE 645 B18E", selected: false},
+        {value: "Варочная поверхность Bosch PKE 645 B19E", selected: false},
+        {value: "Варочная поверхность Bosch PKE 645 B20E", selected: false},
+        {value: "Варочная поверхность Bosch PKE 645 B21E", selected: false},
+        {value: "Варочная поверхность Bosch PKE 645 B22E", selected: false},
+        {value: "Варочная поверхность Bosch PKE 645 B23E", selected: false},
     ]
 
     var table_headers = [
         {title:"№", mode:"text", column_width: "30px", listValue: []}, 
-        {title:"Категория", mode:"text", column_width: "110px", listValue: [/*"table_list_value*/]}, 
-        {title:"Подкатегория", mode:"text", column_width: "100px", listValue: [/*table_list_value_2*/]}, 
-        {title:"Наименование", mode:"text", column_width: "110px", listValue: []}, 
-        {title:"Кол-во ожидаемое", mode:"text", column_width: "90px", listValue: []},
+        {title:"Категория", mode:"inputList", column_width: "130px", listValue: table_list_value}, 
+        {title:"Подкатегория", mode:"inputList", column_width: "130px", listValue: table_list_value_2}, 
+        {title:"Наименование", mode:"inputList", column_width: "110px", listValue: goods_type_list}, 
         {title:"Кол-во коробок", mode:"input", column_width: "70px", listValue: []},
         {title:"", mode:"remove", column_width: "50px", listValue: []},
     ]
 
-    var  table_field_height = "100px"
+    var  table_field_height = "160px"
     console.log("===================-")
     console.log(props.order_list)
     console.log("====================")
-    var temp_table_list = [];
+    var table_list = [[0,"Встраиваемая техника","Варочные поверхности","Варочная поверхность Bosch PKE 645 B17E","0",true],];
 
-    props.order_list.map(function(item,i){
-        var counter=0;
-        var str=[]
+    // props.order_list.map(function(item,i){
+    //     var counter=0;
+    //     var str=[]
 
-        str[counter++] = i
-        str[counter++] = item.category
-        str[counter++] = item.sub_category
-        str[counter++] = item.text
-        str[counter++] = item.amount_ordered
-        str[counter++] = item.amount
-        str[counter++] = true
-        temp_table_list[i]=str
-    })
+    //     str[counter++] = i
+    //     str[counter++] = item.category
+    //     str[counter++] = item.sub_category
+    //     str[counter++] = item.text
+    //     str[counter++] = item.amount_ordered
+    //     str[counter++] = item.amount
+    //     str[counter++] = true
+    //     temp_table_list[i]=str
+    // })
   
-    console.log(temp_table_list[0][1])
-    console.log("--------------")
-    console.log(table_list[0][1])
-    if ( temp_table_list[0][1] != table_list[0][1]) {
-        table_list = temp_table_list
-        //render()
-        //reloadPage()
-    }
+    // console.log(temp_table_list[0][1])
+    // console.log("--------------")
+    // console.log(table_list[0][1])
+    // if ( temp_table_list[0][1] != table_list[0][1]) {
+    //     table_list = temp_table_list
+    //     //render()
+    //     //reloadPage()
+    // }
        
     
     // var table_list = [
@@ -185,13 +193,35 @@ export default function StorekeeperAdvent(props){
         }
         var temp_table_list=[]
         table_list.map(function(item,i){
-            temp_table_list[i] = {id: item[0], category: item[1], sub_category: item[2],  text: item[3], amount_ordered: item[4], amount: item[5], code: item[6]}
+            temp_table_list[i] = {id: item[0], category: item[1], sub_category: item[2], text: item[3], amount: item[4], code: item[5]}
         })
-        props.func2(temp_table_list)
-        console.log(temp_table_list)
+
+        var check=true
+        temp_table_list.map(function(item,i){
+            if (item.category == ""){
+                check=false
+                alert("Ошибка, категория не может быть пустой");
+            }
+            if (item.sub_category == ""){
+                check=false
+                alert("Ошибка, подкатегория не может быть пустой");
+            }
+            if (item.text == ""){
+                check=false
+                alert("Ошибка, Наименование не может быть пустой");
+            }
+            if (item.amount < 0){
+                check=false
+                alert("Ошибка, кол-во коробок не может быть отрицательным");
+            }
+            
+        })
+
+        if (check) props.func2(temp_table_list)
+        //console.log(temp_table_list)
     }
     //-------------------------------------------------------------------------Блок 2 конец
-
+    //[0,"Встраиваемая техника","Варочные поверхности","Варочная поверхность Bosch PKE 645 B17E","0",true],];
     
 
     //-------------------------------------------------------------------------Блок 3
@@ -255,7 +285,7 @@ export default function StorekeeperAdvent(props){
                 {/* <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div> */}
                 {/* <InputText styles = "row_with_ite   m_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/> */}
                 <div class="low_text"><InputFile Id={getId()} func={set_documents}/></div>
-                <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1} numb={0} search="true" add="true" delete="false"/>
+                <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1} numb={0} search="true" add="true" delete="true"/>
                 <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
             </FlexibleBlock>
                 {/* <FlexibleBlock>
