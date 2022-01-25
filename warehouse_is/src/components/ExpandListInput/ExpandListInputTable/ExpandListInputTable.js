@@ -46,6 +46,7 @@ export default function ExpandListInputTable(props){
         if (defVal == item.value) check=true
     })
     if (!check) {
+        console.log(props.list[0])
         defVal = props.list[0].value
         changeDef(props.item_id, props.i)
     }

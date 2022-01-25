@@ -39,8 +39,8 @@ export default function AdministratorAccounts(props){
 
     var  table_field_height_1 = "300px"
     var table_list_1 = []
-
-    props.accounts.map(function(item,i){
+    var accounts = []
+    accounts.map(function(item,i){
         var counter=0;
         var str=[]
         str[counter++] = i
