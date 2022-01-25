@@ -179,15 +179,12 @@ export default function Table(props){
     tableHeaders[props.numb].map(function(item, i){
         grid_template_columns += " " + tableHeaders[props.numb][i].column_width
     })
-    console.log(JSON.stringify(tableData[props.numb]))
-    console.log(JSON.stringify(props.table_list))
+    
     //if (tableData[props.numb][0][3] != props.table_list[0][3]) {
     if (JSON.stringify(tableData[props.numb]) != JSON.stringify(props.table_list)) {
-        console.log("2222")
-  
-       
-        if (props.table_list.length >= 2) {
+        if (props.table_list.length != 0) {
             tableData[props.numb] = props.table_list
+            reloadTable()
             //reloadPage()
             //var bufList = []
             // props.table_list.map(function(item,i){
@@ -205,9 +202,7 @@ export default function Table(props){
             //     sort()
             //   }, [searchTerm]);
         }
-     
     } else {
-        console.log("1111")
         if (props.table_list.length >= 2) {
             //reloadPage()
            

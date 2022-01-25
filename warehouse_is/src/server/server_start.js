@@ -32,10 +32,10 @@ app.get('/goods_cat', db.getCategories)
 app.get('/goods_subcat2', db.getSubCategories2)
 app.get('/goods_subcat3', db.getSubCategories3)
 app.get('/goods_subcat4', db.getSubCategories4)
-api.get('/shelf_space', db.getShelfSpace)
+app.get('/shelf_space', db.getShelfSpace)
 app.post('/shelf_set', db.setShelfs)
 app.post('/post_user', db.postNewUser)
-api.post('/post_goods_to_shelfs', db.postGoodsToShelfSpace)
+app.post('/post_goods_to_shelfs', db.postGoodsToShelfSpace)
 app.put('/update_inventory', db.updateInventory)
 app.put('/update_order', db.updateOrder)
 app.put('/update_order_goods', db.updateOrderGoods)
@@ -46,7 +46,7 @@ app.use('/login', (req, res) => {
   });
 });
 
-app.get('/', (request, response) => {
+app.get('../api/api.js', (request, response) => {
     response.json({ info: 'Node.js, Express, and Postgres API' })
   }
 )

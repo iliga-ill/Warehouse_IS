@@ -30,11 +30,18 @@ const apiGetRacksByZones = function apiGetRacksByZones() {
     xhr.send("code=2");
 }  
 
-var table_list = [
-    [0,'','','','','', true],
-]
+var goods_type_list = [{id:0, text: "", category: "", sub_category: "", ordered: "", amount: "", code: ""}];
+
 
 export default function StorekeeperAdvent(props){
+
+    const [reload, setReload] = React.useState(0)
+
+    function reloadPage(){
+        setReload(reload+1)
+    }
+
+
      
     var id=props.Id
     function getId(){
@@ -42,17 +49,12 @@ export default function StorekeeperAdvent(props){
         return id-1
     }
 
-    const [reload, setReload] = React.useState(0)
-  
-
-    function reloadPage(){
-        setReload(reload+1)
-    }
+//#region блоки
     //-------------------------------------------------------------------------Блок 1
    
     var list_with_search_width = "200px"
     var list_with_search_height = "335px"
-    var list_with_search_items = props.list;
+    
      // {id: 0, text: "Заказ №1143", selected: false},
         // {id: 0, text: "Заказ №1346", selected: false},
         // {id: 0, text: "Заказ №3543", selected: false},
@@ -68,74 +70,156 @@ export default function StorekeeperAdvent(props){
         // {id: 0, text: "Заказ №6556", selected: false},
         // {id: 0, text: "Заказ №6566", selected: false},
 
-    function set_list_with_search(value) {
-        list_with_search_items = value
-        props.func(value)
-        console.log(list_with_search_items)
+    const [orders, setOrders] = React.useState([])
+    function apiGetOrders() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/orders', true);
+        console.log("StorekeeperAdvent apiGetOrders was launched")
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                var answer = JSON.parse(this.response)
+                console.log("StorekeeperAdvent apiGetOrders answer: ")
+                console.log(answer)
+                var counter = 0
+                var order = [{id:0, text: "Ничего не найдено", selected: true, code: 0}]
+                answer.map( function(item, i) {
+                    if (i === 0 & item.status != "closed")  order[i] = {id:counter++, text: item.name, selected: true, code: item.code}
+                    else if (item.status != "closed") order[i] = {id:counter++, text: item.name, selected: false, code: item.code}
+                })
+                setOrders(order)
+            }
+        }
+        xhr.send(null);
     }
     //-------------------------------------------------------------------------Блок 1 конец
 
     //-------------------------------------------------------------------------Блок 2
     //-------------------------------------стол 1
-    var table_list_value = [
-        {value: "Встраиваемая техника", selected: true},
-        {value: "Стиральные машины", selected: false},
-        {value: "Сушильные машины", selected: false},
-        {value: "Холодильники", selected: false},
-        {value: "Морозильные камеры", selected: false},
-        {value: "Винные шкафы", selected: false},
-        {value: "Вытяжки", selected: false},
-        {value: "Плиты", selected: false},
-        {value: "Посудомоечные машины", selected: false},
-        {value: "Мелкая бытовая техника", selected: false},
-        {value: "Микроволновые печи", selected: false},
-        {value: "Электродуховки", selected: false},
-        {value: "Пылесосы", selected: false},
-        {value: "Водонагреватели", selected: false},
-        {value: "Кулеры и пурифайеры", selected: false},
-        {value: "Швейные машины, оверлоки", selected: false}
-    ]
+    
+    const [goodsCategories2, setGoodsCategories2] = React.useState([])
+    function apiGetGoodsSubCat2() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/goods_subcat2', true);
+        console.log("StorekeeperAdvent apiGetGoodsSubCat2 was launched")
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                var answer = JSON.parse(this.response)
+                console.log("StorekeeperAdvent apiGetGoodsSubCat2 answer: ")
+                console.log(answer)
+                var goods = [{id:0, text: "ошибка", code: 0}]
+                answer.map( function(item, i) {
+                    goods[i] = {id:i, text: item.name, code: item.code}
+                })
+                setGoodsCategories2(goods)
+            }
+        }
+        xhr.send(null);
+    }
+    // var table_list_value = [
+    //     {value: "Встраиваемая техника", selected: true},
+    //     {value: "Стиральные машины", selected: false},
+    //     {value: "Сушильные машины", selected: false},
+    //     {value: "Холодильники", selected: false},
+    //     {value: "Морозильные камеры", selected: false},
+    //     {value: "Винные шкафы", selected: false},
+    //     {value: "Вытяжки", selected: false},
+    //     {value: "Плиты", selected: false},
+    //     {value: "Посудомоечные машины", selected: false},
+    //     {value: "Мелкая бытовая техника", selected: false},
+    //     {value: "Микроволновые печи", selected: false},
+    //     {value: "Электродуховки", selected: false},
+    //     {value: "Пылесосы", selected: false},
+    //     {value: "Водонагреватели", selected: false},
+    //     {value: "Кулеры и пурифайеры", selected: false},
+    //     {value: "Швейные машины, оверлоки", selected: false}
+    // ]
 
-    var table_list_value_2 = [
-        {value: "Варочные поверхности", selected: true},
-        {value: "Духовые шкафы", selected: false},
-        {value: "Вытяжки", selected: false},
-        {value: "Встраиваемые посудомоечные машины", selected: false},
-        {value: "Встраиваемые холодильники", selected: false},
-        {value: "Встраиваемые морозильные камеры", selected: false},
-        {value: "Встраиваемые микроволновые печи", selected: false},
-        {value: "Кухонные мойки", selected: false},
-        {value: "Измельчители отходов", selected: false},
-        {value: "Кухня", selected: false},
-        {value: "Бытовые приборы для дома", selected: false},
-        {value: "Красота и гигиена", selected: false},
-        {value: "Косметические приборы", selected: false},
-        {value: "Медицина и реабилитация", selected: false},
-    ]
+    const [goodsCategories3, setGoodsCategories3] = React.useState([])
+    function apiGetGoodsSubCat3() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/goods_subcat3', true);
+        console.log("StorekeeperAdvent apiGetGoodsSubCat3 was launched")
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                var answer = JSON.parse(this.response)
+                console.log("StorekeeperAdvent apiGetGoodsSubCat3 answer: ")
+                console.log(answer)
+                var goods = [{id:0, text: "ошибка", code: 0}]
+                answer.map( function(item, i) {
+                    goods[i] = {id:i, text: item.name, code: item.code}
+                })
+                setGoodsCategories3(goods)
+            }
+        }
+        xhr.send(null);
+    }
 
-    var goods_type_list = [
-        {value: "Варочная поверхность Bosch PKE 645 B17E", selected: true},
-        {value: "Варочная поверхность Bosch PKE 645 B18E", selected: false},
-        {value: "Варочная поверхность Bosch PKE 645 B19E", selected: false},
-        {value: "Варочная поверхность Bosch PKE 645 B20E", selected: false},
-        {value: "Варочная поверхность Bosch PKE 645 B21E", selected: false},
-        {value: "Варочная поверхность Bosch PKE 645 B22E", selected: false},
-        {value: "Варочная поверхность Bosch PKE 645 B23E", selected: false},
-    ]
+    // var table_list_value_2 = [
+    //     {value: "Варочные поверхности", selected: true},
+    //     {value: "Духовые шкафы", selected: false},
+    //     {value: "Вытяжки", selected: false},
+    //     {value: "Встраиваемые посудомоечные машины", selected: false},
+    //     {value: "Встраиваемые холодильники", selected: false},
+    //     {value: "Встраиваемые морозильные камеры", selected: false},
+    //     {value: "Встраиваемые микроволновые печи", selected: false},
+    //     {value: "Кухонные мойки", selected: false},
+    //     {value: "Измельчители отходов", selected: false},
+    //     {value: "Кухня", selected: false},
+    //     {value: "Бытовые приборы для дома", selected: false},
+    //     {value: "Красота и гигиена", selected: false},
+    //     {value: "Косметические приборы", selected: false},
+    //     {value: "Медицина и реабилитация", selected: false},
+    // ]
 
-    var table_headers = [
+    const [goodsType, setGoodsType] = React.useState([])
+    function apiGetGoodsType() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/goods_type', true);
+        console.log("StorekeeperAdvent apiGetGoodsType was launched")
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                var answer = JSON.parse(this.response)
+                console.log("StorekeeperAdvent apiGetGoodsType answer: ")
+                console.log(answer)
+                var goods = [{id:0, text: "Ошибка", category: "Ошибка", sub_category: "Ошибка", ordered: 0, amount: 0, code: 0}]
+                answer.map( function(item, i) {
+                    goods[i] = {id:i, text: item.name, category: item.category, sub_category: item.subcategory_2, ordered: item.amount_ordered, amount: item.amount, code: item.code}
+                })
+                setGoodsType(goods)
+            }
+        }
+        xhr.send(null);
+    }
+
+
+    if (orders.toString()=="" && goodsCategories2.toString()=="" && goodsCategories3.toString()=="" && goodsType.toString()=="") {
+        apiGetOrders()
+        apiGetGoodsSubCat2()
+        apiGetGoodsSubCat3()
+        apiGetGoodsType()
+    }
+    // var goods_type_list = [
+    //     {value: "Варочная поверхность Bosch PKE 645 B17E", selected: true},
+    //     {value: "Варочная поверхность Bosch PKE 645 B18E", selected: false},
+    //     {value: "Варочная поверхность Bosch PKE 645 B19E", selected: false},
+    //     {value: "Варочная поверхность Bosch PKE 645 B20E", selected: false},
+    //     {value: "Варочная поверхность Bosch PKE 645 B21E", selected: false},
+    //     {value: "Варочная поверхность Bosch PKE 645 B22E", selected: false},
+    //     {value: "Варочная поверхность Bosch PKE 645 B23E", selected: false},
+    // ]
+
+    const [tableHeaders, setTableHeaders] = React.useState([
         {title:"№", mode:"text", column_width: "30px", listValue: []}, 
-        {title:"Категория", mode:"inputList", column_width: "130px", listValue: table_list_value}, 
-        {title:"Подкатегория", mode:"inputList", column_width: "130px", listValue: table_list_value_2}, 
-        {title:"Наименование", mode:"inputList", column_width: "110px", listValue: goods_type_list}, 
+        {title:"Категория", mode:"inputList", column_width: "130px", listValue: goodsCategories2}, 
+        {title:"Подкатегория", mode:"inputList", column_width: "130px", listValue: goodsCategories3}, 
+        {title:"Наименование", mode:"inputList", column_width: "110px", listValue: goodsType}, 
         {title:"Кол-во коробок", mode:"input", column_width: "70px", listValue: []},
         {title:"", mode:"remove", column_width: "50px", listValue: []},
-    ]
+    ]) 
 
-    var  table_field_height = "160px"
-    console.log("===================-")
-    console.log(props.order_list)
-    console.log("====================")
+    var table_field_height = "160px"
+
+    //const [tableList, setTableList] = React.useState([])
     var table_list = [[0,"Встраиваемая техника","Варочные поверхности","Варочная поверхность Bosch PKE 645 B17E","0",true],];
 
     // props.order_list.map(function(item,i){
@@ -271,13 +355,141 @@ export default function StorekeeperAdvent(props){
         console.log(table_list_2)
 
     }
-    list_with_search_items.map(function(item,i){ item.id = i })
+    //list_with_search_items.map(function(item,i){ item.id = i })
     
     //-------------------------------------------------------------------------Блок 3 конец
+//#endregion
+    
+//#region api
+
+function apiGetGoodsCat() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', host+'/goods_cat', true);
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+        var answer = JSON.parse(this.response)
+        answer.map( function(item, i) {
+            console.log(this.responseText);
+        })
+        }
+    }
+    xhr.send(null);
+}
+      
+function apiGetGoodsSubCat4() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', host+'/goods_subcat4', true);
+    
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+            console.log(this.responseText);
+        }
+    }
+    
+    xhr.send(null);
+}
+
+
+
+//#endregion категории с первой вкладки конец
+
+//#region Страница 1 подстраница 1
+ 
+  function apiGetGoodsByOrder(orders_array) {
+    var xhr = new XMLHttpRequest();
+    var order = ''
+    orders_array.forEach(element => {
+      if (element.selected == true) order = element
+    });
+
+    //console.log("Selected order " + order.code)
+    xhr.open('GET', host+'/order_goods_by_order'+'?'+`code=${order.code}`, true);
+    
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+        var answer = JSON.parse(this.response)
+        console.log("------------")
+        console.log(answer)
+        console.log("------------")
+        var bar = []
+        console.log(goods_type_list[0].text)
+        answer.map( function(item, i) {
+          var foo = item.goods
+          //goods_by_order[i] = {id:i, category: "goods_categories[answer.category-1]", sub_category: "goods_categories2[answer.sub_category_2-1]",  text: "answer.name", amount_ordered: "answer.amount_ordered", amount: "answer.amount", code: foo}
+          goods_type_list.forEach (function(item2, j) {
+            var it = parseInt(item2.code)
+            if (it == item.goods) {
+              //bar[i] = {id:i, category: goods_categories[0].text, sub_category: goods_categories2[item2.sub_category-1].text,  text: item2.text, amount_ordered: item2.ordered, amount: item2.amount, code: foo}
+            }
+              
+          })
+        })
+        console.log("@@@@@@@@@@@@@@@@@@@@")
+        console.log(bar)
+        //goods_by_order = bar
+        //document.getElementById('page_container').removeChild( document.getElementById('100'))
+        //document.getElementById('page_container').append(<StorekeeperAdvent Id={100} list={temp} func={setTemp} order_list={goods_by_order} func2={setGoodByOrder}/>)
+        //document.getElementById('page_container').append(StorekeeperAdvent.StorekeeperAdvent({ Id:100, list: temp, func:setTemp, order_list: goods_by_order, func2: setGoodByOrder}))
+        //StorekeeperAdvent.StorekeeperAdvent({ Id:100, list: temp, func:setTemp, order_list: goods_by_order, func2: setGoodByOrder})
+        
+        //console.log(StorekeeperAdvent({ Id:100, list: temp, func:setTemp, order_list: goods_by_order, func2: setGoodByOrder}))
+        // changeSubTab(1)
+        // changeSubTab(0)
+        // if (tab_id == 0) {
+          // ReactDOM.render(
+          //   <StorekeeperAdvent Id={100} list={temp} func={setTemp} order_list={goods_by_order} func2={setGoodByOrder}/>,
+          //   document.getElementById('page_container'))
+        // }
+        //subTabs[0][0].page.setReload()
+        //props.rerender()  
+
+        //reloadPage()
+        // changeSubTab(tab_id)
+        //apiGetGoodsType()
+      }
+    }
+  
+    
+    xhr.send(null);
+  }
+
+  // function apiGetGoodsType() {
+  //   var size = goods_by_order.length;
+  //   console.log(goods_by_order)
+  //   goods_by_order.forEach( function(element, i) {
+  //     console.log(`element = ${element.code}`)
+  //     var xhr = new XMLHttpRequest();
+  //     var elm = i
+  //     xhr.open('GET', host+'/goods_type'+'?'+`code=${goods_by_order[elm].code}`, true);
+      
+  //     xhr.onreadystatechange = function() {
+  //       if (xhr.readyState == XMLHttpRequest.DONE) {
+  //         var id = goods_by_order[elm].id
+          
+  //         var answer = JSON.parse(this.response)
+  //         console.log(`answer: ${answer}`)
+  //         console.log(`Element before: ${goods_by_order[elm].text}`)
+  //         element = {id:id, category: goods_categories[answer.category-1], sub_category: goods_categories2[answer.sub_category_2-1],  text: answer.name, amount_ordered: answer.amount_ordered, amount: answer.amount, code: answer.code}
+  //         goods_by_order[elm] = element
+  //         console.log(`Element: ${goods_by_order[elm].text}`)
+       
+  //         if (i == size-1) reloadPage()
+  //       }
+  //     }
+      
+  //     xhr.send(null);
+  //   })
+    
+  //}
+//#endregion Страница 1 подстраница 1 конец
+//#endregion
+
+
     return (
         <FlexibleBlocksPage Id={getId()}>
             <FlexibleBlock>
-                <ListWithSearch Id={getId()} item_list={list_with_search_items} func={set_list_with_search} width={list_with_search_width} height={list_with_search_height}/>
+                <ListWithSearch Id={getId()} item_list={orders} func={setOrders} width={list_with_search_width} height={list_with_search_height}/>
             </FlexibleBlock>
             <FlexibleBlock>
                 <div class="header_text">Прием товаров</div>
@@ -285,7 +497,7 @@ export default function StorekeeperAdvent(props){
                 {/* <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div> */}
                 {/* <InputText styles = "row_with_ite   m_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/> */}
                 <div class="low_text"><InputFile Id={getId()} func={set_documents}/></div>
-                <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1} numb={0} search="true" add="true" delete="true"/>
+                <Table Id={getId()} table_headers={tableHeaders} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1} numb={0} search="true" add="true" delete="true"/>
                 <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
             </FlexibleBlock>
                 {/* <FlexibleBlock>
