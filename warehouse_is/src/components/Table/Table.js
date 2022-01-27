@@ -149,6 +149,8 @@ export default function Table(props){
         var j=0
         tableData[props.numb].map(function(item,k){
             var search=false
+            // console.log(`item`)
+            // console.log(item)
             item.map(function(item1,i){
                 if (i==0){
                     if(item1!==undefined && innerList[props.numb][k].number.toString().toLowerCase().includes(searchTerm.toLowerCase())) {

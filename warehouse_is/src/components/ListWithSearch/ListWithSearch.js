@@ -35,14 +35,14 @@ export default function ListWithSearch(props){
         setSearchResults(results);
     }
 
-    function onItemClick(text){
-    setItemList(
-        itemList.map(item=>{
-            if (item.text == text) item.selected = true
-            else item.selected = false
+    function onItemClick(item1){
+        var list = []
+        itemList.map(function(item,i){
+            if (item.text == item1) {list[i] = item; list[i].selected = true;}
+            else {list[i] = item; list[i].selected = false}
         })
-    )
-    props.func(itemList)
+        setItemList(list)
+        props.func(itemList)
     }
 
     if (styles.scroll.width != props.width) styles.scroll.width = props.width
@@ -57,6 +57,9 @@ export default function ListWithSearch(props){
         <div class="white" style={styles.scroll}>
             {searchResults.map(function(item1,i){
                 var selected = false
+                // console.log("ItemList")
+                // console.log(itemList)
+                // console.log(item1)
                 itemList.map(function(item2,j){
                     if (item1 == item2.text) selected = item2.selected
                 })
