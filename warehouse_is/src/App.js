@@ -33,7 +33,8 @@ export default function App() {
 
   let [mainTabs, setMainTab] = React.useState([
     {id:0, selected: true, title: "АРМ Кладовщика"},
-    {id:1, selected: false, title: "АРМ Администратора"},
+    {id:1, selected: false, title: "АРМ Менеджера"},
+    {id:2, selected: false, title: "АРМ Администратора"},
     /*
     {id:1, selected: false, title: "АРМ Менеджера"},
     {id:2, selected: false, title: "АРМ Логиста"},
@@ -68,11 +69,11 @@ export default function App() {
       {id:2, selected: false, title: "Расстановка товаров", page: <StorekeeperAllocation Id={300}/>},
       {id:3, selected: false, title: "Инвентаризация", page: <StorekeeperInventory Id={400}/>},
     ],[
-      {id:0, selected: true, title: "Аккаунты", page: <AdministratorAccounts Id={500}/>},
+      {id:0, selected: true, title: "Заказы", page: <StorekeeperAdvent Id={500}/>},
+      {id:1, selected: false, title: "Товары", page: <ManagerProducts Id={600}/>},
+      {id:2, selected: false, title: "Счета на оплату", page: <StorekeeperAdvent Id={700}/>},
     ],[
-      {id:0, selected: true, title: "Заказы", page: <StorekeeperAdvent Id={4}/>},
-      {id:1, selected: false, title: "Товары", page: <ManagerProducts Id={5}/>},
-      {id:2, selected: false, title: "Счета на оплату", page: <StorekeeperAdvent Id={6}/>},
+      {id:0, selected: true, title: "Аккаунты", page: <AdministratorAccounts Id={800}/>},
     ],[
       {id:0, selected: true, title: "Товары", page: <StorekeeperAdvent Id={7}/>},
       {id:1, selected: false, title: "Создание заказа", page: <StorekeeperAdvent Id={8}/>},

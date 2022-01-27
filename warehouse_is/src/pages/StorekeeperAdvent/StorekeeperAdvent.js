@@ -274,7 +274,9 @@ export default function StorekeeperAdvent(props){
                         var it = parseInt(item2.code)
                         if (it == item.goods) {
                           //  bar[i] = [i, goodsCategories2[item2.category-1].text, goodsCategories3[item2.sub_category-1].text,  item2.text, item2.ordered, item2.amount, true]
-                            bar[i] = {"codeNum": i, "goodsCategories2": goodsCategories2[item2.category-1].text, "goodsCategories3": goodsCategories3[item2.sub_category-1].text, "goodsType": item2.text, "orderedAmount": item2.ordered, "amount": item2.amount}
+                            bar[i] = {"codeNum": i+1, "goodsCategories2": goodsCategories2[item2.category-1].text, "goodsCategories3": goodsCategories3[item2.sub_category-1].text, "goodsType": item2.text, "orderedAmount": item2.ordered, "amount": item2.amount}
+                            bar[i].id = i+j;
+                            bar[i].code = item2.code;
                         }   
                         
                         })
@@ -346,9 +348,10 @@ export default function StorekeeperAdvent(props){
             //         console.log("document: " + doc.name)
             //     })
             // )
-            console.log('tableList')
-            console.log(tableList)
+       
         }
+        console.log('tableList')
+        console.log(tableList)
         var temp_table_list=[]
         tableList.map(function(item,i){
             temp_table_list[i] = {id: item[0], category: item[1], sub_category: item[2], text: item[3], amount: item[4], code: item[5]}
@@ -533,9 +536,9 @@ function apiGetGoodsSubCat4() {
                 <div class="low_text"><InputFile Id={getId()} func={onBlock3FileUploaded}/></div>
                 <Table Id={getId()} table_headers={table_headers_2} table_field_height={table_field_height_2} table_list={table_list_2} func={set_table_list_2} numb={1} search="true" add="false" delete="false"/>
             </FlexibleBlock> */}
-                <div style={{width:800+'px', display:'block'}} >
+                {/* <div style={{width:800+'px', display:'block'}} >
                     <Table2 columns={tableHeaders2} rows={table_list} setNewTableList={setTableList2}/>
-                </div>
+                </div> */}
         </FlexibleBlocksPage>
       
     )
