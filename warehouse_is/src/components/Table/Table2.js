@@ -7,6 +7,7 @@ import {
   TableHeaderRow,
   TableEditRow,
   TableEditColumn,
+  TableColumnResizing,
 } from '@devexpress/dx-react-grid-material-ui';
 
 // import {
@@ -14,7 +15,7 @@ import {
 //   defaultColumnValues,
 // } from '../../../demo-data/generator';
 
-const getRowId = row => row.id;
+const getRowId = row => row.id
 
 export function Table2(props) {
 //   const [columns] = useState([
@@ -31,6 +32,7 @@ export function Table2(props) {
 //     length: 8,
 //   }));
 //   const [rows, setRows] = useState(generateRows());
+
   const [rows, setRows] = useState();
 //   if (rows != props.rows) {
 //     const data = []
@@ -51,7 +53,35 @@ export function Table2(props) {
     editingStateColumnExtensions[0] = {  columnName: props.columns[0].name, editingEnabled: false }
     editingStateColumnExtensions[1] = {  columnName: props.columns[1].name, editingEnabled: false }
     editingStateColumnExtensions[2] = {  columnName: props.columns[2].name, editingEnabled: false }
+    editingStateColumnExtensions[3] = {  columnName: props.columns[3].name, editingEnabled: false }
+    editingStateColumnExtensions[4] = {  columnName: props.columns[4].name, editingEnabled: false }
   }
+
+//   const [columnWidths, setColumnWidths] = useState([
+//     { columnName: 'name', width: 180 },
+//     { columnName: 'gender', width: 180 },
+//     { columnName: 'city', width: 180 },
+//     { columnName: 'car', width: 240 },
+//   ]);
+    const [columnWidths, setColumnWidths] = useState([  {  columnName: props.columns[0].name, width: 180 },
+        {  columnName: props.columns[1].name, width: 180 },
+        {  columnName: props.columns[2].name, width: 180 },
+        {  columnName: props.columns[3].name, width: 180 },
+        {  columnName: props.columns[4].name, width: 180 },
+        {  columnName: props.columns[5].name, width: 180 },]);
+//     if (columns.length > 2) {
+//         const columnWidthsVal = [  
+//         {  columnName: props.columns[0].name, width: 180 },
+//         {  columnName: props.columns[1].name, width: 180 },
+//         {  columnName: props.columns[2].name, width: 180 },
+//         {  columnName: props.columns[3].name, width: 180 },
+//         {  columnName: props.columns[4].name, width: 180 },
+//         {  columnName: props.columns[5].name, width: 180 },
+//     ]
+
+//     setColumnWidths(columnWidthsVal)
+//   }
+
 
   const commitChanges = ({ added, changed, deleted }) => {
     let changedRows;
@@ -91,12 +121,18 @@ export function Table2(props) {
           columnExtensions={editingStateColumnExtensions}
         />
         <Table />
+        <TableColumnResizing
+          columnWidths={columnWidths}
+          onColumnWidthsChange={setColumnWidths}
+        />
         <TableHeaderRow />
         <TableEditRow />
         <TableEditColumn
-          showAddCommand
+        //   showAddCommand
           showEditCommand
-          showDeleteCommand
+          messages={{editCommand: 'Правка', addCommand: 'Новая запись', commitCommand: 'Сохранить', cancelCommand: 'Отменить'}}
+          width={250}
+          //showDeleteCommand
         />
       </Grid>
     </Paper>
