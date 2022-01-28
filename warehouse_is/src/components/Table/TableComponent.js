@@ -26,6 +26,7 @@ export function TableComponent(props) {
   if (columns.length > 0) {
     if (columns != props.columns) setColumns(props.columns)
     if (rows != props.rows) {setRows(props.rows)}
+    if (editingStateColumnExtensions.toString()=="" && columnWidths.toString()=="")
     props.columns.map(function(item, i){
       editingStateColumnExtensions[i] = {  columnName: item.name, editingEnabled: item.editingEnabled }
       columnWidths[i] = { columnName: item.name, width: item.width}

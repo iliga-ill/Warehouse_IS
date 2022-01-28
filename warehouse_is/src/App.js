@@ -23,7 +23,7 @@ export default function App() {
 
   //#region reloadPage
   const [reload, setReload] = React.useState(0)
-  const [authorizated, setAuthorizated] = React.useState(true)
+  const [authorizated, setAuthorizated] = React.useState(false)
 
   function reloadPage(){
     setReload(reload+1)
@@ -95,10 +95,6 @@ export default function App() {
     for (let i=0;i<subTabs[tabId].length;i++){
       if (subTabs[tabId][i].selected) return i
     }
-  }
-
-  function changeSubTab(tab_id){
-    
   }
 
   function onSubTabClick(tab_id){
