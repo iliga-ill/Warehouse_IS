@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from "react";
 import './StorekeeperAdvent.css';
 import Table from "../../components/Table/Table";
-import { Table2 } from "../../components/Table/Table2";
+import { TableComponent } from "../../components/Table/TableComponent";
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import InputDate from "../../components/InputDate/InputDate";
@@ -31,19 +31,9 @@ const apiGetRacksByZones = function apiGetRacksByZones() {
     xhr.send("code=2");
 }  
 
-var goods_type_list = [{id:0, text: "", category: "", sub_category: "", ordered: "", amount: "", code: ""}];
-
 
 export default function StorekeeperAdvent(props){
 
-    const [reload, setReload] = React.useState(0)
-
-    function reloadPage(){
-        setReload(reload+1)
-    }
-
-
-     
     var id=props.Id
     function getId(){
         id++
@@ -73,7 +63,7 @@ export default function StorekeeperAdvent(props){
 
     const [orders, setOrders] = React.useState([])
     React.useEffect(() => {
-        if (goodsType != []) apiGetGoodsByOrder()
+        if (goodsType.toString() != "") apiGetGoodsByOrder()
     }, [orders]);
     function apiGetOrders() {
         var xhr = new XMLHttpRequest();
@@ -200,10 +190,10 @@ export default function StorekeeperAdvent(props){
 
 
     if (orders.toString()=="" && goodsCategories2.toString()=="" && goodsCategories3.toString()=="" && goodsType.toString()=="") {
-        apiGetOrders()
+        apiGetGoodsType()
         apiGetGoodsSubCat2()
         apiGetGoodsSubCat3()
-        apiGetGoodsType()
+        apiGetOrders()
     }
     // var goods_type_list = [
     //     {value: "Варочная поверхность Bosch PKE 645 B17E", selected: true},
@@ -226,24 +216,17 @@ export default function StorekeeperAdvent(props){
     // ]) 
 
     const [tableHeaders, setTableHeaders] = React.useState([
-        {name: 'codeNum', title:'№'}, 
-        {name: 'goodsCategories2', title:'Категория'}, 
-        {name: 'goodsCategories3', title:'Подкатегория'}, 
-        {title:'Наименование', name: 'goodsType'}, 
-        {title:'Ожидаемое количество', name: 'orderedAmount'},
-        {name: 'amount', title:'Кол-во коробок'}
+        {name: 'number',            title:'№',                  editingEnabled:false,   width:40    }, 
+        {name: 'goodsCategories2',  title:'Категория',          editingEnabled:false,   width:160   }, 
+        {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,   width:170   }, 
+        {name: 'goodsType',         title:'Наименование',       editingEnabled:false,   width:200   }, 
+        {name: 'orderedAmount',     title:'Ожидаемое кол-во',   editingEnabled:false,   width:150   },
+        {name: 'amount',            title:'Кол-во коробок',     editingEnabled:true,    width:130   }
     ]) 
+    var edit_column = {add:false, edit:true, delete:false}
 
-    const [tableHeaders2, setTableHeaders2] = React.useState([
-        {name: 'codeNum', title:'№'}, 
-        {name: 'goodsCategories2', title:'Категория2'}, 
-        {name: 'goodsCategories3', title:'Подкатегория2'}, 
-        {title:'Наименование2', name: 'goodsType'}, 
-        {title:'Ожидаемое количество2', name: 'orderedAmount'},
-        {name: 'amount', title:'Кол-во коробок2'}
-    ]) 
 
-    var table_field_height = "160px"
+    //var table_field_height = "160px"
 
     const [tableList, setTableList] = React.useState([])
     //var table_list = [[0,"Встраиваемая техника","Варочные поверхности","Варочная поверхность Bosch PKE 645 B17E","0",true],];
@@ -265,25 +248,22 @@ export default function StorekeeperAdvent(props){
                     var answer = JSON.parse(this.response)
                     console.log("StorekeeperAdvent apiGetGoodsByOrder answer: ")
                     console.log(answer)
-                    var bar = [[]]
-            
+                    var buffer = []
+                    var counter = 0;
                     answer.map( function(item, i) {
-                    var foo = item.goods
                     //goods_by_order[i] = {id:i, category: "goods_categories[answer.category-1]", sub_category: "goods_categories2[answer.sub_category_2-1]",  text: "answer.name", amount_ordered: "answer.amount_ordered", amount: "answer.amount", code: foo}
                     goodsType.forEach (function(item2, j) {
-                        var it = parseInt(item2.code)
-                        if (it == item.goods) {
-                          //  bar[i] = [i, goodsCategories2[item2.category-1].text, goodsCategories3[item2.sub_category-1].text,  item2.text, item2.ordered, item2.amount, true]
-                            bar[i] = {"codeNum": i+1, "goodsCategories2": goodsCategories2[item2.category-1].text, "goodsCategories3": goodsCategories3[item2.sub_category-1].text, "goodsType": item2.text, "orderedAmount": item2.ordered, "amount": item2.amount}
-                            bar[i].id = i+j;
-                            bar[i].code = item2.code;
-                        }   
-                        
+                            var it = parseInt(item2.code)
+                            if (it.toString() == item.goods.toString()) {
+                                //  bar[i] = [i, goodsCategories2[item2.category-1].text, goodsCategories3[item2.sub_category-1].text,  item2.text, item2.ordered, item2.amount, true]
+                                buffer[counter] = {number: counter+1, goodsCategories2: goodsCategories2[item2.category-1].text, goodsCategories3: goodsCategories3[item2.sub_category-1].text, goodsType: item2.text, orderedAmount: item2.ordered, amount: item2.amount}
+                                buffer[counter].id = 'string_' + counter;
+                                buffer[counter].code = item2.code;
+                                counter++
+                            }   
                         })
                     })
-                    console.log(`bar`)
-                    console.log(bar)
-                    setTableList(bar)
+                    setTableList(buffer)
             
                 }
             }
@@ -325,15 +305,6 @@ export default function StorekeeperAdvent(props){
     //     [5, "Электродуховки", "Бытовые приборы для дома", "Электродуховка №323", "15", "15", true],
     //     [7, "Электродуховки", "Бытовые приборы для дома", "Электродуховка №345", "16", "11", true],
     // ]
-    const [table_list, setTableList2] = React.useState([ 
-        {'codeNum': 0, 'goodsCategories2': "Встраиваемая техника", 'goodsCategories3': "Варочные поверхности", 'goodsType': "Встраиваемая техника №34", 'orderedAmount': 10, 'amount': 10},
-        {'codeNum': 1, 'goodsCategories2': "Холодильники", 'goodsCategories3': "Встраиваемые холодильники", 'goodsType': "Холодильники №323", 'orderedAmount': 15, 'amount': 15},
-        {'codeNum': 2, 'goodsCategories2': "Плиты", 'goodsCategories3': "Кухонные мойки", 'goodsType': "Плита №452", 'orderedAmount': 12, 'amount': 2},
-        {'codeNum': 3, 'goodsCategories2': "Холодильники", 'goodsCategories3': "", 'goodsType': "Холодильник №654", 'orderedAmount': 17, 'amount': 17},
-        {'codeNum': 4, 'goodsCategories2': "Плиты", 'goodsCategories3': "", 'goodsType': "Плита №123", 'orderedAmount': 5, 'amount': 5},
-        {'codeNum': 5, 'goodsCategories2': "Электродуховки", 'goodsCategories3': "Бытовые приборы для дома", 'goodsType': "Электродуховка №323", 'orderedAmount': 15, 'amount': 15},
-        {'codeNum': 7, 'goodsCategories2': "Электродуховки", 'goodsCategories3': "Бытовые приборы для дома", 'goodsType': "Электродуховка №345", 'orderedAmount': 16, 'amount': 11}
-    ])
         
     //-------------------------------------стол 1 конец
 
@@ -520,7 +491,7 @@ function apiGetGoodsSubCat4() {
                 {/* <Table Id={getId()} table_headers={tableHeaders} table_field_height={table_field_height} table_list={tableList} func={setTableList} numb={0} search="true" add="true" delete="true"/> */}
                
                 <div style={{width:800+'px', display:'inline-table'}} >
-                    <Table2 columns={tableHeaders} rows={tableList} setNewTableList={setTableList}/>
+                    <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>
                 <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
             </FlexibleBlock>
@@ -540,11 +511,5 @@ function apiGetGoodsSubCat4() {
                     <Table2 columns={tableHeaders2} rows={table_list} setNewTableList={setTableList2}/>
                 </div> */}
         </FlexibleBlocksPage>
-      
     )
-
-    function rerender() {
-        this.forceUpdate()
-    }
-
 }

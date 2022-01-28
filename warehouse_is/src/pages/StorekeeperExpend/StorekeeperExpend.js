@@ -7,79 +7,180 @@ import InputDate from "../../components/InputDate/InputDate";
 import InputFile from "../../components/InputFile/InputFile";
 import InputText from "../../components/InputText/InputText";
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
+import { TableComponent } from "../../components/Table/TableComponent";
+const host = 'http://localhost:5000';
 
 const styles = {
 
   }
 
-  
-
 export default function StorekeeperExpend(props){
-
+    
     var id=props.Id
     function getId(){
         id++
         return id-1
     }
 
-    let [reload, setReload] = React.useState(0)
-
-    function reloadPage(){
-        setReload(reload+1)
-    }
-
-
+//#region блоки
     //-------------------------------------------------------------------------Блок 1
+   
     var list_with_search_width = "200px"
     var list_with_search_height = "335px"
-    var list_with_search_items = [
-        {id: 0, text: "Заказ №1143", selected: false},
-        {id: 0, text: "Заказ №1346", selected: false},
-        {id: 0, text: "Заказ №3543", selected: true},
-        {id: 0, text: "Заказ №3156", selected: false},
-        {id: 0, text: "Заказ №6243", selected: false},
-        {id: 0, text: "Заказ №6546", selected: false},
-        {id: 0, text: "Заказ №6547", selected: false},
-        {id: 0, text: "Заказ №6548", selected: false},
-        {id: 0, text: "Заказ №6549", selected: false},
-        {id: 0, text: "Заказ №6540", selected: false},
-        {id: 0, text: "Заказ №6526", selected: false},
-        {id: 0, text: "Заказ №6536", selected: false},
-        {id: 0, text: "Заказ №6556", selected: false},
-        {id: 0, text: "Заказ №6566", selected: false},
-    ]
-    function set_list_with_search(value) {
-        list_with_search_items = value
-        console.log(list_with_search_items)
+
+    const [orders, setOrders] = React.useState([])
+    React.useEffect(() => {
+        if (goodsType != []) apiGetGoodsByOrder()
+    }, [orders]);
+    function apiGetOrders() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/orders', true);
+        console.log("StorekeeperAdvent apiGetOrders was launched")
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                var answer = JSON.parse(this.response)
+                console.log("StorekeeperAdvent apiGetOrders answer: ")
+                console.log(answer)
+                var counter = 0
+                var order = [{id:0, text: "Ничего не найдено", selected: true, code: 0}]
+                answer.map( function(item, i) {
+                    if (i === 0 & item.status != "closed")  order[i] = {id:counter++, text: item.name, selected: true, code: item.code}
+                    else if (item.status != "closed") order[i] = {id:counter++, text: item.name, selected: false, code: item.code}
+                })
+                setOrders(order)
+            }
+        }
+        xhr.send(null);
     }
     //-------------------------------------------------------------------------Блок 1 конец
 
     //-------------------------------------------------------------------------Блок 2
     //-------------------------------------стол 1
-    var table_headers = [
-        {title:"№", mode:"text", column_width: "30px", listValue: []}, 
-    {title:"Категория", mode:"text", column_width: "110px", listValue: [/*"table_list_value*/]}, 
-        {title:"Подкатегория", mode:"text", column_width: "100px", listValue: [/*table_list_value_2*/]}, 
-        {title:"Наименование", mode:"text", column_width: "110px", listValue: []}, 
-        {title:"Кол-во ожидаемое", mode:"text", column_width: "90px", listValue: []},
-        {title:"Кол-во коробок", mode:"input", column_width: "70px", listValue: []},
-        {title:"", mode:"remove", column_width: "50px", listValue: []},
-    ]
-
-    var  table_field_height = "100px"
-
-    var table_list = [
-        [0, "Встраиваемая техника", "Варочные поверхности", "Встраиваемая техника №34", "10", "10", true],
-        [1, "Холодильники", "Встраиваемые холодильники", "Холодильники №323", "15", "15", true],
-        [2, "Плиты", "Кухонные мойки", "Плита №452", "12", "12", true],
-        [3, "Холодильники", "", "Холодильник №654", "17", "17", true],
-        [4, "Плиты", "", "Плита №123", "5", "5", true],
-        [5, "Электродуховки", "Бытовые приборы для дома", "Электродуховка №323", "15", "15", true],
-        [7, "Электродуховки", "Бытовые приборы для дома", "Электродуховка №345", "16", "16", true],
-    ]
-    function set_table_list_1(value) {
-        table_list=value
+    
+    const [goodsCategories2, setGoodsCategories2] = React.useState([])
+    function apiGetGoodsSubCat2() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/goods_subcat2', true);
+        console.log("StorekeeperAdvent apiGetGoodsSubCat2 was launched")
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                var answer = JSON.parse(this.response)
+                console.log("StorekeeperAdvent apiGetGoodsSubCat2 answer: ")
+                console.log(answer)
+                var goods = [{id:0, text: "ошибка", code: 0}]
+                answer.map( function(item, i) {
+                    goods[i] = {id:i, text: item.name, code: item.code}
+                })
+                setGoodsCategories2(goods)
+            }
+        }
+        xhr.send(null);
     }
+
+    const [goodsCategories3, setGoodsCategories3] = React.useState([])
+    function apiGetGoodsSubCat3() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/goods_subcat3', true);
+        console.log("StorekeeperAdvent apiGetGoodsSubCat3 was launched")
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                var answer = JSON.parse(this.response)
+                console.log("StorekeeperAdvent apiGetGoodsSubCat3 answer: ")
+                console.log(answer)
+                var goods = [{id:0, text: "ошибка", code: 0}]
+                answer.map( function(item, i) {
+                    goods[i] = {id:i, text: item.name, code: item.code}
+                })
+                setGoodsCategories3(goods)
+            }
+        }
+        xhr.send(null);
+    }
+
+    const [goodsType, setGoodsType] = React.useState([])
+    function apiGetGoodsType() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/goods_type', true);
+        console.log("StorekeeperAdvent apiGetGoodsType was launched")
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (this.response != "") {
+                    console.log("StorekeeperAdvent apiGetGoodsType answer: ")
+                    console.log(this.response)
+                    var answer = JSON.parse(this.response)
+                 
+                    var goods = [{id:0, text: "Ошибка", category: "Ошибка", sub_category: "Ошибка", ordered: 0, amount: 0, code: 0}]
+                    answer.map( function(item, i) {
+                        goods[i] = {id:i, text: item.name, category: item.category, sub_category: item.subcategory_2, ordered: item.amount_ordered, amount: item.amount, code: item.code}
+                    })
+                    setGoodsType(goods)
+                }
+            }
+        }
+        xhr.send(null);
+    }
+
+
+    if (orders.toString()=="" && goodsCategories2.toString()=="" && goodsCategories3.toString()=="" && goodsType.toString()=="") {
+        apiGetGoodsSubCat2()
+        apiGetGoodsSubCat3()
+        apiGetGoodsType()
+        apiGetOrders()
+    }
+
+    const [tableHeaders, setTableHeaders] = React.useState([
+        {name: 'number',            title:'№',                  editingEnabled:false,   width:40    }, 
+        {name: 'goodsCategories2',  title:'Категория',          editingEnabled:false,   width:160   }, 
+        {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,   width:170   }, 
+        {name: 'goodsType',         title:'Наименование',       editingEnabled:false,   width:200   }, 
+        {name: 'orderedAmount',     title:'Ожидаемое кол-во',   editingEnabled:false,   width:150   },
+        {name: 'amount',            title:'Кол-во коробок',     editingEnabled:true,    width:130   }
+    ]) 
+    var edit_column = {add:true, edit:true, delete:true}
+
+    const [tableList, setTableList] = React.useState([])
+    
+
+    function apiGetGoodsByOrder() {
+        var xhr = new XMLHttpRequest();
+        var order = ''
+        orders.forEach(element => {
+          if (element.selected == true) order = element
+        });
+    
+        if (order != ''){
+             //console.log("Selected order " + order.code)
+            xhr.open('GET', host+'/order_goods_by_order'+'?'+`code=${order.code}`, true);
+            console.log("StorekeeperAdvent apiGetGoodsByOrder was launched")
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    var answer = JSON.parse(this.response)
+                    console.log("StorekeeperAdvent apiGetGoodsByOrder answer: ")
+                    console.log(answer)
+                    var buffer = []
+                    var counter = 0;
+                    answer.map( function(item, i) {
+                    //goods_by_order[i] = {id:i, category: "goods_categories[answer.category-1]", sub_category: "goods_categories2[answer.sub_category_2-1]",  text: "answer.name", amount_ordered: "answer.amount_ordered", amount: "answer.amount", code: foo}
+                    goodsType.forEach (function(item2, j) {
+                            var it = parseInt(item2.code)
+                            if (it.toString() == item.goods.toString()) {
+                                //  bar[i] = [i, goodsCategories2[item2.category-1].text, goodsCategories3[item2.sub_category-1].text,  item2.text, item2.ordered, item2.amount, true]
+                                buffer[counter] = {number: counter+1, goodsCategories2: goodsCategories2[item2.category-1].text, goodsCategories3: goodsCategories3[item2.sub_category-1].text, goodsType: item2.text, orderedAmount: item2.ordered, amount: item2.amount}
+                                buffer[counter].id = 'string_' + counter;
+                                buffer[counter].code = item2.code;
+                                counter++
+                            }   
+                        })
+                    })
+                    setTableList(buffer)
+            
+                }
+            }
+            xhr.send(null);
+        }
+       
+    }
+        
     //-------------------------------------стол 1 конец
 
     var date; function set_date(value) {date = value}
@@ -88,16 +189,42 @@ export default function StorekeeperExpend(props){
     function btn_send_1() {
         console.log("date = " + date)
         if (documents != null) {
-            console.log(
-                documents.map(doc=>{
-                    console.log("document: " + doc.name)
-                })
-            )
+            // console.log(
+            //     documents.map(doc=>{
+            //         console.log("document: " + doc.name)
+            //     })
+            // )
+       
         }
-        console.log(table_list)
+        console.log('tableList')
+        console.log(tableList)
+        var temp_table_list=[]
+        tableList.map(function(item,i){
+            temp_table_list[i] = {id: item[0], category: item[1], sub_category: item[2], text: item[3], amount: item[4], code: item[5]}
+        })
+
+        var check=true
+        temp_table_list.map(function(item,i){
+            if (item.category == ""){
+                check=false
+                alert("Ошибка, категория не может быть пустой");
+            }
+            if (item.sub_category == ""){
+                check=false
+                alert("Ошибка, подкатегория не может быть пустой");
+            }
+            if (item.text == ""){
+                check=false
+                alert("Ошибка, Наименование не может быть пустой");
+            }
+            if (item.amount < 0){
+                check=false
+                alert("Ошибка, кол-во коробок не может быть отрицательным");
+            }
+            
+        })
     }
     //-------------------------------------------------------------------------Блок 2 конец
-
     
 
     //-------------------------------------------------------------------------Блок 3
@@ -128,7 +255,7 @@ export default function StorekeeperExpend(props){
     var table_list_2 = [
         [0, "Встраиваемая техника №5", "10/50", "50",  false],
         [1, "Встраиваемая техника №6", "15/50", "40",  false],
-        [2, "Встраиваемая техника №7", "8/50", "70",  false],
+        [2, "Встраиваемая техника №7", "8/50", "71",  false],
 
     ]
     function set_table_list_2(value) {
@@ -147,13 +274,13 @@ export default function StorekeeperExpend(props){
         console.log(table_list_2)
 
     }
-    list_with_search_items.map(function(item,i){ item.id = i })
     //-------------------------------------------------------------------------Блок 3 конец
+//#endregion
 
     return (
-        <FlexibleBlocksPage>
+        <FlexibleBlocksPage Id={getId()}>
             <FlexibleBlock>
-                    <ListWithSearch Id={getId()} item_list={list_with_search_items} func={set_list_with_search} width={list_with_search_width} height={list_with_search_height}/>
+                <ListWithSearch Id={getId()} item_list={orders} func={setOrders} width={list_with_search_width} height={list_with_search_height}/>
             </FlexibleBlock>
             <FlexibleBlock>
                 <div class="header_text">Списывание товаров</div>
@@ -161,10 +288,14 @@ export default function StorekeeperExpend(props){
                 {/* <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div> */}
                 {/* <InputText styles = "row_with_ite   m_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/> */}
                 <div class="low_text"><InputFile Id={getId()} func={set_documents}/></div>
-                <Table Id={getId()} table_headers={table_headers} table_field_height={table_field_height} table_list={table_list} func={set_table_list_1} numb={0} search="true" add="true" delete="false"/>
+                {/* <Table Id={getId()} table_headers={tableHeaders} table_field_height={table_field_height} table_list={tableList} func={setTableList} numb={0} search="true" add="true" delete="true"/> */}
+               
+                <div style={{width:800+'px', display:'inline-table'}} >
+                    <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
+                </div>
                 <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
             </FlexibleBlock>
-            <FlexibleBlock>
+                {/* <FlexibleBlock>
                 <div class="header_text">Заказ 1</div>
                 <InputText styles = "row_with_item_equal" Id={getId()} label="Категория" placeholder="Категория товара" set={set_good_category}/>
                 <InputText styles = "row_with_item_equal" Id={getId()} label="Кол-во товара в поставке&nbsp;" placeholder="Кол-во товара в поставке" set={set_one_shipment_amount}/>
@@ -175,7 +306,10 @@ export default function StorekeeperExpend(props){
                 <InputText styles = "row_with_item_equal" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_2}/>
                 <div class="low_text"><InputFile Id={getId()} func={onBlock3FileUploaded}/></div>
                 <Table Id={getId()} table_headers={table_headers_2} table_field_height={table_field_height_2} table_list={table_list_2} func={set_table_list_2} numb={1} search="true" add="false" delete="false"/>
-            </FlexibleBlock>
+            </FlexibleBlock> */}
+                {/* <div style={{width:800+'px', display:'block'}} >
+                    <Table2 columns={tableHeaders2} rows={table_list} setNewTableList={setTableList2}/>
+                </div> */}
         </FlexibleBlocksPage>
     )
 }

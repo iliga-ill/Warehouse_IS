@@ -4,6 +4,8 @@ import Table from "../../components/Table/Table";
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
+import { TableComponent } from "../../components/Table/TableComponent";
+const host = 'http://localhost:5000';
 
 const styles = {
 
@@ -22,37 +24,18 @@ export default function StorekeeperInventory(props){
 
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------стол 1
-    var table_list_value_1 = [
-        {value: "Потеряно", selected: true},
-        {value: "Найдено", selected: false},
-        {value: "Инвентаризирован", selected: false},
-        {value: "Не инвентаризирован", selected: false},
-    ]
+    const [tableHeaders, setTableHeaders] = React.useState([
+        {name: 'number',                    title:'№',                      editingEnabled:false,     width:40    }, 
+        {name: 'zone',                      title:'Зона',                   editingEnabled:false,     width:70   },
+        {name: 'rack',                      title:'Стеллаж',                editingEnabled:false,     width:80   },
+        {name: 'shelf',                     title:'Полка',                  editingEnabled:false,     width:70   },
+        {name: 'goodsType',                 title:'Наименование',           editingEnabled:false,     width:170   }, 
+        {name: 'inventaryzationStatus',     title:'Статус инвентаризации',  editingEnabled:true,      width:180   },
+    ]) 
+    var edit_column = {add:false, edit:true, delete:false}
 
-    var table_headers_1 = [
-        {title:"№", mode:"text", column_width: "30px", listValue: []}, 
-        {title:"Зона", mode:"text", column_width: "70px", listValue: []}, 
-        {title:"Стеллаж", mode:"text", column_width: "80px", listValue: []}, 
-        {title:"Полка", mode:"text", column_width: "70px", listValue: []}, 
-        {title:"Название", mode:"text", column_width: "110px", listValue: []}, 
-        {title:"Статус инвентаризации", mode:"inputList", column_width: "150px", listValue: table_list_value_1},
-        {title:"", mode:"remove", column_width: "50px", listValue: []},
-    ]
+    const [tableList, setTableList] = React.useState([{number:1, zone:"вв", rack:"вв", shelf:"вв", goodsType:"dd", inventaryzationStatus:"вв"}])
 
-    var  table_field_height_1 = "300px"
-
-    var table_list_1 = [
-        [0, "Зона 1", "Стеллаж 1", "Полка 1", "Встраиваемая техника №34", "Инвентаризирован"     , true],
-        [1, "Зона 2", "Стеллаж 1", "Полка 2", "Холодильники №323"       , "Потеряно"             , true],
-        [2, "Зона 1", "Стеллаж 1", "Полка 4", "Плита №452"              , "Не инвентаризирован"  , true],
-        [3, "Зона 4", "Стеллаж 1", "Полка 3", "Холодильник №654"        , "Найдено"              , true],
-        [4, "Зона 3", "Стеллаж 2", "Полка 2", "Плита №123"              , "Инвентаризирован"     , true],
-        [5, "Зона 1", "Стеллаж 2", "Полка 1", "Электродуховка №323"     , "Потеряно"             , true],
-        [7, "Зона 3", "Стеллаж 2", "Полка 3", "Электродуховка №345"     , "Не инвентаризирован"  , true],
-    ]
-    function set_table_list_1(value) {
-        table_list_1=value
-    }
     //-------------------------------------стол 1 конец
     //-------------------------------------выпадающий список приходной накладной 1
     var expand_imput_list_1 = [
@@ -91,12 +74,14 @@ export default function StorekeeperInventory(props){
     return (
         <FlexibleBlocksPage>
             <FlexibleBlock>
-            <div class="low_text row_with_item_wide_storekeeperInventory">
-                <div class="low_text row_with_item_wide"><div>Зона&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[0].value} list={expand_imput_list_1} func={set_expand_list_input_1}/></div>
-                <div class="low_text row_with_item_wide ml_storekeeperInventory"><div>Стеллаж&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_2[0].value} list={expand_imput_list_2} func={set_expand_list_input_2}/></div>
-                <div class="low_text row_with_item_wide ml_storekeeperInventory"><div>Полка&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_3[0].value} list={expand_imput_list_3} func={set_expand_list_input_3}/></div>
-            </div>
-                <Table Id={getId()} table_headers={table_headers_1} table_field_height={table_field_height_1} table_list={table_list_1} func={set_table_list_1} numb={0} search="true" add="true" delete="false"/>
+                <div class="low_text row_with_item_wide_storekeeperInventory">
+                    <div class="low_text row_with_item_wide"><div>Зона&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[0].value} list={expand_imput_list_1} func={set_expand_list_input_1}/></div>
+                    <div class="low_text row_with_item_wide ml_storekeeperInventory"><div>Стеллаж&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_2[0].value} list={expand_imput_list_2} func={set_expand_list_input_2}/></div>
+                    <div class="low_text row_with_item_wide ml_storekeeperInventory"><div>Полка&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_3[0].value} list={expand_imput_list_3} func={set_expand_list_input_3}/></div>
+                </div>
+                <div style={{width:800+'px', display:'inline-table'}} >
+                    <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
+                </div>
             </FlexibleBlock>
         </FlexibleBlocksPage>
     )

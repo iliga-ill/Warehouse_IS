@@ -23,7 +23,7 @@ export default function App() {
 
   //#region reloadPage
   const [reload, setReload] = React.useState(0)
-  const [authorizated, setAuthorizated] = React.useState(false)
+  const [authorizated, setAuthorizated] = React.useState(true)
 
   function reloadPage(){
     setReload(reload+1)
@@ -31,7 +31,7 @@ export default function App() {
 
   //#region верхние табы
 
-  let [mainTabs, setMainTab] = React.useState([
+  var [mainTabs, setMainTab] = React.useState([
     {id:0, selected: true, title: "АРМ Кладовщика"},
     {id:1, selected: false, title: "АРМ Менеджера"},
     {id:2, selected: false, title: "АРМ Администратора"},
@@ -49,20 +49,20 @@ export default function App() {
   }
 
   function onTabClick(tab_id){
-    setMainTab(
-      mainTabs.map(tab => {
-        if (tab.id != tab_id){
-          mainTabs[tab.id].selected = false
-        }
-        else {
-          mainTabs[tab.id].selected = true
-        }
-        return tab
-      })
-    )
+    var mT = mainTabs
+    mT.map(tab => {
+      if (tab.id != tab_id){
+        tab.selected = false
+      } else {
+        tab.selected = true
+      }
+      return tab
+    })
+    setMainTab(mT)
+    reloadPage()
   }
 
-  let [subTabs, setsubTabs] = React.useState([
+  var [subTabs, setSubTabs] = React.useState([
     [
       {id:0, selected: true, title: "Приход", page: <StorekeeperAdvent Id={100}/>},
       {id:1, selected: false, title: "Расход", page: <StorekeeperExpend Id={200}/>},
@@ -98,19 +98,21 @@ export default function App() {
   }
 
   function changeSubTab(tab_id){
-    setsubTabs(
-      subTabs[getSelectedTabId()].map(tab => {
-        if (tab.id == tab_id){
-          tab.selected = true
-        }else {
-          tab.selected = false
-        }
-      })
-    )
+    
   }
 
   function onSubTabClick(tab_id){
-    changeSubTab(tab_id)
+    var sT = subTabs
+    sT[getSelectedTabId()].map(tab => {
+      if (tab.id == tab_id){
+        tab.selected = true
+      }else {
+        tab.selected = false
+      }
+      return tab
+    })
+    setSubTabs(sT)
+    reloadPage()
   }
   //#endregion верхние табы конец
 
@@ -128,7 +130,7 @@ export default function App() {
         <div class="header">
           <TabHolder tabs={subTabs[getSelectedTabId()]} onTabClick={onSubTabClick}/>
         </div>
-             {subTabs[getSelectedTabId()][getSelectedSubTabId()].page} 
+            {subTabs[getSelectedTabId()][getSelectedSubTabId()].page} 
       </div>
     );
   } else {

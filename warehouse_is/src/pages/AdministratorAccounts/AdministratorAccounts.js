@@ -1,8 +1,8 @@
 import React, { Component, Fragment } from "react";
 import './AdministratorAccounts.css';
-import Table from "../../components/Table/Table";
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
+import { TableComponent } from "../../components/Table/TableComponent";
 const host = 'http://localhost:5000';
 const styles = {
 
@@ -20,82 +20,80 @@ export default function AdministratorAccounts(props){
 
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------стол 1
-    var table_list_value_1 = [
-        {value: "Кладовщик", selected: true},
-        {value: "Администратор", selected: false},
-    ]
+    
+    const [tableHeaders, setTableHeaders] = React.useState([
+        {name: 'number',            title:'№',                  editingEnabled:false,   width:40    }, 
+        {name: 'surname',           title:'Фамилия',            editingEnabled:true,    width:160   }, 
+        {name: 'name',              title:'Имя',                editingEnabled:true,    width:160   }, 
+        {name: 'patronymic',        title:'Отчество',           editingEnabled:true,    width:170   }, 
+        {name: 'phone_num',         title:'Номер телефона',     editingEnabled:true,    width:200   }, 
+        {name: 'duty',              title:'Должность',          editingEnabled:true,    width:150   },
+        {name: 'login',             title:'Логин',              editingEnabled:true,    width:130   },
+        {name: 'password',          title:'Пароль',             editingEnabled:true,    width:130   }
+    ]) 
+    var edit_column = {add:true, edit:true, delete:true}
 
-    var table_headers_1 = [
-        {title:"№", mode:"text", column_width: "30px", listValue: []}, 
-        {title:"Фамилия", mode:"input", column_width: "110px", listValue: []}, 
-        {title:"Имя", mode:"input", column_width: "110px", listValue: []}, 
-        {title:"Отчество", mode:"input", column_width: "110px", listValue: []}, 
-        {title:"Номер телефона", mode:"input", column_width: "150px", listValue: []}, 
-        {title:"Должность", mode:"inputList", column_width: "150px", listValue: table_list_value_1},
-        {title:"Логин", mode:"input", column_width: "110px", listValue: []}, 
-        {title:"Пароль", mode:"input", column_width: "110px", listValue: []}, 
-        {title:"", mode:"remove", column_width: "50px", listValue: []},
-    ]
+    const [tableList, setTableList] = React.useState([])
+    function apiGetClients() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/clients', true);
+        console.log("Authorization apiGetClients was launched")
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            var answer = JSON.parse(this.response)
+            console.log("Authorization apiGetClients answer: ")
+            console.log(answer)
+            var buffer = []
+            answer.map( function(item, i) {
+                buffer[i] = {number:i+1, name: item.name, surname: item.surname, patronymic: item.patronymic, login: item.login, password: item.password, phone_num: item.phone_num, duty: item.duty}
+                buffer[i].id = 'string_' + i;
+            })
+            if (JSON.stringify(tableList)!=JSON.stringify(buffer))
+                setTableList(buffer)
+          }
+        } 
+        xhr.send(null);
+      }
+      if(tableList.toString()=="")
+        apiGetClients()
+    
 
-    var  table_field_height_1 = "300px"
-    var table_list_1 = []
-    var accounts = []
-    accounts.map(function(item,i){
-        var counter=0;
-        var str=[]
-        str[counter++] = i
-        str[counter++] = item.surname
-        str[counter++] = item.name
-        str[counter++] = item.patronymic
-        str[counter++] = item.phone_num
-        str[counter++] = item.duty
-        str[counter++] = item.login
-        str[counter++] = item.password
-        str[counter++] = true
-        table_list_1[i]=str
-    })
-
-    function set_table_list_1(value) {
-        table_list_1=value
-    }
+    
 
     function btn_send_1() {
-        var accountss=[]
-        var iter=0;
-        table_list_1.map(function(item,i){
-            iter++;
-            accountss[i] = {login: item[6], password: item[7], name: item[2], surname: item[1], patronymic: item[3], phone_num: item[4], duty: item[5]}
-        })
+        var accountss = tableList
         var check=true
+
         accountss.map(function(item,i){
-            if (item.login == ""){
-                check=false
-                alert("Ошибка, логин не может быть пустым");
-            }
-            if (item.password == ""){
-                check=false
-                alert("Ошибка, пароль не может быть пустым");
-            }
-            if (item.name == ""){
-                check=false
-                alert("Ошибка, наименование не может быть пустым");
-            }
-            if (item.surname == ""){
-                check=false
-                alert("Ошибка, фамилия не может быть пустым");
-            }
-            if (item.patronymic == ""){
-                check=false
-                alert("Ошибка, отчество не может быть пустым");
-            }
-            if (item.phone_num == ""){
-                check=false
-                alert("Ошибка, телефон не может быть пустым");
+            if (check){
+                if (item.login == "" || item.login == null){
+                    check=false
+                    alert("Ошибка, логин не может быть пустым");
+                }
+                if (item.password == ""|| item.password == null){
+                    check=false
+                    alert("Ошибка, пароль не может быть пустым");
+                }
+                if (item.name == ""|| item.name == null){
+                    check=false
+                    alert("Ошибка, наименование не может быть пустым");
+                }
+                if (item.surname == ""|| item.surname == null){
+                    check=false
+                    alert("Ошибка, фамилия не может быть пустым");
+                }
+                if (item.patronymic == ""|| item.patronymic == null){
+                    check=false
+                    alert("Ошибка, отчество не может быть пустым");
+                }
+                if (item.phone_num == ""|| item.phone_num == null){
+                    check=false
+                    alert("Ошибка, телефон не может быть пустым");
+                }
             }
         })
-
+        console.log(accountss)
         if (check) {
-            props.func(accountss)
             apiPostNewUser(accountss[accountss.length-1])
         }
     }
@@ -122,7 +120,9 @@ export default function AdministratorAccounts(props){
     return (
         <FlexibleBlocksPage>
             <FlexibleBlock>
-                <Table Id={getId()} table_headers={table_headers_1} table_field_height={table_field_height_1} table_list={table_list_1} func={set_table_list_1} numb={0} search="true" add="true" delete="true"/>
+                <div style={{width:800+'px', display:'inline-table'}} >
+                    <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
+                </div>
                 <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={btn_send_1}>Подтвердить</button>
             </FlexibleBlock>
         </FlexibleBlocksPage>
