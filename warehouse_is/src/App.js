@@ -8,6 +8,9 @@ import StorekeeperInventory from './pages/StorekeeperInventory/StorekeeperInvent
 import ManagerProducts from './pages/ManagerProducts/ManagerProducts';
 import Authorization from './pages/Authorization/Authorization';
 import AdministratorAccounts from './pages/AdministratorAccounts/AdministratorAccounts';
+import ManagerOrderCreation from './pages/ManagerOrderCreation/ManagerOrderCreation';
+import ManagerSellOrders from './pages/ManagerSellOrders/ManagerSellOrders';
+import ManagerShipmentOrders from './pages/ManagerShipmentOrders/ManagerShipmentOrders';
 import React from 'react';
 
 //import API from './api/api.js';
@@ -23,7 +26,7 @@ export default function App() {
 
   //#region reloadPage
   const [reload, setReload] = React.useState(0)
-  const [authorizated, setAuthorizated] = React.useState(false)
+  const [authorizated, setAuthorizated] = React.useState(true)
 
   function reloadPage(){
     setReload(reload+1)
@@ -69,9 +72,10 @@ export default function App() {
       {id:2, selected: false, title: "Расстановка товаров", page: <StorekeeperAllocation Id={300}/>},
       {id:3, selected: false, title: "Инвентаризация", page: <StorekeeperInventory Id={400}/>},
     ],[
-      {id:0, selected: true, title: "Заказы", page: <StorekeeperAdvent Id={500}/>},
-      {id:1, selected: false, title: "Товары", page: <ManagerProducts Id={600}/>},
-      {id:2, selected: false, title: "Счета на оплату", page: <StorekeeperAdvent Id={700}/>},
+      {id:0, selected: false, title: "Товары", page: <ManagerProducts Id={500}/>},
+      {id:1, selected: false, title: "Заказы", page: <ManagerOrderCreation Id={600}/>},
+      {id:2, selected: false, title: "Заказы на продажу", page: <ManagerSellOrders Id={700}/>},
+      {id:3, selected: true, title: "Заказы на поставку", page: <ManagerShipmentOrders Id={700}/>},
     ],[
       {id:0, selected: true, title: "Аккаунты", page: <AdministratorAccounts Id={800}/>},
     ],[

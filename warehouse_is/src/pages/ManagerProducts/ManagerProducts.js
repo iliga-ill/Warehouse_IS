@@ -4,6 +4,8 @@ import Table from "../../components/Table/Table";
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import InputText from "../../components/InputText/InputText";
+import { TableComponent } from "../../components/Table/TableComponent";
+const host = 'http://localhost:5000';
 
 const styles = {
 
@@ -22,31 +24,18 @@ export default function ManagerProducts(props){
 
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------стол 1
-    var table_headers_1 = [
-        {title:"№", mode:"text", column_width: "30px", listValue: []}, 
-        {title:"Категория", mode:"text", column_width: "110px", listValue: []}, 
-        {title:"Подкатегория", mode:"text", column_width: "100px", listValue: []}, 
-        {title:"Наименование", mode:"text", column_width: "110px", listValue: []}, 
-        {title:"Кол-во коробок на складе", mode:"text", column_width: "90px", listValue: []},
-        {title:"Цена ед товара (руб)", mode:"input", column_width: "70px", listValue: []},
-        {title:"Лимит товара", mode:"input", column_width: "70px", listValue: []},
-        {title:"", mode:"remove", column_width: "50px", listValue: []},
-    ]
+    const [tableHeaders, setTableHeaders] = React.useState([
+        {name: 'number',            title:'№',                  editingEnabled:false,    width:40    }, 
+        {name: 'goodsCategories2',  title:'Категория',          editingEnabled:false,    width:160   }, 
+        {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,    width:160   }, 
+        {name: 'goodsType',         title:'Наименование',       editingEnabled:false,    width:170   }, 
+        {name: 'amountOnWarehouse', title:'Кол-во на складе',   editingEnabled:false,    width:70   }, 
+        {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:70   },
+        {name: 'goodsLimit',        title:'Лимит товара',       editingEnabled:true,     width:80   },
+    ]) 
+    var edit_column = {add:false, edit:true, delete:false}
 
-    var  table_field_height_1 = "300px"
-
-    var table_list_1 = [
-        [0, "Встраиваемая техника"  , "Варочные поверхности"        , "Встраиваемая техника №34", "10", "1000", "10", true],
-        [1, "Холодильники"          , "Встраиваемые холодильники"   , "Холодильники №323"       , "15", "1500", "5" , true],
-        [2, "Плиты"                 , "Кухонные мойки"              , "Плита №452"              , "12", "1200", "17", true],
-        [3, "Холодильники"          , ""                            , "Холодильник №654"        , "17", "1700", "15", true],
-        [4, "Плиты"                 , ""                            , "Плита №123"              , "5" , "500" , "10", true],
-        [5, "Электродуховки"        , "Бытовые приборы для дома"    , "Электродуховка №323"     , "15", "1500", "11", true],
-        [7, "Электродуховки"        , "Бытовые приборы для дома"    , "Электродуховка №345"     , "16", "1100", "19", true],
-    ]
-    function set_table_list_1(value) {
-        table_list_1=value
-    }
+    const [tableList, setTableList] = React.useState([{number:1, goodsCategories2:"вв", goodsCategories3:"вв", goodsType:"вв", amountOnWarehouse:10, cost:"вв", goodsLimit:"вв"}])
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец
 
@@ -64,7 +53,10 @@ export default function ManagerProducts(props){
     return (
         <FlexibleBlocksPage>
             <FlexibleBlock>
-                <Table Id={getId()} table_headers={table_headers_1} table_field_height={table_field_height_1} table_list={table_list_1} func={set_table_list_1} numb={0} search="true" add="false" delete="false"/>
+                <div class="header_text"></div>
+                <div style={{width:800+'px', display:'inline-table'}} >
+                    <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
+                </div>
             </FlexibleBlock>
             <FlexibleBlock>
             <div class="header_text">Заказ 1</div>

@@ -12,7 +12,7 @@ export default function InputText(props){
     */
    //pattern
    /*
-   <InputText styles = "row_with_item_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/>
+   <InputText styles = "row_with_item_wide" Id={getId()} label="Поставщик" defValue={"ss"} placeholder="Поставщик" set={set_provider_1}/>
    */
 
     function onChange() {
