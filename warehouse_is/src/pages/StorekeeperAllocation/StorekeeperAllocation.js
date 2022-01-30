@@ -29,19 +29,44 @@ export default function StorekeeperAllocation(props){
     const [date, setDate] = React.useState("2022-01-14")
     //-------------------------------------дата конец
     //-------------------------------------стол 1
+
+    var dropdownList1=[
+        {menuItem:"Зона 1"},
+        {menuItem:"Зона 2"},
+        {menuItem:"Зона 3"},
+        {menuItem:"Зона 4"},
+    ]
+
+    var dropdownList2=[
+        {menuItem:"Стеллаж 1"},
+        {menuItem:"Стеллаж 2"},
+        {menuItem:"Стеллаж 3"},
+        {menuItem:"Стеллаж 4"},
+    ]
+
+    var dropdownList3=[
+        {menuItem:"Полка 1"},
+        {menuItem:"Полка 2"},
+        {menuItem:"Полка 3"},
+        {menuItem:"Полка 4"},
+    ]
+
     const [tableHeaders, setTableHeaders] = React.useState([
-        {name: 'number',            title:'№',                  editingEnabled:false,    width:40    }, 
-        {name: 'goodsCategories2',  title:'Категория',          editingEnabled:false,    width:160   }, 
-        {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,    width:160   }, 
-        {name: 'goodsType',         title:'Наименование',       editingEnabled:false,    width:170   }, 
-        {name: 'weight',            title:'Вес',                editingEnabled:false,    width:70   }, 
-        {name: 'zone',              title:'Зона',               editingEnabled:true,     width:70   },
-        {name: 'rack',              title:'Стеллаж',            editingEnabled:true,     width:80   },
-        {name: 'shelf',             title:'Полка',              editingEnabled:true,     width:70   }
+        {name: 'number',            title:'№',                  editingEnabled:false,    width:40,  dropdownList:[] }, 
+        {name: 'goodsCategories2',  title:'Категория',          editingEnabled:false,    width:160, dropdownList:[] }, 
+        {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,    width:160, dropdownList:[] }, 
+        {name: 'goodsType',         title:'Наименование',       editingEnabled:false,    width:170, dropdownList:[] }, 
+        {name: 'weight',            title:'Вес',                editingEnabled:false,    width:70,  dropdownList:[] }, 
+        {name: 'zone',              title:'Зона',               editingEnabled:true,     width:83,  dropdownList: dropdownList1 },
+        {name: 'rack',              title:'Стеллаж',            editingEnabled:true,     width:100,  dropdownList: dropdownList2 },
+        {name: 'shelf',             title:'Полка',              editingEnabled:true,     width:90,  dropdownList: dropdownList3 }
     ]) 
     var edit_column = {add:false, edit:true, delete:false}
 
-    const [tableList, setTableList] = React.useState([{number:1, goodsCategories2:"вв", goodsCategories3:"вв", goodsType:"вв", weight:10, zone:"вв", rack:"вв", shelf:"вв"}])
+    const [tableList, setTableList] = React.useState([
+        {id: 0, number:1, goodsCategories2:"вв", goodsCategories3:"вв", goodsType:"вв", weight:10, zone:"Зона 1", rack:"Стеллаж 1", shelf:"Полка 1"}, 
+        {id: 1, number:2, goodsCategories2:"вв", goodsCategories3:"вв", goodsType:"вв", weight:10, zone:"Зона 2", rack:"Стеллаж 2", shelf:"Полка 3"}
+    ])
     // function apiGetClients() {
     //     var xhr = new XMLHttpRequest();
     //     xhr.open('GET', host+'/clients', true);
@@ -64,18 +89,22 @@ export default function StorekeeperAllocation(props){
     //   }
     //   if(tableList.toString()=="")
     //     apiGetClients()
+
+    // function btn_send_1() {
+    //     console.log(tableList)
+    // }
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец
 
     //-------------------------------------------------------------------------Блок 2
     //-------------------------------------стол 2
     const [tableHeaders2, setTableHeaders2] = React.useState([
-        {name: 'number',            title:'№',                    editingEnabled:false,    width:50    }, 
+        {name: 'number',            title:'№',                    editingEnabled:false,    width:50   }, 
         {name: 'zone',              title:'Зона',                 editingEnabled:true,     width:70   },
         {name: 'rack',              title:'Стеллаж',              editingEnabled:true,     width:80   },
         {name: 'shelf',             title:'Полка',                editingEnabled:true,     width:70   },
-        {name: 'loadСapacity',      title:'Грузоподьемность(кг)', editingEnabled:false,    width:160   }, 
-        {name: 'fillStatus',        title:'заполненность',        editingEnabled:false,    width:160   }, 
+        {name: 'loadСapacity',      title:'Грузоподьемность(кг)', editingEnabled:false,    width:160  }, 
+        {name: 'fillStatus',        title:'заполненность',        editingEnabled:false,    width:160  }, 
     ]) 
     var edit_column2 = {add:false, edit:false, delete:false}
 
@@ -89,15 +118,15 @@ export default function StorekeeperAllocation(props){
     return (
         <FlexibleBlocksPage>
             <FlexibleBlock>
-                <div>
-                    <div class="low_text row_with_item_wide">
-                        <div class="low_text row_with_item_wide"><div>Приходная&nbsp;накладная&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[0].value} list={expand_imput_list_1} func={set_expand_list_input_1}/></div>
-                        <div class="low_text row_with_item_wide"><div>&nbsp;&nbsp;&nbsp;&nbsp;Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={"2022-01-14"} func={set_date}/></div>
-                    </div>
-                    <div style={{width:800+'px', display:'inline-table'}} >
-                        <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column} isDropdownActive={true}/>
-                    </div>
+                <div class="low_text row_with_item_wide">
+                    <div class="low_text row_with_item_wide"><div>Приходная&nbsp;накладная&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expandImputList1[0].value} list={expandImputList1} func={setExpandImputList1}/></div>
+                    <div class="low_text row_with_item_wide"><div>&nbsp;&nbsp;&nbsp;&nbsp;Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={"2022-01-14"} func={setDate}/></div>
                 </div>
+                <div style={{width:800+'px', display:'inline-table'}} >
+                    <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column} isDropdownActive={true}/>
+                </div>
+                {/* <div></div>
+                <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={btn_send_1}>Подтвердить</button> */}
             </FlexibleBlock>
             <FlexibleBlock>
                 <div class="header_text">Полки</div>
