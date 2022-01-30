@@ -68,7 +68,7 @@ export default function ManagerSellOrders(props){
     const [order, setOrder] = React.useState("Заказ №0000001")
     const [shipmentDate, setShipmentDate] = React.useState("")
     const [shipmentAddress, setShipmentAddress] = React.useState("553366, Вологодская область, город Одинцово, пл. Будапештсткая, 04")
-    const [note, setNote] = React.useState("")
+    const [note, setNote] = React.useState("вввв")
     const [orderCost, setOrderCost] = React.useState(1000)
 
     const [tableHeaders1, setTableHeaders1] = React.useState([
@@ -97,9 +97,9 @@ export default function ManagerSellOrders(props){
                 <FlexibleBlock>
                     <div class="header_text">Заказ:&nbsp;{order}</div>
                     <div class="low_text "><div>Дата&nbsp;доставки:&nbsp;{shipmentDate}</div></div>
-                    <div class="low_text "><div>Адрес&nbsp;доставки:&nbsp;{shipmentAddress}</div></div>
-                    <div class="low_text "><div>Примечание:&nbsp;{note}</div></div>
-                    <div class="low_text "><div>Полная&nbsp;стоимость&nbsp;заказа:&nbsp;{orderCost}</div></div>
+                    <div class="low_text ">Адрес&nbsp;доставки:&nbsp;</div><div  class="low_text ">{shipmentAddress}</div>
+                    <div class="low_text ">Примечание:&nbsp;</div><div class="low_text ">{note}</div>
+                    <div class="low_text "><div>Полная&nbsp;стоимость&nbsp;заказа&nbsp;(руб):&nbsp;{orderCost}</div></div>
 
                     <div style={{width:470+'px', display:'inline-table'}} >
                         <TableComponent columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} editColumn={edit_column1}/>

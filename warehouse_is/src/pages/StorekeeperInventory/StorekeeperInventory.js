@@ -38,16 +38,15 @@ export default function StorekeeperInventory(props){
 
     //-------------------------------------стол 1 конец
     //-------------------------------------выпадающий список приходной накладной 1
-    var expand_imput_list_1 = [
+    const [expandImputList1, setExpandImputList1] = React.useState([
         {id: 0, value: "Зона 1", selected: true},
         {id: 1, value: "Зона 2", selected: false},
         // {id: 2, value: "Зона 3", selected: false},
         // {id: 3, value: "Зона 4", selected: false},
-    ]
-    function set_expand_list_input_1(value) {expand_imput_list_1=value}
+    ])
     //-------------------------------------выпадающий список приходной накладной 1 конец
     //-------------------------------------выпадающий список приходной накладной 1
-    var expand_imput_list_2 = [
+    const [expandImputList2, setExpandImputList2] = React.useState([
         {id: 0, value: "Стеллаж 1", selected: true},
         {id: 1, value: "Стеллаж 2", selected: false},
         {id: 2, value: "Стеллаж 3", selected: false},
@@ -58,16 +57,14 @@ export default function StorekeeperInventory(props){
         {id: 7, value: "Стеллаж 8", selected: false},
         {id: 8, value: "Стеллаж 9", selected: false},
         {id: 9, value: "Стеллаж 10", selected: false},
-    ]
-    function set_expand_list_input_2(value) {expand_imput_list_2=value}
+    ])
     //-------------------------------------выпадающий список приходной накладной 1 конец
     //-------------------------------------выпадающий список приходной накладной 1
-    var expand_imput_list_3 = [
+    const [expandImputList3, setExpandImputList3] = React.useState([
         {id: 0, value: "Полка 1", selected: true},
         {id: 1, value: "Полка 2", selected: false},
         {id: 2, value: "Полка 3", selected: false}
-    ]
-    function set_expand_list_input_3(value) {expand_imput_list_3=value}
+    ])
     //-------------------------------------выпадающий список приходной накладной 1 конец
     //-------------------------------------------------------------------------Блок 1 конец
 
@@ -76,9 +73,9 @@ export default function StorekeeperInventory(props){
             <FlexibleBlock>
                 <div class="header_text">Инвентаризация</div>
                 <div class="low_text row_with_item_wide_storekeeperInventory">
-                    <div class="low_text row_with_item_wide"><div>Зона&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[0].value} list={expand_imput_list_1} func={set_expand_list_input_1}/></div>
-                    <div class="low_text row_with_item_wide ml_storekeeperInventory"><div>Стеллаж&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_2[0].value} list={expand_imput_list_2} func={set_expand_list_input_2}/></div>
-                    <div class="low_text row_with_item_wide ml_storekeeperInventory"><div>Полка&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_3[0].value} list={expand_imput_list_3} func={set_expand_list_input_3}/></div>
+                    <div class="low_text row_with_item_wide"><div>Зона&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expandImputList1[0].value} list={expandImputList1} func={setExpandImputList1}/></div>
+                    <div class="low_text row_with_item_wide ml_storekeeperInventory"><div>Стеллаж&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expandImputList2[0].value} list={expandImputList2} func={setExpandImputList2}/></div>
+                    <div class="low_text row_with_item_wide ml_storekeeperInventory"><div>Полка&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expandImputList3[0].value} list={expandImputList3} func={setExpandImputList3}/></div>
                 </div>
                 <div style={{width:800+'px', display:'inline-table'}} >
                     <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>

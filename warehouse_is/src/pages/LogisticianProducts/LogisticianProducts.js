@@ -54,13 +54,13 @@ export default function LogisticianProducts(props){
     return (
         <FlexibleBlocksPage>
             <FlexibleBlock>
-                <div class="header_text"></div>
+                <div class="header_text">Товары</div>
                 <div style={{width:800+'px', display:'inline-table'}} >
                     <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>
             </FlexibleBlock>
             <FlexibleBlock>
-                <div class="low_text "><div>Товар:&nbsp;{good}</div></div>
+                <div class="header_text "><div>Товар:&nbsp;{good}</div></div>
                 <div class="low_text "><div>Категория:&nbsp;{category}</div></div>
                 <div class="low_text "><div>Подкатегория:&nbsp;{subCategory}</div></div>
                 <div class="low_text "><div>Цена&nbsp;ед&nbsp;товара&nbsp;(руб):&nbsp;{cost}</div></div>

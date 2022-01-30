@@ -67,7 +67,7 @@ export default function ManagerShipmentOrders(props){
     //-------------------------------------------------------------------------Блок 1 конец
 
     //-------------------------------------------------------------------------Блок 2
-    const [order, setOrder] = React.useState("")
+    const [order, setOrder] = React.useState("Заказ №0000001")
     const [requisites, setRequisites] = React.useState("")
     const [shipmentStatus, setShipmentStatus] = React.useState("включена")
     const [shipmentDate, setShipmentDate] = React.useState("")
@@ -92,18 +92,18 @@ export default function ManagerShipmentOrders(props){
             <TabHolder tabs={tabs} onTabClick={onTabClick}/>
             <FlexibleBlocksPage>
                 <FlexibleBlock>
-                    <div class="header_text"></div>
+                    <div class="header_text">Заказы на продажу</div>
                     <div style={{width:470+'px', display:'inline-table'}} >
                         <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
                     </div>
                 </FlexibleBlock>
                 <FlexibleBlock>
-                    <div class="low_text "><div>Заказ:&nbsp;{order}</div></div>
-                    <div class="low_text ">Реквизиты:&nbsp;</div><div class="low_text ">{requisites}</div>
-                    <div class="low_text "><div>Доставка:&nbsp;{shipmentStatus}</div></div>
-                    <div class="low_text "><div>Срок поставки:&nbsp;{shipmentDate}</div></div>
-                    <div class="low_text "><div>Полная&nbsp;стоимость&nbsp;заказа:&nbsp;{orderCost}</div></div>
-                    <div class="low_text ">Поставщик:&nbsp;</div><div class="low_text ">{provider}</div>
+                    <div class="header_text"><div>Заказ:&nbsp;{order}</div></div>
+                    <div class="low_text">Реквизиты:&nbsp;</div><div class="low_text">{requisites}</div>
+                    <div class="low_text"><div>Доставка:&nbsp;{shipmentStatus}</div></div>
+                    <div class="low_text"><div>Срок поставки:&nbsp;{shipmentDate}</div></div>
+                    <div class="low_text"><div>Полная&nbsp;стоимость&nbsp;заказа:&nbsp;{orderCost}</div></div>
+                    <div class="low_text">Поставщик:&nbsp;</div><div class="low_text">{provider}</div>
 
                     <div style={{width:350+'px', display:'inline-table'}} >
                         <TableComponent columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} editColumn={edit_column1}/>

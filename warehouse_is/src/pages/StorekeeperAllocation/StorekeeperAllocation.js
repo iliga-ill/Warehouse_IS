@@ -18,16 +18,15 @@ export default function StorekeeperAllocation(props){
 
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------выпадающий список приходной накладной
-    var expand_imput_list_1 = [
+    const [expandImputList1, setExpandImputList1] = React.useState([
         {id: 0, value: "№3521", selected: true},
         {id: 1, value: "№3522", selected: false},
         {id: 2, value: "№3523", selected: false},
         {id: 3, value: "№3524", selected: false},
-    ]
-    function set_expand_list_input_1(value) {expand_imput_list_1=value}
+    ])
     //-------------------------------------выпадающий список приходной накладной конец
     //-------------------------------------дата
-    var date; function set_date(value) {date = value}
+    const [date, setDate] = React.useState("2022-01-14")
     //-------------------------------------дата конец
     //-------------------------------------стол 1
     const [tableHeaders, setTableHeaders] = React.useState([
@@ -92,8 +91,8 @@ export default function StorekeeperAllocation(props){
             <FlexibleBlock>
             <div class="header_text">Расстановка товаров</div>
                 <div class="low_text row_with_item_wide">
-                    <div class="low_text row_with_item_wide"><div>Приходная&nbsp;накладная&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[0].value} list={expand_imput_list_1} func={set_expand_list_input_1}/></div>
-                    <div class="low_text row_with_item_wide"><div>&nbsp;&nbsp;&nbsp;&nbsp;Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={"2022-01-14"} func={set_date}/></div>
+                    <div class="low_text row_with_item_wide"><div>Приходная&nbsp;накладная&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expandImputList1[0].value} list={expandImputList1} func={setExpandImputList1}/></div>
+                    <div class="low_text row_with_item_wide"><div>&nbsp;&nbsp;&nbsp;&nbsp;Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={date} func={setDate}/></div>
                 </div>
                 <div style={{width:400+'px', display:'inline-table'}} >
                     <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>

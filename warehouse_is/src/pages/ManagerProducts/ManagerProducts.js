@@ -4,6 +4,7 @@ import Table from "../../components/Table/Table";
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import InputText from "../../components/InputText/InputText";
+import InputTextArea from "../../components/InputTextArea/InputTextArea";
 import { TableComponent } from "../../components/Table/TableComponent";
 const host = 'http://localhost:5000';
 
@@ -40,13 +41,13 @@ export default function ManagerProducts(props){
     //-------------------------------------------------------------------------Блок 1 конец
 
     //-------------------------------------------------------------------------Блок 3
-    var good; function set_func_1(value) {good = value}
-    var cost; function set_func_2(value) {cost = value}
-    var amount_in_store; function set_func_3(value) {amount_in_store = value}
-    var good_limit; function set_func_4(value) {good_limit = value}
-    var category; function set_func_5(value) {category = value}
-    var subcategory; function set_func_6(value) {subcategory = value}
-    var good_characteristics; function set_func_7(value) {good_characteristics=value}
+    const [good, setGood] = React.useState("")
+    const [category, setCategory] = React.useState("")
+    const [subCategory, setSubCategory] = React.useState("")
+    const [cost, setCost] = React.useState("")
+    const [amountInStore, setAmountInStore] = React.useState("")
+    const [goodLimit, setGoodLimit] = React.useState("")
+    const [goodCharacteristics, setGoodCharacteristics] = React.useState("")
 
     //-------------------------------------------------------------------------Блок 3 конец
 
@@ -59,14 +60,13 @@ export default function ManagerProducts(props){
                 </div>
             </FlexibleBlock>
             <FlexibleBlock>
-            <div class="header_text">Заказ 1</div>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Товар" placeholder="наименование товара" set={set_func_1}/>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Цена&nbsp;" placeholder="цена" set={set_func_2}/>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Кол-во на складе" placeholder="Кол-во на складе" set={set_func_3}/>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Лимит товара&nbsp;" placeholder="лимит товара" set={set_func_4}/>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Категория&nbsp;" placeholder="категория" set={set_func_5}/>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Подкатегория&nbsp;" placeholder="подкатегория" set={set_func_6}/>
-                <InputText styles = "" Id={getId()} label="Прочие хар-ки товара" placeholder="Прочие хар-ки товара" set={set_func_7} defValue={"sssssssss ssssssssssssssss sssssssssssssss ssssssssssssss sssssssss ssssss"}/>
+                <div class="header_text"><div>Товар:&nbsp;{good}</div></div>
+                <div class="low_text"><div>Категория:&nbsp;{category}</div></div>
+                <div class="low_text"><div>Подкатегория:&nbsp;{subCategory}</div></div>
+                <div class="low_text"><div>Цена&nbsp;ед&nbsp;товара&nbsp;(руб):&nbsp;{cost}</div></div>
+                <div class="low_text"><div>Кол-во&nbsp;на&nbsp;складе:&nbsp;{amountInStore}</div></div>
+                <div class="low_text"><div>Лимит&nbsp;товара&nbsp;(кг):&nbsp;{goodLimit}</div></div>
+                <InputTextArea styles = "" Id={getId()} label="Хар-ки&nbsp;товара" width={100} placeholder="адрес" set={setGoodCharacteristics} defValue={goodCharacteristics}/>
             </FlexibleBlock>
         </FlexibleBlocksPage>
     )

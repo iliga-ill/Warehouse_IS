@@ -146,7 +146,7 @@ export default function LogisticianOrders(props){
                     <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Принять</button>
                 </FlexibleBlock>
                 <FlexibleBlock>
-                    <div class="low_text "><div>Заказ:&nbsp;{order}</div></div>
+                    <div class="header_text "><div>Заказ:&nbsp;{order}</div></div>
                     <div class="low_text "><div>Крайний срок поставки:&nbsp;{shipmentDeadline}</div></div>
                     <div class="low_text "><div>Полная&nbsp;стоимость&nbsp;заказа:&nbsp;{orderCost}</div></div>
                     <div class="low_text ">Поставщик:&nbsp;</div><div class="low_text ">{provider}</div>

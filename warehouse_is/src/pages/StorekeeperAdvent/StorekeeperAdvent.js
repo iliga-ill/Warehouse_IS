@@ -313,8 +313,8 @@ export default function StorekeeperAdvent(props){
         
     //-------------------------------------стол 1 конец
 
-    var date; function set_date(value) {date = value}
-    var documents; function set_documents(value) {documents = value}
+    const [date, setDate] = React.useState("2022-01-14")
+    const [documents, setDocuments] = React.useState()
     
     function btn_send_1() {
         console.log("date = " + date)
@@ -513,10 +513,10 @@ function apiUpdateOrderGoods(amount, code) {
             </FlexibleBlock>
             <FlexibleBlock>
                 <div class="header_text">Прием товаров</div>
-                <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={"2022-01-14"} func={set_date}/></div>
+                <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={date} func={setDate}/></div>
                 {/* <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div> */}
                 {/* <InputText styles = "row_with_ite   m_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/> */}
-                <div class="low_text"><InputFile Id={getId()} func={set_documents}/></div>
+                <div class="low_text"><InputFile Id={getId()} func={setDocuments}/></div>
                 {/* <Table Id={getId()} table_headers={tableHeaders} table_field_height={table_field_height} table_list={tableList} func={setTableList} numb={0} search="true" add="true" delete="true"/> */}
                
                 <div style={{width:800+'px', display:'inline-table'}} >
