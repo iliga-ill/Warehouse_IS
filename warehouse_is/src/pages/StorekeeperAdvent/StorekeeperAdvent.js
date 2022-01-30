@@ -467,7 +467,7 @@ function apiUpdateOrderGoods(amount, code) {
     }
     
     xhr.send(null);
-  }
+}
 
 //#endregion категории с первой вкладки конец
 
