@@ -24,14 +24,13 @@ export default function ManagerSellOrders(props){
         id++
         return id-1
     }
-
+    
+    //-------------------------------------------------------------------------Табы
     const [reload, setReload] = React.useState(0)
     function reloadPage(){
         setReload(reload+1)
-      }
+    }
 
-
-    //-------------------------------------------------------------------------Табы
     var [tabs, setTabs] = React.useState([
           {id:0, selected: true, title: "Текущие"},
           {id:1, selected: false, title: "Выполненные"}
@@ -66,7 +65,7 @@ export default function ManagerSellOrders(props){
     //-------------------------------------------------------------------------Блок 1 конец
 
     //-------------------------------------------------------------------------Блок 2
-    const [order, setOrder] = React.useState("")
+    const [order, setOrder] = React.useState("Заказ №0000001")
     const [shipmentDate, setShipmentDate] = React.useState("")
     const [shipmentAddress, setShipmentAddress] = React.useState("553366, Вологодская область, город Одинцово, пл. Будапештсткая, 04")
     const [note, setNote] = React.useState("")
@@ -90,13 +89,13 @@ export default function ManagerSellOrders(props){
             <TabHolder tabs={tabs} onTabClick={onTabClick}/>
             <FlexibleBlocksPage>
                 <FlexibleBlock>
-                    <div class="header_text"></div>
+                    <div class="header_text">Заказы на продажу</div>
                     <div style={{width:470+'px', display:'inline-table'}} >
                         <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
                     </div>
                 </FlexibleBlock>
                 <FlexibleBlock>
-                    <div class="low_text "><div>Заказ:&nbsp;{order}</div></div>
+                    <div class="header_text">Заказ:&nbsp;{order}</div>
                     <div class="low_text "><div>Дата&nbsp;доставки:&nbsp;{shipmentDate}</div></div>
                     <div class="low_text "><div>Адрес&nbsp;доставки:&nbsp;{shipmentAddress}</div></div>
                     <div class="low_text "><div>Примечание:&nbsp;{note}</div></div>

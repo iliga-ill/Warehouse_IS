@@ -25,13 +25,12 @@ export default function ManagerShipmentOrders(props){
         return id-1
     }
 
+    //-------------------------------------------------------------------------Табы
     const [reload, setReload] = React.useState(0)
     function reloadPage(){
         setReload(reload+1)
-      }
+    }
 
-
-    //-------------------------------------------------------------------------Табы
     var [tabs, setTabs] = React.useState([
           {id:0, selected: true, title: "Текущие"},
           {id:1, selected: false, title: "Выполненные"}

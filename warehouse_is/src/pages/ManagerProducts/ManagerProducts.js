@@ -53,7 +53,7 @@ export default function ManagerProducts(props){
     return (
         <FlexibleBlocksPage>
             <FlexibleBlock>
-                <div class="header_text"></div>
+                <div class="header_text">Товары</div>
                 <div style={{width:800+'px', display:'inline-table'}} >
                     <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>

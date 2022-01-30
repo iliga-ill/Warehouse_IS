@@ -74,6 +74,7 @@ export default function StorekeeperInventory(props){
     return (
         <FlexibleBlocksPage>
             <FlexibleBlock>
+                <div class="header_text">Инвентаризация</div>
                 <div class="low_text row_with_item_wide_storekeeperInventory">
                     <div class="low_text row_with_item_wide"><div>Зона&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[0].value} list={expand_imput_list_1} func={set_expand_list_input_1}/></div>
                     <div class="low_text row_with_item_wide ml_storekeeperInventory"><div>Стеллаж&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_2[0].value} list={expand_imput_list_2} func={set_expand_list_input_2}/></div>

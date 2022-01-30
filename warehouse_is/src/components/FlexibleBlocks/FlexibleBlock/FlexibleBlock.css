@@ -1,6 +1,6 @@
 .block{
     height: fit-content;
-    width: max-content;
+    width: fit-content;
     display: inline-table; 
 }
 

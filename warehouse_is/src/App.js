@@ -11,6 +11,8 @@ import AdministratorAccounts from './pages/AdministratorAccounts/AdministratorAc
 import ManagerOrderCreation from './pages/ManagerOrderCreation/ManagerOrderCreation';
 import ManagerSellOrders from './pages/ManagerSellOrders/ManagerSellOrders';
 import ManagerShipmentOrders from './pages/ManagerShipmentOrders/ManagerShipmentOrders';
+import LogisticianOrders from './pages/LogisticianOrders/LogisticianOrders';
+import LogisticianProducts from './pages/LogisticianProducts/LogisticianProducts';
 import React from 'react';
 
 //import API from './api/api.js';
@@ -37,10 +39,10 @@ export default function App() {
   var [mainTabs, setMainTab] = React.useState([
     {id:0, selected: true, title: "АРМ Кладовщика"},
     {id:1, selected: false, title: "АРМ Менеджера"},
-    {id:2, selected: false, title: "АРМ Администратора"},
-    /*
-    {id:1, selected: false, title: "АРМ Менеджера"},
     {id:2, selected: false, title: "АРМ Логиста"},
+    {id:3, selected: false, title: "АРМ Администратора"},
+    /*
+    
     {id:3, selected: false, title: "АРМ Бухгалтера"},
     {id:4, selected: false, title: "KeyCloak"},*/
   ])
@@ -72,18 +74,15 @@ export default function App() {
       {id:2, selected: false, title: "Расстановка товаров", page: <StorekeeperAllocation Id={300}/>},
       {id:3, selected: false, title: "Инвентаризация", page: <StorekeeperInventory Id={400}/>},
     ],[
-      {id:0, selected: false, title: "Товары", page: <ManagerProducts Id={500}/>},
-      {id:1, selected: false, title: "Заказы", page: <ManagerOrderCreation Id={600}/>},
+      {id:0, selected: true, title: "Товары", page: <ManagerProducts Id={500}/>},
+      {id:1, selected: false, title: "Создание заказа", page: <ManagerOrderCreation Id={600}/>},
       {id:2, selected: false, title: "Заказы на продажу", page: <ManagerSellOrders Id={700}/>},
-      {id:3, selected: true, title: "Заказы на поставку", page: <ManagerShipmentOrders Id={700}/>},
+      {id:3, selected: false, title: "Заказы на поставку", page: <ManagerShipmentOrders Id={800}/>},
+    ],[
+      {id:0, selected: true, title: "Заказы", page: <LogisticianOrders Id={900}/>},
+      {id:1, selected: false, title: "Товары", page: <LogisticianProducts Id={10000}/>},
     ],[
       {id:0, selected: true, title: "Аккаунты", page: <AdministratorAccounts Id={800}/>},
-    ],[
-      {id:0, selected: true, title: "Товары", page: <StorekeeperAdvent Id={7}/>},
-      {id:1, selected: false, title: "Создание заказа", page: <StorekeeperAdvent Id={8}/>},
-      {id:2, selected: false, title: "Заказы на продажу", page: <StorekeeperAdvent Id={9}/>},
-      {id:3, selected: false, title: "Заказы на поставку", page: <StorekeeperAdvent Id={10}/>},
-      {id:4, selected: false, title: "Счета на оплату", page: <StorekeeperAdvent Id={11}/>},
     ],[
       {id:0, selected: true, title: "Товары", page: <StorekeeperAdvent Id={12}/>},
       {id:1, selected: false, title: "Накладные", page: <StorekeeperAdvent Id={13}/>},

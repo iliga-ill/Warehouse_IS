@@ -64,12 +64,14 @@ export default function ManagerOrderCreation(props){
     return (
         <FlexibleBlocksPage>
             <FlexibleBlock>
+                <div class="header_text">Создание заказа</div>
                 <div class="header_text"></div>
                 <div style={{width:800+'px', display:'inline-table'}} >
                     <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>
             </FlexibleBlock>
             <FlexibleBlock>
+                <div class="header_text">Характеристики заказа</div>
                 <div class="low_text row_with_item_wide"><div>Тип&nbsp;заказа&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={orderTypeList[0].value} list={orderTypeList} func={setOrderTypeList}  i={0} j={0}/></div> 
                 <div class="low_text row_with_item_wide"><div>Дата&nbsp;доставки&nbsp;</div><InputDate Id={getId()} defValue={shipmentDate} func={setShipmentDate}/></div>
                 <div class="low_text row_with_item_wide"><div>Итоговая&nbsp;цена:&nbsp;{sumCost}&nbsp;руб</div></div>

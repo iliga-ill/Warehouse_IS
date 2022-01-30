@@ -64,7 +64,7 @@ export function TableComponent(props) {
     setRows(changedRows);
     props.setNewTableList(changedRows)
   };
-  var EditColumnWidth = 250
+  var EditColumnWidth = 220
   if (!props.editColumn.add && !props.editColumn.edit && !props.editColumn.delete)
   EditColumnWidth=20
 //---------------------------return-------------------------------
