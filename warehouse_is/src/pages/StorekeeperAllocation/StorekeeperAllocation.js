@@ -89,13 +89,14 @@ export default function StorekeeperAllocation(props){
     return (
         <FlexibleBlocksPage>
             <FlexibleBlock>
-            <div class="header_text">Расстановка товаров</div>
-                <div class="low_text row_with_item_wide">
-                    <div class="low_text row_with_item_wide"><div>Приходная&nbsp;накладная&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expandImputList1[0].value} list={expandImputList1} func={setExpandImputList1}/></div>
-                    <div class="low_text row_with_item_wide"><div>&nbsp;&nbsp;&nbsp;&nbsp;Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={date} func={setDate}/></div>
-                </div>
-                <div style={{width:400+'px', display:'inline-table'}} >
-                    <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
+                <div>
+                    <div class="low_text row_with_item_wide">
+                        <div class="low_text row_with_item_wide"><div>Приходная&nbsp;накладная&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[0].value} list={expand_imput_list_1} func={set_expand_list_input_1}/></div>
+                        <div class="low_text row_with_item_wide"><div>&nbsp;&nbsp;&nbsp;&nbsp;Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={"2022-01-14"} func={set_date}/></div>
+                    </div>
+                    <div style={{width:800+'px', display:'inline-table'}} >
+                        <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column} isDropdownActive={true}/>
+                    </div>
                 </div>
             </FlexibleBlock>
             <FlexibleBlock>

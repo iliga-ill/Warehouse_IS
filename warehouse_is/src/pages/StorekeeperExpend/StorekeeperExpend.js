@@ -168,9 +168,9 @@ export default function StorekeeperExpend(props){
                             var it = parseInt(item2.code)
                             if (it.toString() == item.goods.toString()) {
                                 //  bar[i] = [i, goodsCategories2[item2.category-1].text, goodsCategories3[item2.sub_category-1].text,  item2.text, item2.ordered, item2.amount, true]
-                                buffer[counter] = {number: counter+1, goodsCategories2: goodsCategories2[item2.category-1].text, goodsCategories3: goodsCategories3[item2.sub_category-1].text, goodsType: item2.text, orderedAmount: item2.ordered, amount: item2.amount}
-                                buffer[counter].id = 'string_' + counter;
-                                buffer[counter].code = item2.code;
+                                buffer[counter] = {number: counter+1, goodsCategories2: goodsCategories2[item2.category-1].text, goodsCategories3: goodsCategories3[item2.sub_category-1].text, goodsType: item2.text, orderedAmount: item.amount, amount: item.amount_real}
+                                buffer[counter].id = getId()
+                                buffer[counter].code = item.code;
                                 counter++
                             }   
                         })
@@ -207,28 +207,53 @@ export default function StorekeeperExpend(props){
         })
 
         var check=true
-        temp_table_list.map(function(item,i){
-            if (item.category == ""){
+        tableList.map((item,i) => {
+            if (item.category == ""  && check){
                 check=false
                 alert("Ошибка, категория не может быть пустой");
             }
-            if (item.sub_category == ""){
+            if (item.sub_category == ""  && check){
                 check=false
                 alert("Ошибка, подкатегория не может быть пустой");
             }
-            if (item.text == ""){
+            if (item.text == ""  && check){
                 check=false
                 alert("Ошибка, Наименование не может быть пустой");
             }
-            if (item.amount < 0){
+            if (item.amount < 0  && check){
                 check=false
                 alert("Ошибка, кол-во коробок не может быть отрицательным");
             }
-            
+            if (isNaN(parseInt(item.amount)) && check){
+                console.log(item.amount)
+                check=false
+                alert("Ошибка, кол-во коробок не может быть строкой");
+            }
         })
+
+        if (check) tableList.forEach( item => {
+            apiUpdateOrderGoods(item.amount, item.code)
+        }) 
+        else apiGetGoodsByShipmentOrder()
     }
     //-------------------------------------------------------------------------Блок 2 конец
     
+    function apiUpdateOrderGoods(amount, code) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('PUT', host+'/update_order_goods'+'?'+`amount=${amount}&code=${code}`, true);
+      
+        //Send the proper header information along with the request
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            console.log(this.responseText);
+          }
+        }
+        
+        xhr.send(null);
+    }
+
 
     //-------------------------------------------------------------------------Блок 3
     function onBlock3FileUploaded(files){
