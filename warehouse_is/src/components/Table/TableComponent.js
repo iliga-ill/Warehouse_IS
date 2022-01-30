@@ -44,18 +44,22 @@ export function TableComponent(props) {
           ...row,
         })),
       ];
+
       if (columns[0].name=='number') changedRows.map(function(item,i){changedRows[i].number=i+1})
-      props.setNewTableList(changedRows)
+      //props.setNewTableList(changedRows)
     }
     if (changed) {
+      // console.log('changed')
+      // rows.map( row => (console.log(changed[row.id] ? { ...row, ...changed[row.id] } : row)))
+ 
       changedRows = rows.map(row => (changed[row.id] ? { ...row, ...changed[row.id] } : row));
-      props.setNewTableList(changedRows)
+      //props.setNewTableList(changedRows)
     }
     if (deleted) {
       const deletedSet = new Set(deleted);
       changedRows = rows.filter(row => !deletedSet.has(row.id));
       if (columns[0].name=='number') changedRows.map(function(item,i){changedRows[i].number=i+1})
-      props.setNewTableList(changedRows)
+      //props.setNewTableList(changedRows)
     }
     setRows(changedRows);
     props.setNewTableList(changedRows)
@@ -87,7 +91,7 @@ export function TableComponent(props) {
           showAddCommand={props.editColumn.add}
           showEditCommand={props.editColumn.edit}
           showDeleteCommand={props.editColumn.delete}
-          messages={{editCommand: 'Правка', addCommand: 'Новая запись', commitCommand: 'Сохранить', cancelCommand: 'Отменить'}}
+          messages={{editCommand: 'Правка', addCommand: 'Новая запись', commitCommand: 'Сохранить', cancelCommand: 'Отменить', deleteCommand: 'Удалить'}}
           width={EditColumnWidth}
         />
       </Grid>

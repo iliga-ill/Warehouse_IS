@@ -63,11 +63,12 @@ export default function StorekeeperAdvent(props){
 
     const [orders, setOrders] = React.useState([])
     React.useEffect(() => {
-        if (goodsType.toString() != "") apiGetGoodsByOrder()
+        if (goodsType.toString() != "") apiGetGoodsByShipmentOrder()
     }, [orders]);
-    function apiGetOrders() {
+
+    function apiGetShipmentOrders() {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/orders', true);
+        xhr.open('GET', host+'/shipment_order_goods'+'?'+'type=sell', true);
         console.log("StorekeeperAdvent apiGetOrders was launched")
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -105,6 +106,7 @@ export default function StorekeeperAdvent(props){
                     goods[i] = {id:i, text: item.name, code: item.code}
                 })
                 setGoodsCategories2(goods)
+                apiGetGoodsSubCat3()
             }
         }
         xhr.send(null);
@@ -143,6 +145,7 @@ export default function StorekeeperAdvent(props){
                     goods[i] = {id:i, text: item.name, code: item.code}
                 })
                 setGoodsCategories3(goods)
+                apiGetShipmentOrders()
             }
         }
         xhr.send(null);
@@ -183,17 +186,19 @@ export default function StorekeeperAdvent(props){
                     })
                     setGoodsType(goods)
                 }
+                apiGetGoodsSubCat2()
             }
+
         }
         xhr.send(null);
+
     }
 
+    const [isStart, setIsStart] = React.useState(true)
 
-    if (orders.toString()=="" && goodsCategories2.toString()=="" && goodsCategories3.toString()=="" && goodsType.toString()=="") {
-        apiGetGoodsType()
-        apiGetGoodsSubCat2()
-        apiGetGoodsSubCat3()
-        apiGetOrders()
+    if (isStart) {
+         apiGetGoodsType()
+         setIsStart(false)
     }
     // var goods_type_list = [
     //     {value: "Варочная поверхность Bosch PKE 645 B17E", selected: true},
@@ -232,7 +237,7 @@ export default function StorekeeperAdvent(props){
     //var table_list = [[0,"Встраиваемая техника","Варочные поверхности","Варочная поверхность Bosch PKE 645 B17E","0",true],];
     
 
-    function apiGetGoodsByOrder() {
+    function apiGetGoodsByShipmentOrder() {
         var xhr = new XMLHttpRequest();
         var order = ''
         orders.forEach(element => {
@@ -241,7 +246,7 @@ export default function StorekeeperAdvent(props){
     
         if (order != ''){
              //console.log("Selected order " + order.code)
-            xhr.open('GET', host+'/order_goods_by_order'+'?'+`code=${order.code}`, true);
+            xhr.open('GET', host+'/shipment_order_goods_by_order'+'?'+`code=${order.code}`, true);
             console.log("StorekeeperAdvent apiGetGoodsByOrder was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -256,9 +261,9 @@ export default function StorekeeperAdvent(props){
                             var it = parseInt(item2.code)
                             if (it.toString() == item.goods.toString()) {
                                 //  bar[i] = [i, goodsCategories2[item2.category-1].text, goodsCategories3[item2.sub_category-1].text,  item2.text, item2.ordered, item2.amount, true]
-                                buffer[counter] = {number: counter+1, goodsCategories2: goodsCategories2[item2.category-1].text, goodsCategories3: goodsCategories3[item2.sub_category-1].text, goodsType: item2.text, orderedAmount: item2.ordered, amount: item2.amount}
-                                buffer[counter].id = 'string_' + counter;
-                                buffer[counter].code = item2.code;
+                                buffer[counter] = {number: counter+1, goodsCategories2: goodsCategories2[item2.category-1].text, goodsCategories3: goodsCategories3[item2.sub_category-1].text, goodsType: item2.text, orderedAmount: item.amount, amount: item.amount_real}
+                                buffer[counter].id = getId()
+                                buffer[counter].code = item.code;
                                 counter++
                             }   
                         })
@@ -330,25 +335,35 @@ export default function StorekeeperAdvent(props){
 
         var check=true
         temp_table_list.map(function(item,i){
-            if (item.category == ""){
+            if (item.category == "" && check){
                 check=false
                 alert("Ошибка, категория не может быть пустой");
             }
-            if (item.sub_category == ""){
+            if (item.sub_category == "" && check){
                 check=false
                 alert("Ошибка, подкатегория не может быть пустой");
+                return;
             }
-            if (item.text == ""){
+            if (item.text == "" && check){
                 check=false
                 alert("Ошибка, Наименование не может быть пустой");
+                return;
             }
-            if (item.amount < 0){
+            if (item.amount < 0 && check){
                 check=false
                 alert("Ошибка, кол-во коробок не может быть отрицательным");
+                return;
             }
-            
+            if (isNaN(parseInt(item.amount)) && check){
+                check=false
+                alert("Ошибка, кол-во коробок не может быть строкой");
+            }
         })
 
+        if (check) tableList.forEach( item => {
+            apiUpdateOrderGoods(item.amount, item.code)
+        }) 
+        else apiGetGoodsByShipmentOrder()
         //if (check) props.func2(temp_table_list)
         //console.log(temp_table_list)
     }
@@ -438,7 +453,21 @@ function apiGetGoodsSubCat4() {
     xhr.send(null);
 }
 
-
+function apiUpdateOrderGoods(amount, code) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('PUT', host+'/update_order_goods'+'?'+`amount=${amount}&code=${code}`, true);
+  
+    //Send the proper header information along with the request
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == XMLHttpRequest.DONE) {
+        console.log(this.responseText);
+      }
+    }
+    
+    xhr.send(null);
+  }
 
 //#endregion категории с первой вкладки конец
 

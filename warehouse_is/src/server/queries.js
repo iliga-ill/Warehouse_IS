@@ -7,21 +7,21 @@ const Pool = require('pg').Pool
 //   port: 5432,
 // })
 
-const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'warehouse',
-  password: 'iliga',
-  port: 5432,
-})
-
 // const pool = new Pool({
 //   user: 'postgres',
 //   host: 'localhost',
 //   database: 'warehouse',
-//   password: 'admin',
+//   password: 'iliga',
 //   port: 5432,
 // })
+
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'warehouse',
+  password: 'admin',
+  port: 5432,
+})
 
 pool.connect((err, client, release) => {
     if (err) {
@@ -37,7 +37,6 @@ pool.connect((err, client, release) => {
 })
 
 const getColors = (request, response) => {
-    console.log("You're here")
     pool.query('SELECT name FROM colors ORDER BY code ASC', (error, results) => {
       if (error) {
         throw error
@@ -92,7 +91,7 @@ const getShelfsByRacks = (request, response) => {
 }
 
 const getOrderGoods = (request, response) => {
-  pool.query('SELECT * FROM shipment_order_goods ORDER BY code ASC', (error, results) => {
+  pool.query('SELECT * FROM orders WHERE order_status= ORDER BY code ASC', (error, results) => {
     if (error) {
       throw error
     }
@@ -100,8 +99,34 @@ const getOrderGoods = (request, response) => {
   })
 }
 
-const getOrderGoodsByOrder = (request, response) => {
-  console.log(request.query.code)
+const getShipmentOrderGoods = (request, response) => {
+  var orders = []
+  var sell_orders = []
+  pool.query(`SELECT id FROM orders WHERE order_status LIKE '%${request.query.type}%' ORDER BY id ASC`, (error, results) => {
+    if (error) {
+      throw error
+    }  
+    orders = results.rows
+
+    pool.query('SELECT * FROM shipment_order ORDER BY code ASC', (error, results) => {
+    
+      if (error) {
+        throw error
+      }
+      results.rows.map(element => {
+        orders.map(pos =>{
+          if (pos.id == element.order_id) {
+            sell_orders.push(element) 
+          }
+        })
+      });
+      response.status(200).json(sell_orders)
+    })
+  })
+}
+
+const getOrderGoodsByShipmentOrder = (request, response) => {
+
   pool.query(`SELECT * FROM shipment_order_goods WHERE order_num=${request.query.code} ORDER BY code ASC`, (error, results) => {
     if (error) {
       throw error
@@ -111,7 +136,7 @@ const getOrderGoodsByOrder = (request, response) => {
 }
 
 const getOrders = (request, response) => {
-  pool.query('SELECT * FROM shipment_order ORDER BY code ASC', (error, results) => {
+  pool.query('SELECT * FROM orders ORDER BY code ASC', (error, results) => {
     if (error) {
       throw error
     }
@@ -254,7 +279,7 @@ const updateOrder = (request, response) => {
 }
 
 const updateOrderGoods = (request, response) => {
-  pool.query('UPDATE shipment_order SET amount_real=$1', [request.query.amount], (error, results) => {
+  pool.query('UPDATE shipment_order_goods SET amount_real=$1 WHERE code=$2', [request.query.amount, request.query.code], (error, results) => {
     if (error) {
       throw error
     }
@@ -269,8 +294,8 @@ module.exports = {
   getRacksByZone,
   getShelfs,
   getShelfsByRacks,
-  getOrderGoods,
-  getOrderGoodsByOrder,
+  getShipmentOrderGoods,
+  getOrderGoodsByShipmentOrder,
   getOrders,
   getClients,
   getGoodsTypeByCode,

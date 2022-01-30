@@ -22,8 +22,8 @@ app.get('/racks', db.getRacks)
 app.get('/racks_by_zone', db.getRacksByZone)
 app.get('/shelfs', db.getShelfs)
 app.get('/shelfs_by_racks', db.getShelfsByRacks)
-app.get('/order_goods', db.getOrderGoods)
-app.get('/order_goods_by_order', db.getOrderGoodsByOrder)
+app.get('/shipment_order_goods', db.getShipmentOrderGoods)
+app.get('/shipment_order_goods_by_order', db.getOrderGoodsByShipmentOrder)
 app.get('/orders', db.getOrders)
 app.get('/clients', db.getClients)
 app.get('/goods_type_code', db.getGoodsTypeByCode)
@@ -344,7 +344,7 @@ function apiUpdateOrder() {
 
 function apiUpdateOrderGoods() {
   var xhr = new XMLHttpRequest();
-  xhr.open('PUT', host+'/update_order_goods'+'?'+'"amount=1"', true);
+  xhr.open('PUT', host+'/update_order_goods'+'?'+'"amount=1&code=2"', true);
 
   //Send the proper header information along with the request
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
