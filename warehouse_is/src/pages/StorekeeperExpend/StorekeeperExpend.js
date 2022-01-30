@@ -30,11 +30,11 @@ export default function StorekeeperExpend(props){
 
     const [orders, setOrders] = React.useState([])
     React.useEffect(() => {
-        if (goodsType != []) apiGetGoodsByOrder()
+        if (goodsType != []) apiGetGoodsByShipmentOrder()
     }, [orders]);
-    function apiGetOrders() {
+    function apiGetShipmentOrders() {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/orders', true);
+        xhr.open('GET', host+'/shipment_order_goods'+'?'+'type=purchase', true);
         console.log("StorekeeperAdvent apiGetOrders was launched")
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -72,6 +72,7 @@ export default function StorekeeperExpend(props){
                     goods[i] = {id:i, text: item.name, code: item.code}
                 })
                 setGoodsCategories2(goods)
+                apiGetGoodsSubCat3()
             }
         }
         xhr.send(null);
@@ -92,6 +93,7 @@ export default function StorekeeperExpend(props){
                     goods[i] = {id:i, text: item.name, code: item.code}
                 })
                 setGoodsCategories3(goods)
+                apiGetShipmentOrders()
             }
         }
         xhr.send(null);
@@ -115,17 +117,18 @@ export default function StorekeeperExpend(props){
                     })
                     setGoodsType(goods)
                 }
+                apiGetGoodsSubCat2()
             }
         }
         xhr.send(null);
     }
 
 
-    if (orders.toString()=="" && goodsCategories2.toString()=="" && goodsCategories3.toString()=="" && goodsType.toString()=="") {
-        apiGetGoodsSubCat2()
-        apiGetGoodsSubCat3()
-        apiGetGoodsType()
-        apiGetOrders()
+    const [isStart, setIsStart] = React.useState(true)
+
+    if (isStart) {
+         apiGetGoodsType()
+         setIsStart(false)
     }
 
     const [tableHeaders, setTableHeaders] = React.useState([
@@ -136,12 +139,12 @@ export default function StorekeeperExpend(props){
         {name: 'orderedAmount',     title:'Ожидаемое кол-во',   editingEnabled:false,   width:150   },
         {name: 'amount',            title:'Кол-во коробок',     editingEnabled:true,    width:130   }
     ]) 
-    var edit_column = {add:true, edit:true, delete:true}
+    var edit_column = {add:false, edit:true, delete:false}
 
     const [tableList, setTableList] = React.useState([])
     
 
-    function apiGetGoodsByOrder() {
+    function apiGetGoodsByShipmentOrder() {
         var xhr = new XMLHttpRequest();
         var order = ''
         orders.forEach(element => {
@@ -150,7 +153,7 @@ export default function StorekeeperExpend(props){
     
         if (order != ''){
              //console.log("Selected order " + order.code)
-            xhr.open('GET', host+'/order_goods_by_order'+'?'+`code=${order.code}`, true);
+            xhr.open('GET', host+'/shipment_order_goods_by_order'+'?'+`code=${order.code}`, true);
             console.log("StorekeeperAdvent apiGetGoodsByOrder was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
