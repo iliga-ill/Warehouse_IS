@@ -125,6 +125,15 @@ const getShipmentOrderGoods = (request, response) => {
   })
 }
 
+const getShipmentOrderGoodsAll = (request, response) => {
+  pool.query('SELECT * FROM public.shipment_order_goods ORDER BY code ASC ', (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
 const getOrderGoodsByShipmentOrder = (request, response) => {
 
   pool.query(`SELECT * FROM shipment_order_goods WHERE order_num=${request.query.code} ORDER BY code ASC`, (error, results) => {
@@ -330,6 +339,7 @@ module.exports = {
   getShelfs,
   getShelfsByRacks,
   getShipmentOrderGoods,
+  getShipmentOrderGoodsAll,
   getOrderGoodsByShipmentOrder,
   getOrders,
   getClients,

@@ -10,13 +10,17 @@ import {
   EditingState,
 } from '@devexpress/dx-react-grid';
 import {
-  Grid,
   Table,
+  Grid,
   TableHeaderRow,
   TableEditRow,
   TableEditColumn,
   TableColumnResizing,
+<<<<<<< HEAD
   TableSelection,
+=======
+  VirtualTable,
+>>>>>>> master
 } from '@devexpress/dx-react-grid-material-ui';
 
 // import {
@@ -135,6 +139,7 @@ function onSelected(value) {
 
     return (
       <Paper>
+<<<<<<< HEAD
         <Grid
           rows={rows}
           columns={columns}
@@ -186,6 +191,44 @@ function onSelected(value) {
             width={EditColumnWidth}
           />
         </Grid>
+=======
+        <div className="card">
+          <Grid
+            rows={rows}
+            columns={columns}
+            getRowId={getRowId}
+          >
+            {props.columns.map(item=>{
+              if (item.dropdownList != undefined && item.dropdownList.length>0) {
+                return <DropdownProvider
+                  for={[item.name]}
+                />
+              }
+            })}
+            
+            <EditingState
+              onCommitChanges={commitChanges}
+              //defaultEditingRowIds={[0]}
+              columnExtensions={editingStateColumnExtensions}
+            />
+            <Table />
+            <VirtualTable />
+            <TableColumnResizing
+              columnWidths={columnWidths}
+              onColumnWidthsChange={setColumnWidths}
+            />
+            <TableHeaderRow />
+            <TableEditRow />
+            <TableEditColumn
+              showAddCommand={props.editColumn.add}
+              showEditCommand={props.editColumn.edit}
+              showDeleteCommand={props.editColumn.delete}
+              messages={{editCommand: 'Правка', addCommand: 'Новая запись', commitCommand: 'Сохранить', cancelCommand: 'Отменить', deleteCommand: 'Удалить'}}
+              width={EditColumnWidth}
+            />
+          </Grid>
+        </div>
+>>>>>>> master
       </Paper>
     );
 };
