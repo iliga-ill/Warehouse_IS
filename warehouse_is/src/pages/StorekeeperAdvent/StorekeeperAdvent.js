@@ -69,11 +69,11 @@ export default function StorekeeperAdvent(props){
     function apiGetShipmentOrders() {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', host+'/shipment_order_goods'+'?'+'type=sell', true);
-        console.log("StorekeeperAdvent apiGetOrders was launched")
+        console.log("StorekeeperAdvent apiGetShipmentOrders was launched")
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 var answer = JSON.parse(this.response)
-                console.log("StorekeeperAdvent apiGetOrders answer: ")
+                console.log("StorekeeperAdvent apiGetShipmentOrders answer: ")
                 console.log(answer)
                 var counter = 0
                 var order = [{id:0, text: "Ничего не найдено", selected: true, code: 0}]
