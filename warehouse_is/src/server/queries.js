@@ -145,7 +145,7 @@ const getOrderGoodsByShipmentOrder = (request, response) => {
 }
 
 const getOrders = (request, response) => {
-  pool.query('SELECT * FROM orders ORDER BY code ASC', (error, results) => {
+  pool.query(`SELECT * FROM orders WHERE order_status LIKE '%${request.query.type}%' AND status_execution LIKE '%${request.query.status}%' ORDER BY id ASC`, (error, results) => {
     if (error) {
       throw error
     }

@@ -136,6 +136,7 @@ function onSelected(value) {
 
     return (
       <Paper>
+<<<<<<< HEAD
         <div className="card">
           <Grid
             rows={rows}
@@ -181,6 +182,59 @@ function onSelected(value) {
             />
           </Grid>
         </div>
+=======
+        <Grid
+          rows={rows}
+          columns={columns}
+          getRowId={getRowId}
+        >
+          {props.columns.map(item=>{
+            if (item.dropdownList != undefined && item.dropdownList.length>0) {
+              return <DropdownProvider
+                for={[item.name]}
+              />
+            }
+          })}
+          { () => {
+            // if (props.isSelectionActive != undefined) {
+            //   console.log('FFFFFFFFFFFFFFF')
+            //   return <SelectionState
+            //     selection={selection}
+            //     onSelectionChange={onSelected}
+            //   />        
+            // }
+          }}
+          <EditingState
+            onCommitChanges={commitChanges}
+            //defaultEditingRowIds={[0]}
+            columnExtensions={editingStateColumnExtensions}
+          />
+          <Table />
+          <TableColumnResizing
+            columnWidths={columnWidths}
+            onColumnWidthsChange={setColumnWidths}
+          />
+          <TableHeaderRow />
+          {/* { () => {
+            if (props.isSelectionActive != undefined) {
+              return  <TableSelection
+                        selectByRowClick
+                        highlightRow
+                        showSelectionColumn={false}
+                     />      
+            }
+          }} */}
+         
+          <TableEditRow />
+          <TableEditColumn
+            showAddCommand={props.editColumn.add}
+            showEditCommand={props.editColumn.edit}
+            showDeleteCommand={props.editColumn.delete}
+            messages={{editCommand: 'Правка', addCommand: 'Новая запись', commitCommand: 'Сохранить', cancelCommand: 'Отменить', deleteCommand: 'Удалить'}}
+            width={EditColumnWidth}
+          />
+        </Grid>
+>>>>>>> bd97cdc03d5b28919045681e81abc75cf9ed1742
       </Paper>
     );
 };
