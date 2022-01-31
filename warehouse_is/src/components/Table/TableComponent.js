@@ -16,11 +16,8 @@ import {
   TableEditRow,
   TableEditColumn,
   TableColumnResizing,
-<<<<<<< HEAD
   TableSelection,
-=======
   VirtualTable,
->>>>>>> master
 } from '@devexpress/dx-react-grid-material-ui';
 
 // import {
@@ -128,76 +125,27 @@ export function TableComponent(props) {
 //---------------------------return-------------------------------
 //---------------------------эксперименты-------------------------
 
-const [selection, setSelection] = useState([1]);
+const [selection, setSelection] = useState([]);
 
 function onSelected(value) {
   console.log(value)
-  setSelection(value)
+  //setSelection(value)
 }
 
 //---------------------------эксперименты-------------------------
 
     return (
       <Paper>
-<<<<<<< HEAD
-        <Grid
-          rows={rows}
-          columns={columns}
-          getRowId={getRowId}
-        >
-          {props.columns.map(item=>{
-            if (item.dropdownList != undefined && item.dropdownList.length>0) {
-              return <DropdownProvider
-                for={[item.name]}
-              />
-            }
-          })}
-          { () => {
-            // if (props.isSelectionActive != undefined) {
-            //   console.log('FFFFFFFFFFFFFFF')
-            //   return <SelectionState
-            //     selection={selection}
-            //     onSelectionChange={onSelected}
-            //   />        
-            // }
-          }}
-          <EditingState
-            onCommitChanges={commitChanges}
-            //defaultEditingRowIds={[0]}
-            columnExtensions={editingStateColumnExtensions}
-          />
-          <Table />
-          <TableColumnResizing
-            columnWidths={columnWidths}
-            onColumnWidthsChange={setColumnWidths}
-          />
-          <TableHeaderRow />
-          {/* { () => {
-            if (props.isSelectionActive != undefined) {
-              return  <TableSelection
-                        selectByRowClick
-                        highlightRow
-                        showSelectionColumn={false}
-                     />      
-            }
-          }} */}
-         
-          <TableEditRow />
-          <TableEditColumn
-            showAddCommand={props.editColumn.add}
-            showEditCommand={props.editColumn.edit}
-            showDeleteCommand={props.editColumn.delete}
-            messages={{editCommand: 'Правка', addCommand: 'Новая запись', commitCommand: 'Сохранить', cancelCommand: 'Отменить', deleteCommand: 'Удалить'}}
-            width={EditColumnWidth}
-          />
-        </Grid>
-=======
         <div className="card">
           <Grid
             rows={rows}
             columns={columns}
             getRowId={getRowId}
           >
+            <SelectionState
+              selection={selection}
+              onSelectionChange={onSelected}
+            />
             {props.columns.map(item=>{
               if (item.dropdownList != undefined && item.dropdownList.length>0) {
                 return <DropdownProvider
@@ -218,6 +166,11 @@ function onSelected(value) {
               onColumnWidthsChange={setColumnWidths}
             />
             <TableHeaderRow />
+            <TableSelection
+              selectByRowClick
+              highlightRow
+              showSelectionColumn={false}
+            />
             <TableEditRow />
             <TableEditColumn
               showAddCommand={props.editColumn.add}
@@ -228,7 +181,6 @@ function onSelected(value) {
             />
           </Grid>
         </div>
->>>>>>> master
       </Paper>
     );
 };
