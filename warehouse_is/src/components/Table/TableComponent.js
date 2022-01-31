@@ -128,25 +128,22 @@ export function TableComponent(props) {
 const [selection, setSelection] = useState([]);
 
 function onSelected(value) {
-  console.log(value)
-  //setSelection(value)
+  if (props.editColumn.select != undefined && props.editColumn.select) {
+    setSelection([value[value.length-1]])
+    props.onSelect(value[value.length-1])
+  }
 }
 
 //---------------------------эксперименты-------------------------
 
     return (
       <Paper>
-<<<<<<< HEAD
         <div className="card">
           <Grid
             rows={rows}
             columns={columns}
             getRowId={getRowId}
           >
-            <SelectionState
-              selection={selection}
-              onSelectionChange={onSelected}
-            />
             {props.columns.map(item=>{
               if (item.dropdownList != undefined && item.dropdownList.length>0) {
                 return <DropdownProvider
@@ -159,6 +156,10 @@ function onSelected(value) {
               onCommitChanges={commitChanges}
               //defaultEditingRowIds={[0]}
               columnExtensions={editingStateColumnExtensions}
+            />
+            <SelectionState
+              selection={selection}
+              onSelectionChange={onSelected}
             />
             <Table />
             <VirtualTable />
@@ -182,59 +183,6 @@ function onSelected(value) {
             />
           </Grid>
         </div>
-=======
-        <Grid
-          rows={rows}
-          columns={columns}
-          getRowId={getRowId}
-        >
-          {props.columns.map(item=>{
-            if (item.dropdownList != undefined && item.dropdownList.length>0) {
-              return <DropdownProvider
-                for={[item.name]}
-              />
-            }
-          })}
-          { () => {
-            // if (props.isSelectionActive != undefined) {
-            //   console.log('FFFFFFFFFFFFFFF')
-            //   return <SelectionState
-            //     selection={selection}
-            //     onSelectionChange={onSelected}
-            //   />        
-            // }
-          }}
-          <EditingState
-            onCommitChanges={commitChanges}
-            //defaultEditingRowIds={[0]}
-            columnExtensions={editingStateColumnExtensions}
-          />
-          <Table />
-          <TableColumnResizing
-            columnWidths={columnWidths}
-            onColumnWidthsChange={setColumnWidths}
-          />
-          <TableHeaderRow />
-          {/* { () => {
-            if (props.isSelectionActive != undefined) {
-              return  <TableSelection
-                        selectByRowClick
-                        highlightRow
-                        showSelectionColumn={false}
-                     />      
-            }
-          }} */}
-         
-          <TableEditRow />
-          <TableEditColumn
-            showAddCommand={props.editColumn.add}
-            showEditCommand={props.editColumn.edit}
-            showDeleteCommand={props.editColumn.delete}
-            messages={{editCommand: 'Правка', addCommand: 'Новая запись', commitCommand: 'Сохранить', cancelCommand: 'Отменить', deleteCommand: 'Удалить'}}
-            width={EditColumnWidth}
-          />
-        </Grid>
->>>>>>> bd97cdc03d5b28919045681e81abc75cf9ed1742
       </Paper>
     );
 };

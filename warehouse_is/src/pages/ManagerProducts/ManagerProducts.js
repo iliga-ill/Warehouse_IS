@@ -6,6 +6,7 @@ import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/Flexibl
 import InputText from "../../components/InputText/InputText";
 import InputTextArea from "../../components/InputTextArea/InputTextArea";
 import { TableComponent } from "../../components/Table/TableComponent";
+import { recomposeColor } from "@material-ui/core";
 const host = 'http://localhost:5000';
 
 const styles = {
@@ -25,11 +26,13 @@ export default function ManagerProducts(props){
     function apiGetGoodsTypeCats() {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', host+'/goods_type_cats', true);
-        
+        console.log("ManagerProducts apiGetGoodsTypeCats was launched")
         xhr.onreadystatechange = function() {
           if (xhr.readyState == XMLHttpRequest.DONE) {
             //console.log(this.response);
             var answer = JSON.parse(this.response)
+            console.log("ManagerProducts apiGetGoodsTypeCats answer: ")
+            console.log(answer)
             var buffer = []
             answer.map(function( element, i) {
                 buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: element.price, goodsLimit: element.amount_limit})
@@ -43,7 +46,7 @@ export default function ManagerProducts(props){
         xhr.send(null);
     }
 
-    apiGetGoodsTypeCats()
+    
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------стол 1
     const [tableHeaders, setTableHeaders] = React.useState([
@@ -55,9 +58,17 @@ export default function ManagerProducts(props){
         {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:70   },
         {name: 'goodsLimit',        title:'Лимит товара',       editingEnabled:true,     width:80   },
     ]) 
-    var edit_column = {add:false, edit:false, delete:false}
+    var edit_column = {add:false, edit:false, delete:false, select:true}
+    const [selectedItemId, setSelectedItemId] = React.useState()
 
-    const [tableList, setTableList] = React.useState([{number:1, goodsCategories2:"вв", goodsCategories3:"вв", goodsType:"вв", amountOnWarehouse:10, cost:"вв", goodsLimit:"вв"}])
+    const [tableList, setTableList] = React.useState([])
+    if (tableList.toString()=="")
+        apiGetGoodsTypeCats()
+
+    function btn_send_1() {
+        console.log(tableList)
+        console.log(selectedItemId)
+    }
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец
 
@@ -77,8 +88,10 @@ export default function ManagerProducts(props){
             <FlexibleBlock>
                 <div class="header_text">Товары</div>
                 <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column} isSelectionActive={true}/>
+                    <TableComponent columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column} isSelectionActive={true}/>
                 </div>
+                <div></div>
+                <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={btn_send_1}>Подтвердить</button>
             </FlexibleBlock>
             <FlexibleBlock>
                 <div class="header_text"><div>Товар:&nbsp;{good}</div></div>

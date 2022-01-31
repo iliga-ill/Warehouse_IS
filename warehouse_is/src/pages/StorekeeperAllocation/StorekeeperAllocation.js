@@ -197,11 +197,14 @@ export default function StorekeeperAllocation(props){
                 var counter = 0
                 answer.map( function(item, i) {
                     if (item.amount_real > item.placed_amount) {
-                        buf[counter] = {id: counter++, code:item.code, amount: item.amount, amount_real: item.amount_real, weight:goodsTypeAnswer[item.goods-1].weight, placed_amount:item.placed_amount , code: item.code, good_name: goodsTypeAnswer[item.goods-1].name, goodsCategories2:goodsCategories2Answer[goodsTypeAnswer[item.goods-1].subcategory_2-1].name, goodsCategories3:goodsCategories3Answer[goodsTypeAnswer[item.goods-1].subcategory_3-1].name , order_num: item.order_num}
+                        var good
+                        goodsTypeAnswer.map(item1=>{
+                            if (item1.code == item.goods)
+                                good=item1
+                        })
+                        buf[counter] = {id: counter++, code:item.code, amount: item.amount, amount_real: item.amount_real, weight:good.weight, placed_amount:item.placed_amount , code: item.code, good_name: good.name, goodsCategories2:goodsCategories2Answer[good.subcategory_2-1].name, goodsCategories3:goodsCategories3Answer[good.subcategory_3-1].name , order_num: item.order_num}
                     }
                 })
-                console.log("StorekeeperAllocation apiGetShipmentOrdersGoods changed answer: ")
-                console.log(buf)
                 setShipmentOrdersGoods(buf)
             }
         }
@@ -262,7 +265,7 @@ export default function StorekeeperAllocation(props){
         {name: 'rack',              title:'Стеллаж',            editingEnabled:true,     width:125, dropdownList: dropdownList2 },
         {name: 'shelf',             title:'Полка',              editingEnabled:true,     width:105,  dropdownList: dropdownList3 }
     ]) 
-    var edit_column = {add:false, edit:true, delete:false, select:true}
+    var edit_column = {add:false, edit:true, delete:false}
 
     const [tableList, setTableList] = React.useState([])
 
