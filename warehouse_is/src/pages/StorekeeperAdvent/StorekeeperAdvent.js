@@ -191,7 +191,6 @@ export default function StorekeeperAdvent(props){
 
         }
         xhr.send(null);
-
     }
 
     const [isStart, setIsStart] = React.useState(true)
@@ -520,7 +519,7 @@ function apiUpdateOrderGoods(amount, code) {
                 {/* <Table Id={getId()} table_headers={tableHeaders} table_field_height={table_field_height} table_list={tableList} func={setTableList} numb={0} search="true" add="true" delete="true"/> */}
                
                 <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
+                    <TableComponent height={400+'px'} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>
                 <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
             </FlexibleBlock>
