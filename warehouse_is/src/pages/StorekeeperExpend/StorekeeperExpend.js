@@ -123,7 +123,6 @@ export default function StorekeeperExpend(props){
         xhr.send(null);
     }
 
-
     const [isStart, setIsStart] = React.useState(true)
 
     if (isStart) {
@@ -143,7 +142,6 @@ export default function StorekeeperExpend(props){
 
     const [tableList, setTableList] = React.useState([])
     
-
     function apiGetGoodsByShipmentOrder() {
         var xhr = new XMLHttpRequest();
         var order = ''

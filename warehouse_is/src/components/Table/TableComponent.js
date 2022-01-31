@@ -4,6 +4,7 @@ import Chip from '@material-ui/core/Chip';
 import Input from '@material-ui/core/Input';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import { SelectionState } from '@devexpress/dx-react-grid';
 import {
   DataTypeProvider,
   EditingState,
@@ -15,6 +16,7 @@ import {
   TableEditRow,
   TableEditColumn,
   TableColumnResizing,
+  TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
 
 // import {
@@ -74,53 +76,61 @@ export function TableComponent(props) {
   var EditColumnWidth = 220
   if (!props.editColumn.add && !props.editColumn.edit && !props.editColumn.delete)
   EditColumnWidth=20
+
+  function getColumn(value){
+    var column
+    columns.map(item=>{
+      if (item.dropdownList != undefined && item.dropdownList.length>0) {
+        item.dropdownList.map(item2=>{
+          if (item2.menuItem == value)
+          column=item
+        })
+      }
+    })
+    return column
+  }
+  
+  const DropdownFormatter = ({ value }) => {
+    var column = getColumn(value)
+    var buf
+    column.dropdownList.map(item=>{
+      if (value == item.menuItem){
+        buf = <Chip label={item.menuItem}/>
+      }
+    })
+    return buf
+  }
+  
+  const DropdownEditor = ({ value, onValueChange }) => (
+    <Select
+      input={<Input />}
+      value ={value}
+      onChange={event => {onValueChange(event.target.value)}}
+      style={{ width: '100%' }}
+    >
+      {getColumn(value).dropdownList.map(item=>{
+        return <MenuItem value={item.menuItem}>{item.menuItem}</MenuItem>
+      })}
+    </Select>
+  );
+  
+  const DropdownProvider = props => (
+    <DataTypeProvider
+      formatterComponent={DropdownFormatter}
+      editorComponent={DropdownEditor}
+      {...props}
+    />
+  );
 //---------------------------return-------------------------------
 //---------------------------эксперименты-------------------------
 
-function getColumn(value){
-  var column
-  columns.map(item=>{
-    if (item.dropdownList != undefined && item.dropdownList.length>0) {
-      item.dropdownList.map(item2=>{
-        if (item2.menuItem == value)
-        column=item
-      })
-    }
-  })
-  return column
+const [selection, setSelection] = useState([1]);
+
+function onSelected(value) {
+  console.log(value)
+  setSelection(value)
 }
 
-const DropdownFormatter = ({ value }) => {
-  var column = getColumn(value)
-  var buf
-  column.dropdownList.map(item=>{
-    if (value == item.menuItem){
-      buf = <Chip label={item.menuItem}/>
-    }
-  })
-  return buf
-}
-
-const DropdownEditor = ({ value, onValueChange }) => (
-  <Select
-    input={<Input />}
-    value ={value}
-    onChange={event => {onValueChange(event.target.value)}}
-    style={{ width: '100%' }}
-  >
-    {getColumn(value).dropdownList.map(item=>{
-      return <MenuItem value={item.menuItem}>{item.menuItem}</MenuItem>
-    })}
-  </Select>
-);
-
-const DropdownProvider = props => (
-  <DataTypeProvider
-    formatterComponent={DropdownFormatter}
-    editorComponent={DropdownEditor}
-    {...props}
-  />
-);
 //---------------------------эксперименты-------------------------
 
     return (
@@ -137,6 +147,15 @@ const DropdownProvider = props => (
               />
             }
           })}
+          { () => {
+            // if (props.isSelectionActive != undefined) {
+            //   console.log('FFFFFFFFFFFFFFF')
+            //   return <SelectionState
+            //     selection={selection}
+            //     onSelectionChange={onSelected}
+            //   />        
+            // }
+          }}
           <EditingState
             onCommitChanges={commitChanges}
             //defaultEditingRowIds={[0]}
@@ -148,6 +167,16 @@ const DropdownProvider = props => (
             onColumnWidthsChange={setColumnWidths}
           />
           <TableHeaderRow />
+          {/* { () => {
+            if (props.isSelectionActive != undefined) {
+              return  <TableSelection
+                        selectByRowClick
+                        highlightRow
+                        showSelectionColumn={false}
+                     />      
+            }
+          }} */}
+         
           <TableEditRow />
           <TableEditColumn
             showAddCommand={props.editColumn.add}

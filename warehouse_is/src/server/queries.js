@@ -7,21 +7,21 @@ const Pool = require('pg').Pool
 //   port: 5432,
 // })
 
-const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'warehouse',
-  password: 'iliga',
-  port: 5432,
-})
-
 // const pool = new Pool({
 //   user: 'postgres',
 //   host: 'localhost',
 //   database: 'warehouse',
-//   password: 'admin',
+//   password: 'iliga',
 //   port: 5432,
 // })
+
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'warehouse',
+  password: 'admin',
+  port: 5432,
+})
 
 pool.connect((err, client, release) => {
     if (err) {
@@ -171,6 +171,41 @@ const getGoodsType = (request, response) => {
   })
 }
 
+const getGoodsTypeWithCat = (request, response) => {
+  pool.query('SELECT * FROM goods_categories ORDER BY code ASC', (error, results) => {
+    if (error) {
+      throw error
+    }
+    const categories = results.rows
+
+    pool.query('SELECT * FROM goods_subcategories_2 ORDER BY code ASC', (error, results) => {
+      if (error) {
+        throw error
+      }
+      const subcategories = results.rows
+
+      pool.query(`SELECT * FROM goods_type ORDER BY code ASC`, (error, results) => {
+        if (error) {
+          throw error
+        }
+        
+        var goods = results.rows
+        goods.forEach(element => {
+          categories.forEach(category => {
+            if (category.code == element.category) element.category = category.name
+          });
+          
+          subcategories.forEach(subcategory => {
+            if (subcategory.code == element.subcategory_2) element.subcategory_2 = subcategory.name
+          });
+        });
+        response.status(200).json(goods)
+      })
+    })
+  })
+
+}
+
 const getCategories = (request, response) => {
   pool.query('SELECT * FROM goods_categories ORDER BY code ASC', (error, results) => {
     if (error) {
@@ -299,6 +334,7 @@ module.exports = {
   getOrders,
   getClients,
   getGoodsTypeByCode,
+  getGoodsTypeWithCat,
   getGoodsType,
   getCategories,
   getSubCategories2,
