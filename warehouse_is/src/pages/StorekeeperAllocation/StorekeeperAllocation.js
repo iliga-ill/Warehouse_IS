@@ -274,7 +274,7 @@ export default function StorekeeperAllocation(props){
         var counter = 0;
         shipmentOrdersGoods.map(function(item,i){
             for (let i=0;i<(item.amount_real-item.placed_amount);i++){
-                buf.push({id: counter++, code:item.code, number:counter, goodsCategories2: item.goodsCategories2, goodsCategories3: item.goodsCategories3, goodsType:item.good_name, weight:item.weight, zone:"", rack:" ", shelf:"  "})
+                buf.push({id: getId(), code:item.code, number:++counter, goodsCategories2: item.goodsCategories2, goodsCategories3: item.goodsCategories3, goodsType:item.good_name, weight:item.weight, zone:"", rack:" ", shelf:"  "})
             }
         })
         setTableList(buf)

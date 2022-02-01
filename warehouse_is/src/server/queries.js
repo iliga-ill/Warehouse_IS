@@ -7,21 +7,21 @@ const Pool = require('pg').Pool
 //   port: 5432,
 // })
 
-const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'warehouse',
-  password: 'iliga',
-  port: 5432,
-})
-
 // const pool = new Pool({
 //   user: 'postgres',
 //   host: 'localhost',
 //   database: 'warehouse',
-//   password: 'admin',
+//   password: 'iliga',
 //   port: 5432,
 // })
+
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'warehouse',
+  password: 'admin',
+  port: 5432,
+})
 
 pool.connect((err, client, release) => {
     if (err) {
@@ -145,6 +145,8 @@ const getOrderGoodsByShipmentOrder = (request, response) => {
 }
 
 const getOrders = (request, response) => {
+  console.log(request.query.type)
+  console.log(request.query.status)
   pool.query(`SELECT * FROM orders WHERE order_status LIKE '%${request.query.type}%' AND status_execution LIKE '%${request.query.status}%' ORDER BY id ASC`, (error, results) => {
     if (error) {
       throw error
@@ -152,6 +154,32 @@ const getOrders = (request, response) => {
     response.status(200).json(results.rows)
   })
 }
+
+const getOrdersGoods = (request, response) => {
+  var order = parseInt(request.query.order_id)
+  pool.query(`SELECT * FROM order_goods WHERE order_id=${order} ORDER BY id ASC`, (error, results) => {
+    if (error) {
+      throw error
+    }
+    const order_goods = results.rows
+
+    pool.query(`SELECT * FROM goods_type ORDER BY code ASC`, (error, results) => {
+      if (error) {
+        throw error
+      }
+      var goods = []
+      var buffer = results.rows
+      buffer.forEach(element => {
+        order_goods.forEach(id => {
+          if (element.code == id.good_id) goods.push(element)
+        });
+      });
+      response.status(200).json(goods)
+    })
+
+  })
+}
+
 
 const getClients = (request, response) => {
   pool.query('SELECT * FROM accounts ORDER BY code ASC', (error, results) => {
@@ -342,6 +370,7 @@ module.exports = {
   getShipmentOrderGoodsAll,
   getOrderGoodsByShipmentOrder,
   getOrders,
+  getOrdersGoods,
   getClients,
   getGoodsTypeByCode,
   getGoodsTypeWithCat,
