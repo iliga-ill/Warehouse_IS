@@ -196,7 +196,7 @@ export default function StorekeeperAllocation(props){
                             if (item1.code == item.goods)
                                 good=item1
                         })
-                        buf[counter] = {id: counter++, code:item.code, amount: item.amount, amount_real: item.amount_real, weight:good.weight, placed_amount:item.placed_amount , code: item.code, good_name: good.name, goodsCategories2:goodsCategories2Answer[good.subcategory_2-1].name, goodsCategories3:goodsCategories3Answer[good.subcategory_3-1].name , order_num: item.order_num}
+                        buf[counter] = {id: counter++, code:item.code, goodCode:item.goods, amount: item.amount, amount_real: item.amount_real, weight:good.weight, placed_amount:item.placed_amount , code: item.code, good_name: good.name, goodsCategories2:goodsCategories2Answer[good.subcategory_2-1].name, goodsCategories3:goodsCategories3Answer[good.subcategory_3-1].name , order_num: item.order_num}
                     }
                 })
                 setShipmentOrdersGoods(buf)
@@ -268,7 +268,7 @@ export default function StorekeeperAllocation(props){
         var counter = 0;
         shipmentOrdersGoods.map(function(item,i){
             for (let i=0;i<(item.amount_real-item.placed_amount);i++){
-                buf.push({id: getId(), code:item.code, number:++counter, goodsCategories2: item.goodsCategories2, goodsCategories3: item.goodsCategories3, goodsType:item.good_name, weight:item.weight, zone:"", rack:" ", shelf:"  "})
+                buf.push({id: getId(), shipmentOrderGoodsCode:item.code, goodCode:item.goodCode, number:++counter, goodsCategories2: item.goodsCategories2, goodsCategories3: item.goodsCategories3, goodsType:item.good_name, weight:item.weight, zone:"", rack:" ", shelf:"  "})
             }
         })
         setTableList(buf)

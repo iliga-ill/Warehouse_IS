@@ -23,27 +23,36 @@ export default function ExpandListInputRegular(props){
     /*
     <ExpandListInput Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/>
     */
+    const [itemList, setItemList] = React.useState([])
+    React.useEffect(() => {console.log("work5");props.func(itemList)}, [itemList]);
     
-    var itemList = props.list
+    if (JSON.stringify(itemList) != JSON.stringify(props.list)){
+        setItemList(props.list)
+    }
+        
 
     function option_selected(Id) {
-        itemList.map(item=>{
+        var buf=itemList
+        buf.map(item=>{
             if (item.value==document.getElementById(Id).value) item.selected = true
             else item.selected = false
         })
-        props.func(itemList)
+        setItemList(buf)
     }
 
-    props.list.map(item=>{
-        if (item.value == props.defValue) item.selected = true
-        else item.selected = false
-    })
-    props.func(itemList)
+    if (itemList.toString() == ""){
+        var buf=props.list
+        buf.map(item=>{
+            if (item.value == props.defValue) item.selected = true
+            else item.selected = false
+        })
+        setItemList(buf)
+    }
 
     return (
            <select id={"expand_list_"+props.Id} defaultValue={props.defValue} onChange={e => option_selected("expand_list_"+props.Id)}>
             {
-               props.list.map(function(item, i){
+               itemList.map(function(item, i){
                   return <option value={item.value}>{item.value}</option>
                })
             }
