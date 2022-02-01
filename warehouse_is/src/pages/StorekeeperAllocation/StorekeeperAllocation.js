@@ -38,12 +38,6 @@ export default function StorekeeperAllocation(props){
         }
         xhr.send(null);
     }
-    // const [dropdownList1, setDropdownList1] = React.useState([
-    //     {menuItem:"Зона 1"},
-    //     {menuItem:"Зона 2"},
-    //     {menuItem:"Зона 3"},
-    //     {menuItem:"Зона 4"},
-    // ])
     
     if (zones.toString()=="")
     apiGetZones()

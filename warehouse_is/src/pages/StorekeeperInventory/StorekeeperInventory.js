@@ -22,6 +22,97 @@ export default function StorekeeperInventory(props){
     }
 
 
+    //-------------------------------------------------------------------------query
+    const [zones, setZones] = React.useState([])
+    function apiGetZones() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/zones', true);
+        //console.log("StorekeeperAllocation apiGetZones was launched")
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                var answer = JSON.parse(this.response)
+                //console.log("StorekeeperAllocation apiGetZones answer: ")
+                //console.log(answer)
+                var buf = []
+                answer.map( function(item, i) {
+                    buf[i] = {name: item.name}
+                })
+                setZones(buf)
+                apiGetRacks(buf)
+            }
+            
+        }
+        xhr.send(null);
+    }
+    
+    if (zones.toString()=="")
+    apiGetZones()
+    
+    const [racks, setRacks] = React.useState([])
+    function apiGetRacks(zonesAnswer) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/racks', true);
+        console.log("StorekeeperAllocation apiGetRacks was launched")
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                var answer = JSON.parse(this.response)
+                console.log("StorekeeperAllocation apiGetRacks answer: ")
+                console.log(answer)
+                var buf = []
+                answer.map( function(item, i) {
+                    buf[i] = {code: item.code, name: item.name, racks_num: item.racks_num, zone_num: zonesAnswer[item.zone_num-1].name}
+                })
+                setRacks(buf)
+                apiGetShelfs(buf)
+            }
+        }
+        xhr.send(null);
+    }
+
+    const [shelfs, setShelfs] = React.useState([])
+    function apiGetShelfs(racksAnswer) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/shelfs', true);
+        console.log("StorekeeperAllocation apiGetShelfs was launched")
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                var answer = JSON.parse(this.response)
+                console.log("StorekeeperAllocation apiGetShelfs answer: ")
+                console.log(answer)
+                var buf = []
+                answer.map( function(item, i) {
+                    buf[i] = {code: item.code, name: item.name, shelf_num: item.shelf_num, rack_num: racksAnswer[item.rack_num-1].name, zone_num: racksAnswer[item.rack_num-1].zone_num, capacity: item.capacity, shelf_space: item.shelf_space}
+                })
+                setShelfs(buf)
+                apiGetShelfsSpace(buf)
+            }
+        }
+        xhr.send(null);
+    }
+
+    const [shelfsSpace, setShelfsSpace] = React.useState([])
+    function apiGetShelfsSpace(shelfsAnswer) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/shelf_space', true);
+        console.log("StorekeeperAllocation apiGetShelfsSpace was launched")
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                var answer = JSON.parse(this.response)
+                console.log("StorekeeperAllocation apiGetShelfsSpace answer: ")
+                console.log(answer)
+                var buf = shelfsAnswer
+                answer.map( function(item, i) {
+                    if (buf[item.shelf_num-1].shelf_space == null) buf[item.shelf_num-1].shelf_space = []
+                    buf[item.shelf_num-1].shelf_space.push({good:item.good, amount:item.amount})
+                })
+                console.log("StorekeeperAllocation apiGetShelfsSpace changed answer: ")
+                console.log(buf)
+                setShelfsSpace(buf)
+            }
+        }
+        xhr.send(null);
+    }
+    //-------------------------------------------------------------------------query end
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------стол 1
     const [tableHeaders, setTableHeaders] = React.useState([

@@ -521,6 +521,7 @@ function apiUpdateOrderGoods(amount, code) {
                 <div style={{width:"min-content", display:'inline-table'}} >
                     <TableComponent height={245} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>
+                <div></div>
                 <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
             </FlexibleBlock>
                 {/* <FlexibleBlock>
