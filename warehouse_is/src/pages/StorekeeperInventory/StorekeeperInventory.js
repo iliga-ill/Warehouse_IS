@@ -126,10 +126,11 @@ export default function StorekeeperInventory(props){
                 var buf = shelfsAnswer
                 answer.map( function(item, i) {
                     if (buf[item.shelf_num-1].shelf_space == null) buf[item.shelf_num-1].shelf_space = []
-                        goodsType.map(item1=>{
-                            if (item1.code == item.good)
-                                buf[item.shelf_num-1].shelf_space.push({good:item1.name, goodCode:item.good, amount:item.amount, status:item.status})
-                        })
+                    buf[item.shelf_num-1].shelfSpaceCode = item.code
+                    goodsType.map(item1=>{
+                        if (item1.code == item.good)
+                            buf[item.shelf_num-1].shelf_space.push({good:item1.name, goodCode:item.good, amount:item.amount, status:item.status})
+                    })
                         
                 })
                 console.log("StorekeeperAllocation apiGetShelfsSpace changed answer: ")
@@ -157,8 +158,7 @@ export default function StorekeeperInventory(props){
         {name: 'zone',                      title:'Зона',                   editingEnabled:false,     width:70,  dropdownList:[]                },
         {name: 'rack',                      title:'Стеллаж',                editingEnabled:false,     width:90,  dropdownList:[]                },
         {name: 'shelf',                     title:'Полка',                  editingEnabled:false,     width:70,  dropdownList:[]                },
-        {name: 'goodsType',                 title:'Наименование',           editingEnabled:false,     width:170, dropdownList:[]                }, 
-        {name: 'amount',                    title:'Количество',             editingEnabled:false,     width:170, dropdownList:[]                }, 
+        {name: 'goodsType',                 title:'Наименование',           editingEnabled:false,     width:170, dropdownList:[]                },
         {name: 'inventaryzationStatus',     title:'Статус инвентаризации',  editingEnabled:true,      width:180, dropdownList: dropdownList1    },
     ]) 
     var edit_column = {add:false, edit:true, delete:false}
@@ -171,10 +171,10 @@ export default function StorekeeperInventory(props){
         shelfsSpace.map(function(item, i){
             if (item.shelf_space != null) {
                 item.shelf_space.map(function(item1, j){
-                    buf.push({id:counter, number:++counter, zone:item.zone_num, rack:item.rack_num, shelf:item.name, goodsType:item1.good, amount:item1.amount, inventaryzationStatus:item1.status})
+                    buf.push({id:counter, number:++counter, shelfSpaceCode:item.code, zone:item.zone_num, rack:item.rack_num, shelf:item.name, goodsType:item1.good, amount:item1.amount, inventaryzationStatus:item1.status})
                 })
             } else {
-                    buf.push({id:counter, number:++counter, zone:item.zone_num, rack:item.rack_num, shelf:item.name, goodsType:" ", amount:0, inventaryzationStatus:"Пусто"}) 
+                    buf.push({id:counter, number:++counter, shelfSpaceCode:item.code, zone:item.zone_num, rack:item.rack_num, shelf:item.name, goodsType:" ", amount:0, inventaryzationStatus:"Пусто"}) 
             }
         })
         setTableList(buf)
