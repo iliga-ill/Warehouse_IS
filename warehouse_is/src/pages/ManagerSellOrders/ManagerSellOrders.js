@@ -36,6 +36,10 @@ export default function ManagerSellOrders(props){
           {id:1, selected: false, title: "Выполненные"}
       ])
 
+      React.useEffect(() => {
+        apiGetOrders()
+      }, [reload]);
+
     function onTabClick(tab_id){
         var mT = tabs
         mT.map(tab => {
@@ -58,9 +62,10 @@ export default function ManagerSellOrders(props){
         {name: 'shipmentDate', title:'Срок поставки',             editingEnabled:false,     width:120   }, 
         {name: 'orderCost',    title:'Стоимость заказа (руб)',    editingEnabled:false,     width:180   }, 
     ]) 
-    var edit_column = {add:false, edit:false, delete:false}
+    var edit_column = {add:false, edit:false, delete:false, select:true}
 
-    const [tableList, setTableList] = React.useState([{number:1, orderNumber:"Заказ №0000001", shipmentDate:"2022-01-14", orderCost:1000}])
+    //const [tableList, setTableList] = React.useState([{number:1, orderNumber:"Заказ №0000001", shipmentDate:"2022-01-14", orderCost:1000}])
+    const [tableList, setTableList] = React.useState([])
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец
 
@@ -71,6 +76,13 @@ export default function ManagerSellOrders(props){
     const [note, setNote] = React.useState("вввв")
     const [orderCost, setOrderCost] = React.useState(1000)
 
+    const [selectedItemId, setSelectedItemId] = React.useState()
+
+    React.useEffect(() => {
+        if (tableList.length > 0) apiGetOrderGoods(selectedItemId)
+    }, [selectedItemId]);
+
+
     const [tableHeaders1, setTableHeaders1] = React.useState([
         {name: 'number',            title:'№',                  editingEnabled:false,    width:40    }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:true,     width:120   }, 
@@ -80,7 +92,61 @@ export default function ManagerSellOrders(props){
     ]) 
     var edit_column1 = {add:false, edit:false, delete:false}
 
-    const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"вв", amount:10, cost:10, sumCost:10}])
+    // const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"вв", amount:10, cost:10, sumCost:10}])
+    const [tableList1, setTableList1] = React.useState([])
+
+    function apiGetOrders() {
+        var xhr = new XMLHttpRequest();
+        var status = 'complited'
+        tabs.forEach(tab => {
+            if (tab.selected) {
+                if (tab.title == "Текущие") status = 'in progress'
+                else status = 'complited'
+            }
+           
+        });
+        xhr.open('GET', host+'/orders'+'?'+`type=sell&status=${status}`, true);
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            var answer = JSON.parse(this.response)
+            var buffer = []
+            answer.map(function( element, i) {
+                buffer.push({number:i+1, orderNumber: element.name, shipmentDate: element.deadline, orderCost: element.cost})
+                buffer[i].id = getId()
+                buffer[i].code = element.id;
+            });
+            setTableList(buffer)
+          }
+        }
+        
+        xhr.send(null);
+    }
+
+    function apiGetOrderGoods(value) {
+        var elm;
+        tableList.map( function(element){
+            if (element.id == value) elm = element
+        })
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/orders_goods'+ "?" + `order_id=${elm.code}`, true);
+        
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            var answer = JSON.parse(this.response)
+            console.log("ManagerSellProducts apiGetOrderGoods answer: ")
+            console.log(answer)
+            var buffer = []
+            answer.map(function( element, i) {
+                buffer.push({number:i+1, goodsType: element.name, amount: element.amount, cost: element.price, sumCost: element.price})
+                buffer[i].id = getId()
+                buffer[i].code = element.code;
+            });
+            setTableList1(buffer)
+          }
+        }
+        
+        xhr.send(null);
+    }
 
     //-------------------------------------------------------------------------Блок 2 конец
 
@@ -91,7 +157,7 @@ export default function ManagerSellOrders(props){
                 <FlexibleBlock>
                     <div class="header_text">Заказы на продажу</div>
                     <div style={{width:470+'px', display:'inline-table'}} >
-                        <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
+                        <TableComponent columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
                     </div>
                 </FlexibleBlock>
                 <FlexibleBlock>

@@ -38,6 +38,7 @@ export default function ManagerProducts(props){
                 buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: element.price, goodsLimit: element.amount_limit})
                 buffer[i].id = getId()
                 buffer[i].code = element.code;
+                buffer[i].description = element.description
             });
             setTableList(buffer)
           }
@@ -61,6 +62,10 @@ export default function ManagerProducts(props){
     var edit_column = {add:false, edit:false, delete:false, select:true}
     const [selectedItemId, setSelectedItemId] = React.useState()
 
+    React.useEffect(() => {
+       if (tableList.length > 0) setDataInTable2(selectedItemId)
+    }, [selectedItemId]);
+
     const [tableList, setTableList] = React.useState([])
     if (tableList.toString()=="")
         apiGetGoodsTypeCats()
@@ -81,6 +86,21 @@ export default function ManagerProducts(props){
     const [goodLimit, setGoodLimit] = React.useState("")
     const [goodCharacteristics, setGoodCharacteristics] = React.useState("")
 
+    function setDataInTable2(value) {
+        var elm;
+        tableList.map( function(element){
+            if (element.id == value) elm = element
+        })
+     
+        setGood(elm.goodsType)
+        setCategory(elm.goodsCategories2)
+        setSubCategory(elm.goodsCategories3)
+        setCost(elm.cost)
+        setAmountInStore(elm.amountOnWarehouse)
+        setGoodLimit(elm.goodsLimit)
+        setGoodCharacteristics(elm.description)
+    }
+
     //-------------------------------------------------------------------------Блок 3 конец
 
     return (
@@ -88,7 +108,7 @@ export default function ManagerProducts(props){
             <FlexibleBlock>
                 <div class="header_text">Товары</div>
                 <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column} isSelectionActive={true}/>
+                    <TableComponent columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>
                 <div></div>
                 <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={btn_send_1}>Подтвердить</button>

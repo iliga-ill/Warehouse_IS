@@ -22,6 +22,29 @@ export default function LogisticianProducts(props){
         return id-1
     }
 
+    function apiGetGoodsTypeCats() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/goods_type_cats', true);
+        console.log("ManagerProducts apiGetGoodsTypeCats was launched")
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            //console.log(this.response);
+            var answer = JSON.parse(this.response)
+            console.log("ManagerProducts apiGetGoodsTypeCats answer: ")
+            console.log(answer)
+            var buffer = []
+            answer.map(function( element, i) {
+                buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: element.price, weight: element.weight})
+                buffer[i].id = getId()
+                buffer[i].code = element.code;
+                buffer[i].description = element.description
+            });
+            setTableList(buffer)
+          }
+        }
+        
+        xhr.send(null);
+    }
 
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------стол 1
@@ -34,9 +57,19 @@ export default function LogisticianProducts(props){
         {name: 'cost',              title:'Цена ед товара (руб)',     editingEnabled:true,     width:160   },
         {name: 'weight',            title:'Вес ед товара (кг)',      editingEnabled:true,     width:140   },
     ]) 
-    var edit_column = {add:false, edit:false, delete:false}
+    var edit_column = {add:false, edit:false, delete:false, select:true}
 
-    const [tableList, setTableList] = React.useState([{number:1, goodsCategories2:"вв", goodsCategories3:"вв", goodsType:"вв", amountOnWarehouse:10, cost:1000, weight:100}])
+    const [selectedItemId, setSelectedItemId] = React.useState()
+
+    React.useEffect(() => {
+       if (tableList.length > 0) setDataInTable2(selectedItemId)
+    }, [selectedItemId]);
+
+    //const [tableList, setTableList] = React.useState([{number:1, goodsCategories2:"вв", goodsCategories3:"вв", goodsType:"вв", amountOnWarehouse:10, cost:1000, weight:100}])
+    const [tableList, setTableList] = React.useState([])
+    if (tableList.toString()=="")
+        apiGetGoodsTypeCats()
+    
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец
 
@@ -49,6 +82,22 @@ export default function LogisticianProducts(props){
     const [weight, setWeight] = React.useState("")
     const [goodCharacteristics, setGoodCharacteristics] = React.useState("")
 
+    
+    function setDataInTable2(value) {
+        var elm;
+        tableList.map( function(element){
+            if (element.id == value) elm = element
+        })
+     
+        setGood(elm.goodsType)
+        setCategory(elm.goodsCategories2)
+        setSubCategory(elm.goodsCategories3)
+        setCost(elm.cost)
+        setAmountInStore(elm.amountOnWarehouse)
+        setWeight(elm.weight)
+        setGoodCharacteristics(elm.description)
+    }
+
     //-------------------------------------------------------------------------Блок 3 конец
 
     return (
@@ -56,7 +105,7 @@ export default function LogisticianProducts(props){
             <FlexibleBlock>
                 <div class="header_text">Товары</div>
                 <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
+                    <TableComponent  columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>
             </FlexibleBlock>
             <FlexibleBlock>

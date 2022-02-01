@@ -26,6 +26,7 @@ app.get('/shipment_order_goods', db.getShipmentOrderGoods)
 app.get('/shipment_order_goods_all', db.getShipmentOrderGoodsAll)
 app.get('/shipment_order_goods_by_order', db.getOrderGoodsByShipmentOrder)
 app.get('/orders', db.getOrders)
+app.get('/orders_goods', db.getOrdersGoods)
 app.get('/clients', db.getClients)
 app.get('/goods_type_code', db.getGoodsTypeByCode)
 app.get('/goods_type_cats', db.getGoodsTypeWithCat)
@@ -131,9 +132,9 @@ function apiGetShelfsByRacks() {
   xhr.send(null);
 }
 
-function apiGetGoods() {
+function apiGetOrderGoods() {
   var xhr = new XMLHttpRequest();
-  xhr.open('GET', host+'/order_goods', true);
+  xhr.open('GET', host+'/order_goods'+ "?" + `order_id=4`, true);
   
   xhr.onreadystatechange = function() {
     if (xhr.readyState == XMLHttpRequest.DONE) {

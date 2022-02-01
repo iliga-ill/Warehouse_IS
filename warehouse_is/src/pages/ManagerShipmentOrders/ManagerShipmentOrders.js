@@ -34,7 +34,11 @@ export default function ManagerShipmentOrders(props){
     var [tabs, setTabs] = React.useState([
           {id:0, selected: true, title: "Текущие"},
           {id:1, selected: false, title: "Выполненные"}
-      ])
+    ])
+
+    React.useEffect(() => {
+        apiGetOrders()
+      }, [reload]);
 
     function onTabClick(tab_id){
         var mT = tabs
@@ -60,9 +64,16 @@ export default function ManagerShipmentOrders(props){
         {name: 'amount',        title:'Количество',             editingEnabled:false,     width:100   }, 
         {name: 'delay',         title:'Опоздание (дней)',       editingEnabled:false,     width:140   }, 
     ]) 
-    var edit_column = {add:false, edit:false, delete:false}
+    var edit_column = {add:false, edit:false, delete:false, select:true}
 
-    const [tableList, setTableList] = React.useState([{number:1, orderNumber:"Заказ №0000001", shipmentDate:"2022-01-14", orderCost:1000, amount:"10", delay:"10"}])
+    // const [tableList, setTableList] = React.useState([{number:1, orderNumber:"Заказ №0000001", shipmentDate:"2022-01-14", orderCost:1000, amount:"10", delay:"10"}])
+    const [tableList, setTableList] = React.useState([])
+
+    const [selectedItemId, setSelectedItemId] = React.useState()
+
+    React.useEffect(() => {
+        if (tableList.length > 0) apiGetOrderGoods(selectedItemId)
+    }, [selectedItemId]);
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец
 
@@ -79,11 +90,67 @@ export default function ManagerShipmentOrders(props){
         {name: 'number',            title:'№',                  editingEnabled:false,     width:40    }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,     width:120   }, 
         {name: 'shipmentProgress',  title:'Кол-во',             editingEnabled:false,     width:70    }, 
-        {name: 'weight',            title:'Цена ед товара',     editingEnabled:false,     width:120   },
+        {name: 'price',            title:'Цена ед товара',     editingEnabled:false,     width:120   },
     ]) 
     var edit_column1 = {add:false, edit:false, delete:false}
 
-    const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"вв", shipmentProgress:10, weight:10}])
+    // const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"вв", shipmentProgress:10, price:10}])
+    const [tableList1, setTableList1] = React.useState([])
+    
+    function apiGetOrders() {
+        var xhr = new XMLHttpRequest();
+        var status = 'complited'
+        tabs.forEach(tab => {
+            if (tab.selected) {
+                if (tab.title == "Текущие") status = 'in progress'
+                else status = 'complited'
+            }
+           
+        });
+        xhr.open('GET', host+'/orders'+'?'+`type=purchase&status=${status}`, true);
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            var answer = JSON.parse(this.response)
+            console.log("ManagerShipmentOrders apiGetOrders answer: ")
+            console.log(answer)
+            var buffer = []
+            answer.map(function( element, i) {
+                buffer.push({number:i+1, orderNumber: element.name, shipmentDate: element.deadline, orderCost: element.cost, amount: element.amount, })
+                buffer[i].id = getId()
+                buffer[i].code = element.id;
+            });
+            setTableList(buffer)
+          }
+        }
+        
+        xhr.send(null);
+    }
+
+    function apiGetOrderGoods(value) {
+        var elm;
+        tableList.map( function(element){
+            if (element.id == value) elm = element
+        })
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/orders_goods'+ "?" + `order_id=${elm.code}`, true);
+        
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            var answer = JSON.parse(this.response)
+            console.log("ManagerShipmentOrders apiGetOrderGoods answer: ")
+            console.log(answer)
+            var buffer = []
+            answer.map(function( element, i) {
+                buffer.push({number:i+1, goodsType: element.name, shipmentProgress: element.amount, price: element.price})
+                buffer[i].id = getId()
+                buffer[i].code = element.code;
+            });
+            setTableList1(buffer)
+          }
+        }
+        
+        xhr.send(null);
+    }
 
     //-------------------------------------------------------------------------Блок 2 конец
 
@@ -94,7 +161,7 @@ export default function ManagerShipmentOrders(props){
                 <FlexibleBlock>
                     <div class="header_text">Заказы на продажу</div>
                     <div style={{width:470+'px', display:'inline-table'}} >
-                        <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
+                        <TableComponent columns={tableHeaders} rows={tableList}  onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
                     </div>
                 </FlexibleBlock>
                 <FlexibleBlock>
