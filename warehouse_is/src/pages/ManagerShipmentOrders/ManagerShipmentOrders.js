@@ -78,17 +78,17 @@ export default function ManagerShipmentOrders(props){
     //-------------------------------------------------------------------------Блок 1 конец
 
     //-------------------------------------------------------------------------Блок 2
-    const [order, setOrder] = React.useState("Заказ №0000001")
+    const [order, setOrder] = React.useState("")
     const [requisites, setRequisites] = React.useState("")
     const [shipmentStatus, setShipmentStatus] = React.useState("включена")
     const [shipmentDate, setShipmentDate] = React.useState("")
-    const [orderCost, setOrderCost] = React.useState(1000)
+    const [orderCost, setOrderCost] = React.useState(0)
     const [provider, setProvider] = React.useState("")
 
 
     const [tableHeaders1, setTableHeaders1] = React.useState([
         {name: 'number',            title:'№',                  editingEnabled:false,     width:40    }, 
-        {name: 'goodsType',         title:'Наименование',       editingEnabled:false,     width:120   }, 
+        {name: 'goodsType',         title:'Наименование',       editingEnabled:false,     width:300   }, 
         {name: 'shipmentProgress',  title:'Кол-во',             editingEnabled:false,     width:70    }, 
         {name: 'price',            title:'Цена ед товара',     editingEnabled:false,     width:120   },
     ]) 
@@ -161,19 +161,20 @@ export default function ManagerShipmentOrders(props){
                 <FlexibleBlock>
                     <div class="header_text">Заказы на продажу</div>
                     <div style={{width:470+'px', display:'inline-table'}} >
-                        <TableComponent columns={tableHeaders} rows={tableList}  onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
+                        <TableComponent height={500} columns={tableHeaders} rows={tableList}  onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
                     </div>
                 </FlexibleBlock>
                 <FlexibleBlock>
-                    <div class="header_text"><div>Заказ:&nbsp;{order}</div></div>
-                    <div class="low_text">Реквизиты:&nbsp;</div><div class="low_text">{requisites}</div>
-                    <div class="low_text"><div>Доставка:&nbsp;{shipmentStatus}</div></div>
-                    <div class="low_text"><div>Срок поставки:&nbsp;{shipmentDate}</div></div>
-                    <div class="low_text"><div>Полная&nbsp;стоимость&nbsp;заказа:&nbsp;{orderCost}</div></div>
-                    <div class="low_text">Поставщик:&nbsp;</div><div class="low_text">{provider}</div>
-
+                    <div style={{width:500+"px"}}>
+                        <div class="header_text">Заказ:&nbsp;<label class="normal">{order}</label></div>
+                        <div class="low_text bold">Реквизиты:&nbsp;<label class="normal">{requisites}</label></div>
+                        <div class="low_text bold">Доставка:&nbsp;<label class="normal">{shipmentStatus}</label></div>
+                        <div class="low_text bold">Срок поставки:&nbsp;<label class="normal">{shipmentDate}</label></div>
+                        <div class="low_text bold">Полная&nbsp;стоимость&nbsp;заказа:&nbsp;<label class="normal">{orderCost}</label></div>
+                        <div class="low_text bold">Поставщик:&nbsp;<label class="normal">{provider}</label></div>
+                    </div>
                     <div style={{width:350+'px', display:'inline-table'}} >
-                        <TableComponent columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} editColumn={edit_column1}/>
+                        <TableComponent height={390} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} editColumn={edit_column1}/>
                     </div>
                 </FlexibleBlock>
             </FlexibleBlocksPage>

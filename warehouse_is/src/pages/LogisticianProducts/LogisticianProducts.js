@@ -105,17 +105,19 @@ export default function LogisticianProducts(props){
             <FlexibleBlock>
                 <div class="header_text">Товары</div>
                 <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent  columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
+                    <TableComponent height={500}  columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>
             </FlexibleBlock>
             <FlexibleBlock>
-                <div class="header_text "><div>Товар:&nbsp;{good}</div></div>
-                <div class="low_text "><div>Категория:&nbsp;{category}</div></div>
-                <div class="low_text "><div>Подкатегория:&nbsp;{subCategory}</div></div>
-                <div class="low_text "><div>Цена&nbsp;ед&nbsp;товара&nbsp;(руб):&nbsp;{cost}</div></div>
-                <div class="low_text "><div>Кол-во&nbsp;на&nbsp;складе:&nbsp;{amountInStore}</div></div>
-                <div class="low_text "><div>Вес&nbsp;ед&nbsp;товара&nbsp;(кг):&nbsp;{weight}</div></div>
-                <InputTextArea styles = "" Id={getId()} label="Хар-ки&nbsp;товара" width={100} placeholder="адрес" set={setGoodCharacteristics} defValue={goodCharacteristics}/>
+                <div style={{width:500+"px"}}>
+                    <div class="header_text">Товар:&nbsp;<label class="normal">{good}</label></div>
+                    <div class="low_text bold">Категория:&nbsp;<label class="normal">{category}</label></div>
+                    <div class="low_text bold">Подкатегория:&nbsp;<label class="normal">{subCategory}</label></div>
+                    <div class="low_text bold">Цена&nbsp;ед&nbsp;товара&nbsp;(руб):&nbsp;<label class="normal">{cost}</label></div>
+                    <div class="low_text bold">Кол-во&nbsp;на&nbsp;складе:&nbsp;<label class="normal">{amountInStore}</label></div>
+                    <div class="low_text bold">Вес&nbsp;ед&nbsp;товара&nbsp;(кг):&nbsp;<label class="normal">{weight}</label></div>
+                    <div class="low_text bold">Хар-ки&nbsp;товара:&nbsp;</div><div class="low_text normal">{goodCharacteristics}</div>
+                </div>
             </FlexibleBlock>
         </FlexibleBlocksPage>
     )

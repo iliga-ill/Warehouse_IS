@@ -22,12 +22,23 @@ export default function InputTextArea(props){
     var style = "low_text " + props.styles
     var styles = {
         style1:{
-            // width: props.width + "px"
-            width: "auto"
+            resize:"vertical"
+            // width: "auto"
         } 
     }
+    var list=[{}]
 
     return (
-        <div class={style} ><div>{props.label}</div><textarea class="textareaHeight" class={styles.style1} id={props.Id} defaultValue={props.defValue} placeholder={props.placeholder} onChange={e=>onChange(props.Id)}/></div>
+        <>
+            {list.map(function(item,i){
+                if (i==0) {
+                    if (props.change != undefined && !props.change) {
+                        return <div class={style} ><div>{props.label}</div><textarea class="textareaHeight" id={props.Id} value={props.defValue} placeholder={props.placeholder} onChange={e=>onChange(props.Id)}/></div>
+                    } else {
+                        return <div class={style} ><div>{props.label}</div><textarea class="textareaHeight" id={props.Id} defaultValue={props.defValue} placeholder={props.placeholder} onChange={e=>onChange(props.Id)}/></div>
+                    }
+                }
+            })}
+        </>
     )
 }

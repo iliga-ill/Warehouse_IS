@@ -122,8 +122,9 @@ export default function AdministratorAccounts(props){
             <FlexibleBlock>
                 <div class="header_text">Аккаунты</div>
                 <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
+                    <TableComponent  height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>
+                <div></div>
                 <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={btn_send_1}>Подтвердить</button>
             </FlexibleBlock>
         </FlexibleBlocksPage>

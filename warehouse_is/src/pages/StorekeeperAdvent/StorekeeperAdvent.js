@@ -518,8 +518,8 @@ function apiUpdateOrderGoods(amount, code) {
                 <div class="low_text"><InputFile Id={getId()} func={setDocuments}/></div>
                 {/* <Table Id={getId()} table_headers={tableHeaders} table_field_height={table_field_height} table_list={tableList} func={setTableList} numb={0} search="true" add="true" delete="true"/> */}
                
-                <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent height={400+'px'} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
+                <div style={{width:"min-content", display:'inline-table'}} >
+                    <TableComponent height={245} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>
                 <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
             </FlexibleBlock>

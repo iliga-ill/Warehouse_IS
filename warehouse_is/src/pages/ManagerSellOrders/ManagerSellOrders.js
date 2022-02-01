@@ -70,11 +70,11 @@ export default function ManagerSellOrders(props){
     //-------------------------------------------------------------------------Блок 1 конец
 
     //-------------------------------------------------------------------------Блок 2
-    const [order, setOrder] = React.useState("Заказ №0000001")
+    const [order, setOrder] = React.useState("")
     const [shipmentDate, setShipmentDate] = React.useState("")
-    const [shipmentAddress, setShipmentAddress] = React.useState("553366, Вологодская область, город Одинцово, пл. Будапештсткая, 04")
-    const [note, setNote] = React.useState("вввв")
-    const [orderCost, setOrderCost] = React.useState(1000)
+    const [shipmentAddress, setShipmentAddress] = React.useState("")
+    const [note, setNote] = React.useState("")
+    const [orderCost, setOrderCost] = React.useState(0)
 
     const [selectedItemId, setSelectedItemId] = React.useState()
 
@@ -85,7 +85,7 @@ export default function ManagerSellOrders(props){
 
     const [tableHeaders1, setTableHeaders1] = React.useState([
         {name: 'number',            title:'№',                  editingEnabled:false,    width:40    }, 
-        {name: 'goodsType',         title:'Наименование',       editingEnabled:true,     width:120   }, 
+        {name: 'goodsType',         title:'Наименование',       editingEnabled:true,     width:320   }, 
         {name: 'amount',            title:'Кол-во',             editingEnabled:true,     width:70    }, 
         {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:120   },
         {name: 'sumCost',           title:'Итог цена',          editingEnabled:true,     width:120   },
@@ -157,19 +157,22 @@ export default function ManagerSellOrders(props){
                 <FlexibleBlock>
                     <div class="header_text">Заказы на продажу</div>
                     <div style={{width:470+'px', display:'inline-table'}} >
-                        <TableComponent columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
+                        <TableComponent height={500} columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
                     </div>
                 </FlexibleBlock>
                 <FlexibleBlock>
-                    <div class="header_text">Заказ:&nbsp;{order}</div>
-                    <div class="low_text "><div>Дата&nbsp;доставки:&nbsp;{shipmentDate}</div></div>
-                    <div class="low_text ">Адрес&nbsp;доставки:&nbsp;</div><div  class="low_text ">{shipmentAddress}</div>
-                    <div class="low_text ">Примечание:&nbsp;</div><div class="low_text ">{note}</div>
-                    <div class="low_text "><div>Полная&nbsp;стоимость&nbsp;заказа&nbsp;(руб):&nbsp;{orderCost}</div></div>
-
-                    <div style={{width:470+'px', display:'inline-table'}} >
-                        <TableComponent columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} editColumn={edit_column1}/>
+                    <div style={{width:500+"px"}}>
+                        <div class="header_text">Заказ:&nbsp;<label class="normal">{order}</label></div>
+                        <div class="low_text bold">Дата&nbsp;доставки:&nbsp;<label class="normal">{shipmentDate}</label></div>
+                        <div class="low_text bold">Адрес&nbsp;доставки:&nbsp;<label class="normal">{shipmentAddress}</label></div>
+                        <div class="low_text bold">Примечание:&nbsp;</div><div class="low_text normal">{note}</div>
+                        <div class="low_text bold">Полная&nbsp;стоимость&nbsp;заказа&nbsp;(руб):&nbsp;<label class="normal">{orderCost}</label></div>
+                        <div class="low_text bold">Товары&nbsp;в&nbsp;заказе:</div>
                     </div>
+                    <div style={{width:470+'px', display:'inline-table'}} >
+                        <TableComponent height={390} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} editColumn={edit_column1}/>
+                    </div>
+                   
                 </FlexibleBlock>
             </FlexibleBlocksPage>
         </>

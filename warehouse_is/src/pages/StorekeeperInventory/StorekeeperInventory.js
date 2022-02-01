@@ -78,7 +78,7 @@ export default function StorekeeperInventory(props){
                     <div class="low_text row_with_item_wide ml_storekeeperInventory"><div>Полка&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expandImputList3[0].value} list={expandImputList3} func={setExpandImputList3}/></div>
                 </div>
                 <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
+                    <TableComponent height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>
             </FlexibleBlock>
         </FlexibleBlocksPage>

@@ -42,9 +42,8 @@ export default function App() {
     {id:2, selected: false, title: "АРМ Логиста"},
     {id:3, selected: false, title: "АРМ Администратора"},
     /*
-    
-    {id:3, selected: false, title: "АРМ Бухгалтера"},
-    {id:4, selected: false, title: "KeyCloak"},*/
+    {id:4, selected: false, title: "АРМ Бухгалтера"},
+    */
   ])
 
   function getSelectedTabId(){
@@ -82,14 +81,12 @@ export default function App() {
       {id:0, selected: true, title: "Заказы", page: <LogisticianOrders Id={900}/>},
       {id:1, selected: false, title: "Товары", page: <LogisticianProducts Id={10000}/>},
     ],[
-      {id:0, selected: true, title: "Аккаунты", page: <AdministratorAccounts Id={800}/>},
+      {id:0, selected: true, title: "Аккаунты", page: <AdministratorAccounts Id={11000}/>},
     ],[
       {id:0, selected: true, title: "Товары", page: <StorekeeperAdvent Id={12}/>},
       {id:1, selected: false, title: "Накладные", page: <StorekeeperAdvent Id={13}/>},
       {id:2, selected: false, title: "Отчеты", page: <StorekeeperAdvent Id={14}/>},
       {id:3, selected: false, title: "Счета на оплату", page: <StorekeeperAdvent Id={15}/>},
-    ],[
-      {id:0, selected: true, title: "Аккаунты", page: <StorekeeperAdvent Id={16}/>},
     ]
   ])
 

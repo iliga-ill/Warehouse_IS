@@ -50,9 +50,6 @@ export default function LogisticianOrders(props){
     }
     //-------------------------------------------------------------------------Табы конец
     //-------------------------------------------------------------------------Блок 1
-   
-    var list_with_search_width = "200px"
-    var list_with_search_height = "335px"
 
     const [orders, setOrders] = React.useState([{id:0, text: "Ничего не найдено", selected: true, code: 0}])
     React.useEffect(() => {
@@ -130,28 +127,30 @@ export default function LogisticianOrders(props){
             <TabHolder tabs={tabs} onTabClick={onTabClick}/>
             <FlexibleBlocksPage Id={getId()}>
                 <FlexibleBlock>
-                    <ListWithSearch Id={getId()} item_list={orders} func={setOrders} width={list_with_search_width} height={list_with_search_height}/>
+                    <ListWithSearch Id={getId()} item_list={orders} func={setOrders} width={"200px"} height={"525px"}/>
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div class="header_text">Доставка товаров</div>
                     <div style={{height:20+"px"}} />
                     <div style={{width:300+'px', display:'inline-table'}} >
-                        <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
+                        <TableComponent height={200} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
                     </div>
                     <div style={{height:20+"px"}} />
                     <div style={{width:300+'px', display:'inline-table'}} >
-                        <TableComponent columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} editColumn={edit_column1}/>
+                        <TableComponent height={250} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} editColumn={edit_column1}/>
                     </div>
                     <div style={{height:20+"px"}} />
                     <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Принять</button>
                 </FlexibleBlock>
                 <FlexibleBlock>
-                    <div class="header_text "><div>Заказ:&nbsp;{order}</div></div>
-                    <div class="low_text "><div>Крайний срок поставки:&nbsp;{shipmentDeadline}</div></div>
-                    <div class="low_text "><div>Полная&nbsp;стоимость&nbsp;заказа:&nbsp;{orderCost}</div></div>
-                    <div class="low_text ">Поставщик:&nbsp;</div><div class="low_text ">{provider}</div>
+                    <div style={{width:500+"px"}}>
+                        <div class="header_text">Заказ:&nbsp;<label class="normal">{order}</label></div>
+                        <div class="low_text bold">Крайний срок поставки:&nbsp;&nbsp;<label class="normal">{shipmentDeadline}</label></div>
+                        <div class="low_text bold">Полная&nbsp;стоимость&nbsp;заказа:&nbsp;<label class="normal">{orderCost}</label></div>
+                        <div class="low_text bold">Поставщик:&nbsp;<label class="normal">{provider}</label></div>
+                    </div>
                     <div style={{width:300+'px', display:'inline-table'}} >
-                        <TableComponent columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} editColumn={edit_column2}/>
+                        <TableComponent height={300} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} editColumn={edit_column2}/>
                     </div>
                 </FlexibleBlock>
             </FlexibleBlocksPage>

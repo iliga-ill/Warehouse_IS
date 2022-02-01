@@ -52,12 +52,12 @@ export default function ManagerProducts(props){
     //-------------------------------------стол 1
     const [tableHeaders, setTableHeaders] = React.useState([
         {name: 'number',            title:'№',                  editingEnabled:false,    width:40    }, 
-        {name: 'goodsCategories2',  title:'Категория',          editingEnabled:false,    width:160   }, 
-        {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,    width:160   }, 
-        {name: 'goodsType',         title:'Наименование',       editingEnabled:false,    width:170   }, 
-        {name: 'amountOnWarehouse', title:'Кол-во на складе',   editingEnabled:false,    width:70   }, 
-        {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:70   },
-        {name: 'goodsLimit',        title:'Лимит товара',       editingEnabled:true,     width:80   },
+        {name: 'goodsCategories2',  title:'Категория',          editingEnabled:false,    width:200   }, 
+        {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,    width:200   }, 
+        {name: 'goodsType',         title:'Наименование',       editingEnabled:false,    width:330   }, 
+        {name: 'amountOnWarehouse', title:'Кол-во на складе',   editingEnabled:false,    width:135   }, 
+        {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:125   },
+        {name: 'goodsLimit',        title:'Лимит товара',       editingEnabled:true,     width:120   },
     ]) 
     var edit_column = {add:false, edit:false, delete:false, select:true}
     const [selectedItemId, setSelectedItemId] = React.useState()
@@ -107,20 +107,21 @@ export default function ManagerProducts(props){
         <FlexibleBlocksPage>
             <FlexibleBlock>
                 <div class="header_text">Товары</div>
-                <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
+                <div style={{width:800+'px', display:'inline-table'}}>
+                    <TableComponent height={500} columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>
                 <div></div>
                 <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={btn_send_1}>Подтвердить</button>
             </FlexibleBlock>
             <FlexibleBlock>
-                <div class="header_text"><div>Товар:&nbsp;{good}</div></div>
-                <div class="low_text"><div>Категория:&nbsp;{category}</div></div>
-                <div class="low_text"><div>Подкатегория:&nbsp;{subCategory}</div></div>
-                <div class="low_text"><div>Цена&nbsp;ед&nbsp;товара&nbsp;(руб):&nbsp;{cost}</div></div>
-                <div class="low_text"><div>Кол-во&nbsp;на&nbsp;складе:&nbsp;{amountInStore}</div></div>
-                <div class="low_text"><div>Лимит&nbsp;товара&nbsp;(кг):&nbsp;{goodLimit}</div></div>
-                <InputTextArea styles = "" Id={getId()} label="Хар-ки&nbsp;товара" width={100} placeholder="адрес" set={setGoodCharacteristics} defValue={goodCharacteristics}/>
+                <div style={{width:500+"px"}}>
+                    <div class="header_text">Товар:&nbsp;<label class="normal">{good}</label></div>
+                    <div class="low_text bold">Категория:&nbsp;<label class="normal">{category}</label></div>
+                    <div class="low_text bold">Подкатегория:&nbsp;<label class="normal">{subCategory}</label></div>
+                    <div class="low_text bold">Цена&nbsp;ед&nbsp;товара&nbsp;<label class="normal">{cost}</label></div>
+                    <div class="low_text bold">Лимит&nbsp;товара&nbsp;(кг):&nbsp;<label class="normal">{goodLimit}</label></div>
+                    <div class="low_text bold">Хар-ки&nbsp;товара:&nbsp;</div><div class="low_text normal">{goodCharacteristics}</div>
+                </div>
             </FlexibleBlock>
         </FlexibleBlocksPage>
     )

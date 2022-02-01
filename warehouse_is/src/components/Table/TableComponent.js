@@ -134,6 +134,10 @@ function onSelected(value) {
   }
 }
 
+var height = 400
+if (props.height != undefined)
+    height = props.height
+
 //---------------------------эксперименты-------------------------
 
     return (
@@ -162,7 +166,9 @@ function onSelected(value) {
               onSelectionChange={onSelected}
             />
             <Table />
-            <VirtualTable />
+            <VirtualTable 
+              height={props.height}
+            />
             <TableColumnResizing
               columnWidths={columnWidths}
               onColumnWidthsChange={setColumnWidths}

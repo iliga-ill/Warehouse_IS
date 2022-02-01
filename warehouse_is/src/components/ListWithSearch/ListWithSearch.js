@@ -2,15 +2,7 @@ import React from "react";
 import './ListWithSearch.css';
 
 
-var styles = {
-    scroll: {
-        height: "",
-        width:"",
-        overflowY: "scroll",
-        border: "1px solid darkgray",
-        borderRadius: "5px"
-    }
-}
+
 
 export default function ListWithSearch(props){
     const [searchTerm, setSearchTerm] = React.useState("");
@@ -43,6 +35,16 @@ export default function ListWithSearch(props){
         })
         setItemList(list)
         props.func(itemList)
+    }
+
+    var styles = {
+        scroll: {
+            height: "",
+            width:"",
+            overflowY: "scroll",
+            border: "1px solid darkgray",
+            borderRadius: "5px"
+        }
     }
 
     if (styles.scroll.width != props.width) styles.scroll.width = props.width

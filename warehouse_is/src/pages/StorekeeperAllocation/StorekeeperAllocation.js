@@ -348,8 +348,8 @@ export default function StorekeeperAllocation(props){
                     <div class="low_text row_with_item_wide"><div>Приходная&nbsp;накладная&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expandImputList1[0].value} list={expandImputList1} func={setExpandImputList1}/></div>
                     <div class="low_text row_with_item_wide"><div>&nbsp;&nbsp;&nbsp;&nbsp;Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={"2022-01-14"} func={setDate}/></div>
                 </div>
-                <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column} isDropdownActive={true}/>
+                <div style={{width:400+'px', display:'inline-table'}} >
+                    <TableComponent height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column} isDropdownActive={true}/>
                 </div>
                 <div></div>
                 <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={btn_send_1}>Подтвердить</button>
@@ -357,7 +357,7 @@ export default function StorekeeperAllocation(props){
             <FlexibleBlock>
                 <div class="header_text">Полки</div>
                 <div style={{width:"min-content", height:400+'px', display:'inline-table'}}>
-                    <TableComponent columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} editColumn={edit_column2}/>
+                    <TableComponent height={535} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} editColumn={edit_column2}/>
                 </div>
             </FlexibleBlock>
         </FlexibleBlocksPage>

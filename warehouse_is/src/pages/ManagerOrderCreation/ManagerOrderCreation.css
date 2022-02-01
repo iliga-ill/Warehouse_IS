@@ -23,6 +23,7 @@
 
 .place_holder_ManagerOrderCreation{
     width: calc(100% - 100px);
+    align-self: flex-end;
     display: inline-block;
 }
 

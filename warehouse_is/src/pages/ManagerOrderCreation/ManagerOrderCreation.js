@@ -67,17 +67,19 @@ export default function ManagerOrderCreation(props){
                 <div class="header_text">Создание заказа</div>
                 <div class="header_text"></div>
                 <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
+                    <TableComponent height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>
             </FlexibleBlock>
             <FlexibleBlock>
-                <div class="header_text">Характеристики заказа</div>
-                <div class="low_text row_with_item_wide"><div>Тип&nbsp;заказа&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={orderTypeList[0].value} list={orderTypeList} func={setOrderTypeList}  i={0} j={0}/></div> 
-                <div class="low_text row_with_item_wide"><div>Дата&nbsp;доставки&nbsp;</div><InputDate Id={getId()} defValue={shipmentDate} func={setShipmentDate}/></div>
-                <div class="low_text row_with_item_wide"><div>Итоговая&nbsp;цена:&nbsp;{sumCost}&nbsp;руб</div></div>
-                <InputTextArea styles = "" Id={getId()} label="Адрес доставки" width={100} placeholder="адрес" set={setShipmentAddress} defValue={shipmentAddress}/>
-                <InputTextArea styles = "" Id={getId()} label="Примечание" width={100} placeholder="примечание" set={setNote} defValue={note}/>
-                <div class="place_holder_ManagerOrderCreation"/><button class="bt_send_ManagerOrderCreation" onClick={btn_send_1}>Создать&nbsp;заказ</button>
+                <div style={{width:500+"px"}}>
+                    <div class="header_text">Характеристики заказа</div>
+                    <div class="low_text row_with_item_wide"><div>Тип&nbsp;заказа&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={orderTypeList[0].value} list={orderTypeList} func={setOrderTypeList}  i={0} j={0}/></div> 
+                    <div class="low_text row_with_item_wide"><div>Дата&nbsp;доставки&nbsp;</div><InputDate Id={getId()} defValue={shipmentDate} func={setShipmentDate}/></div>
+                    <div class="low_text row_with_item_wide"><div>Итоговая&nbsp;цена:&nbsp;{sumCost}&nbsp;руб</div></div>
+                    <InputTextArea styles = "" Id={getId()} label="Адрес доставки:" placeholder="адрес" set={setShipmentAddress} defValue={shipmentAddress}/>
+                    <InputTextArea styles = "" Id={getId()} label="Примечание:" placeholder="примечание" set={setNote} defValue={note}/>
+                    <div class="place_holder_ManagerOrderCreation"/><button class="bt_send_ManagerOrderCreation" onClick={btn_send_1}>Создать&nbsp;заказ</button>
+                </div>
             </FlexibleBlock>
         </FlexibleBlocksPage>
     )

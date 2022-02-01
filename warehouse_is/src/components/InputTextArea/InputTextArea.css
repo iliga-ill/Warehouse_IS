@@ -20,6 +20,8 @@
 
 .textareaHeight{
     height: auto;
+    resize: vertical;
+    width: 100%;
 }
 
 .inputText{
