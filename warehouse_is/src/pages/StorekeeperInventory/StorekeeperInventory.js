@@ -145,23 +145,24 @@ export default function StorekeeperInventory(props){
     //-------------------------------------------------------------------------query end
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------стол 1
-    const [dropdownList1, setDropdownList1] = React.useState([
+    const [dropdownList1, setDropdownList4] = React.useState([
+        {menuItem:""},
         {menuItem:"Не инвентаризирован"},
-        {menuItem:"Инвентаризирован"},
+        {menuItem:"Проинвентаризирован"},
         {menuItem:"Потерян"},
         {menuItem:"Найден"},
         {menuItem:"Пусто"},
     ])
 
     const [tableHeaders, setTableHeaders] = React.useState([
-        {name: 'number',                    title:'№',                      editingEnabled:false,     width:40,  dropdownList:[]                }, 
-        {name: 'zone',                      title:'Зона',                   editingEnabled:false,     width:70,  dropdownList:[]                },
-        {name: 'rack',                      title:'Стеллаж',                editingEnabled:false,     width:90,  dropdownList:[]                },
-        {name: 'shelf',                     title:'Полка',                  editingEnabled:false,     width:70,  dropdownList:[]                },
-        {name: 'goodsType',                 title:'Наименование',           editingEnabled:false,     width:170, dropdownList:[]                },
+        {name: 'number',                    title:'№',                      editingEnabled:false,     width:60,  dropdownList:[]                }, 
+        {name: 'zone',                      title:'Зона',                   editingEnabled:false,     width:90,  dropdownList:[]                },
+        {name: 'rack',                      title:'Стеллаж',                editingEnabled:false,     width:120,  dropdownList:[]               },
+        {name: 'shelf',                     title:'Полка',                  editingEnabled:false,     width:90,  dropdownList:[]                },
+        {name: 'goodsType',                 title:'Наименование',           editingEnabled:false,     width:300, dropdownList:[]                },
         {name: 'inventaryzationStatus',     title:'Статус инвентаризации',  editingEnabled:true,      width:180, dropdownList: dropdownList1    },
     ]) 
-    var edit_column = {add:false, edit:true, delete:false}
+    var edit_column = {add:false, edit:true, delete:false, filter: true}
 
     const [tableList, setTableList] = React.useState([])
 

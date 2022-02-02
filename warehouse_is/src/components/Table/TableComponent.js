@@ -13,12 +13,17 @@ import {
   Table,
   Grid,
   TableHeaderRow,
+  TableFilterRow,
   TableEditRow,
   TableEditColumn,
   TableColumnResizing,
   TableSelection,
   VirtualTable,
 } from '@devexpress/dx-react-grid-material-ui';
+import {
+  FilteringState,
+  IntegratedFiltering,
+} from '@devexpress/dx-react-grid';
 
 // import {
 //   generateRows,
@@ -29,13 +34,26 @@ const getRowId = row => row.id
 
 export function TableComponent(props) {
 //---------------------------настройка параметров-------------------------------
-  const [columns, setColumns] = useState([ { name: 'name', title: 'Name' }]);
+  const [columns, setColumns] = useState([]);
   const [rows, setRows] = useState();
   const [editingStateColumnExtensions, setEditingStateColumnExtensions] = useState([]);
   const [columnWidths, setColumnWidths] = useState([]);
-  if (columns.length > 0) {
-    if (columns != props.columns) setColumns(props.columns)
-    if (rows != props.rows) {setRows(props.rows)}
+  console.log("stage1")
+  if (columns.length > 0 || JSON.stringify(rows)!=JSON.stringify(props.rows)) {
+    console.log("stage2")
+    if (JSON.stringify(columns) != JSON.stringify(props.columns)) {setColumns(props.columns)}
+    // console.log(JSON.stringify(rows) +" || "+ JSON.stringify(props.rows))
+    // console.log(JSON.stringify(rows) != JSON.stringify(props.rows))
+    // props.rows.map(function(item,i){
+    //   if (item.new != undefined && item.new){
+    //     console.log("stage3");
+    //     var buf = props.rows
+    //     buf[i].new=false
+    //     rows.push(buf[buf.length-1])
+    //   }
+    // })
+
+    if (JSON.stringify(rows) != JSON.stringify(props.rows)) {console.log("stage3");setRows(props.rows)}
     if (editingStateColumnExtensions.toString()=="" && columnWidths.toString()=="")
     props.columns.map(function(item, i){
       editingStateColumnExtensions[i] = {  columnName: item.name, editingEnabled: item.editingEnabled }
@@ -79,15 +97,21 @@ export function TableComponent(props) {
   EditColumnWidth=20
 
   function getColumn(value){
-    var column
-    columns.map(item=>{
-      if (item.dropdownList != undefined && item.dropdownList.length>0) {
-        item.dropdownList.map(item2=>{
-          if (item2.menuItem == value)
-          column=item
-        })
-      }
-    })
+    var column = {dropdownList:[]}
+    console.log("columns")
+    console.log(columns)
+    console.log("value")
+    console.log(value)
+    if (value!=undefined){
+      columns.map(item=>{
+        if (item.dropdownList != undefined && item.dropdownList.length>0) {
+          item.dropdownList.map(item2=>{
+            if (item2.menuItem == value)
+              column=item
+          })
+        }
+      })
+    }
     return column
   }
   
@@ -138,6 +162,17 @@ var height = 400
 if (props.height != undefined)
     height = props.height
 
+const [filters, setFilters] = useState([]);
+if (columns.length!=1 && filters.toString()=="" && props.editColumn.filter != undefined && props.editColumn.filter) {
+  var buf = []
+  columns.map(item=>{
+    if (item.dropdownList != undefined && item.dropdownList.length>0) {
+      buf.push({ columnName: item.name, value: item.dropdownList[0].menuItem})
+    }
+  })
+  setFilters(buf)
+}
+
 //---------------------------эксперименты-------------------------
 
     return (
@@ -149,13 +184,25 @@ if (props.height != undefined)
             getRowId={getRowId}
           >
             {props.columns.map(item=>{
-              if (item.dropdownList != undefined && item.dropdownList.length>0) {
+              if (item.dropdownList != undefined && item.dropdownList.length>0 && item.editingEnabled) {
                 return <DropdownProvider
                   for={[item.name]}
                 />
               }
             })}
-            
+            {props.columns.map(function(item,i){
+              if (i==0 && props.editColumn.filter != undefined && props.editColumn.filter) {
+                return <FilteringState
+                      filters={filters}
+                      onFiltersChange={setFilters}
+                    />
+              }
+            })}
+            {props.columns.map(function(item,i){
+              if (i==0 && props.editColumn.filter != undefined && props.editColumn.filter) {
+                return <IntegratedFiltering />
+              }
+            })}
             <EditingState
               onCommitChanges={commitChanges}
               //defaultEditingRowIds={[0]}
@@ -174,6 +221,12 @@ if (props.height != undefined)
               onColumnWidthsChange={setColumnWidths}
             />
             <TableHeaderRow />
+            {props.columns.map(function(item,i){
+              if (i==0 && props.editColumn.filter != undefined && props.editColumn.filter) {
+                return <TableFilterRow/>
+              }
+            })}
+            
             <TableSelection
               selectByRowClick
               highlightRow
