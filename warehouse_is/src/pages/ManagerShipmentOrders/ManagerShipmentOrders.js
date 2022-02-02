@@ -79,11 +79,9 @@ export default function ManagerShipmentOrders(props){
 
     //-------------------------------------------------------------------------Блок 2
     const [order, setOrder] = React.useState("")
-    const [requisites, setRequisites] = React.useState("")
-    const [shipmentStatus, setShipmentStatus] = React.useState("включена")
-    const [shipmentDate, setShipmentDate] = React.useState("")
+    const [address, setShipmentAddress] = React.useState("")
+    const [shipmentDeadline, setShipmentDeadline] = React.useState("")
     const [orderCost, setOrderCost] = React.useState(0)
-    const [provider, setProvider] = React.useState("")
 
 
     const [tableHeaders1, setTableHeaders1] = React.useState([
@@ -115,7 +113,7 @@ export default function ManagerShipmentOrders(props){
             console.log(answer)
             var buffer = []
             answer.map(function( element, i) {
-                buffer.push({number:i+1, orderNumber: element.name, shipmentDate: element.deadline, orderCost: element.cost, amount: element.amount, })
+                buffer.push({number:i+1, orderNumber: element.name, orderCost: element.cost, address: element.address, cost:element.cost, deadline:element.deadline})
                 buffer[i].id = getId()
                 buffer[i].code = element.id;
             });
@@ -146,6 +144,10 @@ export default function ManagerShipmentOrders(props){
                 buffer[i].code = element.code;
             });
             setTableList1(buffer)
+            setOrder(elm.orderNumber)
+            setShipmentAddress(elm.address)
+            setShipmentDeadline(elm.deadline)
+            setOrderCost(elm.orderCost)
           }
         }
         
@@ -166,12 +168,11 @@ export default function ManagerShipmentOrders(props){
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div style={{width:500+"px"}}>
-                        <div class="header_text">Заказ:&nbsp;<label class="normal">{order}</label></div>
-                        <div class="low_text bold">Реквизиты:&nbsp;<label class="normal">{requisites}</label></div>
-                        <div class="low_text bold">Доставка:&nbsp;<label class="normal">{shipmentStatus}</label></div>
-                        <div class="low_text bold">Срок поставки:&nbsp;<label class="normal">{shipmentDate}</label></div>
+                        <div class="header_text"><label class="header_text">{order}</label></div>
+                        <div class="low_text bold">Крайний срок поставки:&nbsp;&nbsp;<label class="normal">{shipmentDeadline}</label></div>
                         <div class="low_text bold">Полная&nbsp;стоимость&nbsp;заказа:&nbsp;<label class="normal">{orderCost}</label></div>
-                        <div class="low_text bold">Поставщик:&nbsp;<label class="normal">{provider}</label></div>
+                        <div class="low_text bold">Адрес:&nbsp;<label class="normal">{address}</label></div>
+                        <div class="low_text bold">Товары&nbsp;в&nbsp;заказе:&nbsp;</div>
                     </div>
                     <div style={{width:350+'px', display:'inline-table'}} >
                         <TableComponent height={390} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} editColumn={edit_column1}/>

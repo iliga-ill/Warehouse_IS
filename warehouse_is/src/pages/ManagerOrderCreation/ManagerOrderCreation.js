@@ -102,29 +102,22 @@ export default function ManagerOrderCreation(props){
     React.useEffect(() => {
         
     }, [tableList]);
-
-
-    function btn_send_1() {
-        console.log(orderTypeList)
-        console.log(shipmentDate)
-        console.log(shipmentAddress)
-        console.log(note)
-    }
+    
 
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец
 
     //-------------------------------------------------------------------------Блок 2
     const [tableHeaders1, setTableHeaders1] = React.useState([
-        {name: 'number',            title:'№',                  editingEnabled:false,    width:30    }, 
-        {name: 'goodsCategories2',  title:'Категория',          editingEnabled:false,    width:190   }, 
-        {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,    width:168   }, 
-        {name: 'goodsType',         title:'Наименование',       editingEnabled:false,    width:310   }, 
-        {name: 'amountOnWarehouse', title:'Кол-во на складе',   editingEnabled:false,    width:135   }, 
-        {name: 'cost',              title:'Цена ед товара',     editingEnabled:false,     width:125   },
-        {name: 'goodsLimit',        title:'Лимит товара',       editingEnabled:false,     width:120   },
+        {name: 'number',            title:'№',                  editingEnabled:false,    width:30, dropdownList:[]   }, 
+        {name: 'goodsCategories2',  title:'Категория',          editingEnabled:false,    width:190, dropdownList:[]   }, 
+        {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,    width:168, dropdownList:[]   }, 
+        {name: 'goodsType',         title:'Наименование',       editingEnabled:false,    width:310, dropdownList:[]   }, 
+        {name: 'amountOnWarehouse', title:'Кол-во на складе',   editingEnabled:false,    width:135, dropdownList:[]   }, 
+        {name: 'cost',              title:'Цена ед товара',     editingEnabled:false,     width:125, dropdownList:[]   },
+        {name: 'goodsLimit',        title:'Лимит товара',       editingEnabled:false,     width:120, dropdownList:[]   },
     ]) 
-    var edit_column1 = {add:false, edit:false, delete:false, select:true}
+    var edit_column1 = {add:false, edit:false, delete:false, select:true, filter: true}
     const [selectedItemId1, setSelectedItemId1] = React.useState()
    
     const [iterator, setIterator] = React.useState(0)
@@ -160,51 +153,31 @@ export default function ManagerOrderCreation(props){
 
             buf.map(function(element, i){
                 element.id = getId()
-            })
-
-            // for (var i=0;i<=iterator;i++) {
-            //     console.log(tableList1[i])
-            //     buf.push({id: getId(), goodsType: tableList1[i].goodsTypem, amount: tableList1[i].amountOnWarehouse, cost: tableList1[i].cost, sumCost: " ", goodCode: tableList1[i].code}) 
-            // }
-            // var bar = iterator
-            //setIterator(++bar) 
+            }) 
             setBufferedTableList(buf)
             setTableList(buf)
-
-            //setDataInTable2(selectedItemId1)
-            // console.log("selectedItemId1")
-            // console.log(selectedItemId1)
-            // console.log("tableList1")
-            // console.log(tableList1)
-            // tableList1.map(function(item,i){
-            //     if (item.id == selectedItemId1){
-            //         var check = true
-            //         tableList.map(function(item1,i){
-            //             if (item1.goodCode == item.code) check = false
-            //         })
-            //         console.log("check")
-            //         console.log(check)
-            //         if (check){
-            //             var buf
-            //             if (tableList.toString()==""){
-            //                 buf = []
-            //                 buf.push({id:0, number:1, goodsType:item.goodsType, amount:item.amountOnWarehouse, cost:item.cost, sumCost:" ", goodCode:item.code})
-            //             } else {
-            //                 buf = tableList
-            //                 buf.push({id: tableList[tableList.length-1].id+1, number:(tableList[tableList.length-1].number + 1), goodsType:item.goodsType, amount:item.amountOnWarehouse, cost:item.cost, sumCost:" ", goodCode:item.code})
-            //             }
-            //             console.log(buf)
-            //             setTableList(buf)
-            //         }
-            //     }
-            // })
-
         }
     }, [selectedItemId1]);
 
        
     
     //-------------------------------------------------------------------------Блок 2 конец
+
+    function btn_send_1() {
+        
+        var orderType = 'На продажу'
+        orderTypeList.map(item=>{
+            if (item.selected){
+                orderType = item.value
+            }
+        })
+
+        console.log(orderType)
+        console.log(shipmentDate)
+        console.log(shipmentAddress)
+        console.log(note)
+        console.log(tableList)
+    }
 
     return (
         <FlexibleBlocksPage>

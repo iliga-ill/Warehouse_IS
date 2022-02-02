@@ -11,14 +11,14 @@
     margin-bottom: 0.25rem;
 }
 
-.bt_send{
-    width: 5rem;
+.bt_send_LogisticianOrders{
+    width: 13rem;
     height: fit-content;
     align-self: flex-end;
 }
 
-.place_holder{
-    width: calc(100% - 5rem);
+.place_holder_LogisticianOrders{
+    width: calc(100% - 13rem);
     display: inline-block;
 }
 

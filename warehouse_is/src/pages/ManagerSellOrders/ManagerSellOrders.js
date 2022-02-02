@@ -71,9 +71,8 @@ export default function ManagerSellOrders(props){
 
     //-------------------------------------------------------------------------Блок 2
     const [order, setOrder] = React.useState("")
-    const [shipmentDate, setShipmentDate] = React.useState("")
-    const [shipmentAddress, setShipmentAddress] = React.useState("")
-    const [note, setNote] = React.useState("")
+    const [address, setShipmentAddress] = React.useState("")
+    const [shipmentDeadline, setShipmentDeadline] = React.useState("")
     const [orderCost, setOrderCost] = React.useState(0)
 
     const [selectedItemId, setSelectedItemId] = React.useState()
@@ -110,8 +109,10 @@ export default function ManagerSellOrders(props){
           if (xhr.readyState == XMLHttpRequest.DONE) {
             var answer = JSON.parse(this.response)
             var buffer = []
+            console.log("answer")
+            console.log(answer)
             answer.map(function( element, i) {
-                buffer.push({number:i+1, orderNumber: element.name, shipmentDate: element.deadline, orderCost: element.cost})
+                buffer.push({number:i+1, orderNumber: element.name, orderCost: element.cost, address: element.address, cost:element.cost, deadline:element.deadline})
                 buffer[i].id = getId()
                 buffer[i].code = element.id;
             });
@@ -141,12 +142,20 @@ export default function ManagerSellOrders(props){
                 buffer[i].id = getId()
                 buffer[i].code = element.code;
             });
+            console.log("elm")
+            console.log(elm)
             setTableList1(buffer)
+            setOrder(elm.orderNumber)
+            setShipmentAddress(elm.address)
+            setShipmentDeadline(elm.deadline)
+            setOrderCost(elm.orderCost)
           }
         }
         
         xhr.send(null);
     }
+
+    //{number:i+1, orderNumber: element.name, orderCost: element.cost, address: element.address, cost:element.cost, deadline:element.deadline}
 
     //-------------------------------------------------------------------------Блок 2 конец
 
@@ -162,12 +171,11 @@ export default function ManagerSellOrders(props){
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div style={{width:500+"px"}}>
-                        <div class="header_text">Заказ:&nbsp;<label class="normal">{order}</label></div>
-                        <div class="low_text bold">Дата&nbsp;доставки:&nbsp;<label class="normal">{shipmentDate}</label></div>
-                        <div class="low_text bold">Адрес&nbsp;доставки:&nbsp;<label class="normal">{shipmentAddress}</label></div>
-                        <div class="low_text bold">Примечание:&nbsp;</div><div class="low_text normal">{note}</div>
-                        <div class="low_text bold">Полная&nbsp;стоимость&nbsp;заказа&nbsp;(руб):&nbsp;<label class="normal">{orderCost}</label></div>
-                        <div class="low_text bold">Товары&nbsp;в&nbsp;заказе:</div>
+                        <div class="header_text"><label class="header_text">{order}</label></div>
+                        <div class="low_text bold">Крайний срок поставки:&nbsp;&nbsp;<label class="normal">{shipmentDeadline}</label></div>
+                        <div class="low_text bold">Полная&nbsp;стоимость&nbsp;заказа:&nbsp;<label class="normal">{orderCost}</label></div>
+                        <div class="low_text bold">Адрес:&nbsp;<label class="normal">{address}</label></div>
+                        <div class="low_text bold">Товары&nbsp;в&nbsp;заказе:&nbsp;</div>
                     </div>
                     <div style={{width:470+'px', display:'inline-table'}} >
                         <TableComponent height={390} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} editColumn={edit_column1}/>

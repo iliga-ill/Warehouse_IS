@@ -38,22 +38,17 @@ export function TableComponent(props) {
   const [rows, setRows] = useState();
   const [editingStateColumnExtensions, setEditingStateColumnExtensions] = useState([]);
   const [columnWidths, setColumnWidths] = useState([]);
-  console.log("stage1")
   if (columns.length > 0 || JSON.stringify(rows)!=JSON.stringify(props.rows)) {
-    console.log("stage2")
     if (JSON.stringify(columns) != JSON.stringify(props.columns)) {setColumns(props.columns)}
-    // console.log(JSON.stringify(rows) +" || "+ JSON.stringify(props.rows))
-    // console.log(JSON.stringify(rows) != JSON.stringify(props.rows))
-    // props.rows.map(function(item,i){
-    //   if (item.new != undefined && item.new){
-    //     console.log("stage3");
-    //     var buf = props.rows
-    //     buf[i].new=false
-    //     rows.push(buf[buf.length-1])
-    //   }
-    // })
+    props.rows.map(function(item,i){
+      if (item.new != undefined && item.new){
+        var buf = props.rows
+        buf[i].new=false
+        rows.push(buf[buf.length-1])
+      }
+    })
 
-    if (JSON.stringify(rows) != JSON.stringify(props.rows)) {console.log("stage3");setRows(props.rows)}
+    if (JSON.stringify(rows) != JSON.stringify(props.rows)) {setRows(props.rows)}
     if (editingStateColumnExtensions.toString()=="" && columnWidths.toString()=="")
     props.columns.map(function(item, i){
       editingStateColumnExtensions[i] = {  columnName: item.name, editingEnabled: item.editingEnabled }
@@ -98,10 +93,6 @@ export function TableComponent(props) {
 
   function getColumn(value){
     var column = {dropdownList:[]}
-    console.log("columns")
-    console.log(columns)
-    console.log("value")
-    console.log(value)
     if (value!=undefined){
       columns.map(item=>{
         if (item.dropdownList != undefined && item.dropdownList.length>0) {
@@ -165,11 +156,14 @@ if (props.height != undefined)
 const [filters, setFilters] = useState([]);
 if (columns.length!=1 && filters.toString()=="" && props.editColumn.filter != undefined && props.editColumn.filter) {
   var buf = []
+  var check = false
   columns.map(item=>{
     if (item.dropdownList != undefined && item.dropdownList.length>0) {
       buf.push({ columnName: item.name, value: item.dropdownList[0].menuItem})
+      check = true
     }
   })
+  if (check)
   setFilters(buf)
 }
 

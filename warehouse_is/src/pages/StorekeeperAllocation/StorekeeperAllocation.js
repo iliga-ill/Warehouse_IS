@@ -96,8 +96,8 @@ export default function StorekeeperAllocation(props){
                 console.log(answer)
                 var buf = shelfsAnswer
                 answer.map( function(item, i) {
-                    if (buf[item.shelf_num-1].shelf_space == null) buf[item.shelf_num-1].shelf_space = []
-                    buf[item.shelf_num-1].shelf_space.push({good:item.good, amount:item.amount})
+                    if (buf[item.shelf_num].shelf_space == null) buf[item.shelf_num].shelf_space = []
+                    buf[item.shelf_num].shelf_space.push({good:item.good, amount:item.amount})
                 })
                 console.log("StorekeeperAllocation apiGetShelfsSpace changed answer: ")
                 console.log(buf)

@@ -63,11 +63,9 @@ export default function StorekeeperAdvent(props){
 
     const [orders, setOrders] = React.useState([])
     React.useEffect(() => {
-        if (goodsType.toString() != "") {
+        if (orders.toString() != "") {
             apiGetGoodsByShipmentOrder()
-            console.log(orders)
         }
-     
     }, [orders]);
 
     function apiGetShipmentOrders() {
