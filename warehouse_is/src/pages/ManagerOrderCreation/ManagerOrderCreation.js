@@ -14,8 +14,6 @@ const styles = {
 
   }
 
-  
-
 export default function ManagerOrderCreation(props){
 
     var id=props.Id
@@ -93,7 +91,6 @@ export default function ManagerOrderCreation(props){
 
     //-------------------------------------стол 1
     const [tableHeaders, setTableHeaders] = React.useState([
-        {name: 'number',            title:'№',                  editingEnabled:false,    width:40    }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:true,     width:120   }, 
         {name: 'amount',            title:'Кол-во',             editingEnabled:true,     width:70    }, 
         {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:120   },
@@ -130,42 +127,80 @@ export default function ManagerOrderCreation(props){
     var edit_column1 = {add:false, edit:false, delete:false, select:true}
     const [selectedItemId1, setSelectedItemId1] = React.useState()
    
+    const [iterator, setIterator] = React.useState(0)
 
     const [tableList1, setTableList1] = React.useState([])
+
+    const [bufferedTableList, setBufferedTableList] = React.useState([])
+    
     if (tableList1.toString()=="")
         apiGetGoodsTypeCats()
 
-        React.useEffect(() => {
-            if (tableList1.toString()!="" && selectedItemId1 != undefined) {
-                //setDataInTable2(selectedItemId1)
-                console.log("selectedItemId1")
-                console.log(selectedItemId1)
-                console.log("tableList1")
-                console.log(tableList1)
-                tableList1.map(function(item,i){
-                    if (item.id == selectedItemId1){
-                        var check = true
-                        tableList.map(function(item1,i){
-                            if (item1.goodCode == item.code) check = false
-                        })
-                        console.log("check")
-                        console.log(check)
-                        if (check){
-                            var buf
-                            if (tableList.toString()==""){
-                                buf = []
-                                buf.push({id:0, number:1, goodsType:item.goodsType, amount:item.amountOnWarehouse, cost:item.cost, sumCost:" ", goodCode:item.code})
-                            } else {
-                                buf = tableList
-                                buf.push({id: tableList[tableList.length-1].id+1, number:(tableList[tableList.length-1].number + 1), goodsType:item.goodsType, amount:item.amountOnWarehouse, cost:item.cost, sumCost:" ", goodCode:item.code})
-                            }
-                            console.log(buf)
-                            setTableList(buf)
-                        }
-                    }
-                })
-               }
-        }, [selectedItemId1]);
+    React.useEffect(() => {
+        if (tableList1.toString()!="" && selectedItemId1 != undefined) {
+            var buf = []
+            var selectedRow;
+
+            bufferedTableList.map(function(element, i) {
+                buf.push(element)
+            })
+
+            tableList1.map(function(element, i){
+                if (element.id == selectedItemId1) {
+                    console.log(`i`)
+                    console.log(i)
+                    selectedRow = {id: getId(), goodsType: tableList1[i].goodsType, amount: tableList1[i].amountOnWarehouse, cost: tableList1[i].cost, sumCost: " ", goodCode: tableList1[i].code}
+                }     
+            })
+            var check = true
+            buf.map(function(element,i){
+                if (element.goodCode == selectedRow.goodCode) check = false
+            })
+            if (check) buf.push(selectedRow)
+
+            buf.map(function(element, i){
+                element.id = getId()
+            })
+
+            // for (var i=0;i<=iterator;i++) {
+            //     console.log(tableList1[i])
+            //     buf.push({id: getId(), goodsType: tableList1[i].goodsTypem, amount: tableList1[i].amountOnWarehouse, cost: tableList1[i].cost, sumCost: " ", goodCode: tableList1[i].code}) 
+            // }
+            // var bar = iterator
+            //setIterator(++bar) 
+            setBufferedTableList(buf)
+            setTableList(buf)
+
+            //setDataInTable2(selectedItemId1)
+            // console.log("selectedItemId1")
+            // console.log(selectedItemId1)
+            // console.log("tableList1")
+            // console.log(tableList1)
+            // tableList1.map(function(item,i){
+            //     if (item.id == selectedItemId1){
+            //         var check = true
+            //         tableList.map(function(item1,i){
+            //             if (item1.goodCode == item.code) check = false
+            //         })
+            //         console.log("check")
+            //         console.log(check)
+            //         if (check){
+            //             var buf
+            //             if (tableList.toString()==""){
+            //                 buf = []
+            //                 buf.push({id:0, number:1, goodsType:item.goodsType, amount:item.amountOnWarehouse, cost:item.cost, sumCost:" ", goodCode:item.code})
+            //             } else {
+            //                 buf = tableList
+            //                 buf.push({id: tableList[tableList.length-1].id+1, number:(tableList[tableList.length-1].number + 1), goodsType:item.goodsType, amount:item.amountOnWarehouse, cost:item.cost, sumCost:" ", goodCode:item.code})
+            //             }
+            //             console.log(buf)
+            //             setTableList(buf)
+            //         }
+            //     }
+            // })
+
+        }
+    }, [selectedItemId1]);
 
        
     
