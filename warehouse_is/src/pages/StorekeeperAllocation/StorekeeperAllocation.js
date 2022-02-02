@@ -199,6 +199,8 @@ export default function StorekeeperAllocation(props){
                         buf[counter] = {id: counter++, code:item.code, goodCode:item.goods, amount: item.amount, amount_real: item.amount_real, weight:good.weight, placed_amount:item.placed_amount , code: item.code, good_name: good.name, goodsCategories2:goodsCategories2Answer[good.subcategory_2-1].name, goodsCategories3:goodsCategories3Answer[good.subcategory_3-1].name , order_num: item.order_num}
                     }
                 })
+                console.log("StorekeeperAllocation apiGetShipmentOrdersGoods answer changed: ")
+                console.log(buf)
                 setShipmentOrdersGoods(buf)
             }
         }
@@ -244,9 +246,9 @@ export default function StorekeeperAllocation(props){
 
     const [dropdownList3, setDropdownList3] = React.useState([
         {menuItem:"  "},
-        {menuItem:"полка 1"},
-        {menuItem:"полка 2"},
-        {menuItem:"полка 3"},
+        {menuItem:"Полка 1"},
+        {menuItem:"Полка 2"},
+        {menuItem:"Полка 3"},
     ])
 
     const [tableHeaders, setTableHeaders] = React.useState([
@@ -274,6 +276,21 @@ export default function StorekeeperAllocation(props){
         setTableList(buf)
     }
 
+    function apiPostGoodsToShelfs(value) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", host+'/post_goods_to_shelfs', true);
+      
+        //Send the proper header information along with the request
+        xhr.setRequestHeader("Content-Type", "application/json");
+      
+        xhr.onreadystatechange = function() { // Call a function when the state changes.
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                // Request finished. Do processing here.
+                alert("Изменения успешно приняты")
+            }
+        }
+        xhr.send(JSON.stringify(value));
+    }
     //{id: counter++, amount: item.amount, amount_real: item.amount_real, placed_amount:item.placed_amount, code: item.code, good_name: goodsTypeAnswer[item.goods-1].name, goodsCategories2:goodsCategories2Answer[goodsTypeAnswer[item.goods-1].subcategory_2-1].name, goodsCategories3:goodsCategories3Answer[goodsTypeAnswer[item.goods-1].subcategory_3-1].name , order_num: item.order_num}
     
     // function apiGetClients() {
@@ -301,6 +318,7 @@ export default function StorekeeperAllocation(props){
 
     function btn_send_1() {
         console.log(tableList)
+        apiPostGoodsToShelfs(tableList)
     }
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец

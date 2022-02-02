@@ -26,6 +26,7 @@ app.get('/shipment_order_goods', db.getShipmentOrderGoods)
 app.get('/shipment_order_goods_all', db.getShipmentOrderGoodsAll)
 app.get('/shipment_order_goods_by_order', db.getOrderGoodsByShipmentOrder)
 app.get('/orders', db.getOrders)
+app.get('/orders_all', db.getOrdersAll)
 app.get('/orders_goods', db.getOrdersGoods)
 app.get('/clients', db.getClients)
 app.get('/goods_type_code', db.getGoodsTypeByCode)
@@ -42,6 +43,7 @@ app.post('/post_goods_to_shelfs', db.postGoodsToShelfSpace)
 app.put('/update_inventory', db.updateInventory)
 app.put('/update_order', db.updateOrder)
 app.put('/update_order_goods', db.updateOrderGoods)
+app.put('/update_order_goods_expend', db.updateOrderGoodsExpend)
 
 app.use('/login', (req, res) => {
   res.send({
@@ -324,6 +326,23 @@ function apiPostNewUser() {
   }
   xhr.send("name=Имя&surname=Фамилия&patronymic=Отчество&login=Логин&password=Пароль&phone_num=Телефон&duty=Должность");
 }
+
+function apiPostGoodsToShelfs(value) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", host+'/post_goods_to_shelfs', true);
+
+  //Send the proper header information along with the request
+  xhr.setRequestHeader("Content-Type", "application/json");
+
+  xhr.onreadystatechange = function() { // Call a function when the state changes.
+      if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+          // Request finished. Do processing here.
+          console.log("New shelf set")
+      }
+  }
+  xhr.send(JSON.stringify(value));
+}
+
 
 function apiUpdateInventory() {
   var xhr = new XMLHttpRequest();

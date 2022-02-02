@@ -34,7 +34,7 @@ export default function StorekeeperExpend(props){
     }, [orders]);
     function apiGetShipmentOrders() {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/shipment_order_goods'+'?'+'type=purchase', true);
+        xhr.open('GET', host+'/shipment_order_goods'+'?'+'type=purchase&status=opened', true);
         console.log("StorekeeperAdvent apiGetOrders was launched")
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -238,7 +238,7 @@ export default function StorekeeperExpend(props){
     
     function apiUpdateOrderGoods(amount, code) {
         var xhr = new XMLHttpRequest();
-        xhr.open('PUT', host+'/update_order_goods'+'?'+`amount=${amount}&code=${code}`, true);
+        xhr.open('PUT', host+'/update_order_goods_expend'+'?'+`amount=${amount}&code=${code}`, true);
       
         //Send the proper header information along with the request
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");

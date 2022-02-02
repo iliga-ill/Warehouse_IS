@@ -63,17 +63,13 @@ export default function ManagerProducts(props){
     const [selectedItemId, setSelectedItemId] = React.useState()
 
     React.useEffect(() => {
-       if (tableList.length > 0) setDataInTable2(selectedItemId)
+       if (selectedItemId != undefined && tableList.length > 0) setDataInTable2(selectedItemId)
     }, [selectedItemId]);
 
     const [tableList, setTableList] = React.useState([])
     if (tableList.toString()=="")
         apiGetGoodsTypeCats()
 
-    function btn_send_1() {
-        console.log(tableList)
-        console.log(selectedItemId)
-    }
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец
 
@@ -91,7 +87,8 @@ export default function ManagerProducts(props){
         tableList.map( function(element){
             if (element.id == value) elm = element
         })
-     
+        console.log("elm")
+        console.log(elm)
         setGood(elm.goodsType)
         setCategory(elm.goodsCategories2)
         setSubCategory(elm.goodsCategories3)
@@ -110,8 +107,6 @@ export default function ManagerProducts(props){
                 <div style={{width:800+'px', display:'inline-table'}}>
                     <TableComponent height={500} columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>
-                <div></div>
-                <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={btn_send_1}>Подтвердить</button>
             </FlexibleBlock>
             <FlexibleBlock>
                 <div style={{width:500+"px"}}>

@@ -7,21 +7,21 @@ const Pool = require('pg').Pool
 //   port: 5432,
 // })
 
-const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'warehouse',
-  password: 'iliga',
-  port: 5432,
-})
-
 // const pool = new Pool({
 //   user: 'postgres',
 //   host: 'localhost',
 //   database: 'warehouse',
-//   password: 'admin',
+//   password: 'iliga',
 //   port: 5432,
 // })
+
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'warehouse',
+  password: 'admin',
+  port: 5432,
+})
 
 pool.connect((err, client, release) => {
     if (err) {
@@ -107,8 +107,8 @@ const getShipmentOrderGoods = (request, response) => {
       throw error
     }  
     orders = results.rows
-
-    pool.query('SELECT * FROM shipment_order ORDER BY code ASC', (error, results) => {
+  
+    pool.query(`SELECT * FROM shipment_order WHERE status LIKE '%${request.query.status}%' ORDER BY code ASC`, (error, results) => {
     
       if (error) {
         throw error
@@ -145,9 +145,16 @@ const getOrderGoodsByShipmentOrder = (request, response) => {
 }
 
 const getOrders = (request, response) => {
-  console.log(request.query.type)
-  console.log(request.query.status)
   pool.query(`SELECT * FROM orders WHERE order_status LIKE '%${request.query.type}%' AND status_execution LIKE '%${request.query.status}%' ORDER BY id ASC`, (error, results) => {
+    if (error) {
+      throw error
+    }
+    response.status(200).json(results.rows)
+  })
+}
+
+const getOrdersAll = (request, response) => {
+  pool.query(`SELECT * FROM orders WHERE status_execution LIKE '%${request.query.status}%' ORDER BY id ASC`, (error, results) => {
     if (error) {
       throw error
     }
@@ -305,30 +312,118 @@ const setShelfs = (request, response) => {
 }
 
 const postNewUser = (request, response) => {
-  const text = 'INSERT INTO accounts (name, surname, patronymic, login, password, phone_num, duty) VALUES ($1, $2, $3, $4, $5, $6, $7)'
- 
-  const values = [request.body.name, request.body.surname, request.body.patronymic, request.body.login, request.body.password, parseInt(request.body.phone_num), request.body.duty]
-  console.log(values)
+  const textINSERT = 'INSERT INTO accounts (name, surname, patronymic, login, password, phone_num, duty) VALUES ($1, $2, $3, $4, $5, $6, $7)'
+  const textUPDATE = 'UPDATE accounts SET name=$1, surname=$2, patronymic=$3, login=$4, password=$5, phone_num=$6, duty=$7 WHERE code=$8'
+  const textDELETE = 'DELETE FROM accounts WHERE code=$1'
+  var accounts = []
 
-  pool.query(text, values, (error, results) => {
+  //console.log(Object.values(request.body)[0][2])
+  var accounts_added = Object.values(request.body)[0] 
+
+  pool.query('SELECT * FROM accounts ORDER BY code ASC', (error, results) => {
     if (error) {
       throw error
     }
-    response.status(201).send(`User added with ID: ${results.insertId}`)
+    accounts = results.rows
+
+    accounts.map(function(elementDB, i) {
+      var check = false
+      accounts_added.map(function(element, j) {
+        if (elementDB.code == element.code) {
+          check = true
+          pool.query(textUPDATE, [element.name, element.surname, element.patronymic, element.login, element.password, element.phone_num, element.duty, element.code], (error, results) => {
+            if (error) {
+              throw error
+            }
+          })
+          var index = Object.values(request.body)[0].indexOf(element)
+          accounts_added.splice(index, 1)
+        }
+      })
+      if (!check) {
+        pool.query(textDELETE, [elementDB.code], (error, results) => {
+          if (error) {
+            throw error
+          }
+        })
+      }
+    })
+
+    if (accounts_added.length > 0) {
+      accounts_added.map(function(element, i){
+        pool.query(textINSERT, [element.name, element.surname, element.patronymic, element.login, element.password, element.phone_num, element.duty], (error, results) => {
+          if (error) {
+            throw error
+          }
+        })
+      })
+    }
+
+    response.status(201).send(`Accounts updated: ${results.insertId}`)
   })
 }
 
 const postGoodsToShelfSpace = (request, response) => {
-  const text = 'INSERT INTO accounts (good, amount, shelf_num) VALUES ($1, $2, $3)'
- 
-  const values = [request.body.good, request.body.amount, request.body.shelf_num]
-  console.log(values)
+  const textINSERT = 'INSERT INTO shelf_space (good, amount, shelf_num) VALUES ($1, $2, $3)'
+  const textUPDATE = 'UPDATE shelf_space SET shelf_num=$1 WHERE code=$2'
+  const textUPDATE_placed = 'UPDATE shipment_order_goods SET placed_amount = placed_amount + 1 WHERE code=$1'
+  const list = Object.values(request.body) 
+  var list_sorted = []
+  var shelfs = []
+  var racks = []
+  var zones = []
 
-  pool.query(text, values, (error, results) => {
+  list.map(function(element,i) {
+    if (element.zone != "" && element.rack != " " && element.shelf != "  ") list_sorted.push(element)
+  })
+
+  pool.query('SELECT * FROM shelfs ORDER BY code ASC', (error, results) => {
     if (error) {
       throw error
     }
-    response.status(201).send(`User added with ID: ${results.insertId}`)
+    shelfs = results.rows
+
+    pool.query('SELECT * FROM racks ORDER BY code ASC', (error, results) => {
+      if (error) {
+        throw error
+      }
+      racks = results.rows
+  
+      pool.query('SELECT * FROM zones ORDER BY code ASC', (error, results) => {
+        if (error) {
+          throw error
+        }
+        zones = results.rows
+    
+        list_sorted.map(function(element, i) {
+          var zoneId = 0;
+          var rackId = 0;
+          var shelfID = 0;
+          zones.map(function(zone,j){
+            if (zone.name == element.zone) zoneId = zone.code
+          })
+          racks.map(function(rack,j){
+            if (rack.name == element.rack && zoneId == rack.zone_num) rackId = rack.code
+          })
+          shelfs.map(function(shelf,j){
+            if (shelf.name == element.shelf && rackId == shelf.rack_num) shelfID = shelf.code
+          })
+
+          pool.query(textINSERT, [element.goodCode, 1, shelfID], (error, results) => {
+            if (error) {
+              throw error
+            }
+            pool.query(textUPDATE_placed, [element.shipmentOrderGoodsCode], (error, results) => {
+              if (error) {
+                throw error
+              }
+            })
+          })
+        })
+        
+      })
+    })
+    response.status(201).send(`Updated placed_amount: ${results}`)
   })
 }
 
@@ -351,10 +446,65 @@ const updateOrder = (request, response) => {
 }
 
 const updateOrderGoods = (request, response) => {
-  pool.query('UPDATE shipment_order_goods SET amount_real=$1 WHERE code=$2', [request.query.amount, request.query.code], (error, results) => {
+  var ordered_goods = []
+
+  pool.query('SELECT goods, order_num FROM shipment_order_goods WHERE code=$1', [request.query.code], (error, results) => {
     if (error) {
       throw error
     }
+    ordered_goods = results.rows
+
+    pool.query('UPDATE shipment_order_goods SET amount_real=$1 WHERE code=$2', [request.query.amount, request.query.code], (error, results) => {
+      if (error) {
+        throw error
+      }
+
+      ordered_goods.map(function(element, i){
+        pool.query('UPDATE goods_type SET amount=amount + $1 WHERE code=$2', [request.query.amount, element.goods], (error, results) => {
+          if (error) {
+            throw error
+          }  
+        })    
+      })
+      pool.query(`UPDATE shipment_order SET status='${'closed'}' WHERE code=$1`, [ordered_goods[0].order_num], (error, results) => {
+        if (error) {
+          throw error
+        }
+
+      })     
+    })
+    response.status(201).send(`User added with ID: ${results.insertId}`)
+  })  
+}
+
+const updateOrderGoodsExpend = (request, response) => {
+  var ordered_goods = []
+
+  pool.query('SELECT goods, order_num FROM shipment_order_goods WHERE code=$1', [request.query.code], (error, results) => {
+    if (error) {
+      throw error
+    }
+    ordered_goods = results.rows
+
+    pool.query('UPDATE shipment_order_goods SET amount_real=$1 WHERE code=$2', [request.query.amount, request.query.code], (error, results) => {
+      if (error) {
+        throw error
+      }
+
+      ordered_goods.map(function(element, i){
+        pool.query('UPDATE goods_type SET amount=amount - $1 WHERE code=$2', [request.query.amount, element.goods], (error, results) => {
+          if (error) {
+            throw error
+          }  
+        })    
+      })
+      pool.query(`UPDATE shipment_order SET status='${'closed'}' WHERE code=$1`, [ordered_goods[0].order_num], (error, results) => {
+        if (error) {
+          throw error
+        }
+
+      })     
+    })
     response.status(201).send(`User added with ID: ${results.insertId}`)
   })
 }
@@ -370,6 +520,7 @@ module.exports = {
   getShipmentOrderGoodsAll,
   getOrderGoodsByShipmentOrder,
   getOrders,
+  getOrdersAll,
   getOrdersGoods,
   getClients,
   getGoodsTypeByCode,
@@ -385,5 +536,6 @@ module.exports = {
   postGoodsToShelfSpace,
   updateInventory,
   updateOrder,
-  updateOrderGoods
+  updateOrderGoods,
+  updateOrderGoodsExpend
 }

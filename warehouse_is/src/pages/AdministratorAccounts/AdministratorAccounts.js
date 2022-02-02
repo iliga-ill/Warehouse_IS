@@ -47,6 +47,7 @@ export default function AdministratorAccounts(props){
             answer.map( function(item, i) {
                 buffer[i] = {number:i+1, name: item.name, surname: item.surname, patronymic: item.patronymic, login: item.login, password: item.password, phone_num: item.phone_num, duty: item.duty}
                 buffer[i].id = 'string_' + i;
+                buffer[i].code = item.code
             })
             if (JSON.stringify(tableList)!=JSON.stringify(buffer))
                 setTableList(buffer)
@@ -61,10 +62,10 @@ export default function AdministratorAccounts(props){
     
 
     function btn_send_1() {
-        var accountss = tableList
+        var accounts = tableList
         var check=true
 
-        accountss.map(function(item,i){
+        accounts.map(function(item,i){
             if (check){
                 if (item.login == "" || item.login == null){
                     check=false
@@ -92,27 +93,28 @@ export default function AdministratorAccounts(props){
                 }
             }
         })
-        console.log(accountss)
+        console.log(accounts)
         if (check) {
-            apiPostNewUser(accountss[accountss.length-1])
+            apiPostAccountTable(tableList)
         }
     }
 
-    function apiPostNewUser(value) {
+    function apiPostAccountTable(value) {
         var xhr = new XMLHttpRequest();
         xhr.open("POST", host+'/post_user', true);
       
         //Send the proper header information along with the request
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader("Content-Type", "application/json");
       
         xhr.onreadystatechange = function() { // Call a function when the state changes.
             if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
                 // Request finished. Do processing here.
-                console.log("New shelf set")
+                alert("Данные успешно отправлены")
             }
         }
 
         //xhr.send(`name=${value.name}&surname=${value.surname}&patronymic=${value.surname}&login=${value.login}&password=${value.password}&phone_num=${value.phone_num}&duty=${value.duty}`);
+        xhr.send(JSON.stringify({value}));
       }
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец

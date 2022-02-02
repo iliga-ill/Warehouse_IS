@@ -68,7 +68,7 @@ export default function StorekeeperAdvent(props){
 
     function apiGetShipmentOrders() {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/shipment_order_goods'+'?'+'type=sell', true);
+        xhr.open('GET', host+'/shipment_order_goods'+'?'+'type=sell&status=opened', true);
         console.log("StorekeeperAdvent apiGetShipmentOrders was launched")
         xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -329,7 +329,7 @@ export default function StorekeeperAdvent(props){
         console.log(tableList)
         var temp_table_list=[]
         tableList.map(function(item,i){
-            temp_table_list[i] = {id: item[0], category: item[1], sub_category: item[2], text: item[3], amount: item[4], code: item[5]}
+            temp_table_list[i] = {id: item.id, category: item.goodsCategories2, sub_category: item.goodsCategories3, text: item.goodsType, amount: item.amount, code: item.code}
         })
 
         var check=true
