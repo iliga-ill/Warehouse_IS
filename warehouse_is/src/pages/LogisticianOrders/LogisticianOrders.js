@@ -68,7 +68,7 @@ export default function LogisticianOrders(props){
             setTableList1([])
             setTableList2([])
             apiGetOrderGoods()
-            apiGetShipmentOrderGoodsByOrderId()
+            apiGetGoodsType()
         }
     }, [orders]);
     
@@ -238,7 +238,31 @@ export default function LogisticianOrders(props){
     }, [selectedItemId2]);
 
 
-    function apiGetShipmentOrderGoodsByOrderId() {
+    const [goodsType, setGoodsType] = React.useState([])
+    function apiGetGoodsType() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', host+'/goods_type', true);
+        console.log("StorekeeperAdvent apiGetGoodsType was launched")
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                if (this.response != "") {
+                    console.log("StorekeeperAdvent apiGetGoodsType answer: ")
+                    console.log(this.response)
+                    var answer = JSON.parse(this.response)
+                 
+                    var goods = [{id:0, text: "Ошибка", category: "Ошибка", sub_category: "Ошибка", ordered: 0, amount: 0, code: 0}]
+                    answer.map( function(item, i) {
+                        goods[i] = {id:i, text: item.name, category: item.category, sub_category: item.subcategory_2, ordered: item.amount_ordered, amount: item.amount, code: item.code, weight:item.weight}
+                    })
+                    setGoodsType(goods)
+                    apiGetShipmentOrderGoodsByOrderId(goods)
+                }
+            }
+        }
+        xhr.send(null);
+    }
+
+    function apiGetShipmentOrderGoodsByOrderId(goodsTypeAnswer) {
         var order = ''
         setTableList([])
         orders.forEach(element => {  
@@ -266,10 +290,12 @@ export default function LogisticianOrders(props){
                     tableListBuf.push({number: i+1, shipmentNumber: shipment.name, shipmentDate: shipment.shipment_date, shipmentCost: shipment.shipment_price, shipmentStatus: shipment.status_fullness, goodsInOrder: []})
                     if (shipment.goods != undefined) {
                         shipment.goods.map(function(good, j){
-                            goods_array.push({id: getId(), goodsType: good.goods, weight:good.weight, expectingAmount:0, realAmount:0, goodCode: good.goodCode}) 
+                            goodsTypeAnswer.map(item=>{
+                                if (item.code == good.goods)
+                                    goods_array.push({id: getId(), goodsType: item.text, weight:item.weight, expectingAmount:good.amount, realAmount:0, goodCode: good.goods})
+                            })
                         })
                     }
-                    
                     tableListBuf[i].goodsInOrder = goods_array
                     tableListBuf[i].id = getId()
                     tableListBuf[i].code = shipment.code
