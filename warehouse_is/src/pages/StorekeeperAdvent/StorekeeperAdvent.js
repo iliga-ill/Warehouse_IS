@@ -362,9 +362,12 @@ export default function StorekeeperAdvent(props){
         })
 
         if (check) 
-            tableList.forEach( item => {
-                apiUpdateOrderGoods(item.amount, item.code)
-            }) 
+            // tableList.forEach( item => {
+            //     apiUpdateOrderGoods(item.amount, item.code)
+            // }) 
+           
+            apiUpdateOrderGoods(tableList)
+            
         else apiGetGoodsByShipmentOrder()
         //if (check) props.func2(temp_table_list)
         //console.log(temp_table_list)
@@ -455,24 +458,28 @@ function apiGetGoodsSubCat4() {
     xhr.send(null);
 }
 
-function apiUpdateOrderGoods(amount, code) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('PUT', host+'/update_order_goods'+'?'+`amount=${amount}&code=${code}`, true);
+function apiUpdateOrderGoods(value) {
   
-    //Send the proper header information along with the request
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        console.log(this.responseText);
-        alert("Изменения успешно приняты")
-        setOrders([])
-        setTableList([])
-        apiGetGoodsType()
-      }
-    }
-    
-    xhr.send(null);
+    value.map(function(element, i){
+        var xhr = new XMLHttpRequest();
+        xhr.open('PUT', host+'/update_order_goods'+'?'+`amount=${element.amount}&code=${element.code}`, true);
+      
+        //Send the proper header information along with the request
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            console.log(this.responseText);
+        
+            setOrders([])
+            setTableList([])
+            apiGetGoodsType()
+          }
+        }
+        
+        xhr.send(null);
+    })
+    alert("Изменения успешно приняты")
 }
 
 //#endregion категории с первой вкладки конец
