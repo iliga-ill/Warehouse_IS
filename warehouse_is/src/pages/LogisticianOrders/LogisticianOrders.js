@@ -218,7 +218,7 @@ export default function LogisticianOrders(props){
 
             tableList2.map(function(element, i){
                 if (element.id == selectedItemId2) {
-                    selectedRow = {id: getId(), goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode}
+                    selectedRow = {id: getId(), goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode, shipmentOrderGoodsCode:0}
                 }     
             })
             var check = true
@@ -283,6 +283,8 @@ export default function LogisticianOrders(props){
                 var answer = JSON.parse(this.response)
                 console.log('response')
                 console.log(answer);
+                console.log("goodsTypeAnswer");
+                console.log(goodsTypeAnswer);
 
                 answer.map(function(shipment, i){
                     //tableListBuf.push({number: i+1, shipmentNumber: shipment.name, shipmentDate: shipment.shipment_date, shipmentCost: shipment.shipment_price, shipmentStatus: shipment.status_fullness, goodsInOrder: shipment.goods})
@@ -292,7 +294,7 @@ export default function LogisticianOrders(props){
                         shipment.goods.map(function(good, j){
                             goodsTypeAnswer.map(item=>{
                                 if (item.code == good.goods)
-                                    goods_array.push({id: getId(), goodsType: item.text, weight:item.weight, expectingAmount:good.amount, realAmount:0, goodCode: good.goods})
+                                    goods_array.push({id: getId(), goodsType: item.text, weight:item.weight, expectingAmount:good.amount, realAmount:0, goodCode: good.goods, shipmentOrderGoodsCode:good.code})
                             })
                         })
                     }
@@ -300,6 +302,8 @@ export default function LogisticianOrders(props){
                     tableListBuf[i].id = getId()
                     tableListBuf[i].code = shipment.code
                 })
+                console.log("tableListBuf")
+                console.log(tableListBuf)
                 setTableList(tableListBuf)
               } 
             }
