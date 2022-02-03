@@ -7,21 +7,21 @@ const Pool = require('pg').Pool
 //   port: 5432,
 // })
 
-const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'warehouse',
-  password: 'iliga',
-  port: 5432,
-})
-
 // const pool = new Pool({
 //   user: 'postgres',
 //   host: 'localhost',
 //   database: 'warehouse',
-//   password: 'admin',
+//   password: 'iliga',
 //   port: 5432,
 // })
+
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'warehouse',
+  password: 'admin',
+  port: 5432,
+})
 
 pool.connect((err, client, release) => {
     if (err) {
@@ -122,6 +122,16 @@ const getShipmentOrderGoods = (request, response) => {
       });
       response.status(200).json(sell_orders)
     })
+  })
+}
+
+const getShipmentOrderGoodsByOrderId = (request, response) => {
+  pool.query(`SELECT * FROM shipment_order WHERE order_id=${request.query.order_id} ORDER BY code ASC`, (error, results) => {
+    if (error) {
+      throw error
+    }  
+  
+    response.status(200).json(results.rows)
   })
 }
 
@@ -427,6 +437,54 @@ const postGoodsToShelfSpace = (request, response) => {
   })
 }
 
+const postNewOrder = (request, response) => {
+  const textINSERT_order = 'INSERT INTO orders (id, cost, deadline, order_status, address, note, name) VALUES ($1, $2, $3, $4, $5, $6, $7)'
+  const textINSERT_orderGoods = 'INSERT INTO order_goods (id, good_id, order_id, amount) VALUES ($1, $2, $3, $4)'
+  const textSELECT_order_id_name = 'SELECT id, name FROM orders ORDER BY id ASC'
+  const textSELECT_order_good_id = 'SELECT id FROM order_goods ORDER BY id ASC'
+  var obj = Object.values(request.body)[0] 
+  console.log('Attention')
+  console.log(obj)
+  if (obj.order_status == 'На продажу') obj.order_status = 'sell'
+  else obj.order_status = 'purchase'
+
+  pool.query(textSELECT_order_id_name, (error, results) => {
+    if (error) {
+      throw error
+    }
+    var array_id_name = results.rows
+    var new_id = array_id_name[array_id_name.length-1].id + 1
+    var new_name = array_id_name[array_id_name.length-1].name
+    const start = 6 // 7ой элемент в слове *заказ №....*
+    //var new_name_char = [...new_name]
+
+    pool.query(textINSERT_order, [new_id, obj.cost, obj.deadline, obj.order_status, obj.address, obj.note, obj.name], (error, results) => {
+      if (error) {
+        throw error
+      }
+      pool.query(textSELECT_order_good_id, (error, results) => {
+        if (error) {
+          throw error
+        }
+        var array_good_id = results.rows
+        var new_good_id = array_good_id[array_good_id.length-1].id
+
+        obj.order_goods.map(function(good, i) {
+          new_good_id++
+          pool.query(textINSERT_orderGoods, [new_good_id, parseInt(good.goodCode), new_id, good.amount], (error, results) => {
+            if (error) {
+              throw error
+            }
+          })
+        })
+      })
+    })
+
+    response.status(201).send(`Accounts updated`)
+  })
+  
+}
+
 const updateInventory = (request, response) => {
     pool.query('UPDATE goods_type SET status = $1', [request.query.status_text], (error, results) => {
       if (error) {
@@ -517,6 +575,7 @@ module.exports = {
   getShelfs,
   getShelfsByRacks,
   getShipmentOrderGoods,
+  getShipmentOrderGoodsByOrderId,
   getShipmentOrderGoodsAll,
   getOrderGoodsByShipmentOrder,
   getOrders,
@@ -534,6 +593,7 @@ module.exports = {
   setShelfs,
   postNewUser,
   postGoodsToShelfSpace,
+  postNewOrder,
   updateInventory,
   updateOrder,
   updateOrderGoods,

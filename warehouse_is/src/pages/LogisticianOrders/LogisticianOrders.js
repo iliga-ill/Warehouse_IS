@@ -62,7 +62,10 @@ export default function LogisticianOrders(props){
     //const [orders, setOrders] = React.useState([{id:0, text: "Ничего не найдено", selected: true, code: 0}])
     const [orders, setOrders] = React.useState([])
     React.useEffect(() => {
-        if (orders.length > 0) apiGetOrderGoods()
+        if (orders.length > 0) {
+            apiGetOrderGoods()
+            apiGetShipmentOrderGoodsByOrderId()
+        }
     }, [orders]);
     
     function apiGetOrders() {
@@ -208,8 +211,6 @@ export default function LogisticianOrders(props){
 
             tableList2.map(function(element, i){
                 if (element.id == selectedItemId2) {
-                    console.log(`i`)
-                    console.log(i)
                     selectedRow = {id: getId(), goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode}
                 }     
             })
@@ -228,6 +229,27 @@ export default function LogisticianOrders(props){
             setTableList1(buf)
         }
     }, [selectedItemId2]);
+
+
+    function apiGetShipmentOrderGoodsByOrderId() {
+        var order = ''
+        orders.forEach(element => {
+          if (element.selected == true) order = element
+        });
+
+        if (order != '') {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', host+'/shipment_order_goods_id'+'?'+`order_id=${order.code}`, true);
+            
+            xhr.onreadystatechange = function() {
+              if (xhr.readyState == XMLHttpRequest.DONE) {
+                console.log(this.responseText);
+              }
+            }
+            
+            xhr.send(null);
+        }
+      }
 
     function apiGetOrderGoods() {
         var order = ''

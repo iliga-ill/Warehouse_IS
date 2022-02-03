@@ -166,6 +166,10 @@ export default function StorekeeperInventory(props){
 
     const [tableList, setTableList] = React.useState([])
 
+    React.useEffect(() => {
+        if (tableList.length>0) console.log(tableList)
+    }, [tableList]);
+
     if (tableList.toString()=="" && shelfsSpace.toString()!=""){
         var buf=[]
         var counter = 0

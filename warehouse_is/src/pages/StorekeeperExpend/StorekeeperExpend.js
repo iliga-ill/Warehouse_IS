@@ -30,7 +30,7 @@ export default function StorekeeperExpend(props){
 
     const [orders, setOrders] = React.useState([])
     React.useEffect(() => {
-        if (goodsType != []) apiGetGoodsByShipmentOrder()
+        if (orders.length>0) apiGetGoodsByShipmentOrder()
     }, [orders]);
     function apiGetShipmentOrders() {
         var xhr = new XMLHttpRequest();
