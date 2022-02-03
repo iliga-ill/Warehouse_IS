@@ -23,6 +23,7 @@ app.get('/racks_by_zone', db.getRacksByZone)
 app.get('/shelfs', db.getShelfs)
 app.get('/shelfs_by_racks', db.getShelfsByRacks)
 app.get('/shipment_order_goods', db.getShipmentOrderGoods)
+app.get('/shipment_order_goods_id', db.getShipmentOrderGoodsByOrderId)
 app.get('/shipment_order_goods_all', db.getShipmentOrderGoodsAll)
 app.get('/shipment_order_goods_by_order', db.getOrderGoodsByShipmentOrder)
 app.get('/orders', db.getOrders)
@@ -40,6 +41,7 @@ app.get('/shelf_space', db.getShelfSpace)
 app.post('/shelf_set', db.setShelfs)
 app.post('/post_user', db.postNewUser)
 app.post('/post_goods_to_shelfs', db.postGoodsToShelfSpace)
+app.post('/post_order', db.postNewOrder)
 app.put('/update_inventory', db.updateInventory)
 app.put('/update_order', db.updateOrder)
 app.put('/update_order_goods', db.updateOrderGoods)
@@ -166,6 +168,19 @@ function apiGetGoodsByOrder() {
 function apiGetOrders() {
   var xhr = new XMLHttpRequest();
   xhr.open('GET', host+'/orders', true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log(this.responseText);
+    }
+  }
+  
+  xhr.send(null);
+}
+
+function apiGetShipmentOrderGoodsByOrderId() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', host+'/shipment_order_goods_id', true);
   
   xhr.onreadystatechange = function() {
     if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -343,6 +358,21 @@ function apiPostGoodsToShelfs(value) {
   xhr.send(JSON.stringify(value));
 }
 
+function apiPostNewOrderAndGoods(value) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", host+'/post_order', true);
+
+  //Send the proper header information along with the request
+  xhr.setRequestHeader("Content-Type", "application/json");
+
+  xhr.onreadystatechange = function() { // Call a function when the state changes.
+      if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+          // Request finished. Do processing here.
+          console.log("new order posted")
+      }
+  }
+  xhr.send(JSON.stringify(value));
+}
 
 function apiUpdateInventory() {
   var xhr = new XMLHttpRequest();

@@ -91,12 +91,12 @@ export default function ManagerOrderCreation(props){
 
     //-------------------------------------стол 1
     const [tableHeaders, setTableHeaders] = React.useState([
-        {name: 'goodsType',         title:'Наименование',       editingEnabled:true,     width:120   }, 
+        {name: 'goodsType',         title:'Наименование',       editingEnabled:false,     width:120   }, 
         {name: 'amount',            title:'Кол-во',             editingEnabled:true,     width:70    }, 
         {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:120   },
         {name: 'sumCost',           title:'Итог цена',          editingEnabled:true,     width:120   },
     ]) 
-    var edit_column = {add:true, edit:true, delete:true}
+    var edit_column = {add:false, edit:true, delete:true}
 
     const [tableList, setTableList] = React.useState([])
     React.useEffect(() => {
@@ -132,16 +132,22 @@ export default function ManagerOrderCreation(props){
     React.useEffect(() => {
         if (tableList1.toString()!="" && selectedItemId1 != undefined) {
             var buf = []
+            var buf2 = []
             var selectedRow;
 
             bufferedTableList.map(function(element, i) {
-                buf.push(element)
+                tableList.map(function(element2, j){
+                    if (element.goodCode == element2.goodCode) buf.push(element2)
+                })
             })
+            console.log(bufferedTableList)
+            console.log(tableList)
+            // buf2.map(function(element, i) {
+            //     buf.push(element)
+            // })
 
             tableList1.map(function(element, i){
                 if (element.id == selectedItemId1) {
-                    console.log(`i`)
-                    console.log(i)
                     selectedRow = {id: getId(), goodsType: tableList1[i].goodsType, amount: tableList1[i].amountOnWarehouse, cost: tableList1[i].cost, sumCost: " ", goodCode: tableList1[i].code}
                 }     
             })
@@ -164,20 +170,43 @@ export default function ManagerOrderCreation(props){
     //-------------------------------------------------------------------------Блок 2 конец
 
     function btn_send_1() {
-        
-        var orderType = 'На продажу'
-        orderTypeList.map(item=>{
-            if (item.selected){
-                orderType = item.value
-            }
-        })
-
-        console.log(orderType)
-        console.log(shipmentDate)
-        console.log(shipmentAddress)
-        console.log(note)
-        console.log(tableList)
+        if (tableList.length == 0) {
+            alert('Нельзя создать заказ без товаров')
+        }
+        else {
+            var orderType = 'На продажу'
+            orderTypeList.map(item=>{
+                if (item.selected){
+                    orderType = item.value
+                }
+            })
+          
+            var result_obj = [{cost: sumCost, order_status: orderType, deadline: shipmentDate, address: shipmentAddress, note: note, order_goods:tableList}]
+            // console.log(orderType)
+            // console.log(shipmentDate)
+            // console.log(shipmentAddress)
+            // console.log(note)
+            // console.log(tableList)
+            console.log(result_obj)
+            apiPostNewOrderAndGoods(result_obj)
+        }
     }
+
+    function apiPostNewOrderAndGoods(value) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", host+'/post_order', true);
+      
+        //Send the proper header information along with the request
+        xhr.setRequestHeader("Content-Type", "application/json");
+      
+        xhr.onreadystatechange = function() { // Call a function when the state changes.
+            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                // Request finished. Do processing here.
+                console.log("new order posted")
+            }
+        }
+        xhr.send(JSON.stringify(value));
+      }
 
     return (
         <FlexibleBlocksPage>
