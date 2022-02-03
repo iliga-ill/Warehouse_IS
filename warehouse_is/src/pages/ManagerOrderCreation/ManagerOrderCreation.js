@@ -87,7 +87,7 @@ export default function ManagerOrderCreation(props){
     const [orderNumber, setOrderNumber] = React.useState("")
     const [shipmentDate, setShipmentDate] = React.useState("")
     const [shipmentAddress, setShipmentAddress] = React.useState("")
-    const [sumCost, setSumCost] = React.useState(200)
+    const [sumCost, setSumCost] = React.useState(0)
     const [note, setNote] = React.useState("")
 
     //-------------------------------------стол 1
@@ -133,7 +133,6 @@ export default function ManagerOrderCreation(props){
     React.useEffect(() => {
         if (tableList1.toString()!="" && selectedItemId1 != undefined) {
             var buf = []
-            var buf2 = []
             var selectedRow;
 
             bufferedTableList.map(function(element, i) {
@@ -161,8 +160,16 @@ export default function ManagerOrderCreation(props){
             buf.map(function(element, i){
                 element.id = getId()
             }) 
+
+            var order_cost = 0
+            buf.map(function(good, i){
+                order_cost = order_cost + good.amount*parseInt(good.cost)
+            })
+
+            setSumCost(order_cost)
             setBufferedTableList(buf)
             setTableList(buf)
+
         }
     }, [selectedItemId1]);
 
@@ -211,7 +218,13 @@ export default function ManagerOrderCreation(props){
             })
             
             if (check) {
-                var result_obj = [{cost: sumCost, order_status: orderType, deadline: shipmentDate, address: shipmentAddress, note: note, order_goods:tableList, orderNumber:"Заказ №" + orderNumber}]
+                var order_cost = 0
+
+                tableList.map(function(good, i){
+                    order_cost = order_cost + good.amount*parseInt(good.cost)
+                })
+
+                var result_obj = [{cost: order_cost, order_status: orderType, deadline: shipmentDate, address: shipmentAddress, note: note, order_goods:tableList, name:"Заказ №" + orderNumber}]
                 // console.log(orderType)
                 // console.log(shipmentDate)
                 // console.log(shipmentAddress)

@@ -7,21 +7,21 @@ const Pool = require('pg').Pool
 //   port: 5432,
 // })
 
-const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'warehouse',
-  password: 'iliga',
-  port: 5432,
-})
-
 // const pool = new Pool({
 //   user: 'postgres',
 //   host: 'localhost',
 //   database: 'warehouse',
-//   password: 'admin',
+//   password: 'iliga',
 //   port: 5432,
 // })
+
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'warehouse',
+  password: 'admin',
+  port: 5432,
+})
 
 pool.connect((err, client, release) => {
     if (err) {
@@ -187,8 +187,13 @@ const getOrdersGoods = (request, response) => {
       var goods = []
       var buffer = results.rows
       buffer.forEach(element => {
-        order_goods.forEach(id => {
-          if (element.code == id.good_id) goods.push(element)
+        order_goods.map(function(id, i) {
+          if (element.code == id.good_id) {
+            goods.push(element)
+            goods[goods.length-1].amount = id.amount
+            goods[goods.length-1].price = id.price_one
+          }
+
         });
       });
       response.status(200).json(goods)
@@ -439,12 +444,11 @@ const postGoodsToShelfSpace = (request, response) => {
 
 const postNewOrder = (request, response) => {
   const textINSERT_order = 'INSERT INTO orders (id, cost, deadline, order_status, address, note, name) VALUES ($1, $2, $3, $4, $5, $6, $7)'
-  const textINSERT_orderGoods = 'INSERT INTO order_goods (id, good_id, order_id, amount) VALUES ($1, $2, $3, $4)'
+  const textINSERT_orderGoods = 'INSERT INTO order_goods (id, good_id, order_id, amount, price_one) VALUES ($1, $2, $3, $4, $5)'
   const textSELECT_order_id_name = 'SELECT id, name FROM orders ORDER BY id ASC'
   const textSELECT_order_good_id = 'SELECT id FROM order_goods ORDER BY id ASC'
   var obj = Object.values(request.body)[0] 
-  console.log('Attention')
-  console.log(obj)
+
   if (obj.order_status == 'На продажу') obj.order_status = 'sell'
   else obj.order_status = 'purchase'
 
@@ -454,9 +458,6 @@ const postNewOrder = (request, response) => {
     }
     var array_id_name = results.rows
     var new_id = array_id_name[array_id_name.length-1].id + 1
-    var new_name = array_id_name[array_id_name.length-1].name
-    const start = 6 // 7ой элемент в слове *заказ №....*
-    //var new_name_char = [...new_name]
 
     pool.query(textINSERT_order, [new_id, obj.cost, obj.deadline, obj.order_status, obj.address, obj.note, obj.name], (error, results) => {
       if (error) {
@@ -471,7 +472,7 @@ const postNewOrder = (request, response) => {
 
         obj.order_goods.map(function(good, i) {
           new_good_id++
-          pool.query(textINSERT_orderGoods, [new_good_id, parseInt(good.goodCode), new_id, good.amount], (error, results) => {
+          pool.query(textINSERT_orderGoods, [new_good_id, parseInt(good.goodCode), new_id, good.amount, parseInt(good.cost)], (error, results) => {
             if (error) {
               throw error
             }
