@@ -361,9 +361,10 @@ export default function StorekeeperAdvent(props){
             }
         })
 
-        if (check) tableList.forEach( item => {
-            apiUpdateOrderGoods(item.amount, item.code)
-        }) 
+        if (check) 
+            tableList.forEach( item => {
+                apiUpdateOrderGoods(item.amount, item.code)
+            }) 
         else apiGetGoodsByShipmentOrder()
         //if (check) props.func2(temp_table_list)
         //console.log(temp_table_list)
@@ -464,6 +465,10 @@ function apiUpdateOrderGoods(amount, code) {
     xhr.onreadystatechange = function() {
       if (xhr.readyState == XMLHttpRequest.DONE) {
         console.log(this.responseText);
+        alert("Изменения успешно приняты")
+        setOrders([])
+        setTableList([])
+        apiGetGoodsType()
       }
     }
     
@@ -517,7 +522,7 @@ function apiUpdateOrderGoods(amount, code) {
                 <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={date} func={setDate}/></div>
                 {/* <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div> */}
                 {/* <InputText styles = "row_with_ite   m_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/> */}
-                <div class="low_text"><InputFile Id={getId()} func={setDocuments}/></div>
+                {/* <div class="low_text"><InputFile Id={getId()} func={setDocuments}/></div> */}
                 {/* <Table Id={getId()} table_headers={tableHeaders} table_field_height={table_field_height} table_list={tableList} func={setTableList} numb={0} search="true" add="true" delete="true"/> */}
                
                 <div style={{width:"min-content", display:'inline-table'}} >

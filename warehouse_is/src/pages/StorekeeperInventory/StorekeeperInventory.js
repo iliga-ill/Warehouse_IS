@@ -80,7 +80,7 @@ export default function StorekeeperInventory(props){
                 console.log(answer)
                 var buf = []
                 answer.map( function(item, i) {
-                    buf[i] = {shelfCode: item.code, name: item.name, shelf_num: item.shelf_num, rack_num: racksAnswer[item.rack_num-1].name, zone_num: racksAnswer[item.rack_num-1].zone_num, capacity: item.capacity, shelf_space: item.shelf_space}
+                    buf[i] = {shelfCode: item.code, name: item.name, shelfCode: item.code, rack_num: racksAnswer[item.rack_num-1].name, zone_num: racksAnswer[item.rack_num-1].zone_num, capacity: item.capacity, shelf_space: item.shelf_space}
                 })
                 setShelfs(buf)
                 apiGetGoodsType(buf)
@@ -125,13 +125,16 @@ export default function StorekeeperInventory(props){
                 console.log(answer)
                 var buf = shelfsAnswer
                 answer.map( function(item, i) {
-                    if (buf[item.shelf_num-1].shelf_space == null) buf[item.shelf_num-1].shelf_space = []
-                    buf[item.shelf_num-1].shelfSpaceCode = item.code
-                    goodsType.map(item1=>{
-                        if (item1.code == item.good)
-                            buf[item.shelf_num-1].shelf_space.push({good:item1.name, goodCode:item.good, amount:item.amount, status:item.status})
+                    shelfsAnswer.map(function(item1,j){
+                        if (item1.shelfCode == item.shelf_num) {
+                            goodsType.map(item2=>{
+                                if (item2.code == item.good){
+                                    if (item1.shelf_space == null) buf[j].shelf_space = []
+                                    buf[j].shelf_space.push({good:item2.name, goodCode:item.good, amount:item.amount, status:item.status})
+                                }
+                            })
+                        }
                     })
-                        
                 })
                 console.log("StorekeeperAllocation apiGetShelfsSpace changed answer: ")
                 console.log(buf)
@@ -186,6 +189,10 @@ export default function StorekeeperInventory(props){
     }
 
     //-------------------------------------стол 1 конец
+    function btn_send_1() {
+        console.log(tableList)
+        
+    }
     //-------------------------------------------------------------------------Блок 1 конец
 
     return (
@@ -195,6 +202,8 @@ export default function StorekeeperInventory(props){
                 <div style={{width:800+'px', display:'inline-table'}} >
                     <TableComponent height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>
+                <div></div>
+                <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={btn_send_1}>Подтвердить</button>
             </FlexibleBlock>
         </FlexibleBlocksPage>
     )

@@ -16,6 +16,12 @@ export default function StorekeeperAllocation(props){
         return id-1
     }
 
+    const [reload, setReload] = React.useState(0)
+
+    function reloadPage(){
+        setReload(reload+1)
+    }
+
     //-------------------------------------------------------------------------query
     const [zones, setZones] = React.useState([])
     function apiGetZones() {
@@ -75,7 +81,7 @@ export default function StorekeeperAllocation(props){
                 console.log(answer)
                 var buf = []
                 answer.map( function(item, i) {
-                    buf[i] = {code: item.code, name: item.name, shelf_num: item.shelf_num, rack_num: racksAnswer[item.rack_num-1].name, zone_num: racksAnswer[item.rack_num-1].zone_num, capacity: item.capacity, shelf_space: item.shelf_space}
+                    buf[i] = {code: item.code, name: item.name, shelfCode: item.code, rack_num: racksAnswer[item.rack_num-1].name, zone_num: racksAnswer[item.rack_num-1].zone_num, capacity: item.capacity, shelf_space: item.shelf_space}
                 })
                 setShelfs(buf)
                 apiGetShelfsSpace(buf)
@@ -94,10 +100,16 @@ export default function StorekeeperAllocation(props){
                 var answer = JSON.parse(this.response)
                 console.log("StorekeeperAllocation apiGetShelfsSpace answer: ")
                 console.log(answer)
+                console.log("shelfsAnswer")
+                console.log(shelfsAnswer)
                 var buf = shelfsAnswer
                 answer.map( function(item, i) {
-                    if (buf[item.shelf_num].shelf_space == null) buf[item.shelf_num].shelf_space = []
-                    buf[item.shelf_num].shelf_space.push({good:item.good, amount:item.amount})
+                    shelfsAnswer.map(function(item1,j){
+                        if (item1.shelfCode == item.shelf_num) {
+                            if (item1.shelf_space == null) buf[j].shelf_space = []
+                            buf[j].shelf_space.push({good:item.good, amount:item.amount})
+                        }
+                    })
                 })
                 console.log("StorekeeperAllocation apiGetShelfsSpace changed answer: ")
                 console.log(buf)
@@ -264,17 +276,22 @@ export default function StorekeeperAllocation(props){
     var edit_column = {add:false, edit:true, delete:false}
 
     const [tableList, setTableList] = React.useState([])
+    React.useEffect(() => {
+        if (tableList.toString()=="" && shipmentOrdersGoods.toString()!=""){
+            var buf=[]
+            var counter = 0;
+            shipmentOrdersGoods.map(function(item,i){
+                for (let i=0;i<(item.amount_real-item.placed_amount);i++){
+                    buf.push({id: getId(), shipmentOrderGoodsCode:item.code, goodCode:item.goodCode, number:++counter, goodsCategories2: item.goodsCategories2, goodsCategories3: item.goodsCategories3, goodsType:item.good_name, weight:item.weight, zone:"", rack:" ", shelf:"  "})
+                }
+            })
+            console.log("buf")
+            console.log(buf)
+            setTableList(buf)
+        }
+    }, [shipmentOrdersGoods]);
 
-    if (tableList.toString()=="" && shipmentOrdersGoods.toString()!=""){
-        var buf=[]
-        var counter = 0;
-        shipmentOrdersGoods.map(function(item,i){
-            for (let i=0;i<(item.amount_real-item.placed_amount);i++){
-                buf.push({id: getId(), shipmentOrderGoodsCode:item.code, goodCode:item.goodCode, number:++counter, goodsCategories2: item.goodsCategories2, goodsCategories3: item.goodsCategories3, goodsType:item.good_name, weight:item.weight, zone:"", rack:" ", shelf:"  "})
-            }
-        })
-        setTableList(buf)
-    }
+    
 
     function apiPostGoodsToShelfs(value) {
         var xhr = new XMLHttpRequest();
@@ -284,9 +301,22 @@ export default function StorekeeperAllocation(props){
         xhr.setRequestHeader("Content-Type", "application/json");
       
         xhr.onreadystatechange = function() { // Call a function when the state changes.
-            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+            // console.log("this.readyState")
+            // console.log(this.readyState)
+            // console.log("this.status")
+            // console.log(this.status)
+            if (this.readyState === XMLHttpRequest.DONE) {
                 // Request finished. Do processing here.
                 alert("Изменения успешно приняты")
+                console.log("Изменения успешно приняты")
+                setTableList([])
+                setTableList2([])
+
+                setShelfsSpace("")
+                setShipmentOrdersGoods("")
+
+                apiGetGoodsType()
+                apiGetZones()
             }
         }
         xhr.send(JSON.stringify(value));
@@ -333,20 +363,24 @@ export default function StorekeeperAllocation(props){
         {name: 'loadСapacity',      title:'Грузоподьемность(кг)', editingEnabled:false,    width:160  }, 
         {name: 'fillStatus',        title:'Заполненность',        editingEnabled:false,    width:120  }, 
     ]) 
-    var edit_column2 = {add:false, edit:false, delete:false}
+    var edit_column2 = {add:false, edit:false, delete:false, filter: true}
 
     const [tableList2, setTableList2] = React.useState([])
-    if (tableList2.toString()=="" && shelfsSpace.toString()!=""){
-        var buf=[]
-        shelfsSpace.map(function(item,i){
-            if (item.shelf_space==null)
-                buf.push({id:i, number:(i+1), zone: item.zone_num, rack: item.rack_num, shelf: item.name, loadСapacity: item.capacity, fillStatus:"нет"})
-            else
-                buf.push({id:i, number:(i+1), zone: item.zone_num, rack: item.rack_num, shelf: item.name, loadСapacity: item.capacity, fillStatus:"да"})
-        })
-        setTableList2(buf)
-    }
-
+    React.useEffect(() => {
+        if (tableList2.toString()=="" && shelfsSpace.toString()!=""){
+            var buf=[]
+            shelfsSpace.map(function(item,i){
+                if (item.shelf_space==null)
+                    buf.push({id:i, number:(i+1), zone: item.zone_num, rack: item.rack_num, shelf: item.name, loadСapacity: item.capacity, fillStatus:0})
+                else
+                    buf.push({id:i, number:(i+1), zone: item.zone_num, rack: item.rack_num, shelf: item.name, loadСapacity: item.capacity, fillStatus:item.shelf_space.length})
+            })
+            console.log("buf2")
+            console.log(buf)
+            setTableList2(buf)
+        }
+    }, [shelfsSpace]);
+    
     //-------------------------------------стол 2 конец
 
     //-------------------------------------------------------------------------Блок 2 конец
@@ -356,10 +390,11 @@ export default function StorekeeperAllocation(props){
     return (
         <FlexibleBlocksPage>
             <FlexibleBlock>
-                <div class="low_text row_with_item_wide">
+                {/* <div class="low_text row_with_item_wide">
                     <div class="low_text row_with_item_wide"><div>Приходная&nbsp;накладная&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expandImputList1[0].value} list={expandImputList1} func={setExpandImputList1}/></div>
                     <div class="low_text row_with_item_wide"><div>&nbsp;&nbsp;&nbsp;&nbsp;Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={"2022-01-14"} func={setDate}/></div>
-                </div>
+                </div> */}
+                <div class="header_text">Расстановка&nbsp;товаров</div>
                 <div style={{width:400+'px', display:'inline-table'}} >
                     <TableComponent height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column} isDropdownActive={true}/>
                 </div>
@@ -369,7 +404,7 @@ export default function StorekeeperAllocation(props){
             <FlexibleBlock>
                 <div class="header_text">Полки</div>
                 <div style={{width:"min-content", height:400+'px', display:'inline-table'}}>
-                    <TableComponent height={535} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} editColumn={edit_column2}/>
+                    <TableComponent height={527} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} editColumn={edit_column2}/>
                 </div>
             </FlexibleBlock>
         </FlexibleBlocksPage>

@@ -59,7 +59,7 @@ export default function ManagerProducts(props){
         {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:125   },
         {name: 'goodsLimit',        title:'Лимит товара',       editingEnabled:true,     width:120   },
     ]) 
-    var edit_column = {add:false, edit:false, delete:false, select:true}
+    var edit_column = {add:false, edit:false, delete:false, select:true, filter: true}
     const [selectedItemId, setSelectedItemId] = React.useState()
 
     React.useEffect(() => {

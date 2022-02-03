@@ -84,6 +84,7 @@ export default function ManagerOrderCreation(props){
         {id: 0, value: "На продажу", selected: true},
         {id: 1, value: "На поставку", selected: false},
     ])
+    const [orderNumber, setOrderNumber] = React.useState("")
     const [shipmentDate, setShipmentDate] = React.useState("")
     const [shipmentAddress, setShipmentAddress] = React.useState("")
     const [sumCost, setSumCost] = React.useState(200)
@@ -94,7 +95,7 @@ export default function ManagerOrderCreation(props){
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,     width:120   }, 
         {name: 'amount',            title:'Кол-во',             editingEnabled:true,     width:70    }, 
         {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:120   },
-        {name: 'sumCost',           title:'Итог цена',          editingEnabled:true,     width:120   },
+        {name: 'sumCost',           title:'Итог цена',          editingEnabled:false,     width:120   },
     ]) 
     var edit_column = {add:false, edit:true, delete:true}
 
@@ -148,7 +149,7 @@ export default function ManagerOrderCreation(props){
 
             tableList1.map(function(element, i){
                 if (element.id == selectedItemId1) {
-                    selectedRow = {id: getId(), goodsType: tableList1[i].goodsType, amount: tableList1[i].amountOnWarehouse, cost: tableList1[i].cost, sumCost: " ", goodCode: tableList1[i].code}
+                    selectedRow = {id: getId(), goodsType: tableList1[i].goodsType, amount: 0, cost: tableList1[i].cost, sumCost: " ", goodCode: tableList1[i].code}
                 }     
             })
             var check = true
@@ -180,15 +181,47 @@ export default function ManagerOrderCreation(props){
                     orderType = item.value
                 }
             })
+
+            var accounts = tableList
+            var check=true
+
+            if (check && (orderNumber == "" || orderNumber == null)){
+                check=false
+                alert("Ошибка, номер заказа не может быть пустым");
+            }
+            console.log("shipmentDate")
+            console.log(shipmentDate)
+            if (check && (shipmentDate == ""|| shipmentDate == null)){
+                check=false
+                alert("Ошибка, дата доставки не может быть пустой");
+            }
+            if (check && (shipmentAddress == ""|| shipmentAddress == null)){
+                check=false
+                alert("Ошибка, адрес не может быть пустым");
+            }
+            tableList.map(item=>{
+                if (check && (item.amount == "" || item.amount == 0 || item.amount == null)){
+                    check=false
+                    alert("Ошибка, количество товара не может быть пустым");
+                }
+                if (check && (item.cost == "" || item.cost == 0 || item.cost == null)){
+                    check=false
+                    alert("Ошибка, цена товара не может быть пустой");
+                }
+            })
+            
+            if (check) {
+                var result_obj = [{cost: sumCost, order_status: orderType, deadline: shipmentDate, address: shipmentAddress, note: note, order_goods:tableList, orderNumber:"Заказ №" + orderNumber}]
+                // console.log(orderType)
+                // console.log(shipmentDate)
+                // console.log(shipmentAddress)
+                // console.log(note)
+                // console.log(tableList)
+                console.log(result_obj)
+                apiPostNewOrderAndGoods(result_obj)
+            }
           
-            var result_obj = [{cost: sumCost, order_status: orderType, deadline: shipmentDate, address: shipmentAddress, note: note, order_goods:tableList}]
-            // console.log(orderType)
-            // console.log(shipmentDate)
-            // console.log(shipmentAddress)
-            // console.log(note)
-            // console.log(tableList)
-            console.log(result_obj)
-            apiPostNewOrderAndGoods(result_obj)
+            
         }
     }
 
@@ -200,9 +233,21 @@ export default function ManagerOrderCreation(props){
         xhr.setRequestHeader("Content-Type", "application/json");
       
         xhr.onreadystatechange = function() { // Call a function when the state changes.
-            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+            if (this.readyState === XMLHttpRequest.DONE) {
                 // Request finished. Do processing here.
                 console.log("new order posted")
+                alert("Заказ успешно создан")
+                setOrderTypeList([
+                    {id: 0, value: "На продажу", selected: true},
+                    {id: 1, value: "На поставку", selected: false},
+                ])
+                // setOrderNumber("")
+                // setShipmentDate("")
+                // setShipmentAddress("")
+                // setSumCost(200)
+                // setNote("")
+                setTableList([])
+                // reloadPage()
             }
         }
         xhr.send(JSON.stringify(value));
@@ -213,6 +258,7 @@ export default function ManagerOrderCreation(props){
             <FlexibleBlock>
                 <div class="header_text">Создание заказа</div>
                 <div class="low_text row_with_item_wide"><div>Тип&nbsp;заказа&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={orderTypeList[0].value} list={orderTypeList} func={setOrderTypeList}  i={0} j={0}/></div> 
+                <InputText styles = "row_with_item_wide" Id={getId()} label="Заказ&nbsp;№&nbsp;" placeholder="номер заказа" set={setOrderNumber}/> 
                 <div class="low_text row_with_item_wide"><div>Дата&nbsp;доставки&nbsp;</div><InputDate Id={getId()} defValue={shipmentDate} func={setShipmentDate}/></div>
                 <div class="low_text row_with_item_wide"><div>Итоговая&nbsp;цена:&nbsp;{sumCost}&nbsp;руб</div></div>
                 <InputTextArea styles = "" Id={getId()} label="Адрес доставки:" placeholder="адрес" set={setShipmentAddress} defValue={shipmentAddress}/>

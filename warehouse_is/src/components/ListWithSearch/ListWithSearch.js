@@ -34,6 +34,7 @@ export default function ListWithSearch(props){
             else {list[i] = item; list[i].selected = false}
         })
         setItemList(list)
+        props.func([])
         props.func(itemList)
     }
 

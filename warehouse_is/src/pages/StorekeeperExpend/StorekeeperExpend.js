@@ -246,6 +246,10 @@ export default function StorekeeperExpend(props){
         xhr.onreadystatechange = function() {
           if (xhr.readyState == XMLHttpRequest.DONE) {
             console.log(this.responseText);
+            alert("Изменения успешно приняты")
+            setOrders([])
+            setTableList([])
+            apiGetGoodsType()
           }
         }
         
