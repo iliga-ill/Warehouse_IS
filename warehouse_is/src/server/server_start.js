@@ -46,6 +46,7 @@ app.put('/update_inventory', db.updateInventory)
 app.put('/update_order', db.updateOrder)
 app.put('/update_order_goods', db.updateOrderGoods)
 app.put('/update_order_goods_expend', db.updateOrderGoodsExpend)
+app.post('/update_shipment_orders', db.updateShipmentOrders)
 
 app.use('/login', (req, res) => {
   res.send({
@@ -420,6 +421,22 @@ function apiUpdateOrderGoods() {
   }
   
   xhr.send(null);
+}
+
+function apiUpdateShipmentOrder(value) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', host+'/update_shipment_orders', true);
+
+  //Send the proper header information along with the request
+  xhr.setRequestHeader("Content-Type", "application/json");
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      console.log(this.responseText);
+    }
+  }
+  
+  xhr.send(JSON.stringify(value));
 }
 
 //apiGetZones()

@@ -33,7 +33,8 @@ export default function LogisticianOrders(props){
     React.useEffect(() => {
         setTableList2([])
         setTableList1([])
-        setTableList([{id:0, number:1, shipmentNumber:"Доставка №0000001", shipmentDate:"2022-01-14", shipmentCost:1000, shipmentStatus:"Ожидается", goodsInOrder:[]}, {id:1, number:1, shipmentNumber:"Доставка №0000001", shipmentDate:"2022-01-14", shipmentCost:1000, shipmentStatus:"Пустой", goodsInOrder:[]}])
+        // setTableList([{id:0, number:1, shipmentNumber:"Доставка №0000001", shipmentDate:"2022-01-14", shipmentCost:1000, shipmentStatus:"Ожидается", goodsInOrder:[]}, {id:1, number:1, shipmentNumber:"Доставка №0000001", shipmentDate:"2022-01-14", shipmentCost:1000, shipmentStatus:"Пустой", goodsInOrder:[]}])
+        setTableList([])
         
         apiGetOrders()
     }, [reload]);
@@ -63,6 +64,9 @@ export default function LogisticianOrders(props){
     const [orders, setOrders] = React.useState([])
     React.useEffect(() => {
         if (orders.length > 0) {
+            setTableList([])
+            setTableList1([])
+            setTableList2([])
             apiGetOrderGoods()
             apiGetShipmentOrderGoodsByOrderId()
         }
@@ -120,9 +124,10 @@ export default function LogisticianOrders(props){
     ]) 
     var edit_column = {add:true, edit:true, delete:true, select:true}
 
-    const [tableList, setTableList] = React.useState([{id:0, number:1, shipmentNumber:"Доставка №0000001", shipmentDate:"2022-01-14", shipmentCost:1000, shipmentStatus:"Ожидается", goodsInOrder:[]},
-    {id:1, number:1, shipmentNumber:"Доставка №0000001", shipmentDate:"2022-01-14", shipmentCost:1000, shipmentStatus:"Пустой", goodsInOrder:[]}
-])
+//     const [tableList, setTableList] = React.useState([{id:0, number:1, shipmentNumber:"Доставка №0000001", shipmentDate:"2022-01-14", shipmentCost:1000, shipmentStatus:"Ожидается", goodsInOrder:[]},
+//     {id:1, number:1, shipmentNumber:"Доставка №0000001", shipmentDate:"2022-01-14", shipmentCost:1000, shipmentStatus:"Пустой", goodsInOrder:[]}
+// ])
+    const [tableList, setTableList] = React.useState([])
     const [selectedItemId, setSelectedItemId] = React.useState()
     React.useEffect(() => {
         console.log("tableList")
@@ -235,28 +240,58 @@ export default function LogisticianOrders(props){
 
     function apiGetShipmentOrderGoodsByOrderId() {
         var order = ''
-        orders.forEach(element => {
-          if (element.selected == true) order = element
+        setTableList([])
+        orders.forEach(element => {  
+          if (element.selected == true) {
+            order = element
+            console.log('element')
+            console.log(element)
+          }
         });
 
         if (order != '') {
+            var tableListBuf = []
             var xhr = new XMLHttpRequest();
             xhr.open('GET', host+'/shipment_order_goods_id'+'?'+`order_id=${order.code}`, true);
             
             xhr.onreadystatechange = function() {
               if (xhr.readyState == XMLHttpRequest.DONE) {
-                console.log(this.responseText);
-              }
+                var answer = JSON.parse(this.response)
+                console.log('response')
+                console.log(answer);
+
+                answer.map(function(shipment, i){
+                    //tableListBuf.push({number: i+1, shipmentNumber: shipment.name, shipmentDate: shipment.shipment_date, shipmentCost: shipment.shipment_price, shipmentStatus: shipment.status_fullness, goodsInOrder: shipment.goods})
+                    var goods_array = []
+                    tableListBuf.push({number: i+1, shipmentNumber: shipment.name, shipmentDate: shipment.shipment_date, shipmentCost: shipment.shipment_price, shipmentStatus: shipment.status_fullness, goodsInOrder: []})
+                    if (shipment.goods != undefined) {
+                        shipment.goods.map(function(good, j){
+                            goods_array.push({id: getId(), goodsType: good.goods, weight:good.weight, expectingAmount:0, realAmount:0, goodCode: good.goodCode}) 
+                        })
+                    }
+                    
+                    tableListBuf[i].goodsInOrder = goods_array
+                    tableListBuf[i].id = getId()
+                    tableListBuf[i].code = shipment.code
+                })
+                setTableList(tableListBuf)
+              } 
             }
-            
+        
             xhr.send(null);
+        } else {
+            setTableList([])
         }
       }
 
     function apiGetOrderGoods() {
         var order = ''
         orders.forEach(element => {
-          if (element.selected == true) order = element
+        if (element.selected == true) {
+            console.log('order')
+            console.log(element)
+            order = element
+        }
         });
         if (order != '') {
             var xhr = new XMLHttpRequest();
@@ -273,9 +308,9 @@ export default function LogisticianOrders(props){
                     buffer[i].id = getId()
                     buffer[i].code = element.code;
                 });
-                console.log("order")
-                console.log(order)
-                setTableList2(buffer)
+                // console.log("order")
+                // console.log(order)
+              
                 if (order.order_status == "sell")
                     setOrderType("На продажу")
                 else
@@ -284,6 +319,7 @@ export default function LogisticianOrders(props){
                 setShipmentDeadline(order.deadline)
                 setOrderCost(order.cost)
                 setAddress(order.address)
+                setTableList2(buffer)
               }
             }
             xhr.send(null);
@@ -305,8 +341,26 @@ export default function LogisticianOrders(props){
         });
 
         console.log(order)
-        console.log(tableList)
+        var obj = [{order_id: order.code, tableList: tableList}]
+        console.log(obj)
+        apiUpdateShipmentOrder(obj)
     }
+
+    function apiUpdateShipmentOrder(value) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', host+'/update_shipment_orders', true);
+      
+        //Send the proper header information along with the request
+        xhr.setRequestHeader("Content-Type", "application/json");
+        
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            console.log(this.responseText);
+          }
+        }
+        
+        xhr.send(JSON.stringify(value));
+      }
 
     function btn_send_2() {
 
