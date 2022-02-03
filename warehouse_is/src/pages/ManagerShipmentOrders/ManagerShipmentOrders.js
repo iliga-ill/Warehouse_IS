@@ -78,7 +78,7 @@ export default function ManagerShipmentOrders(props){
     //-------------------------------------------------------------------------Блок 1 конец
 
     //-------------------------------------------------------------------------Блок 2
-    const [order, setOrder] = React.useState("")
+    const [order, setOrder] = React.useState("Заказ №")
     const [address, setShipmentAddress] = React.useState("")
     const [shipmentDeadline, setShipmentDeadline] = React.useState("")
     const [orderCost, setOrderCost] = React.useState(0)
