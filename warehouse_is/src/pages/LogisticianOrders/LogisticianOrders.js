@@ -297,8 +297,6 @@ export default function LogisticianOrders(props){
     //-------------------------------------------------------------------------Блок 3 конец
 
     function btn_send_1() {
-        
-        
         var order = ''
         orders.forEach(element => {
           if (element.selected == true) order = element
@@ -306,9 +304,10 @@ export default function LogisticianOrders(props){
 
         console.log(order)
         console.log(tableList)
+    }
 
+    function btn_send_2() {
 
-        
     }
 //#endregion
 
@@ -342,8 +341,10 @@ export default function LogisticianOrders(props){
                         <div class="low_text bold">Товары&nbsp;в&nbsp;заказе:&nbsp;</div>
                     </div>
                     <div style={{width:300+'px', display:'inline-table'}} >
-                        <TableComponent height={300} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} editColumn={edit_column2} onSelect={setSelectedItemId2}/>
+                        <TableComponent height={380} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} editColumn={edit_column2} onSelect={setSelectedItemId2}/>
                     </div>
+                    <div style={{height:20+"px"}}/>   
+                    <div class="place_holder_LogisticianOrders"/><button class="bt_send_LogisticianOrders" onClick={btn_send_2}>Завершить заказ</button>
                 </FlexibleBlock>
             </FlexibleBlocksPage>
         </>

@@ -138,7 +138,10 @@ export default function ManagerSellOrders(props){
             console.log(answer)
             var buffer = []
             answer.map(function( element, i) {
-                buffer.push({number:i+1, goodsType: element.name, amount: element.amount, cost: element.price, sumCost: element.price})
+                var sumCost = 0
+                if (!isNaN(parseInt(element.amount)) && !isNaN(parseInt(element.price)))
+                sumCost=element.amount*element.price
+                buffer.push({number:i+1, goodsType: element.name, amount: element.amount, cost: element.price, sumCost: sumCost})
                 buffer[i].id = getId()
                 buffer[i].code = element.code;
             });

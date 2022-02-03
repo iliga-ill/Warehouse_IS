@@ -69,13 +69,35 @@ export function TableComponent(props) {
       ];
 
       if (columns[0].name=='number') changedRows.map(function(item,i){changedRows[i].number=i+1})
+      if (columns[0].name=='number') 
+      var counter=0
+      columns.map(item=>{
+        if (item.name == "amount" || item.name == "cost" || item.name == "sumCost" ) counter++
+      })
+      if (counter==3) {
+        changedRows.map(function(item,i){
+          if (!isNaN(parseInt(changedRows[i].amount)) && !isNaN(parseInt(changedRows[i].cost)))
+            changedRows[i].sumCost=changedRows[i].amount * changedRows[i].cost
+          else changedRows[i].sumCost=0
+        })
+      }
       //props.setNewTableList(changedRows)
     }
     if (changed) {
       // console.log('changed')
       // rows.map( row => (console.log(changed[row.id] ? { ...row, ...changed[row.id] } : row)))
- 
       changedRows = rows.map(row => (changed[row.id] ? { ...row, ...changed[row.id] } : row));
+      var counter=0
+      columns.map(item=>{
+        if (item.name == "amount" || item.name == "cost" || item.name == "sumCost" ) counter++
+      })
+      if (counter==3) {
+        changedRows.map(function(item,i){
+          if (!isNaN(parseInt(changedRows[i].amount)) && !isNaN(parseInt(changedRows[i].cost)))
+            changedRows[i].sumCost=changedRows[i].amount * changedRows[i].cost
+          else changedRows[i].sumCost=0
+        })
+      }
       //props.setNewTableList(changedRows)
     }
     if (deleted) {

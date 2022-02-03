@@ -101,7 +101,12 @@ export default function ManagerOrderCreation(props){
 
     const [tableList, setTableList] = React.useState([])
     React.useEffect(() => {
-        
+        var order_cost = 0
+        tableList.map(function(good, i){
+                if (!isNaN(parseInt(good.sumCost)))
+                    order_cost = order_cost + good.sumCost
+            })
+        setSumCost(order_cost)
     }, [tableList]);
     
 
@@ -148,7 +153,10 @@ export default function ManagerOrderCreation(props){
 
             tableList1.map(function(element, i){
                 if (element.id == selectedItemId1) {
-                    selectedRow = {id: getId(), goodsType: tableList1[i].goodsType, amount: 0, cost: tableList1[i].cost, sumCost: " ", goodCode: tableList1[i].code}
+                    var sumCost = 0
+                    if (!isNaN(parseInt(0)) && !isNaN(parseInt(tableList1[i].cost)))
+                        sumCost=0*tableList1[i].cost
+                    selectedRow = {id: getId(), goodsType: tableList1[i].goodsType, amount: 0, cost: tableList1[i].cost, sumCost: sumCost, goodCode: tableList1[i].code}
                 }     
             })
             var check = true
@@ -160,13 +168,7 @@ export default function ManagerOrderCreation(props){
             buf.map(function(element, i){
                 element.id = getId()
             }) 
-
-            var order_cost = 0
-            buf.map(function(good, i){
-                order_cost = order_cost + good.amount*parseInt(good.cost)
-            })
-
-            setSumCost(order_cost)
+            
             setBufferedTableList(buf)
             setTableList(buf)
 

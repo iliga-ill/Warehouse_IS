@@ -87,12 +87,14 @@ export default function ManagerShipmentOrders(props){
     const [tableHeaders1, setTableHeaders1] = React.useState([
         {name: 'number',            title:'№',                  editingEnabled:false,     width:40    }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,     width:300   }, 
-        {name: 'shipmentProgress',  title:'Кол-во',             editingEnabled:false,     width:70    }, 
-        {name: 'price',            title:'Цена ед товара',     editingEnabled:false,     width:120   },
+        {name: 'amount',            title:'Кол-во',             editingEnabled:false,     width:70    }, 
+        {name: 'cost',              title:'Цена ед товара',     editingEnabled:false,     width:120   },
+        {name: 'sumCost',           title:'Итог цена',          editingEnabled:false,     width:120   },
     ]) 
+        
     var edit_column1 = {add:false, edit:false, delete:false}
 
-    // const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"вв", shipmentProgress:10, price:10}])
+    // const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"вв", amount:10, price:10}])
     const [tableList1, setTableList1] = React.useState([])
     
     function apiGetOrders() {
@@ -139,7 +141,10 @@ export default function ManagerShipmentOrders(props){
             console.log(answer)
             var buffer = []
             answer.map(function( element, i) {
-                buffer.push({number:i+1, goodsType: element.name, shipmentProgress: element.amount, price: element.price})
+                var sumCost = 0
+                if (!isNaN(parseInt(element.amount)) && !isNaN(parseInt(element.price)))
+                sumCost=element.amount*element.price
+                buffer.push({number:i+1, goodsType: element.name, amount: element.amount, cost: element.price, sumCost:sumCost})
                 buffer[i].id = getId()
                 buffer[i].code = element.code;
             });
