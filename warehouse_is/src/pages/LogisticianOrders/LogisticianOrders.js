@@ -125,6 +125,8 @@ export default function LogisticianOrders(props){
 ])
     const [selectedItemId, setSelectedItemId] = React.useState()
     React.useEffect(() => {
+        console.log("tableList")
+        console.log(tableList)
         tableList.map(item=>{
             if (item.id == selectedItemId) {
                 setTableList1(item.goodsInOrder)

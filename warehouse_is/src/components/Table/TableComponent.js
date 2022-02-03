@@ -38,7 +38,9 @@ export function TableComponent(props) {
   const [rows, setRows] = useState();
   const [editingStateColumnExtensions, setEditingStateColumnExtensions] = useState([]);
   const [columnWidths, setColumnWidths] = useState([]);
+  
   if (columns.length > 0 || JSON.stringify(rows)!=JSON.stringify(props.rows)) {
+    
     if (JSON.stringify(columns) != JSON.stringify(props.columns)) {setColumns(props.columns)}
     props.rows.map(function(item,i){
       if (item.new != undefined && item.new){
@@ -69,6 +71,16 @@ export function TableComponent(props) {
       ];
 
       if (columns[0].name=='number') changedRows.map(function(item,i){changedRows[i].number=i+1})
+      
+      columns.map(item=>{
+        if (item.name == "shipmentStatus")
+          changedRows.map(function(item,i){
+            if (item.shipmentStatus == "" || item.shipmentStatus == undefined)
+              changedRows[i].shipmentStatus = "Пустой"
+              changedRows[i].goodsInOrder = []
+          })
+      })
+
       if (columns[0].name=='number') 
       var counter=0
       columns.map(item=>{
