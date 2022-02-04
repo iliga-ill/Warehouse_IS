@@ -164,12 +164,6 @@ export default function LogisticianOrders(props){
         })
         setTableList(buf)
         
-
-        var order = ''
-        orders.forEach(element => {
-          if (element.selected == true) order = element
-        });
-
         console.log(order)
         console.log("tableList")
         console.log(tableList)
@@ -209,6 +203,13 @@ export default function LogisticianOrders(props){
         console.log("selectedItemId")
         console.log(selectedItemId)
         if (tableList2.toString()!="" && selectedItemId2 != undefined && selectedItemId != undefined) {
+            var order = ''
+            orders.forEach(element => {  
+                if (element.selected == true) {
+                    order = element
+                }
+            });
+
             var buf = []
             var selectedRow;
 
@@ -218,7 +219,7 @@ export default function LogisticianOrders(props){
 
             tableList2.map(function(element, i){
                 if (element.id == selectedItemId2) {
-                    selectedRow = {id: getId(), goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode, shipmentOrderGoodsCode:0}
+                    selectedRow = {id: getId(), goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode, shipmentOrderGoodsCode:0, orderCode:order.code}
                 }     
             })
             var check = true
@@ -277,19 +278,19 @@ export default function LogisticianOrders(props){
             var tableListBuf = []
             var xhr = new XMLHttpRequest();
             xhr.open('GET', host+'/shipment_order_goods_id'+'?'+`order_id=${order.code}`, true);
-            
+            console.log("StorekeeperAdvent apiGetShipmentOrderGoodsByOrderId was launched")
             xhr.onreadystatechange = function() {
               if (xhr.readyState == XMLHttpRequest.DONE) {
                 var answer = JSON.parse(this.response)
-                console.log('response')
-                console.log(answer);
+                console.log("StorekeeperAdvent apiGetShipmentOrderGoodsByOrderId answer: ")
+                console.log(answer)
                 console.log("goodsTypeAnswer");
                 console.log(goodsTypeAnswer);
 
                 answer.map(function(shipment, i){
                     //tableListBuf.push({number: i+1, shipmentNumber: shipment.name, shipmentDate: shipment.shipment_date, shipmentCost: shipment.shipment_price, shipmentStatus: shipment.status_fullness, goodsInOrder: shipment.goods})
                     var goods_array = []
-                    tableListBuf.push({number: i+1, shipmentNumber: shipment.name, shipmentDate: shipment.shipment_date, shipmentCost: shipment.shipment_price, shipmentStatus: shipment.status_fullness, goodsInOrder: []})
+                    tableListBuf.push({number: i+1, shipmentNumber: shipment.name, orderCode:order.code, shipmentDate: shipment.shipment_date, shipmentCost: shipment.shipment_price, shipmentStatus: shipment.status_fullness, goodsInOrder: []})
                     if (shipment.goods != undefined) {
                         shipment.goods.map(function(good, j){
                             goodsTypeAnswer.map(item=>{
@@ -393,7 +394,7 @@ export default function LogisticianOrders(props){
       }
 
     function btn_send_2() {
-
+        console.log(tableList)
     }
 //#endregion
 

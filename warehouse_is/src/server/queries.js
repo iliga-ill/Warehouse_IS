@@ -7,21 +7,21 @@ const Pool = require('pg').Pool
 //   port: 5432,
 // })
 
-// const pool = new Pool({
-//   user: 'postgres',
-//   host: 'localhost',
-//   database: 'warehouse',
-//   password: 'iliga',
-//   port: 5432,
-// })
-
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
   database: 'warehouse',
-  password: 'admin',
+  password: 'iliga',
   port: 5432,
 })
+
+// const pool = new Pool({
+//   user: 'postgres',
+//   host: 'localhost',
+//   database: 'warehouse',
+//   password: 'admin',
+//   port: 5432,
+// })
 
 pool.connect((err, client, release) => {
     if (err) {
@@ -140,15 +140,10 @@ const getShipmentOrderGoodsByOrderId = (request, response) => {
           throw error
         }  
         const answer = results.rows
-        order.goods = []
         if (answer.length == 0) {
           order.status_fullness = 'Пустой'
-        } 
-        else {
+        } else {
           order.status_fullness = 'Ожидается'
-          answer.map(function(good, j){
-            order.goods.push(good)
-          })
         }
         if (shipment_orders.length-1 == i) response.status(200).json(shipment_orders)
       })
@@ -764,6 +759,172 @@ const updateShipmentOrders = (request, response) => {
   })    
 }
 
+const updateShipmentOrders1 = (request, response) => {
+  const textINSERT_shipment_order = 'INSERT INTO shipment_order (code, name, shipment_date, shipment_status, shipment_payment, shipment_price, status, order_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)'
+  const textUPDATE_shipment_order = `UPDATE shipment_order SET name=$1, shipment_date=$2, shipment_payment=$3, shipment_price=$4 WHERE code=$5`
+  const textSELECT_shipment_order = 'SELECT code FROM shipment_order ORDER BY code ASC'
+  const textSELECT_shipment_order_where = 'SELECT * FROM shipment_order WHERE order_id=$1 ORDER BY code ASC'
+  const textDELETE_shipment_order = `DELETE from shipment_order WHERE code=$1`
+
+  const textINSERT_orderGoods = 'INSERT INTO shipment_order_goods (code, goods, amount, order_num) VALUES ($1, $2, $3, $4)'
+  const textUPDATE_orderGoods = 'UPDATE shipment_order_goods SET amount=$1 WHERE code=$2'
+  const textSELECT_order_id_name = 'SELECT * FROM shipment_order_goods ORDER BY code ASC'
+  const textSELECT_by_order_num = 'SELECT * FROM shipment_order_goods WHERE order_num=$1 ORDER BY code ASC'
+  const textDELETE_shipment_order_good = `DELETE from shipment_order_goods WHERE code=$1`
+  const textDELETE_shipment_order_good_by_id = `DELETE from shipment_order_goods WHERE order_num=$1`
+  var shipment_status = 'Не доставлено'
+  var shipment_payment = ''
+  var shipment_orders_in_db = []
+  var array_for_delete = []
+
+  var obj = Object.values(request.body)[0] 
+
+  pool.query(textSELECT_shipment_order_where, [obj.order_id], (error, results) => {
+    if (error) {
+      throw error
+    }
+    shipment_orders_in_db = results.rows
+
+    pool.query(textSELECT_shipment_order, (error, results) => {
+      if (error) {
+        throw error
+      }
+      var array_id = results.rows
+      var new_id = array_id[array_id.length-1].code
+      var iterator = 1
+
+      obj.tableList.map(function(shipment, i) {
+        if (shipment.shipmentCost == "0") shipment_payment = 'Без доставки'
+        else shipment_payment = 'Не оплачено'
+
+        if (shipment.code == undefined) {
+          //работа с новым заказом на доставку
+          pool.query(textINSERT_shipment_order, [new_id + iterator, shipment.shipmentNumber, shipment.shipmentDate, shipment_status, shipment_payment, parseInt(shipment.shipmentCost), 'opened', obj.order_id], (error, results) => {
+            if (error) {
+              throw error
+            }
+            //работа с товарами
+            var order_num = new_id+iterator
+            if (shipment.goodsInOrder.length != 0) {
+              pool.query(textSELECT_order_id_name, (error, results) => {
+                if (error) {
+                  throw error
+                }
+                var array_id = results.rows
+                var new_id = array_id[array_id.length-1].code
+                var iterator1 = 1
+                shipment.goodsInOrder.map(function(good, j){
+                  pool.query(textINSERT_orderGoods, [new_id+iterator1, good.goodCode, good.expectingAmount, order_num], (error, results) => {
+                    if (error) {
+                      throw error
+                    }
+                  })  
+                  iterator1++;
+                }) 
+              })
+            }
+            //работа с товарами конец
+          })
+        } else {
+          //работа со старым заказом на доставку
+          check = true
+          var shipmentFromBd
+          shipment_orders_in_db.map(function(sample, j){
+            if (sample.code == shipment.code) {
+              check=false
+              shipmentFromBd = sample
+            }
+          })
+          if (check) array_for_delete.push(shipmentFromBd)
+          else{
+            pool.query(textUPDATE_shipment_order, [shipment.shipmentNumber, shipment.shipmentDate, shipment_payment, parseInt(shipment.shipmentCost), shipment.code], (error, results) => {
+              if (error) {
+                throw error
+              }
+              //работа с товарами
+              shipment.goodsInOrder.map(function(good){
+                if (good.shipmentOrderGoodsCode == 0) {
+                  pool.query(textSELECT_order_id_name, (error, results) => {
+                    var array_id = results.rows
+                    var new_id = array_id[array_id.length-1].code
+                    var iterator1 = 1
+
+                    pool.query(textINSERT_orderGoods, [new_id+iterator1, good.goodCode, good.expectingAmount, shipment.code], (error, results) => {
+                      if (error) {
+                        throw error
+                      }
+                    })
+                    iterator1++
+                  })
+                } else {
+                  pool.query(textUPDATE_orderGoods, [good.expectingAmount, good.shipmentOrderGoodsCode], (error, results) => {
+                    if (error) {
+                      throw error
+                    }
+                  })
+                }
+              })
+
+              //delete goods in order
+              pool.query(textSELECT_by_order_num, [shipment.code], (error, results) => {
+                if (error) {
+                  throw error
+                }
+                var shipmentOrderGoodsFromBd = results.rows
+                var shipmentOrderGoodsFromBdDeletedCode
+                shipment.goodsInOrder.map(function(good){
+                  var check = true
+                  shipmentOrderGoodsFromBd.map(function(good1){
+                    if (good.goodCode == good1.goods) {
+                      check=false
+                    }
+                  })
+                  if (check) {
+                    pool.query(textDELETE_shipment_order_good, [good.shipmentOrderGoodsCode], (error, results) => {
+                      if (error) {
+                        throw error
+                      }
+                    })
+                  }
+                })
+              })
+              //delete goods end
+              //работа с товарами конец
+            })
+          }
+
+          //delete order and its goods
+          var array_for_delete_goods = []
+          if (array_for_delete.length == 0) {
+            response.status(201).send(`User added with ID: ${results.insertId}`)
+          } else {
+            array_for_delete.map(function(sample, i){
+              pool.query(textDELETE_shipment_order, [sample.code], (error, results) => {
+                if (error) {
+                  throw error
+                }
+                pool.query(textDELETE_shipment_order_good_by_id, [sample.code], (error, results) => {
+                  if (error) {
+                    throw error
+                  }
+                  if (array_for_delete.length-1 == i) response.status(201).send(`User added with ID: ${results.insertId}`)
+                })
+              })  
+            })
+          }
+           //delete order and its goods end
+          
+        }
+        iterator++
+      })
+    }) 
+
+
+
+
+  })    
+}
+
 module.exports = {
   getColors,
   getZones,
@@ -795,5 +956,5 @@ module.exports = {
   updateOrder,
   updateOrderGoods,
   updateOrderGoodsExpend,
-  updateShipmentOrders
+  updateShipmentOrders1
 }

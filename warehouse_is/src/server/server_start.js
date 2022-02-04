@@ -46,7 +46,7 @@ app.put('/update_inventory', db.updateInventory)
 app.put('/update_order', db.updateOrder)
 app.put('/update_order_goods', db.updateOrderGoods)
 app.put('/update_order_goods_expend', db.updateOrderGoodsExpend)
-app.post('/update_shipment_orders', db.updateShipmentOrders)
+app.post('/update_shipment_orders', db.updateShipmentOrders1)
 
 app.use('/login', (req, res) => {
   res.send({
