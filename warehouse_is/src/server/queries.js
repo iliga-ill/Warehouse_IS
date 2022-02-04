@@ -925,6 +925,27 @@ const updateShipmentOrders1 = (request, response) => {
   })    
 }
 
+const updateOrderStatus = (request, response) => {
+  pool.query(`UPDATE orders SET status_execution LIKE '${'complited'}' WHERE code=$1`, [request.query.id], (error, results) => {
+    if (error) {
+      throw error
+    }
+
+    response.status(201).send(`User added with ID: ${results.insertId}`)
+  })
+}
+
+const updateShelfSpaceStatus = (request, response) => {
+  pool.query(`UPDATE shelf_space SET status LIKE '$1' WHERE code=$2`, [request.query.status, request.query.code], (error, results) => {
+    if (error) {
+      throw error
+    }
+
+    response.status(201).send(`User added with ID: ${results.insertId}`)
+  })
+}
+
+
 module.exports = {
   getColors,
   getZones,
@@ -956,5 +977,7 @@ module.exports = {
   updateOrder,
   updateOrderGoods,
   updateOrderGoodsExpend,
-  updateShipmentOrders1
+  updateShipmentOrders1,
+  updateOrderStatus,
+  updateShelfSpaceStatus
 }

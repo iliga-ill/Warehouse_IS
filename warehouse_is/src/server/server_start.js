@@ -46,6 +46,8 @@ app.put('/update_inventory', db.updateInventory)
 app.put('/update_order', db.updateOrder)
 app.put('/update_order_goods', db.updateOrderGoods)
 app.put('/update_order_goods_expend', db.updateOrderGoodsExpend)
+app.put('/update_order_status', db.updateOrderStatus)
+app.put('/update_shelf_space_status', db.updateShelfSpaceStatus)
 app.post('/update_shipment_orders', db.updateShipmentOrders1)
 
 app.use('/login', (req, res) => {
@@ -437,6 +439,38 @@ function apiUpdateShipmentOrder(value) {
   }
   
   xhr.send(JSON.stringify(value));
+}
+
+function apiUpdateOrderStatus() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('PUT', host+'/update_order_status'+'?'+'id=1', true);
+
+ //Send the proper header information along with the request
+ xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  
+xhr.onreadystatechange = function() {
+  if (xhr.readyState == XMLHttpRequest.DONE) {
+    console.log(this.responseText);
+  }
+}
+  
+  xhr.send(null);
+}
+
+function apiUpdateOrderStatus() {
+  var xhr = new XMLHttpRequest();
+  xhr.open('PUT', host+'/update_shelf_space_status'+'?'+'status=1&code=2', true);
+
+ //Send the proper header information along with the request
+ xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+  
+xhr.onreadystatechange = function() {
+  if (xhr.readyState == XMLHttpRequest.DONE) {
+    console.log(this.responseText);
+  }
+}
+  
+  xhr.send(null);
 }
 
 //apiGetZones()
