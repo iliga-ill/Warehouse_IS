@@ -7,21 +7,21 @@ const Pool = require('pg').Pool
 //   port: 5432,
 // })
 
-const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'warehouse',
-  password: 'iliga',
-  port: 5432,
-})
-
 // const pool = new Pool({
 //   user: 'postgres',
 //   host: 'localhost',
 //   database: 'warehouse',
-//   password: 'admin',
+//   password: 'iliga',
 //   port: 5432,
 // })
+
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'warehouse',
+  password: 'admin',
+  port: 5432,
+})
 
 pool.connect((err, client, release) => {
     if (err) {
@@ -618,9 +618,12 @@ const updateShipmentOrders = (request, response) => {
   const textSELECT_shipment_order_where = 'SELECT * FROM shipment_order WHERE order_id=$1 ORDER BY code ASC'
   const textDELETE_shipment_order = `DELETE from shipment_order WHERE code=$1`
 
-  const textINSERT_orderGoods = 'INSERT INTO order_goods (id, good_id, order_id, amount, price_one) VALUES ($1, $2, $3, $4, $5)'
-  const textUPDATE_orderGoods = 'UPDATE order_goods SET amount=$1, price_one=$2 WHERE id=$3'
-  const textSELECT_order_id_name = 'SELECT * FROM orders ORDER BY id ASC'
+  const textINSERT_orderGoods = 'INSERT INTO shipment_order_goods (code, goods, amount, order_num) VALUES ($1, $2, $3, $4)'
+  const textUPDATE_orderGoods = 'UPDATE shipment_order_goods SET amount=$1 WHERE code=$2'
+  const textSELECT_order_id_name = 'SELECT * FROM shipment_order_goods ORDER BY code ASC'
+  const textSELECT_by_order_num = 'SELECT * FROM shipment_order_goods WHERE order_num=$1 ORDER BY code ASC'
+  const textDELETE_shipment_order_good = `DELETE from shipment_order_goods WHERE code=$1`
+  const textDELETE_shipment_order_good_by_id = `DELETE from shipment_order_goods WHERE order_num=$1`
   var shipment_status = 'Не доставлено'
   var shipment_payment = ''
   var shipment_orders_in_db = []
@@ -651,7 +654,25 @@ const updateShipmentOrders = (request, response) => {
             if (error) {
               throw error
             }
-            //INSERT
+            var order_num = new_id+iterator
+            if (shipment.goodsInOrder.length != 0) {
+              pool.query(textSELECT_order_id_name, (error, results) => {
+                if (error) {
+                  throw error
+                }
+                shipment.goodsInOrder.map(function(good, j){
+                  var array_id = results.rows
+                  var new_id = array_id[array_id.length-1].code
+                  var iterator = 1
+                  pool.query(textINSERT_orderGoods, [new_id+iterator, good.goodCode, good.expectingAmount, order_num], (error, results) => {
+                    if (error) {
+                      throw error
+                    }
+                  })  
+                  iterator++;
+                }) 
+              })
+            }
           })
           iterator++   
         } else {
@@ -661,9 +682,29 @@ const updateShipmentOrders = (request, response) => {
                 if (error) {
                   throw error
                 }
-                //INSERT
-                //UPDATE
               })  
+              shipment.goodsInOrder.map(function(good){
+                if (good.shipmentOrderGoodsCode == 0) {
+                  pool.query(textSELECT_order_id_name, (error, results) => {
+                    var array_id = results.rows
+                    var new_id = array_id[array_id.length-1].code
+                    var iterator = 1
+
+                    pool.query(textINSERT_orderGoods, [new_id+iterator, good.goodCode, good.expectingAmount, shipment.code], (error, results) => {
+                      if (error) {
+                        throw error
+                      }
+                    })
+                    iterator++
+                  })
+                } else {
+                  pool.query(textUPDATE_orderGoods, [good.expectingAmount, good.shipmentOrderGoodsCode], (error, results) => {
+                    if (error) {
+                      throw error
+                    }
+                  })
+                }
+              })
             } else {
               array_for_delete.push(sample)
             }
@@ -672,17 +713,50 @@ const updateShipmentOrders = (request, response) => {
       })
     }) 
     
+    var ffg = []
+    var ffg_delete = []
+
+    obj.tableList.map(function(element) {
+      pool.query(textSELECT_by_order_num, [element.code], (error, results) => {
+        if (error) {
+          throw error
+        }
+        ffg = results.rows
+      
+        element.goodsInOrder.map((good) => {
+          ffg.map((sss) => {
+            if (good.shipmentOrderGoodsCode != sss.code && good.shipmentOrderGoodsCode != 0) {
+               ffg_delete.push(sss)
+            }
+          })
+        })
+
+        ffg_delete.map((ffg) => {
+          pool.query(textDELETE_shipment_order_good, [ffg.code], (error, results) => {
+            if (error) {
+              throw error
+            }
+          })
+        })
+      })
+    })
+    
+
+    var array_for_delete_goods = []
     if (array_for_delete.length == 0) {
       response.status(201).send(`User added with ID: ${results.insertId}`)
     } else {
-      //DELETE
       array_for_delete.map(function(sample, i){
         pool.query(textDELETE_shipment_order, [sample.code], (error, results) => {
           if (error) {
             throw error
           }
-
-          if (array_for_delete.length-1 == i) response.status(201).send(`User added with ID: ${results.insertId}`)
+          pool.query(textDELETE_shipment_order_good_by_id, [sample.code], (error, results) => {
+            if (error) {
+              throw error
+            }
+            if (array_for_delete.length-1 == i) response.status(201).send(`User added with ID: ${results.insertId}`)
+          })
         })  
       })
     }
