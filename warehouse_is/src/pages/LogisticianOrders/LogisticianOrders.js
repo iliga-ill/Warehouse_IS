@@ -265,7 +265,6 @@ export default function LogisticianOrders(props){
 
     function apiGetShipmentOrderGoodsByOrderId(goodsTypeAnswer) {
         var order = ''
-        setTableList([])
         orders.forEach(element => {  
           if (element.selected == true) {
             order = element
@@ -399,8 +398,38 @@ export default function LogisticianOrders(props){
       }
 
     function btn_send_2() {
-        console.log(tableList)
+        apiUpdateOrderStatus()
     }
+
+    function apiUpdateOrderStatus() {
+    var order = ''
+    orders.forEach(element => {
+    if (element.selected == true) {
+        order = element
+    }
+    });
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('PUT', host+'/update_order_status'+'?'+`id=${order.code}`, true);
+    
+    //Send the proper header information along with the request
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    
+    xhr.onreadystatechange = function() {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+        console.log(this.responseText);
+        alert(`${order.code} успешно завершен`)
+        setOrders([])
+        setTableList([])
+        setTableList1([])
+        setTableList2([])
+        setBufferedTableList2([])
+        apiGetOrders()
+    }
+    }
+        
+        xhr.send(null);
+      }
 //#endregion
 
     return (

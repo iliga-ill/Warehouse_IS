@@ -926,7 +926,7 @@ const updateShipmentOrders1 = (request, response) => {
 }
 
 const updateOrderStatus = (request, response) => {
-  pool.query(`UPDATE orders SET status_execution LIKE '${'complited'}' WHERE code=$1`, [request.query.id], (error, results) => {
+  pool.query(`UPDATE orders SET status_execution = '${'complited'}' WHERE id=$1`, [request.query.id], (error, results) => {
     if (error) {
       throw error
     }
@@ -936,10 +936,12 @@ const updateOrderStatus = (request, response) => {
 }
 
 const updateShelfSpaceStatus = (request, response) => {
-  pool.query(`UPDATE shelf_space SET status LIKE '$1' WHERE code=$2`, [request.query.status, request.query.code], (error, results) => {
+  pool.query(`UPDATE shelf_space SET status = $1 WHERE code=$2`, [request.query.status, request.query.code], (error, results) => {
     if (error) {
       throw error
     }
+    console.log("request.query.code")
+    console.log(request.query.code)
 
     response.status(201).send(`User added with ID: ${results.insertId}`)
   })
