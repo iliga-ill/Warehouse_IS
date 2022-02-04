@@ -130,7 +130,7 @@ export default function StorekeeperInventory(props){
                             goodsType.map(item2=>{
                                 if (item2.code == item.good){
                                     if (item1.shelf_space == null) buf[j].shelf_space = []
-                                    buf[j].shelf_space.push({good:item2.name, goodCode:item.good, amount:item.amount, status:item.status})
+                                    buf[j].shelf_space.push({good:item2.name, goodCode:item.good, amount:item.amount, status:item.status, shelfCode:answer.code})
                                 }
                             })
                         }
@@ -179,10 +179,10 @@ export default function StorekeeperInventory(props){
         shelfsSpace.map(function(item, i){
             if (item.shelf_space != null) {
                 item.shelf_space.map(function(item1, j){
-                    buf.push({id:counter, number:++counter, shelfSpaceCode:item.code, zone:item.zone_num, rack:item.rack_num, shelf:item.name, goodsType:item1.good, amount:item1.amount, inventaryzationStatus:item1.status})
+                    buf.push({id:counter, number:++counter, shelfSpaceCode:item.shelfCode, zone:item.zone_num, rack:item.rack_num, shelf:item.name, goodsType:item1.good, amount:item1.amount, inventaryzationStatus:item1.status})
                 })
             } else {
-                    buf.push({id:counter, number:++counter, shelfSpaceCode:item.code, zone:item.zone_num, rack:item.rack_num, shelf:item.name, goodsType:" ", amount:0, inventaryzationStatus:"Пусто"}) 
+                    buf.push({id:counter, number:++counter, shelfSpaceCode:item.shelfCode, zone:item.zone_num, rack:item.rack_num, shelf:item.name, goodsType:" ", amount:0, inventaryzationStatus:"Пусто"}) 
             }
         })
         setTableList(buf)
