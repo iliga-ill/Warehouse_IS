@@ -45,7 +45,9 @@ export default function Authorization(props){
       if (item.login==login && item.password==password){
         passCheck=false
         authorizated = true
-        props.func(true)
+        if (item.duty == "Кладовщик")  props.func(0)
+        if (item.duty == "Менеджер") props.func(1)
+        if (item.duty == "Администратор") props.func(2)
       }
     })
     if (passCheck) {

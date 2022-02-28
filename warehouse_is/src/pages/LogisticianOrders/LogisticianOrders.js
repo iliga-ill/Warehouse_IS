@@ -418,7 +418,7 @@ export default function LogisticianOrders(props){
     xhr.onreadystatechange = function() {
     if (xhr.readyState == XMLHttpRequest.DONE) {
         console.log(this.responseText);
-        alert(`${order.code} успешно завершен`)
+        alert(`${order.text} успешно завершен`)
         setOrders([])
         setTableList([])
         setTableList1([])

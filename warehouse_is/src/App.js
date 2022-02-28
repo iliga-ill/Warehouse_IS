@@ -28,7 +28,7 @@ export default function App() {
 
   //#region reloadPage
   const [reload, setReload] = React.useState(0)
-  const [authorizated, setAuthorizated] = React.useState(true)
+  const [authorizated, setAuthorizated] = React.useState(-1)
 
   function reloadPage(){
     setReload(reload+1)
@@ -45,26 +45,6 @@ export default function App() {
     {id:4, selected: false, title: "АРМ Бухгалтера"},
     */
   ])
-
-  function getSelectedTabId(){
-    for (let i=0;i<mainTabs.length;i++){
-      if (mainTabs[i].selected) return i
-    }
-  }
-
-  function onTabClick(tab_id){
-    var mT = mainTabs
-    mT.map(tab => {
-      if (tab.id != tab_id){
-        tab.selected = false
-      } else {
-        tab.selected = true
-      }
-      return tab
-    })
-    setMainTab(mT)
-    reloadPage()
-  }
 
   var [subTabs, setSubTabs] = React.useState([
     [
@@ -90,6 +70,54 @@ export default function App() {
     ]
   ])
 
+  React.useEffect(() => {
+    if (authorizated == 0) {
+      setSubTabs([[
+        {id:0, selected: true, title: "Приход", page: <StorekeeperAdvent Id={100}/>},
+        {id:1, selected: false, title: "Расход", page: <StorekeeperExpend Id={200}/>},
+        {id:2, selected: false, title: "Расстановка товаров", page: <StorekeeperAllocation Id={300}/>},
+        {id:3, selected: false, title: "Инвентаризация", page: <StorekeeperInventory Id={400}/>},
+      ]])
+      setMainTab([{id:0, selected: true, title: "АРМ Кладовщика"}])
+    }
+    if (authorizated == 1) {
+      setMainTab([{id:1, selected: false, title: "АРМ Менеджера"}])
+      setSubTabs([[
+        {id:0, selected: true, title: "Товары", page: <ManagerProducts Id={500}/>},
+        {id:1, selected: false, title: "Создание заказа", page: <ManagerOrderCreation Id={600}/>},
+        {id:2, selected: false, title: "Заказы на продажу", page: <ManagerSellOrders Id={700}/>},
+        {id:3, selected: false, title: "Заказы на поставку", page: <ManagerShipmentOrders Id={800}/>},
+      ]])
+    }  
+    if (authorizated == 2) setMainTab([
+      {id:0, selected: true, title: "АРМ Кладовщика"},
+      {id:1, selected: false, title: "АРМ Менеджера"},
+      {id:2, selected: false, title: "АРМ Логиста"},
+      {id:3, selected: false, title: "АРМ Администратора"}])
+  }, [authorizated]);
+
+  function getSelectedTabId(){
+    for (let i=0;i<mainTabs.length;i++){
+      if (mainTabs[i].selected) return i
+    }
+  }
+
+  function onTabClick(tab_id){
+    var mT = mainTabs
+    mT.map(tab => {
+      if (tab.id != tab_id){
+        tab.selected = false
+      } else {
+        tab.selected = true
+      }
+      return tab
+    })
+    setMainTab(mT)
+    reloadPage()
+  }
+
+
+
   function getSelectedSubTabId(){
     let tabId = getSelectedTabId();
     for (let i=0;i<subTabs[tabId].length;i++){
@@ -112,7 +140,7 @@ export default function App() {
   }
   //#endregion верхние табы конец
 
-  if (authorizated){
+  if (authorizated != -1){
     return (
       <div>
         <div class="header">
