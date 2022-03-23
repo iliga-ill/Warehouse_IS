@@ -7,7 +7,7 @@ import InputDate from "../../components/InputDate/InputDate";
 import InputFile from "../../components/InputFile/InputFile";
 import InputText from "../../components/InputText/InputText";
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
-import TabHolder from "../../components/TabHolder/TabHolder";
+import TabHolder from "../../components/TabHolders/TabHolder/TabHolder";
 import { TableComponent } from "../../components/Table/TableComponent";
 const host = 'http://localhost:5000';
 

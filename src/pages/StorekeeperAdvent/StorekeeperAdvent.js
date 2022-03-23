@@ -34,7 +34,7 @@ const apiGetRacksByZones = function apiGetRacksByZones() {
 
 export default function StorekeeperAdvent(props){
 
-    var id=props.Id
+    var id=100
     function getId(){
         id++
         return id-1
