@@ -17,26 +17,14 @@ import LogisticianOrders from './pages/LogisticianOrders/LogisticianOrders';
 import LogisticianProducts from './pages/LogisticianProducts/LogisticianProducts';
 import React from 'react';
 import {Routes, Route} from "react-router-dom"
+import {useCookies} from 'react-cookie'
 
 const host = 'http://localhost:5000';
 
-const styles = {
-  headTabs: {
-  }
-}
-
 export default function App() {
-  const [authorizated, setAuthorizated] = React.useState(1)
-
-  //туду - починить переключение текущих заказов и старых 
-  //вынести авторизацию и сделать на нее редирект если человек не авторизован
-  //сделать нормальную авторизацию
-  //проверить работоспособность всех вкладок
-  //доработать роутинг согласно видео (убрать полную загрузку страницы)
-  //сделать нормальное апи как в уроках
-  //сделать доступными только роуты, которые есть у аккаунта
-  //сделать подгрузку по несколько элментов в таблице, и до подгрузку по мере пролистывания
-  //#region верхние табы
+  const [cookies, setCookie] = useCookies(['access_token', 'refresh_token'])
+  // let expires = new Date()
+  // expires.setTime(expires.getTime() + (20 * 1000))
 
   var [mainTabs, setMainTab] = React.useState([
     {title: "АРМ Кладовщика",     href:"/Storekeeper",    basicHref:"/StorekeeperAdvent"},
@@ -72,7 +60,6 @@ export default function App() {
     //   {id:3, title: "Счета на оплату", roleHref:"/Storekeeper", href:"/StorekeeperAdvent", page: <StorekeeperAdvent Id={15}/>},
     // ]
   ])
-  //#endregion верхние табы конец
 
   function wrapErrorBoundary(component){
     return (
@@ -81,8 +68,12 @@ export default function App() {
       </ErrorBoundary>
     )
   }
+  
+  //setCookie('access_token', undefined, { path: '/Storekeeper/StorekeeperAdvent',  expires})
 
-  if (authorizated != -1){
+  console.log("cookies.get('Authorization'): " + cookies.access_token)
+  
+  if (cookies.access_token != undefined){
     return (
       <div>
         <div className="header">
@@ -113,6 +104,6 @@ export default function App() {
       </div>
     );
   } else {
-    return <Authorization func={setAuthorizated} authorizated={authorizated}/> 
+    return <Authorization setCookie={setCookie}/> 
   }
 }

@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react";
 import './Authorization.css';
 import Table from "../../components/Table/Table";
+import cookie from "react-cookie";
 
 
 var accounts = [
@@ -14,6 +15,8 @@ var authorizated = false
 const host = 'http://localhost:5000';
 
 export default function Authorization(props){
+  let expires = new Date()
+  expires.setTime(expires.getTime() + (20 * 1000))
 
   function apiGetClients() {
     var xhr = new XMLHttpRequest();
@@ -45,9 +48,9 @@ export default function Authorization(props){
       if (item.login==login && item.password==password){
         passCheck=false
         authorizated = true
-        if (item.duty == "Кладовщик")  props.func(0)
-        if (item.duty == "Менеджер") props.func(1)
-        if (item.duty == "Администратор") props.func(2)
+        if (item.duty == "Кладовщик")  {props.setCookie('access_token', 0, { path: '/',  expires})}
+        if (item.duty == "Менеджер") {props.setCookie('access_token', 1, { path: '/',  expires})}
+        if (item.duty == "Администратор") {props.setCookie('access_token', 2, { path: '/',  expires})}
       }
     })
     if (passCheck) {

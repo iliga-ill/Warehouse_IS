@@ -7,7 +7,7 @@ import InputDate from "../../components/InputDate/InputDate";
 import InputFile from "../../components/InputFile/InputFile";
 import InputText from "../../components/InputText/InputText";
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
-import TabHolder from "../../components/TabHolders/TabHolder/TabHolder";
+import SwitchHolder from "../../components/TabHolders/SwitchHolder/SwitchHolder";
 import { TableComponent } from "../../components/Table/TableComponent";
 const host = 'http://localhost:5000';
 
@@ -434,7 +434,7 @@ export default function LogisticianOrders(props){
 
     return (
         <>
-            <TabHolder tabs={tabs} onTabClick={onTabClick}/>
+            <SwitchHolder tabs={tabs} onTabClick={onTabClick}/>
             <FlexibleBlocksPage Id={getId()}>
                 <FlexibleBlock>
                     <ListWithSearch Id={getId()} item_list={orders} func={setOrders} width={"200px"} height={"525px"}/>

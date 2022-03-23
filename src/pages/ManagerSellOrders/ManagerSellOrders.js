@@ -7,7 +7,7 @@ import InputText from "../../components/InputText/InputText";
 import InputTextArea from "../../components/InputTextArea/InputTextArea";
 import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
 import InputDate from "../../components/InputDate/InputDate";
-import TabHolder from "../../components/TabHolders/TabHolder/TabHolder";
+import SwitchHolder from "../../components/TabHolders/SwitchHolder/SwitchHolder";
 import { TableComponent } from "../../components/Table/TableComponent";
 const host = 'http://localhost:5000';
 
@@ -164,7 +164,7 @@ export default function ManagerSellOrders(props){
 
     return (
         <>
-            <TabHolder tabs={tabs} onTabClick={onTabClick}/>
+            <SwitchHolder tabs={tabs} onTabClick={onTabClick}/>
             <FlexibleBlocksPage>
                 <FlexibleBlock>
                     <div class="header_text">Заказы на продажу</div>
