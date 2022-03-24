@@ -16,50 +16,90 @@ import ManagerShipmentOrders from './pages/ManagerShipmentOrders/ManagerShipment
 import LogisticianOrders from './pages/LogisticianOrders/LogisticianOrders';
 import LogisticianProducts from './pages/LogisticianProducts/LogisticianProducts';
 import React from 'react';
-import {Routes, Route} from "react-router-dom"
+import {Routes, Route, useLocation, useNavigate} from "react-router-dom"
 import {useCookies} from 'react-cookie'
 
 const host = 'http://localhost:5000';
 
+const mainTabsArray = [
+  {title: "АРМ Кладовщика",     href:"/Storekeeper",    basicHref:"/StorekeeperAdvent"},
+  {title: "АРМ Менеджера",      href:"/Manager",        basicHref:"/ManagerProducts"},
+  {title: "АРМ Логиста",        href:"/Logistician",    basicHref:"/LogisticianOrders"},
+  {title: "АРМ Администратора", href:"/Administrator",  basicHref:"/AdministratorAccounts"},
+  /*
+  {id:4, selected: false, title: "АРМ Бухгалтера"},
+  */
+]
+
+const subTabsArray = [
+  [
+    {title: "Приход",               roleHref:"/Storekeeper",    href:"/StorekeeperAdvent"},
+    {title: "Расход",               roleHref:"/Storekeeper",    href:"/StorekeeperExpend"},
+    {title: "Расстановка товаров",  roleHref:"/Storekeeper",    href:"/StorekeeperAllocation"},
+    {title: "Инвентаризация",       roleHref:"/Storekeeper",    href:"/StorekeeperInventory"},
+  ],[
+    {title: "Товары",               roleHref:"/Manager",        href:"/ManagerProducts"},
+    {title: "Создание заказа",      roleHref:"/Manager",        href:"/ManagerOrderCreation"},
+    {title: "Заказы на продажу",    roleHref:"/Manager",        href:"/ManagerSellOrders"},
+    {title: "Заказы на поставку",   roleHref:"/Manager",        href:"/ManagerShipmentOrders"},
+  ],[
+    {title: "Заказы",               roleHref:"/Logistician",    href:"/LogisticianOrders"},
+    {title: "Товары",               roleHref:"/Logistician",    href:"/LogisticianProducts"},
+  ],[
+    {title: "Аккаунты",             roleHref:"/Administrator",  href:"/AdministratorAccounts"},
+  ]
+  // ,[
+  //   {id:0, title: "Товары", roleHref:"/Storekeeper", href:"/StorekeeperAdvent", page: <StorekeeperAdvent Id={12}/>},
+  //   {id:1, title: "Накладные", roleHref:"/Storekeeper", href:"/StorekeeperAdvent", page: <StorekeeperAdvent Id={13}/>},
+  //   {id:2, title: "Отчеты", roleHref:"/Storekeeper", href:"/StorekeeperAdvent", page: <StorekeeperAdvent Id={14}/>},
+  //   {id:3, title: "Счета на оплату", roleHref:"/Storekeeper", href:"/StorekeeperAdvent", page: <StorekeeperAdvent Id={15}/>},
+  // ]
+]
+
+
 export default function App() {
-  const [cookies, setCookie] = useCookies(['access_token', 'refresh_token'])
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [cookies, setCookie] = useCookies(['access_token', 'refresh_token', 'accountData'])
   // let expires = new Date()
   // expires.setTime(expires.getTime() + (20 * 1000))
 
-  var [mainTabs, setMainTab] = React.useState([
-    {title: "АРМ Кладовщика",     href:"/Storekeeper",    basicHref:"/StorekeeperAdvent"},
-    {title: "АРМ Менеджера",      href:"/Manager",        basicHref:"/ManagerProducts"},
-    {title: "АРМ Логиста",        href:"/Logistician",    basicHref:"/LogisticianOrders"},
-    {title: "АРМ Администратора", href:"/Administrator",  basicHref:"/AdministratorAccounts"},
-    /*
-    {id:4, selected: false, title: "АРМ Бухгалтера"},
-    */
-  ])
+  var [mainTabs, setMainTab] = React.useState([])
+  var [subTabs, setSubTabs] = React.useState(subTabsArray)
 
-  var [subTabs, setSubTabs] = React.useState([
-    [
-      {title: "Приход",               roleHref:"/Storekeeper",    href:"/StorekeeperAdvent"},
-      {title: "Расход",               roleHref:"/Storekeeper",    href:"/StorekeeperExpend"},
-      {title: "Расстановка товаров",  roleHref:"/Storekeeper",    href:"/StorekeeperAllocation"},
-      {title: "Инвентаризация",       roleHref:"/Storekeeper",    href:"/StorekeeperInventory"},
-    ],[
-      {title: "Товары",               roleHref:"/Manager",        href:"/ManagerProducts"},
-      {title: "Создание заказа",      roleHref:"/Manager",        href:"/ManagerOrderCreation"},
-      {title: "Заказы на продажу",    roleHref:"/Manager",        href:"/ManagerSellOrders"},
-      {title: "Заказы на поставку",   roleHref:"/Manager",        href:"/ManagerShipmentOrders"},
-    ],[
-      {title: "Заказы",               roleHref:"/Logistician",    href:"/LogisticianOrders"},
-      {title: "Товары",               roleHref:"/Logistician",    href:"/LogisticianProducts"},
-    ],[
-      {title: "Аккаунты",             roleHref:"/Administrator",  href:"/AdministratorAccounts"},
-    ]
-    // ,[
-    //   {id:0, title: "Товары", roleHref:"/Storekeeper", href:"/StorekeeperAdvent", page: <StorekeeperAdvent Id={12}/>},
-    //   {id:1, title: "Накладные", roleHref:"/Storekeeper", href:"/StorekeeperAdvent", page: <StorekeeperAdvent Id={13}/>},
-    //   {id:2, title: "Отчеты", roleHref:"/Storekeeper", href:"/StorekeeperAdvent", page: <StorekeeperAdvent Id={14}/>},
-    //   {id:3, title: "Счета на оплату", roleHref:"/Storekeeper", href:"/StorekeeperAdvent", page: <StorekeeperAdvent Id={15}/>},
-    // ]
-  ])
+  React.useEffect(() => {
+    if (cookies.accountData!=undefined){
+      var mainTabsBuff = []
+      var subTabsBuff = []
+      var admin = false
+      cookies.accountData.roles.map(role=>{
+        if (role=="Администратор"){admin=true}
+        if (role=="Кладовщик"){
+          mainTabsBuff.push(mainTabsArray[0])
+          subTabsBuff.push(subTabsArray[0])
+        }
+        if (role=="Менеджер"){
+          mainTabsBuff.push(mainTabsArray[1])
+          subTabsBuff.push(subTabsArray[1])
+        }
+        if (role=="Логист"){
+          mainTabsBuff.push(mainTabsArray[2])
+          subTabsBuff.push(subTabsArray[2])
+        }
+      })
+      if (admin){
+        mainTabsBuff = mainTabsArray
+        subTabsBuff = subTabsArray
+      }
+      setMainTab(mainTabsBuff)
+      setSubTabs(subTabsBuff)
+      var check=true
+      subTabsBuff.map(tab=>{
+        if (location.pathname.split("/")[1] == tab[0].roleHref.split("/")[1]) check=false
+      })
+      if (check) navigate(subTabsBuff[0][0].roleHref + subTabsBuff[0][0].href)
+    }
+  }, [cookies.accountData]);
 
   function wrapErrorBoundary(component){
     return (
@@ -87,7 +127,6 @@ export default function App() {
         <div className="header">
           <SubTabHolder tabs={subTabs}/>
         </div>
-        {/* {subTabs[getSelectedTabId()][getSelectedSubTabId()].page} */}
         <Routes>
           <Route path="/Storekeeper/StorekeeperAdvent" element={wrapErrorBoundary(<StorekeeperAdvent Id={100}/>)}/>
           <Route path="/Storekeeper/StorekeeperExpend" element={wrapErrorBoundary(<StorekeeperExpend Id={200}/>)}/>

@@ -48,9 +48,24 @@ export default function Authorization(props){
       if (item.login==login && item.password==password){
         passCheck=false
         authorizated = true
-        if (item.duty == "Кладовщик")  {props.setCookie('access_token', 0, { path: '/',  expires})}
-        if (item.duty == "Менеджер") {props.setCookie('access_token', 1, { path: '/',  expires})}
-        if (item.duty == "Администратор") {props.setCookie('access_token', 2, { path: '/',  expires})}
+
+        var access_token = -1;
+        var accountData = {roles:["Логист", "Менеджер"]}
+        if (item.duty == "Кладовщик")  {
+          access_token = 0
+        }
+        if (item.duty == "Менеджер") {
+          access_token = 1
+        }
+        if (item.duty == "Администратор") {
+          access_token = 2
+        }
+        if (item.duty == "Логист") {
+          access_token = 3
+        }
+        props.setCookie('access_token', access_token, { path: '/',  expires})
+        props.setCookie('refresh_token', "refresh_token", { path: '/',  expires})
+        props.setCookie('accountData', accountData, { path: '/',  expires})
       }
     })
     if (passCheck) {
