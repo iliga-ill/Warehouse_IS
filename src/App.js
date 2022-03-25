@@ -15,6 +15,7 @@ import ManagerSellOrders from './pages/ManagerSellOrders/ManagerSellOrders';
 import ManagerShipmentOrders from './pages/ManagerShipmentOrders/ManagerShipmentOrders';
 import LogisticianOrders from './pages/LogisticianOrders/LogisticianOrders';
 import LogisticianProducts from './pages/LogisticianProducts/LogisticianProducts';
+import Profile from './pages/Profile/Profile';
 import React from 'react';
 import {Routes, Route, useLocation, useNavigate} from "react-router-dom"
 import {useCookies} from 'react-cookie'
@@ -93,13 +94,27 @@ export default function App() {
       }
       setMainTab(mainTabsBuff)
       setSubTabs(subTabsBuff)
-      var check=true
-      subTabsBuff.map(tab=>{
-        if (location.pathname.split("/")[1] == tab[0].roleHref.split("/")[1]) check=false
-      })
-      if (check) navigate(subTabsBuff[0][0].roleHref + subTabsBuff[0][0].href)
+      checkAccess()
     }
   }, [cookies.accountData]);
+
+  function isRolePage(){
+    var check = false
+    mainTabsArray.map(tab=>{
+      if (tab.href.split("/")[1]==location.pathname.split("/")[1]) check = true
+    })
+    return check
+  }
+
+  function checkAccess(){
+      var check=false
+      subTabs.map(tab=>{
+        if (location.pathname.split("/")[1] == tab[0].roleHref.split("/")[1]) check=true
+      })
+      if (!isRolePage()) check = true
+      if (!check) navigate(subTabs[0][0].roleHref + subTabs[0][0].href)
+      return check
+  }
 
   function wrapErrorBoundary(component){
     return (
@@ -121,24 +136,28 @@ export default function App() {
             <TabHolder tabs={mainTabs}/>
           </div>
           <div className="userAvatar">
-            <AvatarHolder/>
+            <AvatarHolder cookies={cookies} setCookie={setCookie}/>
           </div>
         </div>
-        <div className="header">
-          <SubTabHolder tabs={subTabs}/>
-        </div>
+        {isRolePage() && checkAccess()
+          ? <div className="header">
+              <SubTabHolder tabs={subTabs}/>
+            </div>
+          : <></>
+        }
         <Routes>
-          <Route path="/Storekeeper/StorekeeperAdvent" element={wrapErrorBoundary(<StorekeeperAdvent Id={100}/>)}/>
-          <Route path="/Storekeeper/StorekeeperExpend" element={wrapErrorBoundary(<StorekeeperExpend Id={200}/>)}/>
-          <Route path="/Storekeeper/StorekeeperAllocation" element={wrapErrorBoundary(<StorekeeperAllocation Id={300}/>)}/>
-          <Route path="/Storekeeper/StorekeeperInventory" element={wrapErrorBoundary(<StorekeeperInventory Id={400}/>)}/>
-          <Route path="/Manager/ManagerProducts" element={wrapErrorBoundary(<ManagerProducts Id={500}/>)}/>
-          <Route path="/Manager/ManagerOrderCreation" element={wrapErrorBoundary(<ManagerOrderCreation Id={600}/>)}/>
-          <Route path="/Manager/ManagerSellOrders" element={wrapErrorBoundary(<ManagerSellOrders Id={700}/>)}/>
-          <Route path="/Manager/ManagerShipmentOrders" element={wrapErrorBoundary(<ManagerShipmentOrders Id={800}/>)}/>
-          <Route path="/Logistician/LogisticianOrders" element={wrapErrorBoundary(<LogisticianOrders Id={900}/>)}/>
-          <Route path="/Logistician/LogisticianProducts" element={wrapErrorBoundary(<LogisticianProducts Id={1000}/>)}/>
-          <Route path="/Administrator/AdministratorAccounts" element={wrapErrorBoundary(<AdministratorAccounts Id={1100}/>)}/>
+          <Route path="/Storekeeper/StorekeeperAdvent" element={wrapErrorBoundary(<StorekeeperAdvent />)}/>
+          <Route path="/Storekeeper/StorekeeperExpend" element={wrapErrorBoundary(<StorekeeperExpend />)}/>
+          <Route path="/Storekeeper/StorekeeperAllocation" element={wrapErrorBoundary(<StorekeeperAllocation />)}/>
+          <Route path="/Storekeeper/StorekeeperInventory" element={wrapErrorBoundary(<StorekeeperInventory />)}/>
+          <Route path="/Manager/ManagerProducts" element={wrapErrorBoundary(<ManagerProducts />)}/>
+          <Route path="/Manager/ManagerOrderCreation" element={wrapErrorBoundary(<ManagerOrderCreation />)}/>
+          <Route path="/Manager/ManagerSellOrders" element={wrapErrorBoundary(<ManagerSellOrders />)}/>
+          <Route path="/Manager/ManagerShipmentOrders" element={wrapErrorBoundary(<ManagerShipmentOrders />)}/>
+          <Route path="/Logistician/LogisticianOrders" element={wrapErrorBoundary(<LogisticianOrders />)}/>
+          <Route path="/Logistician/LogisticianProducts" element={wrapErrorBoundary(<LogisticianProducts />)}/>
+          <Route path="/Administrator/AdministratorAccounts" element={wrapErrorBoundary(<AdministratorAccounts />)}/>
+          <Route path="/Profile" element={wrapErrorBoundary(<Profile cookies={cookies}/>)}/>
         </Routes>
       </div>
     );

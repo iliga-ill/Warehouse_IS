@@ -1,14 +1,43 @@
 .avatarHolder{
-    width: 100%;
-    height: 100%;
+    height: 50px;
+    width: 50px;
     background-color: white;
-    align-items: center;
     border: 1px solid darkgray;
+}
+
+.avatarHolder:hover{
+    background-color: rgba(228, 228, 228, 0.842);
 }
 
 .icon{
     width: 50px;
-    height: 49px;
-    margin: 0;
+    height: 50px;
     border-radius: 50%;
+    background-color: white;
+}
+
+.dropdownMenu{
+    position: fixed;
+    right: -151px;
+    top:52px;
+    font-size: 20px;
+    width: 150px;
+    transition: all .22s ease-in;
+    background-color: white;
+    border: 1px solid darkgray;
+}
+
+.dropdownMenu.open{
+    right: 0px;
+    border: 1px solid darkgray;
+}
+
+.menuItem{
+    width: .100;
+    height: fit-content;
+    padding: 3px;
+}
+
+.menuItem:hover{
+    background-color: rgba(228, 228, 228, 0.842);
 }

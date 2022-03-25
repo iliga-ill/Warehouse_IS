@@ -2,6 +2,7 @@ import React, { Component, Fragment } from "react";
 import './Authorization.css';
 import Table from "../../components/Table/Table";
 import cookie from "react-cookie";
+import ManIcon from '../../images/ManIcon.svg'
 
 
 var accounts = [
@@ -16,7 +17,7 @@ const host = 'http://localhost:5000';
 
 export default function Authorization(props){
   let expires = new Date()
-  expires.setTime(expires.getTime() + (20 * 1000))
+  expires.setTime(expires.getTime() + (5 * 60 * 1000))
 
   function apiGetClients() {
     var xhr = new XMLHttpRequest();
@@ -50,7 +51,15 @@ export default function Authorization(props){
         authorizated = true
 
         var access_token = -1;
-        var accountData = {roles:["Логист", "Менеджер"]}
+        var accountData = {
+          roles: ["Логист", "Менеджер", "Администратор"], 
+          avatar: ManIcon, 
+          name: item.name, 
+          surname: item.surname, 
+          patronymic: item.patronymic,
+          login:  item.login,
+          password: item.password
+        }
         if (item.duty == "Кладовщик")  {
           access_token = 0
         }

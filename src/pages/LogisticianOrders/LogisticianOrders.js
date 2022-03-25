@@ -17,7 +17,7 @@ const styles = {
 
 export default function LogisticianOrders(props){
     
-    var id=props.Id
+    var id=0
     function getId(){
         id++
         return id-1
