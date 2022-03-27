@@ -21,3 +21,8 @@
 .inputText{
     width: 100%;
 }
+
+.special-label{
+    visibility: collapse;
+    height: 0px;
+}

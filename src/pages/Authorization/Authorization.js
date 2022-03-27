@@ -58,7 +58,8 @@ export default function Authorization(props){
           surname: item.surname, 
           patronymic: item.patronymic,
           login:  item.login,
-          password: item.password
+          password: item.password,
+          phone_num: item.phone_num
         }
         if (item.duty == "Кладовщик")  {
           access_token = 0
