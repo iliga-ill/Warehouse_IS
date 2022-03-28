@@ -26,14 +26,17 @@ export default function AdministratorAccounts(props){
         {name: 'surname',           title:'Фамилия',            editingEnabled:true,    width:160   }, 
         {name: 'name',              title:'Имя',                editingEnabled:true,    width:160   }, 
         {name: 'patronymic',        title:'Отчество',           editingEnabled:true,    width:170   }, 
-        {name: 'phone_num',         title:'Номер телефона',     editingEnabled:true,    width:200   }, 
-        {name: 'duty',              title:'Должность',          editingEnabled:true,    width:150   },
+        {name: 'phone',             title:'Номер телефона',     editingEnabled:true,    width:200   }, 
+        {name: 'email',             title:'Почта',              editingEnabled:true,    width:200   }, 
+        {name: 'duty',              title:'Должность',          editingEnabled:false,   width:150   },
         {name: 'login',             title:'Логин',              editingEnabled:true,    width:130   },
         {name: 'password',          title:'Пароль',             editingEnabled:true,    width:130   }
     ]) 
-    var edit_column = {add:true, edit:true, delete:true}
+    var edit_column = {add:true, edit:true, delete:true, select:true}
 
     const [tableList, setTableList] = React.useState([])
+    const [selectedItem, setSelectedItem] = React.useState()
+    
     function apiGetClients() {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', host+'/clients', true);
@@ -45,7 +48,7 @@ export default function AdministratorAccounts(props){
             console.log(answer)
             var buffer = []
             answer.map( function(item, i) {
-                buffer[i] = {number:i+1, name: item.name, surname: item.surname, patronymic: item.patronymic, login: item.login, password: item.password, phone_num: item.phone_num, duty: item.duty}
+                buffer[i] = {number:i+1, name: item.name, surname: item.surname, patronymic: item.patronymic, login: item.login, password: item.password, phone: item.phone_num, duty: " Кладовщик Менеджер", email:""}
                 buffer[i].id = 'string_' + i;
                 buffer[i].code = item.code
             })
@@ -118,16 +121,46 @@ export default function AdministratorAccounts(props){
       }
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец
+    //-------------------------------------------------------------------------Блок 2 начало
+    var allDuties=["Администратор", "Кладовщик", "Менеджер", "Логист", "Бухгалтер"]
+    var isSelectedItemUndefined=()=>{return selectedItem==undefined}
+    var isSelectedItemIncludes=(value)=>{return !isSelectedItemUndefined()?selectedItem.duty.split(" ").includes(value):false}
+
+    function onAccessChange(duty){
+        var tableBuf = tableList.map(item=>{
+            if (item.id==selectedItem.id && isSelectedItemIncludes(duty))
+                item.duty = item.duty.replace(` ${duty}`,'');
+            else if (item.id==selectedItem.id && !isSelectedItemIncludes(duty))
+                item.duty = item.duty + ` ${duty}`
+            return item
+        })
+        setTableList(tableBuf)
+    }
+
+    React.useEffect(() => {
+        allDuties.map(function(duty, i){
+            document.getElementById("checkbox"+i).checked=isSelectedItemIncludes(duty)
+        })
+    }, [selectedItem]);
+    //-------------------------------------------------------------------------Блок 2 конец
 
     return (
         <FlexibleBlocksPage>
             <FlexibleBlock>
                 <div class="header_text">Аккаунты</div>
                 <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent  height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
+                    <TableComponent  height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column} onSelect={setSelectedItem}/>
                 </div>
                 <div></div>
                 <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={btn_send_1}>Подтвердить</button>
+            </FlexibleBlock>
+            <FlexibleBlock>
+                <div class="header_text">Доступные АРМ</div>
+                <div><input id="checkbox0" type="checkbox" onChange={()=>onAccessChange(allDuties[0])}  disabled={isSelectedItemUndefined()}/> <a> {allDuties[0]}</a></div>
+                <div><input id="checkbox1" type="checkbox" onChange={()=>onAccessChange(allDuties[1])}  disabled={isSelectedItemUndefined()}/> <a> {allDuties[1]}</a></div>
+                <div><input id="checkbox2" type="checkbox" onChange={()=>onAccessChange(allDuties[2])}  disabled={isSelectedItemUndefined()}/> <a> {allDuties[2]}</a></div>
+                <div><input id="checkbox3" type="checkbox" onChange={()=>onAccessChange(allDuties[3])}  disabled={isSelectedItemUndefined()}/> <a> {allDuties[3]}</a></div>
+                <div><input id="checkbox4" type="checkbox" onChange={()=>onAccessChange(allDuties[4])}  disabled={isSelectedItemUndefined()}/> <a> {allDuties[4]}</a></div>
             </FlexibleBlock>
         </FlexibleBlocksPage>
     )

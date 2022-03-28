@@ -15,6 +15,10 @@ import ManagerSellOrders from './pages/ManagerSellOrders/ManagerSellOrders';
 import ManagerShipmentOrders from './pages/ManagerShipmentOrders/ManagerShipmentOrders';
 import LogisticianOrders from './pages/LogisticianOrders/LogisticianOrders';
 import LogisticianProducts from './pages/LogisticianProducts/LogisticianProducts';
+import AccountantProducts from './pages/AccountantProducts/AccountantProducts';
+import AccountantInvoice from './pages/AccountantInvoice/AccountantInvoice';
+import AccountantReports from './pages/AccountantReports/AccountantReports';
+import AccountantAccounts from './pages/AccountantAccounts/AccountantAccounts';
 import Profile from './pages/Profile/Profile';
 import React from 'react';
 import {Routes, Route, useLocation, useNavigate} from "react-router-dom"
@@ -27,9 +31,7 @@ const mainTabsArray = [
   {title: "АРМ Менеджера",      href:"/Manager",        basicHref:"/ManagerProducts"},
   {title: "АРМ Логиста",        href:"/Logistician",    basicHref:"/LogisticianOrders"},
   {title: "АРМ Администратора", href:"/Administrator",  basicHref:"/AdministratorAccounts"},
-  /*
-  {id:4, selected: false, title: "АРМ Бухгалтера"},
-  */
+  {title: "АРМ Бухгалтера",     href:"/Accountant",     basicHref:"/AccountantProducts"},
 ]
 
 const subTabsArray = [
@@ -48,13 +50,12 @@ const subTabsArray = [
     {title: "Товары",               roleHref:"/Logistician",    href:"/LogisticianProducts"},
   ],[
     {title: "Аккаунты",             roleHref:"/Administrator",  href:"/AdministratorAccounts"},
+  ],[
+    {title: "Товары",               roleHref:"/Accountant",     href:"/AccountantProducts"},
+    {title: "Накладные",            roleHref:"/Accountant",     href:"/AccountantInvoice"},
+    {title: "Отчеты",               roleHref:"/Accountant",     href:"/AccountantReports"},
+    {title: "Счета на оплату",      roleHref:"/Accountant",     href:"/AccountantAccounts"},
   ]
-  // ,[
-  //   {id:0, title: "Товары", roleHref:"/Storekeeper", href:"/StorekeeperAdvent", page: <StorekeeperAdvent Id={12}/>},
-  //   {id:1, title: "Накладные", roleHref:"/Storekeeper", href:"/StorekeeperAdvent", page: <StorekeeperAdvent Id={13}/>},
-  //   {id:2, title: "Отчеты", roleHref:"/Storekeeper", href:"/StorekeeperAdvent", page: <StorekeeperAdvent Id={14}/>},
-  //   {id:3, title: "Счета на оплату", roleHref:"/Storekeeper", href:"/StorekeeperAdvent", page: <StorekeeperAdvent Id={15}/>},
-  // ]
 ]
 
 
@@ -146,17 +147,23 @@ export default function App() {
           : <></>
         }
         <Routes>
-          <Route path="/Storekeeper/StorekeeperAdvent" element={wrapErrorBoundary(<StorekeeperAdvent />)}/>
-          <Route path="/Storekeeper/StorekeeperExpend" element={wrapErrorBoundary(<StorekeeperExpend />)}/>
-          <Route path="/Storekeeper/StorekeeperAllocation" element={wrapErrorBoundary(<StorekeeperAllocation />)}/>
-          <Route path="/Storekeeper/StorekeeperInventory" element={wrapErrorBoundary(<StorekeeperInventory />)}/>
-          <Route path="/Manager/ManagerProducts" element={wrapErrorBoundary(<ManagerProducts />)}/>
-          <Route path="/Manager/ManagerOrderCreation" element={wrapErrorBoundary(<ManagerOrderCreation />)}/>
-          <Route path="/Manager/ManagerSellOrders" element={wrapErrorBoundary(<ManagerSellOrders />)}/>
-          <Route path="/Manager/ManagerShipmentOrders" element={wrapErrorBoundary(<ManagerShipmentOrders />)}/>
-          <Route path="/Logistician/LogisticianOrders" element={wrapErrorBoundary(<LogisticianOrders />)}/>
-          <Route path="/Logistician/LogisticianProducts" element={wrapErrorBoundary(<LogisticianProducts />)}/>
-          <Route path="/Administrator/AdministratorAccounts" element={wrapErrorBoundary(<AdministratorAccounts />)}/>
+          <Route path="/Storekeeper/StorekeeperAdvent" element={wrapErrorBoundary(<StorekeeperAdvent/>)}/>
+          <Route path="/Storekeeper/StorekeeperExpend" element={wrapErrorBoundary(<StorekeeperExpend/>)}/>
+          <Route path="/Storekeeper/StorekeeperAllocation" element={wrapErrorBoundary(<StorekeeperAllocation/>)}/>
+          <Route path="/Storekeeper/StorekeeperInventory" element={wrapErrorBoundary(<StorekeeperInventory/>)}/>
+          <Route path="/Manager/ManagerProducts" element={wrapErrorBoundary(<ManagerProducts/>)}/>
+          <Route path="/Manager/ManagerOrderCreation" element={wrapErrorBoundary(<ManagerOrderCreation/>)}/>
+          <Route path="/Manager/ManagerSellOrders" element={wrapErrorBoundary(<ManagerSellOrders/>)}/>
+          <Route path="/Manager/ManagerShipmentOrders" element={wrapErrorBoundary(<ManagerShipmentOrders/>)}/>
+          <Route path="/Logistician/LogisticianOrders" element={wrapErrorBoundary(<LogisticianOrders/>)}/>
+          <Route path="/Logistician/LogisticianProducts" element={wrapErrorBoundary(<LogisticianProducts/>)}/>
+          <Route path="/Administrator/AdministratorAccounts" element={wrapErrorBoundary(<AdministratorAccounts/>)}/>
+
+          <Route path="/Accountant/AccountantProducts" element={wrapErrorBoundary(<AccountantProducts/>)}/>
+          <Route path="/Accountant/AccountantInvoice" element={wrapErrorBoundary(<AccountantInvoice/>)}/>
+          <Route path="/Accountant/AccountantReports" element={wrapErrorBoundary(<AccountantReports/>)}/>
+          <Route path="/Accountant/AccountantAccounts" element={wrapErrorBoundary(<AccountantAccounts/>)}/>
+
           <Route path="/Profile" element={wrapErrorBoundary(<Profile cookies={cookies}/>)}/>
         </Routes>
       </div>

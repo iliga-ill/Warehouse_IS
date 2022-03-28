@@ -73,6 +73,9 @@ export default function Authorization(props){
         if (item.duty == "Логист") {
           access_token = 3
         }
+        if (item.duty == "Бухгалтер") {
+          access_token = 4
+        }
         props.setCookie('access_token', access_token, { path: '/',  expires})
         props.setCookie('refresh_token', "refresh_token", { path: '/',  expires})
         props.setCookie('accountData', accountData, { path: '/',  expires})

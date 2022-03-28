@@ -60,6 +60,7 @@ export function TableComponent(props) {
 //---------------------------изменение таблицы-------------------------------
   const commitChanges = ({ added, changed, deleted }) => {
     let changedRows;
+
     if (added) {
       const startingAddedId = rows.length > 0 ? rows[rows.length - 1].id + 1 : 0;
       changedRows = [
@@ -179,7 +180,15 @@ const [selection, setSelection] = useState([]);
 function onSelected(value) {
   if (props.editColumn.select != undefined && props.editColumn.select) {
     setSelection([value[value.length-1]])
-    props.onSelect(value[value.length-1])
+    var check = false
+    rows.map(function(element, i){
+      if (element.id == value[value.length-1]) {
+          props.onSelect(element)
+          check=true
+      }   
+  })
+  if (!check) props.onSelect(undefined)
+    
   }
 }
 

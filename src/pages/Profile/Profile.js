@@ -79,7 +79,7 @@ export default function Profile(props){
                         :<>
                             <table>
                                 <tr>
-                                    <td  style={{width:"200px"}}>
+                                    <td style={{width:"200px"}}>
                                         <div style={{width:"200px"}}>
                                             <Avatar
                                                 width={200}
