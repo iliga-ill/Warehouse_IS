@@ -12,11 +12,8 @@ const styles = {
 
 export default function AdministratorAccounts(props){
 
-    var id=props.Id
-    function getId(){
-        id++
-        return id-1
-    }
+    var id=0
+    function getId(){return id++}
 
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------стол 1

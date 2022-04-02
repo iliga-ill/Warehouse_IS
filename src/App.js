@@ -13,8 +13,10 @@ import AdministratorAccounts from './pages/AdministratorAccounts/AdministratorAc
 import ManagerOrderCreation from './pages/ManagerOrderCreation/ManagerOrderCreation';
 import ManagerSellOrders from './pages/ManagerSellOrders/ManagerSellOrders';
 import ManagerShipmentOrders from './pages/ManagerShipmentOrders/ManagerShipmentOrders';
+import ManagerBills from './pages/ManagerBills/ManagerBills';
 import LogisticianOrders from './pages/LogisticianOrders/LogisticianOrders';
 import LogisticianProducts from './pages/LogisticianProducts/LogisticianProducts';
+import LogisticianBills from './pages/LogisticianBills/LogisticianBills';
 import AccountantProducts from './pages/AccountantProducts/AccountantProducts';
 import AccountantInvoice from './pages/AccountantInvoice/AccountantInvoice';
 import AccountantReports from './pages/AccountantReports/AccountantReports';
@@ -45,9 +47,11 @@ const subTabsArray = [
     {title: "Создание заказа",      roleHref:"/Manager",        href:"/ManagerOrderCreation"},
     {title: "Заказы на продажу",    roleHref:"/Manager",        href:"/ManagerSellOrders"},
     {title: "Заказы на поставку",   roleHref:"/Manager",        href:"/ManagerShipmentOrders"},
+    {title: "Счета на оплату",      roleHref:"/Manager",        href:"/ManagerBills"},
   ],[
     {title: "Заказы",               roleHref:"/Logistician",    href:"/LogisticianOrders"},
     {title: "Товары",               roleHref:"/Logistician",    href:"/LogisticianProducts"},
+    {title: "Счета на оплату",      roleHref:"/Logistician",    href:"/LogisticianBills"},
   ],[
     {title: "Аккаунты",             roleHref:"/Administrator",  href:"/AdministratorAccounts"},
   ],[
@@ -155,14 +159,19 @@ export default function App() {
           <Route path="/Manager/ManagerOrderCreation" element={wrapErrorBoundary(<ManagerOrderCreation/>)}/>
           <Route path="/Manager/ManagerSellOrders" element={wrapErrorBoundary(<ManagerSellOrders/>)}/>
           <Route path="/Manager/ManagerShipmentOrders" element={wrapErrorBoundary(<ManagerShipmentOrders/>)}/>
+
+          <Route path="/Manager/ManagerBills" element={wrapErrorBoundary(<ManagerBills/>)}/>
+
           <Route path="/Logistician/LogisticianOrders" element={wrapErrorBoundary(<LogisticianOrders/>)}/>
           <Route path="/Logistician/LogisticianProducts" element={wrapErrorBoundary(<LogisticianProducts/>)}/>
-          <Route path="/Administrator/AdministratorAccounts" element={wrapErrorBoundary(<AdministratorAccounts/>)}/>
+
+          <Route path="/Logistician/LogisticianBills" element={wrapErrorBoundary(<LogisticianBills/>)}/>
 
           <Route path="/Accountant/AccountantProducts" element={wrapErrorBoundary(<AccountantProducts/>)}/>
           <Route path="/Accountant/AccountantInvoice" element={wrapErrorBoundary(<AccountantInvoice/>)}/>
           <Route path="/Accountant/AccountantReports" element={wrapErrorBoundary(<AccountantReports/>)}/>
           <Route path="/Accountant/AccountantAccounts" element={wrapErrorBoundary(<AccountantAccounts/>)}/>
+          <Route path="/Administrator/AdministratorAccounts" element={wrapErrorBoundary(<AdministratorAccounts/>)}/>
 
           <Route path="/Profile" element={wrapErrorBoundary(<Profile cookies={cookies}/>)}/>
         </Routes>

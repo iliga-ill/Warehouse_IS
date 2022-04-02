@@ -20,11 +20,8 @@ const styles = {
 
 export default function AccountantInvoice(props){
 
-    var id=props.Id
-    function getId(){
-        id++
-        return id-1
-    }
+    var id=0
+    function getId(){return id++}
 
     //-------------------------------------------------------------------------Табы
     const [reload, setReload] = React.useState(0)
@@ -121,7 +118,7 @@ export default function AccountantInvoice(props){
             <SwitchHolder tabs={tabs} onTabClick={onTabClick}/>
             <FlexibleBlocksPage>
                 <FlexibleBlock>
-                    <div class="header_text">Заказы на продажу</div>
+                    <div class="header_text">Список накладных</div>
                     <div style={{width:470+'px', display:'inline-table'}} >
                         <TableComponent height={611} columns={tableHeaders} rows={tableList}  onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
                     </div>

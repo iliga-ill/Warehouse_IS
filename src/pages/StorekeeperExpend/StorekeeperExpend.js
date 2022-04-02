@@ -16,11 +16,8 @@ const styles = {
 
 export default function StorekeeperExpend(props){
     
-    var id=props.Id
-    function getId(){
-        id++
-        return id-1
-    }
+    var id=0
+    function getId(){return id++}
 
 //#region блоки
     //-------------------------------------------------------------------------Блок 1

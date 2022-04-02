@@ -16,11 +16,8 @@ const styles = {
 
 export default function LogisticianProducts(props){
 
-    var id=props.Id
-    function getId(){
-        id++
-        return id-1
-    }
+    var id=0
+    function getId(){return id++}
 
     function apiGetGoodsTypeCats() {
         var xhr = new XMLHttpRequest();
@@ -84,18 +81,13 @@ export default function LogisticianProducts(props){
 
     
     function setDataInTable2(value) {
-        var elm;
-        tableList.map( function(element){
-            if (element.id == value) elm = element
-        })
-     
-        setGood(elm.goodsType)
-        setCategory(elm.goodsCategories2)
-        setSubCategory(elm.goodsCategories3)
-        setCost(elm.cost)
-        setAmountInStore(elm.amountOnWarehouse)
-        setWeight(elm.weight)
-        setGoodCharacteristics(elm.description)
+        setGood(value.goodsType)
+        setCategory(value.goodsCategories2)
+        setSubCategory(value.goodsCategories3)
+        setCost(value.cost)
+        setAmountInStore(value.amountOnWarehouse)
+        setWeight(value.weight)
+        setGoodCharacteristics(value.description)
     }
 
     //-------------------------------------------------------------------------Блок 3 конец

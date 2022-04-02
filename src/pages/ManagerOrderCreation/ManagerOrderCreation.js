@@ -16,11 +16,8 @@ const styles = {
 
 export default function ManagerOrderCreation(props){
 
-    var id=props.Id
-    function getId(){
-        id++
-        return id-1
-    }
+    var id=0
+    function getId(){return id++}
 
     const [reload, setReload] = React.useState(0)
 
@@ -151,14 +148,10 @@ export default function ManagerOrderCreation(props){
             //     buf.push(element)
             // })
 
-            tableList1.map(function(element, i){
-                if (element.id == selectedItemId1) {
-                    var sumCost = 0
-                    if (!isNaN(parseInt(0)) && !isNaN(parseInt(tableList1[i].cost)))
-                        sumCost=0*tableList1[i].cost
-                    selectedRow = {id: getId(), goodsType: tableList1[i].goodsType, amount: 0, cost: tableList1[i].cost, sumCost: sumCost, goodCode: tableList1[i].code}
-                }     
-            })
+            var sumCost = 0
+            if (!isNaN(parseInt(0)) && !isNaN(parseInt(selectedItemId1.cost)))
+                sumCost=0*selectedItemId1.cost
+            selectedRow = {id: getId(), goodsType: selectedItemId1.goodsType, amount: 0, cost: selectedItemId1.cost, sumCost: sumCost, goodCode: selectedItemId1.code}
             var check = true
             buf.map(function(element,i){
                 if (element.goodCode == selectedRow.goodCode) check = false

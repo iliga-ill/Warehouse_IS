@@ -34,11 +34,8 @@ const apiGetRacksByZones = function apiGetRacksByZones() {
 
 export default function StorekeeperAdvent(props){
 
-    var id=100
-    function getId(){
-        id++
-        return id-1
-    }
+    var id=0
+    function getId(){return id++}
 
 //#region блоки
     //-------------------------------------------------------------------------Блок 1

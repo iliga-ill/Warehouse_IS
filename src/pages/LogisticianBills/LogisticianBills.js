@@ -1,10 +1,12 @@
 import React, { Component, Fragment } from "react";
-import './AccountantAccounts.css';
+import './LogisticianBills.css';
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
 import InputFile from "../../components/InputFile/InputFile";
 import SwitchHolder from "../../components/TabHolders/SwitchHolder/SwitchHolder";
+import InputText from "../../components/InputText/InputText";
+import InputTextArea from "../../components/InputTextArea/InputTextArea";
 import { TableComponent } from "../../components/Table/TableComponent";
 const host = 'http://localhost:5000';
 
@@ -14,7 +16,7 @@ const styles = {
 
   
 
-export default function AccountantAccounts(props){
+export default function LogisticianBills(props){
 
     var id=0
     function getId(){return id++}
@@ -65,17 +67,13 @@ export default function AccountantAccounts(props){
     //-------------------------------------------------------------------------Блок 1 конец
 
     //-------------------------------------------------------------------------Блок 2
-    const [order, setOrder] = React.useState("Заказ №")
+    const [order, setOrder] = React.useState("Доставка №")
     const [requestedBy, setRequestedBy] = React.useState("/--/")
     const [billCost, setBillCost] = React.useState("/--/")
     const [requisites, setRequisites] = React.useState("/--/")
     const [documents, setDocuments] = React.useState("/--/")
     const [note, setNote] = React.useState("/--/")
-    const [accountStatus, setAccountStatus] = React.useState([
-        {id: 0, value: "Счет выставлен", selected: true},
-        {id: 1, value: "Счет оплачен", selected: false},
-        {id: 2, value: "Оплата отменена", selected: false},
-    ])
+    const [accountStatus, setAccountStatus] = React.useState("/--/")
     const [paymentCheque, setPaymentCheque] = React.useState("/--/")
 
     function btn_save() {
@@ -97,14 +95,14 @@ export default function AccountantAccounts(props){
                     <div style={{width:500+"px"}}>
                         <div class="header_text"><label class="header_text">{order}</label></div>
                         <div class="low_text bold">От кого:&nbsp;&nbsp;<label class="normal">{requestedBy}</label></div>
-                        <div class="low_text bold">Cтоимость:&nbsp;<label class="normal">{billCost}</label></div>
-                        <div class="low_text bold">Реквизиты:</div><label class="normal low_text text_shift">{requisites}</label>
+                        <InputText styles="row_with_item_wide bold" Id={getId()} label="Cтоимость:&nbsp;" defValue={billCost} placeholder="стоимость доставки" set={setBillCost}/> 
+                        <InputText styles="row_with_item_wide bold" Id={getId()} label="Реквизиты:&nbsp;" defValue={requisites} placeholder="реквизиты" set={setRequisites}/> 
                         <div class="low_text bold">Документы:</div><label class="normal low_text text_shift">{documents}</label>
-                        <div class="low_text bold">Примечание:</div><label class="normal low_text text_shift">{note}</label>
-                        <div class="low_text row_with_item_wide"><div class="bold">Статус&nbsp;оплаты:&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={accountStatus[0].value} list={accountStatus} func={setAccountStatus}/></div> 
+                        <InputTextArea styles = "bold" Id={getId()} label="Примечание:" placeholder="адрес" set={setNote} defValue={note}/>
+                        <div class="low_text bold">Статус&nbsp;оплаты:&nbsp;<label class="normal">{accountStatus}</label></div>
                         <div class="low_text"><InputFile Id={getId()} func={setDocuments}/></div>
                         <div></div>
-                        <div class="place_holder"/><button class="bt_send" onClick={btn_save}>Сохранить</button>
+                        <div class="place_holder"/><button class="bt_send" onClick={btn_save}>Отправить</button>
                     </div>
                 </FlexibleBlock> 
             </FlexibleBlocksPage>

@@ -10,11 +10,8 @@ const host = 'http://localhost:5000';
 
 export default function StorekeeperAllocation(props){
 
-    var id=props.Id
-    function getId(){
-        id++
-        return id-1
-    }
+    var id=0
+    function getId(){return id++}
 
     const [reload, setReload] = React.useState(0)
 

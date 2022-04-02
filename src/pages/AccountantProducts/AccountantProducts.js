@@ -18,10 +18,7 @@ const styles = {
 export default function AccountantProducts(props){
 
     var id=0
-    function getId(){
-        id++
-        return id-1
-    }
+    function getId(){return id++}
 
     function apiGetGoodsTypeCats() {
         var xhr = new XMLHttpRequest();
@@ -82,19 +79,15 @@ export default function AccountantProducts(props){
     const [goodCharacteristics, setGoodCharacteristics] = React.useState("")
 
     function setDataInTable2(value) {
-        var elm;
-        tableList.map( function(element){
-            if (element.id == value) elm = element
-        })
         console.log("elm")
-        console.log(elm)
-        setGood(elm.goodsType)
-        setCategory(elm.goodsCategories2)
-        setSubCategory(elm.goodsCategories3)
-        setCost(elm.cost)
-        setAmountInStore(elm.amountOnWarehouse)
-        setGoodLimit(elm.goodsLimit)
-        setGoodCharacteristics(elm.description)
+        console.log(value)
+        setGood(value.goodsType)
+        setCategory(value.goodsCategories2)
+        setSubCategory(value.goodsCategories3)
+        setCost(value.cost)
+        setAmountInStore(value.amountOnWarehouse)
+        setGoodLimit(value.goodsLimit)
+        setGoodCharacteristics(value.description)
     }
 
     //-------------------------------------------------------------------------Блок 3 конец
@@ -102,7 +95,7 @@ export default function AccountantProducts(props){
     return (
         <FlexibleBlocksPage>
             <FlexibleBlock>
-                <div class="header_text">Товары</div>
+                <div class="header_text">Список товаров</div>
                 <div style={{width:800+'px', display:'inline-table'}}>
                     <TableComponent height={500} columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
                 </div>

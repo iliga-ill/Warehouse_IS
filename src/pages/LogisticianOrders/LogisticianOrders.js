@@ -18,10 +18,7 @@ const styles = {
 export default function LogisticianOrders(props){
     
     var id=0
-    function getId(){
-        id++
-        return id-1
-    }
+    function getId(){return id++}
 
 //#region блоки
     //-------------------------------------------------------------------------Табы

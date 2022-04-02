@@ -81,7 +81,7 @@ export default function InputFile(props){
         // <input placeholder="Загрузить документы" accept=".pdf, .docx, .doc, .txt" onChange={handleCapture} type="file" multiple="true"/>
         <form method="post" enctype="multipart/form-data">
             <div>
-                <label  >Документы&nbsp;</label>
+                <label  class="bold">Документы&nbsp;</label>
                 <input type="file" id={"file_input_" + props.Id} accept=".pdf, .docx, .doc, .txt" onChange={updateImageDisplay} multiple/>
             </div>
             <div class={"file_preview_" + props.Id}>

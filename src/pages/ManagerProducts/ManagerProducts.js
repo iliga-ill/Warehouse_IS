@@ -17,11 +17,8 @@ const styles = {
 
 export default function ManagerProducts(props){
 
-    var id=props.Id
-    function getId(){
-        id++
-        return id-1
-    }
+    var id=0
+    function getId(){return id++}
 
     function apiGetGoodsTypeCats() {
         var xhr = new XMLHttpRequest();
@@ -83,19 +80,13 @@ export default function ManagerProducts(props){
     const [goodCharacteristics, setGoodCharacteristics] = React.useState("")
 
     function setDataInTable2(value) {
-        var elm;
-        tableList.map( function(element){
-            if (element.id == value) elm = element
-        })
-        console.log("elm")
-        console.log(elm)
-        setGood(elm.goodsType)
-        setCategory(elm.goodsCategories2)
-        setSubCategory(elm.goodsCategories3)
-        setCost(elm.cost)
-        setAmountInStore(elm.amountOnWarehouse)
-        setGoodLimit(elm.goodsLimit)
-        setGoodCharacteristics(elm.description)
+        setGood(value.goodsType)
+        setCategory(value.goodsCategories2)
+        setSubCategory(value.goodsCategories3)
+        setCost(value.cost)
+        setAmountInStore(value.amountOnWarehouse)
+        setGoodLimit(value.goodsLimit)
+        setGoodCharacteristics(value.description)
     }
 
     //-------------------------------------------------------------------------Блок 3 конец

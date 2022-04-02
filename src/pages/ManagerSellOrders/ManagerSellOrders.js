@@ -19,11 +19,8 @@ const styles = {
 
 export default function ManagerSellOrders(props){
 
-    var id=props.Id
-    function getId(){
-        id++
-        return id-1
-    }
+    var id=0
+    function getId(){return id++}
     
     //-------------------------------------------------------------------------Табы
     const [reload, setReload] = React.useState(0)
@@ -124,12 +121,8 @@ export default function ManagerSellOrders(props){
     }
 
     function apiGetOrderGoods(value) {
-        var elm;
-        tableList.map( function(element){
-            if (element.id == value) elm = element
-        })
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/orders_goods'+ "?" + `order_id=${elm.code}`, true);
+        xhr.open('GET', host+'/orders_goods'+ "?" + `order_id=${value.code}`, true);
         
         xhr.onreadystatechange = function() {
           if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -146,12 +139,12 @@ export default function ManagerSellOrders(props){
                 buffer[i].code = element.code;
             });
             console.log("elm")
-            console.log(elm)
+            console.log(value)
             setTableList1(buffer)
-            setOrder(elm.orderNumber)
-            setShipmentAddress(elm.address)
-            setShipmentDeadline(elm.deadline)
-            setOrderCost(elm.orderCost)
+            setOrder(value.orderNumber)
+            setShipmentAddress(value.address)
+            setShipmentDeadline(value.deadline)
+            setOrderCost(value.orderCost)
           }
         }
         
