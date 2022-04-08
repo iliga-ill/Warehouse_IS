@@ -19,6 +19,7 @@ import {
   TableColumnResizing,
   TableSelection,
   VirtualTable,
+  TableInlineCellEditing
 } from '@devexpress/dx-react-grid-material-ui';
 import {
   FilteringState,
@@ -38,6 +39,7 @@ export function TableComponent(props) {
   const [rows, setRows] = useState();
   const [editingStateColumnExtensions, setEditingStateColumnExtensions] = useState([]);
   const [columnWidths, setColumnWidths] = useState([]);
+  const [selection, setSelection] = useState([]);
   
   if (columns.length > 0 || JSON.stringify(rows)!=JSON.stringify(props.rows)) {
     
@@ -58,8 +60,59 @@ export function TableComponent(props) {
     })
   }
 //---------------------------изменение таблицы-------------------------------
+
+//---------------------------эксперименты-----------------------------------------------------------------------------------------------
+const [editingRowIds, setEditingRowIds] = useState([]);
+const [rowChanges, setRowChanges] = useState({});
+const [validationStatus, setValidationStatus] = useState({});
+
+const requiredRule = {
+  isValid: value => value?.trim().length > 0,
+  errorText: 'This field is required',
+};
+const validationRules = {
+  phone: {
+    isValid: phone => phone.match(/^\(\d{3}\) \d{3}-\d{4}$/i),
+    errorText: 'Your phone must have "(555) 555-5555" format!',
+  },
+  number: requiredRule,
+  surname: requiredRule,
+  name: requiredRule,
+  patronymic: requiredRule,
+  phone: requiredRule,
+  email: requiredRule,
+  duty: requiredRule,
+  password: requiredRule,
+  login: requiredRule,
+  // firstName: requiredRule,
+  // lastName: requiredRule,
+  // state: requiredRule,
+};
+
+const validate = (changed, validationStatus) => Object.keys(changed).reduce((status, id) => {
+  let rowStatus = validationStatus[id] || {};
+  if (changed[id]) {
+    rowStatus = {
+      ...rowStatus,
+      ...Object.keys(changed[id]).reduce((acc, field) => {
+        const isValid = validationRules[field].isValid(changed[id][field]);
+        return {
+          ...acc,
+          [field]: {
+            isValid,
+            error: !isValid && validationRules[field].errorText,
+          },
+        };
+      }, {}),
+    };
+  }
+  console.log("2")
+  return { ...status, [id]: rowStatus };
+}, {});
+//---------------------------эксперименты-------------------------------------------------------------------------------------------------
   const commitChanges = ({ added, changed, deleted }) => {
     let changedRows;
+    let validationPassed=true;
 
     if (added) {
       const startingAddedId = rows.length > 0 ? rows[rows.length - 1].id + 1 : 0;
@@ -96,10 +149,25 @@ export function TableComponent(props) {
       }
       //props.setNewTableList(changedRows)
     }
+    
+    //---------------------------эксперименты--------------------------------------------------------------------------------------------
     if (changed) {
-      // console.log('changed')
-      // rows.map( row => (console.log(changed[row.id] ? { ...row, ...changed[row.id] } : row)))
       changedRows = rows.map(row => (changed[row.id] ? { ...row, ...changed[row.id] } : row));
+      //setValidationStatus({ ...validationStatus, ...validate(changed, validationStatus) })
+      console.log('changed')
+      rows.map(row =>{
+        if (changed[row.id] != undefined){
+          columns.map(item=>{
+            var keys = Object.keys(changed[row.id])
+            if (item.name == keys[0] && item.mask!=undefined && changed[row.id][keys[0]].match(item.mask)==null){
+              console.log(changed[row.id][keys[0]])
+              alert(`Введенное значение в поле ${item.title} в строке №${row.id+1} не соответствует шаблону ${item.maskExample}`)
+              validationPassed=false
+            }
+          });
+        }
+      });
+      
       var counter=0
       columns.map(item=>{
         if (item.name == "amount" || item.name == "cost" || item.name == "sumCost" ) counter++
@@ -111,16 +179,19 @@ export function TableComponent(props) {
           else changedRows[i].sumCost=0
         })
       }
-      //props.setNewTableList(changedRows)
     }
+
+    //---------------------------эксперименты-----------------------------------------------------------------------------------------------
     if (deleted) {
       const deletedSet = new Set(deleted);
       changedRows = rows.filter(row => !deletedSet.has(row.id));
       if (columns[0].name=='number') changedRows.map(function(item,i){changedRows[i].number=i+1})
-      //props.setNewTableList(changedRows)
     }
-    setRows(changedRows);
-    props.setNewTableList(changedRows)
+    if (validationPassed){
+      setRows(changedRows);
+      props.setNewTableList(changedRows)
+    }
+    
   };
   var EditColumnWidth = 220
   if (!props.editColumn.add && !props.editColumn.edit && !props.editColumn.delete)
@@ -172,44 +243,58 @@ export function TableComponent(props) {
       {...props}
     />
   );
+
+  function onSelected(value) {
+    if (props.editColumn.select != undefined && props.editColumn.select) {
+      setSelection([value[value.length-1]])
+      var check = false
+      rows.map(function(element, i){
+        if (element.id == value[value.length-1]) {
+            props.onSelect(element)
+            check=true
+        }   
+    })
+    if (!check) props.onSelect(undefined)
+      
+    }
+  }
+  
+  var height = 400
+  if (props.height != undefined)
+      height = props.height
+  
+  const [filters, setFilters] = useState([]);
+  if (columns.length!=1 && filters.toString()=="" && props.editColumn.filter != undefined && props.editColumn.filter) {
+    var buf = []
+    var check = false
+    columns.map(item=>{
+      if (item.dropdownList != undefined && item.dropdownList.length>0) {
+        buf.push({ columnName: item.name, value: item.dropdownList[0].menuItem})
+        check = true
+      }
+    })
+    if (check)
+    setFilters(buf)
+  }
 //---------------------------return-------------------------------
 //---------------------------эксперименты-------------------------
 
-const [selection, setSelection] = useState([]);
-
-function onSelected(value) {
-  if (props.editColumn.select != undefined && props.editColumn.select) {
-    setSelection([value[value.length-1]])
-    var check = false
-    rows.map(function(element, i){
-      if (element.id == value[value.length-1]) {
-          props.onSelect(element)
-          check=true
-      }   
-  })
-  if (!check) props.onSelect(undefined)
-    
-  }
-}
-
-var height = 400
-if (props.height != undefined)
-    height = props.height
-
-const [filters, setFilters] = useState([]);
-if (columns.length!=1 && filters.toString()=="" && props.editColumn.filter != undefined && props.editColumn.filter) {
-  var buf = []
-  var check = false
-  columns.map(item=>{
-    if (item.dropdownList != undefined && item.dropdownList.length>0) {
-      buf.push({ columnName: item.name, value: item.dropdownList[0].menuItem})
-      check = true
-    }
-  })
-  if (check)
-  setFilters(buf)
-}
-
+const Cell = React.useCallback((props) => {
+    const { tableRow: { rowId }, column: { name: columnName } } = props;
+    const columnStatus = validationStatus[rowId]?.[columnName];
+    const valid = !columnStatus || columnStatus.isValid;
+    const style = {
+      ...(!valid ? { border: '1px solid red' } : null),
+    };
+    const title = valid ? '' : validationStatus[rowId][columnName].error;
+    return (
+      <Table.Cell
+        {...props}
+        style={style}
+        title={title}
+      />
+    );
+}, [validationStatus]);
 //---------------------------эксперименты-------------------------
 
     return (
@@ -241,6 +326,12 @@ if (columns.length!=1 && filters.toString()=="" && props.editColumn.filter != un
               }
             })}
             <EditingState
+
+              editingRowIds={editingRowIds}
+              onEditingRowIdsChange={setEditingRowIds}
+              rowChanges={rowChanges}
+              onRowChangesChange={setRowChanges}
+
               onCommitChanges={commitChanges}
               //defaultEditingRowIds={[0]}
               columnExtensions={editingStateColumnExtensions}
@@ -249,7 +340,11 @@ if (columns.length!=1 && filters.toString()=="" && props.editColumn.filter != un
               selection={selection}
               onSelectionChange={onSelected}
             />
-            <Table />
+            <Table 
+
+              cellComponent={Cell}
+
+            />
             <VirtualTable 
               height={props.height}
             />
@@ -277,6 +372,7 @@ if (columns.length!=1 && filters.toString()=="" && props.editColumn.filter != un
               messages={{editCommand: 'Правка', addCommand: 'Новая запись', commitCommand: 'Сохранить', cancelCommand: 'Отменить', deleteCommand: 'Удалить'}}
               width={EditColumnWidth}
             />
+            <TableInlineCellEditing />
           </Grid>
         </div>
       </Paper>

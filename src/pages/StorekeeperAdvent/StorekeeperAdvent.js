@@ -37,6 +37,11 @@ export default function StorekeeperAdvent(props){
     var id=0
     function getId(){return id++}
 
+    const [reload, setReload] = React.useState(0)
+    function reloadPage(){
+        setReload(reload+1)
+    }
+
 //#region блоки
     //-------------------------------------------------------------------------Блок 1
    
@@ -60,10 +65,13 @@ export default function StorekeeperAdvent(props){
 
     const [orders, setOrders] = React.useState([])
     React.useEffect(() => {
-        if (orders.toString() != "") {
-            apiGetGoodsByShipmentOrder()
-        }
+        apiGetGoodsByShipmentOrder()
     }, [orders]);
+
+    function setOrdersForced(value){
+        setOrders(value)
+        apiGetGoodsByShipmentOrder()
+    }
 
     function apiGetShipmentOrders() {
         var xhr = new XMLHttpRequest();
@@ -241,6 +249,9 @@ export default function StorekeeperAdvent(props){
         orders.forEach(element => {
           if (element.selected == true) order = element
         });
+
+        console.log("order.code")
+        console.log(order.code)
     
         if (order != ''){
              //console.log("Selected order " + order.code)
@@ -456,27 +467,30 @@ function apiGetGoodsSubCat4() {
 }
 
 function apiUpdateOrderGoods(value) {
-  
-    value.map(function(element, i){
-        var xhr = new XMLHttpRequest();
-        xhr.open('PUT', host+'/update_order_goods'+'?'+`amount=${element.amount}&code=${element.code}`, true);
+    console.log("value")
+    console.log(value)
+    // value.map(function(element, i){
+    //     var xhr = new XMLHttpRequest();
+    //     xhr.open('PUT', host+'/update_order_goods'+'?'+`amount=${element.amount}&code=${element.code}`, true);
       
-        //Send the proper header information along with the request
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    //     //Send the proper header information along with the request
+    //     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == XMLHttpRequest.DONE) {
-            console.log(this.responseText);
+    //     xhr.onreadystatechange = function() {
+    //       if (xhr.readyState == XMLHttpRequest.DONE) {
+    //         console.log(this.responseText);
+            
         
-            setOrders([])
-            setTableList([])
-            apiGetGoodsType()
-          }
-        }
+    //         setOrders([])
+    //         setTableList([])
+    //         apiGetGoodsType()
+    //       }
+    //     }
         
-        xhr.send(null);
-    })
+    //     xhr.send(null);
+    // })
     alert("Изменения успешно приняты")
+    
 }
 
 //#endregion категории с первой вкладки конец
@@ -519,7 +533,7 @@ function apiUpdateOrderGoods(value) {
     return (
         <FlexibleBlocksPage Id={getId()}>
             <FlexibleBlock>
-                <ListWithSearch Id={getId()} item_list={orders} func={setOrders} width={list_with_search_width} height={list_with_search_height}/>
+                <ListWithSearch Id={getId()} item_list={orders} func={setOrdersForced} width={list_with_search_width} height={list_with_search_height}/>
             </FlexibleBlock>
             <FlexibleBlock>
                 <div class="header_text">Прием товаров</div>

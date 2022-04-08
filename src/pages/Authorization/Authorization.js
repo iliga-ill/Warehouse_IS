@@ -52,7 +52,8 @@ export default function Authorization(props){
 
         var access_token = -1;
         var accountData = {
-          roles: ["Логист", "Менеджер", "Администратор"], 
+          // roles: ["Логист", "Менеджер", "Администратор"], 
+          roles: [item.duty], 
           avatar: ManIcon, 
           name: item.name, 
           surname: item.surname, 

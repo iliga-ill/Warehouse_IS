@@ -130,7 +130,7 @@ export default function LogisticianOrders(props){
         console.log("tableList")
         console.log(tableList)
         tableList.map(item=>{
-            if (item.id == selectedItemId) {
+            if (item.id == selectedItemId.id) {
                 setTableList1(item.goodsInOrder)
                 setBufferedTableList2(item.goodsInOrder)
             }
@@ -195,10 +195,6 @@ export default function LogisticianOrders(props){
     const [bufferedTableList2, setBufferedTableList2] = React.useState([])
 
     React.useEffect(() => {
-        console.log("selectedItemId2")
-        console.log(selectedItemId2)
-        console.log("selectedItemId")
-        console.log(selectedItemId)
         if (tableList2.toString()!="" && selectedItemId2 != undefined && selectedItemId != undefined) {
             var order = ''
             orders.forEach(element => {  
@@ -215,7 +211,7 @@ export default function LogisticianOrders(props){
             })
 
             tableList2.map(function(element, i){
-                if (element.id == selectedItemId2) {
+                if (element.id == selectedItemId2.id) {
                     selectedRow = {id: getId(), goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode, shipmentOrderGoodsCode:0, orderCode:order.code}
                 }     
             })
@@ -392,7 +388,7 @@ export default function LogisticianOrders(props){
         }
         
         xhr.send(JSON.stringify(value));
-      }
+    }
 
     function btn_send_2() {
         apiUpdateOrderStatus()

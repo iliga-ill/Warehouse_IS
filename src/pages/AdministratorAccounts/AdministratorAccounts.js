@@ -19,17 +19,17 @@ export default function AdministratorAccounts(props){
     //-------------------------------------стол 1
     
     const [tableHeaders, setTableHeaders] = React.useState([
-        {name: 'number',            title:'№',                  editingEnabled:false,   width:40    }, 
-        {name: 'surname',           title:'Фамилия',            editingEnabled:true,    width:160   }, 
-        {name: 'name',              title:'Имя',                editingEnabled:true,    width:160   }, 
-        {name: 'patronymic',        title:'Отчество',           editingEnabled:true,    width:170   }, 
-        {name: 'phone',             title:'Номер телефона',     editingEnabled:true,    width:200   }, 
-        {name: 'email',             title:'Почта',              editingEnabled:true,    width:200   }, 
-        {name: 'duty',              title:'Должность',          editingEnabled:false,   width:150   },
-        {name: 'login',             title:'Логин',              editingEnabled:true,    width:130   },
-        {name: 'password',          title:'Пароль',             editingEnabled:true,    width:130   }
+        {name: 'number',            title:'№',                  editingEnabled:false,   width:40                                       }, 
+        {name: 'surname',           title:'Фамилия',            editingEnabled:true,    width:160                                      }, 
+        {name: 'name',              title:'Имя',                editingEnabled:true,    width:160                                      }, 
+        {name: 'patronymic',        title:'Отчество',           editingEnabled:true,    width:170                                      }, 
+        {name: 'phone',             title:'Номер телефона',     editingEnabled:true,    width:200,  mask:/^\+\d{1} \(\d{3}\) \d{3}-\d{4}$/i, maskExample:"+7 (930) 442-5665"  }, 
+        {name: 'email',             title:'Почта',              editingEnabled:true,    width:200                                      }, 
+        {name: 'duty',              title:'Должность',          editingEnabled:false,   width:150                                      },
+        {name: 'login',             title:'Логин',              editingEnabled:true,    width:130                                      },
+        {name: 'password',          title:'Пароль',             editingEnabled:true,    width:130                                      }
     ]) 
-    var edit_column = {add:true, edit:true, delete:true, select:true}
+    var edit_column = {add:true, edit:true, delete:true, select:true, validation:true}
 
     const [tableList, setTableList] = React.useState([])
     const [selectedItem, setSelectedItem] = React.useState()
@@ -46,7 +46,7 @@ export default function AdministratorAccounts(props){
             var buffer = []
             answer.map( function(item, i) {
                 buffer[i] = {number:i+1, name: item.name, surname: item.surname, patronymic: item.patronymic, login: item.login, password: item.password, phone: item.phone_num, duty: " Кладовщик Менеджер", email:""}
-                buffer[i].id = 'string_' + i;
+                buffer[i].id = i;
                 buffer[i].code = item.code
             })
             if (JSON.stringify(tableList)!=JSON.stringify(buffer))
