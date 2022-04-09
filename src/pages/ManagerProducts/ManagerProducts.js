@@ -56,7 +56,7 @@ export default function ManagerProducts(props){
         {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:125   },
         {name: 'goodsLimit',        title:'Лимит товара',       editingEnabled:true,     width:120   },
     ]) 
-    var edit_column = {add:false, edit:false, delete:false, select:true, filter: true}
+    var tableSettings = {add:false, edit:false, delete:false, select:true, filter: true}
     const [selectedItemId, setSelectedItemId] = React.useState()
 
     React.useEffect(() => {
@@ -96,7 +96,7 @@ export default function ManagerProducts(props){
             <FlexibleBlock>
                 <div class="header_text">Товары</div>
                 <div style={{width:800+'px', display:'inline-table'}}>
-                    <TableComponent height={500} columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
+                    <TableComponent height={500} columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
                 </div>
             </FlexibleBlock>
             <FlexibleBlock>

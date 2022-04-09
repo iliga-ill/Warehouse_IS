@@ -6,6 +6,7 @@
     background-color: white;
     vertical-align: middle;
     white-space: nowrap;
+    border: 1px solid darkgray;
 }
 
 .tab {

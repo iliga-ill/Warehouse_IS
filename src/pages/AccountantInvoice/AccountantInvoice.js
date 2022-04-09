@@ -58,7 +58,7 @@ export default function AccountantInvoice(props){
         {name: 'amount',        title:'Дата создания',  editingEnabled:false,     width:100   }, 
         {name: 'delay',         title:'Статус',         editingEnabled:false,     width:140   }, 
     ]) 
-    var edit_column = {add:false, edit:false, delete:false, select:true}
+    var tableSettings = {add:false, edit:false, delete:false, select:true}
 
     const [tableList, setTableList] = React.useState([])
 
@@ -85,7 +85,7 @@ export default function AccountantInvoice(props){
         {name: 'sumCost',           title:'Итог цена',          editingEnabled:false,     width:120   },
     ]) 
         
-    var edit_column1 = {add:false, edit:false, delete:false}
+    var tableSettings1 = {add:false, edit:false, delete:false}
 
     // const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"вв", amount:10, price:10}])
     const [tableList1, setTableList1] = React.useState([])
@@ -107,7 +107,7 @@ export default function AccountantInvoice(props){
         {name: 'sumCost',           title:'Итог цена',          editingEnabled:false,     width:120   },
     ]) 
         
-    var edit_column2 = {add:false, edit:false, delete:false}
+    var tableSettings2 = {add:false, edit:false, delete:false}
 
     // const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"вв", amount:10, price:10}])
     const [tableList2, setTableList2] = React.useState([])
@@ -120,7 +120,7 @@ export default function AccountantInvoice(props){
                 <FlexibleBlock>
                     <div class="header_text">Список накладных</div>
                     <div style={{width:470+'px', display:'inline-table'}} >
-                        <TableComponent height={611} columns={tableHeaders} rows={tableList}  onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
+                        <TableComponent height={611} columns={tableHeaders} rows={tableList}  onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
                     </div>
                 </FlexibleBlock>
                 <FlexibleBlockDouble 
@@ -134,7 +134,7 @@ export default function AccountantInvoice(props){
                                 <div class="low_text bold">Товары&nbsp;в&nbsp;заказе:&nbsp;</div>
                             </div>
                             <div style={{width:470+'px', display:'inline-table'}} >
-                                <TableComponent height={200} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} editColumn={edit_column1}/>
+                                <TableComponent height={200} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} tableSettings={tableSettings1}/>
                             </div>
                         </>
                     } 
@@ -147,7 +147,7 @@ export default function AccountantInvoice(props){
                                 <div class="low_text bold">Стоимость&nbsp;накладной:&nbsp;<label class="normal">{invoiceCost}</label></div>
                             </div>
                             <div style={{width:470+'px', display:'inline-table'}} >
-                                <TableComponent height={200} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} editColumn={edit_column2}/>
+                                <TableComponent height={200} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} tableSettings={tableSettings2}/>
                             </div>
                         </>
                     }

@@ -59,7 +59,7 @@ export default function ManagerSellOrders(props){
         {name: 'shipmentDate', title:'Срок поставки',             editingEnabled:false,     width:120   }, 
         {name: 'orderCost',    title:'Стоимость заказа (руб)',    editingEnabled:false,     width:180   }, 
     ]) 
-    var edit_column = {add:false, edit:false, delete:false, select:true}
+    var tableSettings = {add:false, edit:false, delete:false, select:true}
 
     //const [tableList, setTableList] = React.useState([{number:1, orderNumber:"Заказ №0000001", shipmentDate:"2022-01-14", orderCost:1000}])
     const [tableList, setTableList] = React.useState([])
@@ -86,7 +86,7 @@ export default function ManagerSellOrders(props){
         {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:120   },
         {name: 'sumCost',           title:'Итог цена',          editingEnabled:true,     width:120   },
     ]) 
-    var edit_column1 = {add:false, edit:false, delete:false}
+    var tableSettings1 = {add:false, edit:false, delete:false}
 
     // const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"вв", amount:10, cost:10, sumCost:10}])
     const [tableList1, setTableList1] = React.useState([])
@@ -162,7 +162,7 @@ export default function ManagerSellOrders(props){
                 <FlexibleBlock>
                     <div class="header_text">Заказы на продажу</div>
                     <div style={{width:470+'px', display:'inline-table'}} >
-                        <TableComponent height={500} columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
+                        <TableComponent height={500} columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
                     </div>
                 </FlexibleBlock>
                 <FlexibleBlock>
@@ -174,7 +174,7 @@ export default function ManagerSellOrders(props){
                         <div class="low_text bold">Товары&nbsp;в&nbsp;заказе:&nbsp;</div>
                     </div>
                     <div style={{width:470+'px', display:'inline-table'}} >
-                        <TableComponent height={390} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} editColumn={edit_column1}/>
+                        <TableComponent height={390} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} tableSettings={tableSettings1}/>
                     </div>
                    
                 </FlexibleBlock>

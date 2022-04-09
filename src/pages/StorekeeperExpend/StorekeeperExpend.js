@@ -7,6 +7,7 @@ import InputDate from "../../components/InputDate/InputDate";
 import InputFile from "../../components/InputFile/InputFile";
 import InputText from "../../components/InputText/InputText";
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
+import SwitchHolder from "../../components/TabHolders/SwitchHolder/SwitchHolder";
 import { TableComponent } from "../../components/Table/TableComponent";
 const host = 'http://localhost:5000';
 
@@ -18,6 +19,34 @@ export default function StorekeeperExpend(props){
     
     var id=0
     function getId(){return id++}
+
+    const [reload, setReload] = React.useState(0)
+    function reloadPage(){
+        setReload(reload+1)
+    }
+
+    var [tabs, setTabs] = React.useState([
+        {id:0, selected: true, title: "Текущие"},
+        {id:1, selected: false, title: "Выполненные"}
+    ])
+
+    function onTabClick(tab_id){
+        var mT = tabs
+        mT.map(tab => {
+            if (tab.id != tab_id){
+                tab.selected = false
+            } else {
+                tab.selected = true
+            }
+            return tab
+        })
+        setTabs(mT)
+        reloadPage()
+    }
+
+    React.useEffect(() => {
+        apiGetGoodsType()
+    }, [reload]);
 
 //#region блоки
     //-------------------------------------------------------------------------Блок 1
@@ -135,7 +164,7 @@ export default function StorekeeperExpend(props){
         {name: 'orderedAmount',     title:'Ожидаемое кол-во',   editingEnabled:false,   width:150   },
         {name: 'amount',            title:'Кол-во коробок',     editingEnabled:true,    width:130   }
     ]) 
-    var edit_column = {add:false, edit:true, delete:false}
+    var  tableSettings = {add:false, edit:true, delete:false}
 
     const [tableList, setTableList] = React.useState([])
     
@@ -305,39 +334,42 @@ export default function StorekeeperExpend(props){
 //#endregion
 
     return (
-        <FlexibleBlocksPage Id={getId()}>
-            <FlexibleBlock>
-                <ListWithSearch Id={getId()} item_list={orders} func={setOrders} width={list_with_search_width} height={list_with_search_height}/>
-            </FlexibleBlock>
-            <FlexibleBlock>
-                <div class="header_text">Списывание товаров</div>
-                <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={date} func={setDate}/></div>
-                {/* <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div> */}
-                {/* <InputText styles = "row_with_ite   m_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/> */}
-                <div class="low_text"><InputFile Id={getId()} func={setDocuments}/></div>
-                {/* <Table Id={getId()} table_headers={tableHeaders} table_field_height={table_field_height} table_list={tableList} func={setTableList} numb={0} search="true" add="true" delete="true"/> */}
-               
-                <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent height={245} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
-                </div>
-                <div></div>
-                <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
-            </FlexibleBlock>
-                {/* <FlexibleBlock>
-                <div class="header_text">Заказ 1</div>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Категория" placeholder="Категория товара" set={set_good_category}/>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Кол-во товара в поставке&nbsp;" placeholder="Кол-во товара в поставке" set={set_one_shipment_amount}/>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Гарантия" placeholder="Гарантия" set={set_warranty_good}/>
-                <div class="low_text row_with_item_equal"><div>Крайний срок поставки&nbsp;</div><InputDate Id="2" func={set_shipment_deadline}/></div>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Кол-во партий товара&nbsp;" placeholder="Кол-во партий товара" set={set_amount_of_shipments}/>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Цена&nbsp;" placeholder="Цена" set={set_good_cost}/>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_2}/>
-                <div class="low_text"><InputFile Id={getId()} func={onBlock3FileUploaded}/></div>
-                <Table Id={getId()} table_headers={table_headers_2} table_field_height={table_field_height_2} table_list={table_list_2} func={set_table_list_2} numb={1} search="true" add="false" delete="false"/>
-            </FlexibleBlock> */}
-                {/* <div style={{width:800+'px', display:'block'}} >
-                    <Table2 columns={tableHeaders2} rows={table_list} setNewTableList={setTableList2}/>
-                </div> */}
-        </FlexibleBlocksPage>
+        <>
+            <SwitchHolder tabs={tabs} onTabClick={onTabClick}/>
+            <FlexibleBlocksPage Id={getId()}>
+                <FlexibleBlock>
+                    <ListWithSearch Id={getId()} item_list={orders} func={setOrders} width={list_with_search_width} height={list_with_search_height}/>
+                </FlexibleBlock>
+                <FlexibleBlock>
+                    <div class="header_text">Списывание товаров</div>
+                    <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={date} func={setDate}/></div>
+                    {/* <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div> */}
+                    {/* <InputText styles = "row_with_ite   m_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/> */}
+                    <div class="low_text"><InputFile Id={getId()} func={setDocuments}/></div>
+                    {/* <Table Id={getId()} table_headers={tableHeaders} table_field_height={table_field_height} table_list={tableList} func={setTableList} numb={0} search="true" add="true" delete="true"/> */}
+                
+                    <div style={{width:800+'px', display:'inline-table'}} >
+                        <TableComponent height={245} columns={tableHeaders} rows={tableList} setNewTableList={setTableList}  tableSettings={tableSettings}/>
+                    </div>
+                    <div></div>
+                    <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
+                </FlexibleBlock>
+                    {/* <FlexibleBlock>
+                    <div class="header_text">Заказ 1</div>
+                    <InputText styles = "row_with_item_equal" Id={getId()} label="Категория" placeholder="Категория товара" set={set_good_category}/>
+                    <InputText styles = "row_with_item_equal" Id={getId()} label="Кол-во товара в поставке&nbsp;" placeholder="Кол-во товара в поставке" set={set_one_shipment_amount}/>
+                    <InputText styles = "row_with_item_equal" Id={getId()} label="Гарантия" placeholder="Гарантия" set={set_warranty_good}/>
+                    <div class="low_text row_with_item_equal"><div>Крайний срок поставки&nbsp;</div><InputDate Id="2" func={set_shipment_deadline}/></div>
+                    <InputText styles = "row_with_item_equal" Id={getId()} label="Кол-во партий товара&nbsp;" placeholder="Кол-во партий товара" set={set_amount_of_shipments}/>
+                    <InputText styles = "row_with_item_equal" Id={getId()} label="Цена&nbsp;" placeholder="Цена" set={set_good_cost}/>
+                    <InputText styles = "row_with_item_equal" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_2}/>
+                    <div class="low_text"><InputFile Id={getId()} func={onBlock3FileUploaded}/></div>
+                    <Table Id={getId()} table_headers={table_headers_2} table_field_height={table_field_height_2} table_list={table_list_2} func={set_table_list_2} numb={1} search="true" add="false" delete="false"/>
+                </FlexibleBlock> */}
+                    {/* <div style={{width:800+'px', display:'block'}} >
+                        <Table2 columns={tableHeaders2} rows={table_list} setNewTableList={setTableList2}/>
+                    </div> */}
+            </FlexibleBlocksPage>
+        </>
     )
 }

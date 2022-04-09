@@ -148,13 +148,13 @@ export default function StorekeeperInventory(props){
     //-------------------------------------стол 1
 
     const [tableHeaders, setTableHeaders] = React.useState([
-        {name: 'number',                    title:'№',                      editingEnabled:false,     width:60,  dropdownList:[]                }, 
-        {name: 'zone',                      title:'Зона',                   editingEnabled:false,     width:90,  dropdownList:[]                },
-        {name: 'rack',                      title:'Стеллаж',                editingEnabled:false,     width:120,  dropdownList:[]               },
-        {name: 'shelf',                     title:'Полка',                  editingEnabled:false,     width:90,  dropdownList:[]                },
-        {name: 'amount',                    title:'Кол-во',         editingEnabled:false,     width:70, dropdownList:[]                }
+        {name: 'number',                    title:'№',                      editingEnabled:false,     width:60 }, 
+        {name: 'zone',                      title:'Зона',                   editingEnabled:false,     width:90 },
+        {name: 'rack',                      title:'Стеллаж',                editingEnabled:false,     width:120},
+        {name: 'shelf',                     title:'Полка',                  editingEnabled:false,     width:90 },
+        {name: 'amount',                    title:'Кол-во',                 editingEnabled:false,     width:70 }
     ]) 
-    var edit_column = {add:false, edit:false, delete:false, filter: true, select:true}
+    var  tableSettings = {add:false, edit:false, delete:false, filter: true, select:true}
 
     const [tableList, setTableList] = React.useState([])
     const [selectedItemId, setSelectedItemId] = React.useState()
@@ -208,7 +208,7 @@ export default function StorekeeperInventory(props){
     const [shelf, setShelf] = React.useState("Зона - Стеллаж - Полка -")
     const [liftingCapacity, setLiftingCapacity] = React.useState("-")
 
-    const [dropdownList1, setDropdownList4] = React.useState([
+    const [dropdownList1, setDropdownList] = React.useState([
         {menuItem:""},
         {menuItem:"Не инвентаризирован"},
         {menuItem:"Проинвентаризирован"},
@@ -223,7 +223,7 @@ export default function StorekeeperInventory(props){
         {name: 'weight',                    title:'Вес',                    editingEnabled:false,     width:60    },
         {name: 'inventaryzationStatus',     title:'Статус инвентаризации',  editingEnabled:true,      width:180, dropdownList: dropdownList1    },
     ]) 
-    var edit_column1 = {add:false, edit:true, delete:false}
+    var  tableSettings1 = {add:false, edit:true, delete:false}
 
     // const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"вв", amount:10, cost:10, sumCost:10}])
     const [tableList1, setTableList1] = React.useState([])
@@ -260,7 +260,7 @@ export default function StorekeeperInventory(props){
             <FlexibleBlock>
                 <div class="header_text">Инвентаризация</div>
                 <div style={{width:400+'px', display:'inline-table'}} >
-                    <TableComponent height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column} onSelect={setSelectedItemId}/>
+                    <TableComponent height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings} onSelect={setSelectedItemId}/>
                 </div>
             </FlexibleBlock>
             <FlexibleBlock>
@@ -269,7 +269,7 @@ export default function StorekeeperInventory(props){
                     <div class="low_text bold">Грузоподьемность:&nbsp;&nbsp;<label class="normal">{liftingCapacity}</label></div>
                 </div>
                 <div style={{width:470+'px', display:'inline-table'}} >
-                    <TableComponent height={390} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} editColumn={edit_column1}/>
+                    <TableComponent height={390} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} tableSettings={tableSettings1}/>
                 </div>
                 <div></div>
                 <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={btn_send_1}>Подтвердить</button>

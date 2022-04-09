@@ -19,17 +19,26 @@ export default function AdministratorAccounts(props){
     //-------------------------------------стол 1
     
     const [tableHeaders, setTableHeaders] = React.useState([
-        {name: 'number',            title:'№',                  editingEnabled:false,   width:40                                       }, 
-        {name: 'surname',           title:'Фамилия',            editingEnabled:true,    width:160                                      }, 
-        {name: 'name',              title:'Имя',                editingEnabled:true,    width:160                                      }, 
-        {name: 'patronymic',        title:'Отчество',           editingEnabled:true,    width:170                                      }, 
-        {name: 'phone',             title:'Номер телефона',     editingEnabled:true,    width:200,  mask:/^\+\d{1} \(\d{3}\) \d{3}-\d{4}$/i, maskExample:"+7 (930) 442-5665"  }, 
-        {name: 'email',             title:'Почта',              editingEnabled:true,    width:200                                      }, 
-        {name: 'duty',              title:'Должность',          editingEnabled:false,   width:150                                      },
-        {name: 'login',             title:'Логин',              editingEnabled:true,    width:130                                      },
-        {name: 'password',          title:'Пароль',             editingEnabled:true,    width:130                                      }
+        {name: 'number',            title:'№',                  editingEnabled:false,   width:40                               }, 
+        {name: 'surname',           title:'Фамилия',            editingEnabled:true,    width:100,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                }, 
+        {name: 'name',              title:'Имя',                editingEnabled:true,    width:80,   mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                }, 
+        {name: 'patronymic',        title:'Отчество',           editingEnabled:true,    width:120,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                }, 
+        {name: 'phone',             title:'Номер телефона',     editingEnabled:true,    width:130,  mask:/^\+\d{1} \(\d{3}\) \d{3}-\d{4}$/i,    maskExample:"соотвестсвовать шаблону +7 (930) 442-5665"     }, 
+        {name: 'email',             title:'Почта',              editingEnabled:true,    width:160,  mask:/^(.)(.*)(.@.*)\.(.)(.)$/i,            maskExample:"соотвестсвовать шаблону example@service.ru"    }, 
+        {name: 'duty',              title:'Должность',          editingEnabled:false,   width:170                                                                                                           },
+        {name: 'login',             title:'Логин',              editingEnabled:true,    width:130,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                },
+        {name: 'password',          title:'Пароль',             editingEnabled:true,    width:130,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                }
     ]) 
-    var edit_column = {add:true, edit:true, delete:true, select:true, validation:true}
+    var tableSettings = {
+        add:true, 
+        edit:true, 
+        delete:true, 
+        select:true, 
+        validation:true, 
+        cell:false, 
+        exportExel:true, 
+        exportExelFileName:"Accounts"
+    }
 
     const [tableList, setTableList] = React.useState([])
     const [selectedItem, setSelectedItem] = React.useState()
@@ -146,7 +155,7 @@ export default function AdministratorAccounts(props){
             <FlexibleBlock>
                 <div class="header_text">Аккаунты</div>
                 <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent  height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column} onSelect={setSelectedItem}/>
+                    <TableComponent width={800} height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings} onSelect={setSelectedItem}/>
                 </div>
                 <div></div>
                 <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={btn_send_1}>Подтвердить</button>

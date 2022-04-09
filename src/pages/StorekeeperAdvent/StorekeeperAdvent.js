@@ -9,6 +9,7 @@ import InputFile from "../../components/InputFile/InputFile";
 import InputText from "../../components/InputText/InputText";
 import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
+import SwitchHolder from "../../components/TabHolders/SwitchHolder/SwitchHolder";
 import { render } from "react-dom";
 //const API = require('../../api/api.js');
 const host = 'http://localhost:5000';
@@ -41,6 +42,29 @@ export default function StorekeeperAdvent(props){
     function reloadPage(){
         setReload(reload+1)
     }
+
+    var [tabs, setTabs] = React.useState([
+        {id:0, selected: true, title: "Текущие"},
+        {id:1, selected: false, title: "Выполненные"}
+    ])
+
+    function onTabClick(tab_id){
+        var mT = tabs
+        mT.map(tab => {
+            if (tab.id != tab_id){
+                tab.selected = false
+            } else {
+                tab.selected = true
+            }
+            return tab
+        })
+        setTabs(mT)
+        reloadPage()
+    }
+
+    React.useEffect(() => {
+        apiGetGoodsType()
+    }, [reload]);
 
 //#region блоки
     //-------------------------------------------------------------------------Блок 1
@@ -234,8 +258,7 @@ export default function StorekeeperAdvent(props){
         {name: 'orderedAmount',     title:'Ожидаемое кол-во',   editingEnabled:false,   width:150   },
         {name: 'amount',            title:'Кол-во коробок',     editingEnabled:true,    width:130   }
     ]) 
-    var edit_column = {add:false, edit:true, delete:false}
-
+    var  tableSettings = {add:false, edit:true, delete:false}
 
     //var table_field_height = "160px"
 
@@ -285,40 +308,6 @@ export default function StorekeeperAdvent(props){
         }
        
     }
-
-    // props.order_list.map(function(item,i){
-    //     var counter=0;
-    //     var str=[]
-
-    //     str[counter++] = i
-    //     str[counter++] = item.category
-    //     str[counter++] = item.sub_category
-    //     str[counter++] = item.text
-    //     str[counter++] = item.amount_ordered
-    //     str[counter++] = item.amount
-    //     str[counter++] = true
-    //     temp_table_list[i]=str
-    // })
-  
-    // console.log(temp_table_list[0][1])
-    // console.log("--------------")
-    // console.log(table_list[0][1])
-    // if ( temp_table_list[0][1] != table_list[0][1]) {
-    //     table_list = temp_table_list
-    //     //render()
-    //     //reloadPage()
-    // }
-       
-    
-    // var table_list = [
-    //     [0, "Встраиваемая техника", "Варочные поверхности", "Встраиваемая техника №34", "10", "10", true],
-    //     [1, "Холодильники", "Встраиваемые холодильники", "Холодильники №323", "15", "15", true],
-    //     [2, "Плиты", "Кухонные мойки", "Плита №452", "12", "12", true],
-    //     [3, "Холодильники", "", "Холодильник №654", "17", "17", true],
-    //     [4, "Плиты", "", "Плита №123", "5", "5", true],
-    //     [5, "Электродуховки", "Бытовые приборы для дома", "Электродуховка №323", "15", "15", true],
-    //     [7, "Электродуховки", "Бытовые приборы для дома", "Электродуховка №345", "16", "11", true],
-    // ]
         
     //-------------------------------------стол 1 конец
 
@@ -381,9 +370,6 @@ export default function StorekeeperAdvent(props){
         //console.log(temp_table_list)
     }
     //-------------------------------------------------------------------------Блок 2 конец
-    //[0,"Встраиваемая техника","Варочные поверхности","Варочная поверхность Bosch PKE 645 B17E","0",true],];
-    
-
     //-------------------------------------------------------------------------Блок 3
     function onBlock3FileUploaded(files){
         files.map(doc=>{
@@ -467,28 +453,26 @@ function apiGetGoodsSubCat4() {
 }
 
 function apiUpdateOrderGoods(value) {
-    console.log("value")
-    console.log(value)
-    // value.map(function(element, i){
-    //     var xhr = new XMLHttpRequest();
-    //     xhr.open('PUT', host+'/update_order_goods'+'?'+`amount=${element.amount}&code=${element.code}`, true);
+    value.map(function(element, i){
+        var xhr = new XMLHttpRequest();
+        xhr.open('PUT', host+'/update_order_goods'+'?'+`amount=${element.amount}&code=${element.code}`, true);
       
-    //     //Send the proper header information along with the request
-    //     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        //Send the proper header information along with the request
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         
-    //     xhr.onreadystatechange = function() {
-    //       if (xhr.readyState == XMLHttpRequest.DONE) {
-    //         console.log(this.responseText);
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == XMLHttpRequest.DONE) {
+            console.log(this.responseText);
             
         
-    //         setOrders([])
-    //         setTableList([])
-    //         apiGetGoodsType()
-    //       }
-    //     }
+            setOrders([])
+            setTableList([])
+            apiGetGoodsType()
+          }
+        }
         
-    //     xhr.send(null);
-    // })
+        xhr.send(null);
+    })
     alert("Изменения успешно приняты")
     
 }
@@ -497,73 +481,47 @@ function apiUpdateOrderGoods(value) {
 
 //#region Страница 1 подстраница 1
 
-
-  // function apiGetGoodsType() {
-  //   var size = goods_by_order.length;
-  //   console.log(goods_by_order)
-  //   goods_by_order.forEach( function(element, i) {
-  //     console.log(`element = ${element.code}`)
-  //     var xhr = new XMLHttpRequest();
-  //     var elm = i
-  //     xhr.open('GET', host+'/goods_type'+'?'+`code=${goods_by_order[elm].code}`, true);
-      
-  //     xhr.onreadystatechange = function() {
-  //       if (xhr.readyState == XMLHttpRequest.DONE) {
-  //         var id = goods_by_order[elm].id
-          
-  //         var answer = JSON.parse(this.response)
-  //         console.log(`answer: ${answer}`)
-  //         console.log(`Element before: ${goods_by_order[elm].text}`)
-  //         element = {id:id, category: goods_categories[answer.category-1], sub_category: goods_categories2[answer.sub_category_2-1],  text: answer.name, amount_ordered: answer.amount_ordered, amount: answer.amount, code: answer.code}
-  //         goods_by_order[elm] = element
-  //         console.log(`Element: ${goods_by_order[elm].text}`)
-       
-  //         if (i == size-1) reloadPage()
-  //       }
-  //     }
-      
-  //     xhr.send(null);
-  //   })
-    
-  //}
 //#endregion Страница 1 подстраница 1 конец
 //#endregion
 
 
     return (
-        <FlexibleBlocksPage Id={getId()}>
-            <FlexibleBlock>
-                <ListWithSearch Id={getId()} item_list={orders} func={setOrdersForced} width={list_with_search_width} height={list_with_search_height}/>
-            </FlexibleBlock>
-            <FlexibleBlock>
-                <div class="header_text">Прием товаров</div>
-                <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={date} func={setDate}/></div>
-                {/* <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div> */}
-                {/* <InputText styles = "row_with_ite   m_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/> */}
-                {/* <div class="low_text"><InputFile Id={getId()} func={setDocuments}/></div> */}
-                {/* <Table Id={getId()} table_headers={tableHeaders} table_field_height={table_field_height} table_list={tableList} func={setTableList} numb={0} search="true" add="true" delete="true"/> */}
-               
-                <div style={{width:"min-content", display:'inline-table'}} >
-                    <TableComponent height={245} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column}/>
-                </div>
-                <div></div>
-                <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
-            </FlexibleBlock>
-                {/* <FlexibleBlock>
-                <div class="header_text">Заказ 1</div>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Категория" placeholder="Категория товара" set={set_good_category}/>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Кол-во товара в поставке&nbsp;" placeholder="Кол-во товара в поставке" set={set_one_shipment_amount}/>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Гарантия" placeholder="Гарантия" set={set_warranty_good}/>
-                <div class="low_text row_with_item_equal"><div>Крайний срок поставки&nbsp;</div><InputDate Id="2" func={set_shipment_deadline}/></div>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Кол-во партий товара&nbsp;" placeholder="Кол-во партий товара" set={set_amount_of_shipments}/>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Цена&nbsp;" placeholder="Цена" set={set_good_cost}/>
-                <InputText styles = "row_with_item_equal" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_2}/>
-                <div class="low_text"><InputFile Id={getId()} func={onBlock3FileUploaded}/></div>
-                <Table Id={getId()} table_headers={table_headers_2} table_field_height={table_field_height_2} table_list={table_list_2} func={set_table_list_2} numb={1} search="true" add="false" delete="false"/>
-            </FlexibleBlock> */}
-                {/* <div style={{width:800+'px', display:'block'}} >
-                    <Table2 columns={tableHeaders2} rows={table_list} setNewTableList={setTableList2}/>
-                </div> */}
-        </FlexibleBlocksPage>
+        <>
+            <SwitchHolder tabs={tabs} onTabClick={onTabClick}/>
+            <FlexibleBlocksPage Id={getId()}>
+                <FlexibleBlock>
+                    <ListWithSearch Id={getId()} item_list={orders} func={setOrdersForced} width={list_with_search_width} height={list_with_search_height}/>
+                </FlexibleBlock>
+                <FlexibleBlock>
+                    <div class="header_text">Прием товаров</div>
+                    <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={date} func={setDate}/></div>
+                    {/* <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div> */}
+                    {/* <InputText styles = "row_with_ite   m_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/> */}
+                    {/* <div class="low_text"><InputFile Id={getId()} func={setDocuments}/></div> */}
+                    {/* <Table Id={getId()} table_headers={tableHeaders} table_field_height={table_field_height} table_list={tableList} func={setTableList} numb={0} search="true" add="true" delete="true"/> */}
+                
+                    <div style={{width:"min-content", display:'inline-table'}} >
+                        <TableComponent height={245} columns={tableHeaders} rows={tableList} setNewTableList={setTableList}  tableSettings={tableSettings}/>
+                    </div>
+                    <div></div>
+                    <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
+                </FlexibleBlock>
+                    {/* <FlexibleBlock>
+                    <div class="header_text">Заказ 1</div>
+                    <InputText styles = "row_with_item_equal" Id={getId()} label="Категория" placeholder="Категория товара" set={set_good_category}/>
+                    <InputText styles = "row_with_item_equal" Id={getId()} label="Кол-во товара в поставке&nbsp;" placeholder="Кол-во товара в поставке" set={set_one_shipment_amount}/>
+                    <InputText styles = "row_with_item_equal" Id={getId()} label="Гарантия" placeholder="Гарантия" set={set_warranty_good}/>
+                    <div class="low_text row_with_item_equal"><div>Крайний срок поставки&nbsp;</div><InputDate Id="2" func={set_shipment_deadline}/></div>
+                    <InputText styles = "row_with_item_equal" Id={getId()} label="Кол-во партий товара&nbsp;" placeholder="Кол-во партий товара" set={set_amount_of_shipments}/>
+                    <InputText styles = "row_with_item_equal" Id={getId()} label="Цена&nbsp;" placeholder="Цена" set={set_good_cost}/>
+                    <InputText styles = "row_with_item_equal" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_2}/>
+                    <div class="low_text"><InputFile Id={getId()} func={onBlock3FileUploaded}/></div>
+                    <Table Id={getId()} table_headers={table_headers_2} table_field_height={table_field_height_2} table_list={table_list_2} func={set_table_list_2} numb={1} search="true" add="false" delete="false"/>
+                </FlexibleBlock> */}
+                    {/* <div style={{width:800+'px', display:'block'}} >
+                        <Table2 columns={tableHeaders2} rows={table_list} setNewTableList={setTableList2}/>
+                    </div> */}
+            </FlexibleBlocksPage>
+        </>
     )
 }

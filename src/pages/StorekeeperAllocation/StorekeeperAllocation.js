@@ -270,7 +270,7 @@ export default function StorekeeperAllocation(props){
         {name: 'rack',              title:'Стеллаж',            editingEnabled:true,     width:125, dropdownList: dropdownList2 },
         {name: 'shelf',             title:'Полка',              editingEnabled:true,     width:105,  dropdownList: dropdownList3 }
     ]) 
-    var edit_column = {add:false, edit:true, delete:false}
+    var  tableSettings = {add:false, edit:true, delete:false}
 
     const [tableList, setTableList] = React.useState([])
     React.useEffect(() => {
@@ -360,7 +360,7 @@ export default function StorekeeperAllocation(props){
         {name: 'loadСapacity',      title:'Грузоподьемность(кг)', editingEnabled:false,    width:160  }, 
         {name: 'fillStatus',        title:'Заполненность',        editingEnabled:false,    width:120  }, 
     ]) 
-    var edit_column2 = {add:false, edit:false, delete:false, filter: true}
+    var  tableSettings2 = {add:false, edit:false, delete:false, filter: true}
 
     const [tableList2, setTableList2] = React.useState([])
     React.useEffect(() => {
@@ -393,7 +393,7 @@ export default function StorekeeperAllocation(props){
                 </div> */}
                 <div class="header_text">Расстановка&nbsp;товаров</div>
                 <div style={{width:400+'px', display:'inline-table'}} >
-                    <TableComponent height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column} isDropdownActive={true}/>
+                    <TableComponent height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings} isDropdownActive={true}/>
                 </div>
                 <div></div>
                 <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={btn_send_1}>Подтвердить</button>
@@ -401,7 +401,7 @@ export default function StorekeeperAllocation(props){
             <FlexibleBlock>
                 <div class="header_text">Полки</div>
                 <div style={{width:"min-content", height:400+'px', display:'inline-table'}}>
-                    <TableComponent height={527} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} editColumn={edit_column2}/>
+                    <TableComponent height={527} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} tableSettings={tableSettings2}/>
                 </div>
             </FlexibleBlock>
         </FlexibleBlocksPage>

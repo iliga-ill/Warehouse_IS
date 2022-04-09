@@ -52,7 +52,7 @@ export default function AccountantAccounts(props){
         {name: 'accuontCost',   title:'Тип накладной',  editingEnabled:false,     width:130   }, 
         {name: 'accountStatus', title:'Дата создания',  editingEnabled:false,     width:140   }, 
     ]) 
-    var edit_column = {add:false, edit:false, delete:false, select:true}
+    var tableSettings = {add:false, edit:false, delete:false, select:true}
 
     const [tableList, setTableList] = React.useState([])
 
@@ -90,7 +90,7 @@ export default function AccountantAccounts(props){
                 <FlexibleBlock>
                     <div class="header_text">Счета на оплату</div>
                     <div style={{width:470+'px', display:'inline-table'}} >
-                        <TableComponent height={611} columns={tableHeaders} rows={tableList}  onSelect={setSelectedItemId} setNewTableList={setTableList} editColumn={edit_column}/>
+                        <TableComponent height={611} columns={tableHeaders} rows={tableList}  onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
                     </div>
                 </FlexibleBlock>
                 <FlexibleBlock>

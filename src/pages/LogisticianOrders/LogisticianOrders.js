@@ -119,7 +119,7 @@ export default function LogisticianOrders(props){
         {name: 'shipmentCost',      title:'Стоимость доставки (руб)',   editingEnabled:true,    width:200   }, 
         {name: 'shipmentStatus',    title:'Статус',                     editingEnabled:false,   width:110   }, 
     ]) 
-    var edit_column = {add:true, edit:true, delete:true, select:true}
+    var tableSettings = {add:true, edit:true, delete:true, select:true}
 
 //     const [tableList, setTableList] = React.useState([{id:0, number:1, shipmentNumber:"Доставка №0000001", shipmentDate:"2022-01-14", shipmentCost:1000, shipmentStatus:"Ожидается", goodsInOrder:[]},
 //     {id:1, number:1, shipmentNumber:"Доставка №0000001", shipmentDate:"2022-01-14", shipmentCost:1000, shipmentStatus:"Пустой", goodsInOrder:[]}
@@ -146,7 +146,7 @@ export default function LogisticianOrders(props){
         {name: 'realAmount',      title:'Пришедшее кол-во',      editingEnabled:false,   width:144   }, 
         
     ]) 
-    var edit_column1 = {add:false, edit:true, delete:true}
+    var tableSettings1 = {add:false, edit:true, delete:true}
 
     //const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"bb", weight:100, expectingAmount:10, realAmount:10}])
     const [tableList1, setTableList1] = React.useState([])
@@ -187,7 +187,7 @@ export default function LogisticianOrders(props){
         {name: 'shipmentProgress',  title:'Прогресс доставки',      editingEnabled:false,   width:142   }, 
         {name: 'weight',            title:'Вес ед продукции (кг)',  editingEnabled:false,   width:159   }, 
     ])
-    var edit_column2 = {add:false, edit:false, delete:false, select:true}
+    var tableSettings2 = {add:false, edit:false, delete:false, select:true}
 
     // const [tableList2, setTableList2] = React.useState([{number:1, goodsType:"bb", goodsCost:100, shipmentProgress:"10/100", weight:10}])
     const [tableList2, setTableList2] = React.useState([])
@@ -436,11 +436,11 @@ export default function LogisticianOrders(props){
                     <div class="header_text">Доставка товаров</div>
                     <div style={{height:20+"px"}}/>
                     <div style={{width:300+'px', display:'inline-table'}} >
-                        <TableComponent height={200} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} editColumn={edit_column} onSelect={setSelectedItemId}/>
+                        <TableComponent height={200} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings} onSelect={setSelectedItemId}/>
                     </div>
                     <div style={{height:20+"px"}}/>
                     <div style={{width:300+'px', display:'inline-table'}} >
-                        <TableComponent height={250} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} editColumn={edit_column1}/>
+                        <TableComponent height={250} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} tableSettings={tableSettings1}/>
                     </div>
                     <div style={{height:20+"px"}}/>    
                     <div class="place_holder_LogisticianOrders"/><button class="bt_send_LogisticianOrders" onClick={btn_send_1}>Завершить редактирование</button>
@@ -455,7 +455,7 @@ export default function LogisticianOrders(props){
                         <div class="low_text bold">Товары&nbsp;в&nbsp;заказе:&nbsp;</div>
                     </div>
                     <div style={{width:300+'px', display:'inline-table'}} >
-                        <TableComponent height={380} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} editColumn={edit_column2} onSelect={setSelectedItemId2}/>
+                        <TableComponent height={380} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} tableSettings={tableSettings2} onSelect={setSelectedItemId2}/>
                     </div>
                     <div style={{height:20+"px"}}/>   
                     <div class="place_holder_LogisticianOrders"/><button class="bt_send_LogisticianOrders" onClick={btn_send_2}>Завершить заказ</button>

@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback  } from 'react';
 import Paper from '@material-ui/core/Paper';
 import Chip from '@material-ui/core/Chip';
 import Input from '@material-ui/core/Input';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
 import { SelectionState } from '@devexpress/dx-react-grid';
+import { GridExporter } from '@devexpress/dx-react-grid-export';
 import {
+  SummaryState,
+  IntegratedSummary,
   DataTypeProvider,
   EditingState,
 } from '@devexpress/dx-react-grid';
@@ -13,23 +16,64 @@ import {
   Table,
   Grid,
   TableHeaderRow,
+  TableSummaryRow,
   TableFilterRow,
   TableEditRow,
   TableEditColumn,
   TableColumnResizing,
   TableSelection,
   VirtualTable,
-  TableInlineCellEditing
+  TableInlineCellEditing,
+  Toolbar,
+  ExportPanel,
 } from '@devexpress/dx-react-grid-material-ui';
 import {
   FilteringState,
   IntegratedFiltering,
 } from '@devexpress/dx-react-grid';
+import saveAs from 'file-saver';
 
-// import {
-//   generateRows,
-//   defaultColumnValues,
-// } from '../../../demo-data/generator';
+
+/* example
+const [dropdownList, setDropdownList] = React.useState([
+    {menuItem:""},
+    {menuItem:"Не инвентаризирован"},
+    {menuItem:"Проинвентаризирован"},
+    {menuItem:"Потерян"},
+    {menuItem:"Найден"},
+    {menuItem:"Пусто"},
+])
+
+const [tableHeaders, setTableHeaders] = React.useState([
+    {name: 'number',            title:'№',                  editingEnabled:false,   width:40, totalCount:{type:['count', 'sum', 'max', 'min', 'avg'], expantionAlign: 'right', isCurrency:false}  }, 
+    {name: 'surname',           title:'Фамилия',            editingEnabled:true,    width:160                                                                               }, 
+    {name: 'name',              title:'Имя',                editingEnabled:true,    width:160                                                                               }, 
+    {name: 'patronymic',        title:'Отчество',           editingEnabled:true,    width:170                                                                               }, 
+    {name: 'phone',             title:'Номер телефона',     editingEnabled:true,    width:200,  mask:/^\+\d{1} \(\d{3}\) \d{3}-\d{4}$/i, maskExample:"+7 (930) 442-5665"    }, 
+    {name: 'email',             title:'Почта',              editingEnabled:true,    width:200                                                                               }, 
+    {name: 'duty',              title:'Должность',          editingEnabled:false,   width:150                                                                               },
+    {name: 'login',             title:'Логин',              editingEnabled:true,    width:130                                                                               },
+    {name: 'password',          title:'Пароль',             editingEnabled:true,    width:130, dropdownList: dropdownList                                                   }
+]) 
+var tableSettings = {
+  editColumnWidth: 220, 
+  add:true, edit:true, 
+  delete:true, 
+  filter: true, 
+  select:true, 
+  validation:true,
+  cell:true, 
+  exportExel:true, 
+  exportExelFileName:"Accounts"
+}
+const [tableList, setTableList] = React.useState([])
+const [selectedItem, setSelectedItem] = React.useState()
+
+
+<div style={{width:800+'px', display:'inline-table'}} >
+    <TableComponent  height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings} onSelect={setSelectedItem}/>
+</div>
+*/
 
 const getRowId = row => row.id
 
@@ -40,6 +84,25 @@ export function TableComponent(props) {
   const [editingStateColumnExtensions, setEditingStateColumnExtensions] = useState([]);
   const [columnWidths, setColumnWidths] = useState([]);
   const [selection, setSelection] = useState([]);
+  const [editingRowIds, setEditingRowIds] = useState([]);
+  const [rowChanges, setRowChanges] = useState({});
+
+ //---------------------------эксперименты-------------------------
+
+  const [tableColumnExtensions] = useState([]);
+  const [totalSummaryItems] = useState([]);
+  const [currencyColumns] = useState([]);
+
+
+
+//---------------------------эксперименты-------------------------
+
+  var onSaveCheck = 0
+  var settings = props.tableSettings
+  var EditColumnWidth = settings.editColumnWidth!=undefined?settings.editColumnWidth:220
+
+  if (!settings.add && !settings.edit && !settings.delete)
+    EditColumnWidth=20
   
   if (columns.length > 0 || JSON.stringify(rows)!=JSON.stringify(props.rows)) {
     
@@ -57,62 +120,40 @@ export function TableComponent(props) {
     props.columns.map(function(item, i){
       editingStateColumnExtensions[i] = {  columnName: item.name, editingEnabled: item.editingEnabled }
       columnWidths[i] = { columnName: item.name, width: item.width}
+      if (item.totalCount!=undefined){
+        tableColumnExtensions.push({ columnName: item.name, align: item.totalCount.expantionAlign })
+        item.totalCount.type.map(item1=>{
+          totalSummaryItems.push({ columnName: item.name, type: item1 },)
+        });
+        if(item.totalCount.isCurrency)
+          currencyColumns.push(item.name)
+      }
     })
   }
+
+  console.log('tableColumnExtensions')
+  console.log(tableColumnExtensions)
+  console.log('totalSummaryItems')
+  console.log(totalSummaryItems)
+  console.log('currencyColumns')
+  console.log(currencyColumns)
+//---------------------------экспорт таблицы-------------------------------
+  const exporterRef = useRef(null);
+
+  const startExport = useCallback(() => {
+    exporterRef.current.exportGrid();
+  }, [exporterRef]);
+
+  const onSave = (workbook) => {
+    if (onSaveCheck++==0){
+      workbook.xlsx.writeBuffer().then((buffer) => {
+        saveAs(new Blob([buffer], { type: 'application/octet-stream' }), `${settings.exportExelFileName}.xlsx`);
+      });
+    } else {onSaveCheck=0}
+  };
 //---------------------------изменение таблицы-------------------------------
-
-//---------------------------эксперименты-----------------------------------------------------------------------------------------------
-const [editingRowIds, setEditingRowIds] = useState([]);
-const [rowChanges, setRowChanges] = useState({});
-const [validationStatus, setValidationStatus] = useState({});
-
-const requiredRule = {
-  isValid: value => value?.trim().length > 0,
-  errorText: 'This field is required',
-};
-const validationRules = {
-  phone: {
-    isValid: phone => phone.match(/^\(\d{3}\) \d{3}-\d{4}$/i),
-    errorText: 'Your phone must have "(555) 555-5555" format!',
-  },
-  number: requiredRule,
-  surname: requiredRule,
-  name: requiredRule,
-  patronymic: requiredRule,
-  phone: requiredRule,
-  email: requiredRule,
-  duty: requiredRule,
-  password: requiredRule,
-  login: requiredRule,
-  // firstName: requiredRule,
-  // lastName: requiredRule,
-  // state: requiredRule,
-};
-
-const validate = (changed, validationStatus) => Object.keys(changed).reduce((status, id) => {
-  let rowStatus = validationStatus[id] || {};
-  if (changed[id]) {
-    rowStatus = {
-      ...rowStatus,
-      ...Object.keys(changed[id]).reduce((acc, field) => {
-        const isValid = validationRules[field].isValid(changed[id][field]);
-        return {
-          ...acc,
-          [field]: {
-            isValid,
-            error: !isValid && validationRules[field].errorText,
-          },
-        };
-      }, {}),
-    };
-  }
-  console.log("2")
-  return { ...status, [id]: rowStatus };
-}, {});
-//---------------------------эксперименты-------------------------------------------------------------------------------------------------
   const commitChanges = ({ added, changed, deleted }) => {
     let changedRows;
-    let validationPassed=true;
 
     if (added) {
       const startingAddedId = rows.length > 0 ? rows[rows.length - 1].id + 1 : 0;
@@ -147,23 +188,20 @@ const validate = (changed, validationStatus) => Object.keys(changed).reduce((sta
           else changedRows[i].sumCost=0
         })
       }
-      //props.setNewTableList(changedRows)
     }
     
-    //---------------------------эксперименты--------------------------------------------------------------------------------------------
     if (changed) {
       changedRows = rows.map(row => (changed[row.id] ? { ...row, ...changed[row.id] } : row));
-      //setValidationStatus({ ...validationStatus, ...validate(changed, validationStatus) })
-      console.log('changed')
       rows.map(row =>{
         if (changed[row.id] != undefined){
           columns.map(item=>{
             var keys = Object.keys(changed[row.id])
-            if (item.name == keys[0] && item.mask!=undefined && changed[row.id][keys[0]].match(item.mask)==null){
-              console.log(changed[row.id][keys[0]])
-              alert(`Введенное значение в поле ${item.title} в строке №${row.id+1} не соответствует шаблону ${item.maskExample}`)
-              validationPassed=false
-            }
+            keys.map(key=>{
+              if (item.name == key && item.mask!=undefined && changed[row.id][key].match(item.mask)==null){
+                alert(`Значение в поле ${item.title} в строке №${row.id+1} должно ${item.maskExample}`)
+                changedRows[row.id][key] = rows[row.id][key]
+              }
+            });
           });
         }
       });
@@ -181,21 +219,15 @@ const validate = (changed, validationStatus) => Object.keys(changed).reduce((sta
       }
     }
 
-    //---------------------------эксперименты-----------------------------------------------------------------------------------------------
     if (deleted) {
       const deletedSet = new Set(deleted);
       changedRows = rows.filter(row => !deletedSet.has(row.id));
       if (columns[0].name=='number') changedRows.map(function(item,i){changedRows[i].number=i+1})
     }
-    if (validationPassed){
-      setRows(changedRows);
-      props.setNewTableList(changedRows)
-    }
+    setRows(changedRows);
+    props.setNewTableList(changedRows)
     
   };
-  var EditColumnWidth = 220
-  if (!props.editColumn.add && !props.editColumn.edit && !props.editColumn.delete)
-  EditColumnWidth=20
 
   function getColumn(value){
     var column = {dropdownList:[]}
@@ -245,7 +277,7 @@ const validate = (changed, validationStatus) => Object.keys(changed).reduce((sta
   );
 
   function onSelected(value) {
-    if (props.editColumn.select != undefined && props.editColumn.select) {
+    if (settings.select != undefined && settings.select) {
       setSelection([value[value.length-1]])
       var check = false
       rows.map(function(element, i){
@@ -264,7 +296,7 @@ const validate = (changed, validationStatus) => Object.keys(changed).reduce((sta
       height = props.height
   
   const [filters, setFilters] = useState([]);
-  if (columns.length!=1 && filters.toString()=="" && props.editColumn.filter != undefined && props.editColumn.filter) {
+  if (columns.length!=1 && filters.toString()=="" && settings.filter != undefined && settings.filter) {
     var buf = []
     var check = false
     columns.map(item=>{
@@ -279,22 +311,67 @@ const validate = (changed, validationStatus) => Object.keys(changed).reduce((sta
 //---------------------------return-------------------------------
 //---------------------------эксперименты-------------------------
 
-const Cell = React.useCallback((props) => {
-    const { tableRow: { rowId }, column: { name: columnName } } = props;
-    const columnStatus = validationStatus[rowId]?.[columnName];
-    const valid = !columnStatus || columnStatus.isValid;
-    const style = {
-      ...(!valid ? { border: '1px solid red' } : null),
-    };
-    const title = valid ? '' : validationStatus[rowId][columnName].error;
-    return (
-      <Table.Cell
-        {...props}
-        style={style}
-        title={title}
-      />
-    );
-}, [validationStatus]);
+// const customizeSummaryCell = (cell) => {
+//   cell.font = { italic: true };
+// };
+
+// const customizeHeader = (worksheet) => {
+//   const generalStyles = {
+//     font: { bold: true },
+//     fill: {
+//       type: 'pattern', pattern: 'solid', fgColor: { argb: 'D3D3D3' }, bgColor: { argb: 'D3D3D3' },
+//     },
+//     alignment: { horizontal: 'left' },
+//   };
+//   for (let rowIndex = 1; rowIndex < 6; rowIndex += 1) {
+//     worksheet.mergeCells(rowIndex, 1, rowIndex, 3);
+//     worksheet.mergeCells(rowIndex, 4, rowIndex, 6);
+//     Object.assign(worksheet.getRow(rowIndex).getCell(1), generalStyles);
+//     Object.assign(worksheet.getRow(rowIndex).getCell(3), generalStyles);
+//   }
+//   worksheet.getRow(1).height = 20;
+//   worksheet.getRow(1).getCell(1).font = { bold: true, size: 16 };
+//   worksheet.getRow(1).getCell(4).numFmt = 'd mmmm yyyy';
+//   worksheet.getRow(1).getCell(4).font = { bold: true, size: 16 };
+//   worksheet.getColumn(1).values = ['Sale Amounts:', 'Company Name:', 'Address:', 'Phone:', 'Website:'];
+//   worksheet.getColumn(4).values = [new Date(), 'K&S Music', '1000 Nicllet Mall Minneapolis Minnesota', '(612) 304-6073', 'www.nowebsitemusic.com'];
+//   worksheet.addRow({});
+// };
+
+// const customizeFooter = (worksheet) => {
+//   const { lastRow } = worksheet;
+//   let currentRowIndex = lastRow.number + 2;
+//   for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
+//     worksheet.mergeCells(currentRowIndex + rowIndex, 1, currentRowIndex + rowIndex, 6);
+//     Object.assign(worksheet.getRow(currentRowIndex + rowIndex).getCell(1), { font: { bold: true }, alignment: { horizontal: 'right' } });
+//   }
+//   worksheet.getRow(currentRowIndex).getCell(1).value = 'If you have any questions, please contact John Smith.';
+//   currentRowIndex += 1;
+//   worksheet.getRow(currentRowIndex).getCell(1).value = 'Phone: +111-111';
+//   currentRowIndex += 1;
+//   worksheet.getRow(currentRowIndex).getCell(1).value = 'For demonstration purposes only';
+//   worksheet.getRow(currentRowIndex).getCell(1).font = { italic: true };
+// };
+// /* eslint-enable no-param-reassign */
+
+// const onSave = (workbook) => {
+//   workbook.xlsx.writeBuffer().then((buffer) => {
+//     saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'DataGrid.xlsx');
+//   });
+// };
+const CurrencyFormatter = ({ value }) => (
+  value.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' })
+);
+
+const CurrencyTypeProvider = props => (
+  <DataTypeProvider
+    formatterComponent={CurrencyFormatter}
+    {...props}
+  />
+);
+
+
+
 //---------------------------эксперименты-------------------------
 
     return (
@@ -312,53 +389,46 @@ const Cell = React.useCallback((props) => {
                 />
               }
             })}
-            {props.columns.map(function(item,i){
-              if (i==0 && props.editColumn.filter != undefined && props.editColumn.filter) {
-                return <FilteringState
-                      filters={filters}
-                      onFiltersChange={setFilters}
-                    />
-              }
-            })}
-            {props.columns.map(function(item,i){
-              if (i==0 && props.editColumn.filter != undefined && props.editColumn.filter) {
-                return <IntegratedFiltering />
-              }
-            })}
+            {settings.filter==true?<FilteringState filters={filters} onFiltersChange={setFilters}/>:<></>}
+            {settings.filter==true?<IntegratedFiltering />:<></>}
             <EditingState
-
               editingRowIds={editingRowIds}
               onEditingRowIdsChange={setEditingRowIds}
               rowChanges={rowChanges}
               onRowChangesChange={setRowChanges}
-
               onCommitChanges={commitChanges}
-              //defaultEditingRowIds={[0]}
               columnExtensions={editingStateColumnExtensions}
             />
             <SelectionState
               selection={selection}
               onSelectionChange={onSelected}
             />
-            <Table 
 
-              cellComponent={Cell}
 
+            <CurrencyTypeProvider
+              for={currencyColumns}
             />
+            <SummaryState
+              totalItems={totalSummaryItems}
+            />
+            <IntegratedSummary />
+            <Table
+              columnExtensions={tableColumnExtensions}
+            />
+
+            {/* <Table/> */}
             <VirtualTable 
               height={props.height}
+              width={props.width}
             />
             <TableColumnResizing
               columnWidths={columnWidths}
               onColumnWidthsChange={setColumnWidths}
             />
             <TableHeaderRow />
-            {props.columns.map(function(item,i){
-              if (i==0 && props.editColumn.filter != undefined && props.editColumn.filter) {
-                return <TableFilterRow/>
-              }
-            })}
-            
+            {settings.exportExel==true?<Toolbar/>:<></>}
+            {settings.exportExel==true?<ExportPanel startExport={startExport}/>:<></>}
+            {settings.filter==true?<TableFilterRow/>:<></>}
             <TableSelection
               selectByRowClick
               highlightRow
@@ -366,15 +436,26 @@ const Cell = React.useCallback((props) => {
             />
             <TableEditRow />
             <TableEditColumn
-              showAddCommand={props.editColumn.add}
-              showEditCommand={props.editColumn.edit}
-              showDeleteCommand={props.editColumn.delete}
+              showAddCommand={settings.add}
+              showEditCommand={settings.edit}
+              showDeleteCommand={settings.delete}
               messages={{editCommand: 'Правка', addCommand: 'Новая запись', commitCommand: 'Сохранить', cancelCommand: 'Отменить', deleteCommand: 'Удалить'}}
               width={EditColumnWidth}
             />
-            <TableInlineCellEditing />
+            {settings.cell==true?<TableInlineCellEditing/>:<></>}
+
+
+            <TableSummaryRow />
+
+
           </Grid>
         </div>
+        <GridExporter
+            ref={exporterRef}
+            rows={rows}
+            columns={columns}
+            onSave={onSave}
+          />
       </Paper>
     );
 };
