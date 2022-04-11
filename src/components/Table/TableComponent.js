@@ -35,6 +35,64 @@ import saveAs from 'file-saver';
 
 
 /* example
+
+    var customizationSettings={
+      customizeCell:(cell, row, column)=>{
+          if (row.number < 3) {
+            cell.font = { color: { argb: 'AAAAAA' } };
+          }
+          if (row.number > 4) {
+            if (column.name === 'password') {
+              cell.font = { color: { argb: '000000' } };
+              cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFBB00' } };
+            }
+          }
+          return cell
+      },
+      customizeSummaryCell: (cell)=>{
+          cell.font = { italic: true };
+          return cell
+      },
+      customizeHeader: (worksheet)=>{
+          const generalStyles = {
+              font: { bold: true },
+              fill: {
+                type: 'pattern', pattern: 'solid', fgColor: { argb: 'D3D3D3' }, bgColor: { argb: 'D3D3D3' },
+              },
+              alignment: { horizontal: 'left' },
+          };
+          for (let rowIndex = 1; rowIndex < 6; rowIndex += 1) {
+              worksheet.mergeCells(rowIndex, 1, rowIndex, 3);
+              worksheet.mergeCells(rowIndex, 4, rowIndex, 6);
+              Object.assign(worksheet.getRow(rowIndex).getCell(1), generalStyles);
+              Object.assign(worksheet.getRow(rowIndex).getCell(3), generalStyles);
+          }
+          worksheet.getRow(1).height = 20;
+          worksheet.getRow(1).getCell(1).font = { bold: true, size: 16 };
+          worksheet.getRow(1).getCell(4).numFmt = 'd mmmm yyyy';
+          worksheet.getRow(1).getCell(4).font = { bold: true, size: 16 };
+          worksheet.getColumn(1).values = ['Sale Amounts:', 'Company Name:', 'Address:', 'Phone:', 'Website:'];
+          worksheet.getColumn(4).values = [new Date(), 'K&S Music', '1000 Nicllet Mall Minneapolis Minnesota', '(612) 304-6073', 'www.nowebsitemusic.com'];
+          worksheet.addRow({});
+          return worksheet
+      },
+      customizeFooter:(worksheet)=>{
+          const { lastRow } = worksheet;
+          let currentRowIndex = lastRow.number + 2;
+          for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
+              worksheet.mergeCells(currentRowIndex + rowIndex, 1, currentRowIndex + rowIndex, 6);
+              Object.assign(worksheet.getRow(currentRowIndex + rowIndex).getCell(1), { font: { bold: true }, alignment: { horizontal: 'right' } });
+          }
+          worksheet.getRow(currentRowIndex).getCell(1).value = 'If you have any questions, please contact John Smith.';
+          currentRowIndex += 1;
+          worksheet.getRow(currentRowIndex).getCell(1).value = 'Phone: +111-111';
+          currentRowIndex += 1;
+          worksheet.getRow(currentRowIndex).getCell(1).value = 'For demonstration purposes only';
+          worksheet.getRow(currentRowIndex).getCell(1).font = { italic: true };
+          return worksheet
+      },
+  }
+
 const [dropdownList, setDropdownList] = React.useState([
     {menuItem:""},
     {menuItem:"Не инвентаризирован"},
@@ -45,7 +103,7 @@ const [dropdownList, setDropdownList] = React.useState([
 ])
 
 const [tableHeaders, setTableHeaders] = React.useState([
-    {name: 'number',            title:'№',                  editingEnabled:false,   width:40, totalCount:{type:['count', 'sum', 'max', 'min', 'avg'], expantionAlign: 'right', isCurrency:false}  }, 
+    {name: 'number',            title:'№',                  editingEnabled:false,   width:40, totalCount:{type:['count', 'sum', 'max', 'min', 'avg'], expantionAlign: 'right'}, isCurrency:false, isDate:false  }, 
     {name: 'surname',           title:'Фамилия',            editingEnabled:true,    width:160                                                                               }, 
     {name: 'name',              title:'Имя',                editingEnabled:true,    width:160                                                                               }, 
     {name: 'patronymic',        title:'Отчество',           editingEnabled:true,    width:170                                                                               }, 
@@ -64,7 +122,8 @@ var tableSettings = {
   validation:true,
   cell:true, 
   exportExel:true, 
-  exportExelFileName:"Accounts"
+  exportExelFileName:"Accounts",
+  exportCustomization: customizationSettings
 }
 const [tableList, setTableList] = React.useState([])
 const [selectedItem, setSelectedItem] = React.useState()
@@ -86,18 +145,16 @@ export function TableComponent(props) {
   const [selection, setSelection] = useState([]);
   const [editingRowIds, setEditingRowIds] = useState([]);
   const [rowChanges, setRowChanges] = useState({});
-
- //---------------------------эксперименты-------------------------
-
   const [tableColumnExtensions] = useState([]);
   const [totalSummaryItems] = useState([]);
   const [currencyColumns] = useState([]);
-
-
-
-//---------------------------эксперименты-------------------------
+  const [dateColumns] = useState([])
 
   var onSaveCheck = 0
+  var onCustomizeHeaderCheck = 0
+  var onCustomizeFooterCheck = 0
+
+
   var settings = props.tableSettings
   var EditColumnWidth = settings.editColumnWidth!=undefined?settings.editColumnWidth:220
 
@@ -123,20 +180,13 @@ export function TableComponent(props) {
       if (item.totalCount!=undefined){
         tableColumnExtensions.push({ columnName: item.name, align: item.totalCount.expantionAlign })
         item.totalCount.type.map(item1=>{
-          totalSummaryItems.push({ columnName: item.name, type: item1 },)
+          totalSummaryItems.push({ columnName: item.name, type: item1 })
         });
-        if(item.totalCount.isCurrency)
-          currencyColumns.push(item.name)
       }
+      if(item.isCurrency) currencyColumns.push(item.name)
+      if(item.isDate) dateColumns.push(item.name)
     })
   }
-
-  console.log('tableColumnExtensions')
-  console.log(tableColumnExtensions)
-  console.log('totalSummaryItems')
-  console.log(totalSummaryItems)
-  console.log('currencyColumns')
-  console.log(currencyColumns)
 //---------------------------экспорт таблицы-------------------------------
   const exporterRef = useRef(null);
 
@@ -145,6 +195,7 @@ export function TableComponent(props) {
   }, [exporterRef]);
 
   const onSave = (workbook) => {
+    console.log("5")
     if (onSaveCheck++==0){
       workbook.xlsx.writeBuffer().then((buffer) => {
         saveAs(new Blob([buffer], { type: 'application/octet-stream' }), `${settings.exportExelFileName}.xlsx`);
@@ -308,69 +359,54 @@ export function TableComponent(props) {
     if (check)
     setFilters(buf)
   }
-//---------------------------return-------------------------------
+
+  const CurrencyFormatter = ({ value }) => (
+    value.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' })
+  );
+  
+  const CurrencyTypeProvider = props => (
+    <DataTypeProvider
+      formatterComponent={CurrencyFormatter}
+      {...props}
+    />
+  );
+//------------------------------разобраться как работает-----------
+const DateFormatter = ({ value }) => (
+  <span>
+    {value.toLocaleDateString()}
+  </span>
+);
+
+const DateTypeProvider = props => (
+  <DataTypeProvider {...props} formatterComponent={DateFormatter} />
+);
+
 //---------------------------эксперименты-------------------------
 
-// const customizeSummaryCell = (cell) => {
-//   cell.font = { italic: true };
-// };
+const customizeCell = (cell, row, column) => {
+  cell=settings.exportCustomization.customizeCell(cell, row, column)
 
-// const customizeHeader = (worksheet) => {
-//   const generalStyles = {
-//     font: { bold: true },
-//     fill: {
-//       type: 'pattern', pattern: 'solid', fgColor: { argb: 'D3D3D3' }, bgColor: { argb: 'D3D3D3' },
-//     },
-//     alignment: { horizontal: 'left' },
-//   };
-//   for (let rowIndex = 1; rowIndex < 6; rowIndex += 1) {
-//     worksheet.mergeCells(rowIndex, 1, rowIndex, 3);
-//     worksheet.mergeCells(rowIndex, 4, rowIndex, 6);
-//     Object.assign(worksheet.getRow(rowIndex).getCell(1), generalStyles);
-//     Object.assign(worksheet.getRow(rowIndex).getCell(3), generalStyles);
-//   }
-//   worksheet.getRow(1).height = 20;
-//   worksheet.getRow(1).getCell(1).font = { bold: true, size: 16 };
-//   worksheet.getRow(1).getCell(4).numFmt = 'd mmmm yyyy';
-//   worksheet.getRow(1).getCell(4).font = { bold: true, size: 16 };
-//   worksheet.getColumn(1).values = ['Sale Amounts:', 'Company Name:', 'Address:', 'Phone:', 'Website:'];
-//   worksheet.getColumn(4).values = [new Date(), 'K&S Music', '1000 Nicllet Mall Minneapolis Minnesota', '(612) 304-6073', 'www.nowebsitemusic.com'];
-//   worksheet.addRow({});
-// };
+  currencyColumns.map(item=>{
+    if (column.name==item) cell.numFmt = '0₽';
+  })
+};
 
-// const customizeFooter = (worksheet) => {
-//   const { lastRow } = worksheet;
-//   let currentRowIndex = lastRow.number + 2;
-//   for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
-//     worksheet.mergeCells(currentRowIndex + rowIndex, 1, currentRowIndex + rowIndex, 6);
-//     Object.assign(worksheet.getRow(currentRowIndex + rowIndex).getCell(1), { font: { bold: true }, alignment: { horizontal: 'right' } });
-//   }
-//   worksheet.getRow(currentRowIndex).getCell(1).value = 'If you have any questions, please contact John Smith.';
-//   currentRowIndex += 1;
-//   worksheet.getRow(currentRowIndex).getCell(1).value = 'Phone: +111-111';
-//   currentRowIndex += 1;
-//   worksheet.getRow(currentRowIndex).getCell(1).value = 'For demonstration purposes only';
-//   worksheet.getRow(currentRowIndex).getCell(1).font = { italic: true };
-// };
-// /* eslint-enable no-param-reassign */
+const customizeSummaryCell = (cell) => {
+    cell=settings.exportCustomization.customizeSummaryCell(cell)
+};
 
-// const onSave = (workbook) => {
-//   workbook.xlsx.writeBuffer().then((buffer) => {
-//     saveAs(new Blob([buffer], { type: 'application/octet-stream' }), 'DataGrid.xlsx');
-//   });
-// };
-const CurrencyFormatter = ({ value }) => (
-  value.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' })
-);
+const customizeHeader = (worksheet) => {
+  if (onCustomizeHeaderCheck++==0){
+    worksheet = settings.exportCustomization.customizeHeader(worksheet)
+  } else {onCustomizeHeaderCheck=0}
+};
 
-const CurrencyTypeProvider = props => (
-  <DataTypeProvider
-    formatterComponent={CurrencyFormatter}
-    {...props}
-  />
-);
-
-
+const customizeFooter = (worksheet) => {
+  if (onCustomizeFooterCheck++==0){
+    worksheet = settings.exportCustomization.customizeFooter(worksheet)
+  } else {onCustomizeFooterCheck=0}
+};
+/* eslint-enable no-param-reassign */
 
 //---------------------------эксперименты-------------------------
 
@@ -403,11 +439,14 @@ const CurrencyTypeProvider = props => (
               selection={selection}
               onSelectionChange={onSelected}
             />
+            <CurrencyTypeProvider for={currencyColumns}/>
 
 
-            <CurrencyTypeProvider
-              for={currencyColumns}
-            />
+
+            <DateTypeProvider for={dateColumns} />
+
+
+
             <SummaryState
               totalItems={totalSummaryItems}
             />
@@ -415,8 +454,6 @@ const CurrencyTypeProvider = props => (
             <Table
               columnExtensions={tableColumnExtensions}
             />
-
-            {/* <Table/> */}
             <VirtualTable 
               height={props.height}
               width={props.width}
@@ -443,18 +480,19 @@ const CurrencyTypeProvider = props => (
               width={EditColumnWidth}
             />
             {settings.cell==true?<TableInlineCellEditing/>:<></>}
-
-
             <TableSummaryRow />
-
-
           </Grid>
         </div>
         <GridExporter
             ref={exporterRef}
             rows={rows}
             columns={columns}
+            totalSummaryItems={totalSummaryItems}
             onSave={onSave}
+            customizeCell={customizeCell}
+            customizeSummaryCell={customizeSummaryCell}
+            customizeHeader={customizeHeader}
+            customizeFooter={customizeFooter}
           />
       </Paper>
     );

@@ -17,6 +17,63 @@ export default function AdministratorAccounts(props){
 
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------стол 1
+
+    var customizationSettings={
+        customizeCell:(cell, row, column)=>{
+            if (row.number < 3) {
+              cell.font = { color: { argb: 'AAAAAA' } };
+            }
+            if (row.number > 4) {
+              if (column.name === 'password') {
+                cell.font = { color: { argb: '000000' } };
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFBB00' } };
+              }
+            }
+            return cell
+        },
+        customizeSummaryCell: (cell)=>{
+            cell.font = { italic: true };
+            return cell
+        },
+        customizeHeader: (worksheet)=>{
+            const generalStyles = {
+                font: { bold: true },
+                fill: {
+                  type: 'pattern', pattern: 'solid', fgColor: { argb: 'D3D3D3' }, bgColor: { argb: 'D3D3D3' },
+                },
+                alignment: { horizontal: 'left' },
+            };
+            for (let rowIndex = 1; rowIndex < 6; rowIndex += 1) {
+                worksheet.mergeCells(rowIndex, 1, rowIndex, 3);
+                worksheet.mergeCells(rowIndex, 4, rowIndex, 6);
+                Object.assign(worksheet.getRow(rowIndex).getCell(1), generalStyles);
+                Object.assign(worksheet.getRow(rowIndex).getCell(3), generalStyles);
+            }
+            worksheet.getRow(1).height = 20;
+            worksheet.getRow(1).getCell(1).font = { bold: true, size: 16 };
+            worksheet.getRow(1).getCell(4).numFmt = 'd mmmm yyyy';
+            worksheet.getRow(1).getCell(4).font = { bold: true, size: 16 };
+            worksheet.getColumn(1).values = ['Sale Amounts:', 'Company Name:', 'Address:', 'Phone:', 'Website:'];
+            worksheet.getColumn(4).values = [new Date(), 'K&S Music', '1000 Nicllet Mall Minneapolis Minnesota', '(612) 304-6073', 'www.nowebsitemusic.com'];
+            worksheet.addRow({});
+            return worksheet
+        },
+        customizeFooter:(worksheet)=>{
+            const { lastRow } = worksheet;
+            let currentRowIndex = lastRow.number + 2;
+            for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
+                worksheet.mergeCells(currentRowIndex + rowIndex, 1, currentRowIndex + rowIndex, 6);
+                Object.assign(worksheet.getRow(currentRowIndex + rowIndex).getCell(1), { font: { bold: true }, alignment: { horizontal: 'right' } });
+            }
+            worksheet.getRow(currentRowIndex).getCell(1).value = 'If you have any questions, please contact John Smith.';
+            currentRowIndex += 1;
+            worksheet.getRow(currentRowIndex).getCell(1).value = 'Phone: +111-111';
+            currentRowIndex += 1;
+            worksheet.getRow(currentRowIndex).getCell(1).value = 'For demonstration purposes only';
+            worksheet.getRow(currentRowIndex).getCell(1).font = { italic: true };
+            return worksheet
+        },
+    }
     
     const [tableHeaders, setTableHeaders] = React.useState([
         {name: 'number',            title:'№',                  editingEnabled:false,   width:40                               }, 
@@ -29,6 +86,7 @@ export default function AdministratorAccounts(props){
         {name: 'login',             title:'Логин',              editingEnabled:true,    width:130,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                },
         {name: 'password',          title:'Пароль',             editingEnabled:true,    width:130,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                }
     ]) 
+
     var tableSettings = {
         add:true, 
         edit:true, 
@@ -37,7 +95,8 @@ export default function AdministratorAccounts(props){
         validation:true, 
         cell:false, 
         exportExel:true, 
-        exportExelFileName:"Accounts"
+        exportExelFileName:"Accounts",
+        exportCustomization: customizationSettings
     }
 
     const [tableList, setTableList] = React.useState([])
