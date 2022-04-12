@@ -1,11 +1,4 @@
 const Pool = require('pg').Pool
-// const pool = new Pool({
-//   user: 'ekwzgehq',
-//   host: 'abul.db.elephantsql.com',
-//   database: 'ekwzgehq',
-//   password: 'wb2N6g8H5bJmREhfVMATYNom4V0xN3tn',
-//   port: 5432,
-// })
 
 const pool = new Pool({
   user: 'test_user',
@@ -369,9 +362,8 @@ const postNewUser = (request, response) => {
   const textUPDATE = 'UPDATE accounts SET name=$1, surname=$2, patronymic=$3, login=$4, password=$5, phone_num=$6, duty=$7 WHERE code=$8'
   const textDELETE = 'DELETE FROM accounts WHERE code=$1'
   var accounts = []
-
   //console.log(Object.values(request.body)[0][2])
-  var accounts_added = Object.values(request.body)[0] 
+  var accounts_added = request.body
 
   pool.query('SELECT * FROM accounts ORDER BY code ASC', (error, results) => {
     if (error) {
@@ -389,7 +381,7 @@ const postNewUser = (request, response) => {
               throw error
             }
           })
-          var index = Object.values(request.body)[0].indexOf(element)
+          var index = request.body.indexOf(element)
           accounts_added.splice(index, 1)
         }
       })
