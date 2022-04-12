@@ -38,7 +38,7 @@ export function TableComponent(props) {
   const [rows, setRows] = useState();
   const [editingStateColumnExtensions, setEditingStateColumnExtensions] = useState([]);
   const [columnWidths, setColumnWidths] = useState([]);
-  
+
   if (columns.length > 0 || JSON.stringify(rows)!=JSON.stringify(props.rows)) {
     
     if (JSON.stringify(columns) != JSON.stringify(props.columns)) {setColumns(props.columns)}

@@ -7,13 +7,13 @@ const Pool = require('pg').Pool
 //   port: 5432,
 // })
 
-const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'warehouse',
-  password: 'iliga',
-  port: 5432,
-})
+// const pool = new Pool({
+//   user: 'postgres',
+//   host: 'localhost',
+//   database: 'warehouse',
+//   password: 'iliga',
+//   port: 5432,
+// })
 
 // const pool = new Pool({
 //   user: 'postgres',
@@ -22,6 +22,14 @@ const pool = new Pool({
 //   password: 'admin',
 //   port: 5432,
 // })
+
+const pool = new Pool({
+  user: 'test_user',
+  host: '176.53.182.224',
+  database: 'test_base',
+  password: 'testuser',
+  port: 54322,
+})
 
 pool.connect((err, client, release) => {
     if (err) {
@@ -369,9 +377,8 @@ const postNewUser = (request, response) => {
   const textUPDATE = 'UPDATE accounts SET name=$1, surname=$2, patronymic=$3, login=$4, password=$5, phone_num=$6, duty=$7 WHERE code=$8'
   const textDELETE = 'DELETE FROM accounts WHERE code=$1'
   var accounts = []
-
   //console.log(Object.values(request.body)[0][2])
-  var accounts_added = Object.values(request.body)[0] 
+  var accounts_added = request.body
 
   pool.query('SELECT * FROM accounts ORDER BY code ASC', (error, results) => {
     if (error) {
@@ -389,7 +396,7 @@ const postNewUser = (request, response) => {
               throw error
             }
           })
-          var index = Object.values(request.body)[0].indexOf(element)
+          var index = request.body.indexOf(element)
           accounts_added.splice(index, 1)
         }
       })

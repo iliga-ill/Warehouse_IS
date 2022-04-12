@@ -3,19 +3,29 @@ import './AdministratorAccounts.css';
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import { TableComponent } from "../../components/Table/TableComponent";
+import { Api } from "../../api/api"
+
 const host = 'http://localhost:5000';
 const styles = {
 
   }
 
-  
+var isFirstTime = true
+var api = new Api()
+var buf = {value: []}
 
+  
 export default function AdministratorAccounts(props){
 
     var id=props.Id
     function getId(){
         id++
         return id-1
+    }
+
+    const [reload, setReload] = React.useState(0)
+    function reloadPage(){
+        setReload(reload+1)
     }
 
     //-------------------------------------------------------------------------Блок 1
@@ -33,36 +43,40 @@ export default function AdministratorAccounts(props){
         {name: 'password',          title:'Пароль',             editingEnabled:true,    width:130   }
     ]) 
     var edit_column = {add:true, edit:true, delete:true, select:true}
-
-    const [tableList, setTableList] = React.useState([])
+    const [tableList, setTableList] =  React.useState([])
     const [selectedItem, setSelectedItem] = React.useState()
-    
-    function apiGetClients() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/clients', true);
-        console.log("Authorization apiGetClients was launched")
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == XMLHttpRequest.DONE) {
-            var answer = JSON.parse(this.response)
-            console.log("Authorization apiGetClients answer: ")
-            console.log(answer)
-            var buffer = []
-            answer.map( function(item, i) {
-                buffer[i] = {number:i+1, name: item.name, surname: item.surname, patronymic: item.patronymic, login: item.login, password: item.password, phone: item.phone_num, duty: " Кладовщик Менеджер", email:""}
-                buffer[i].id = 'string_' + i;
-                buffer[i].code = item.code
-            })
-            if (JSON.stringify(tableList)!=JSON.stringify(buffer))
-                setTableList(buffer)
-          }
-        } 
-        xhr.send(null);
-      }
-      if(tableList.toString()=="")
-        apiGetClients()
-    
 
-    
+    React.useEffect(() => {
+        // console.log("================================")
+        // console.log(tableList)
+        // console.log(tableList.length)
+        // console.log("================================")
+        // return () => {
+        //     React.effect()
+        //     .then((value) => setTableList({ status: 'fulfilled', value, error: null }))
+        //     .catch((error) => setTableList({ status: 'rejected', value: null, error }))
+        // }
+
+        async function apiGetClients(){
+            var result = await api.getClients("GET", "/clients")
+            console.log(result.length)
+            console.log(JSON.stringify(result))
+            // setTableList([{}])
+            setTableList(result)
+            // setSelectedItem()
+            // buf.value = {value: result}
+            // console.log("1")
+            // console.log(tableList)
+        }
+        apiGetClients()
+        // setTableList(result)
+    }, []);
+
+    if(tableList.length != 5 && isFirstTime == true) {
+        console.log(`isFirstTime ${isFirstTime}`)
+        isFirstTime = false
+        setTableList([])
+    }
 
     function btn_send_1() {
         var accounts = tableList
@@ -98,27 +112,15 @@ export default function AdministratorAccounts(props){
         })
         console.log(accounts)
         if (check) {
-            apiPostAccountTable(tableList)
+          
+            async function test(value) {
+                await api.postClients("POST", "/post_user", value)
+            }
+            test(tableList)
         }
     }
 
-    function apiPostAccountTable(value) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", host+'/post_user', true);
-      
-        //Send the proper header information along with the request
-        xhr.setRequestHeader("Content-Type", "application/json");
-      
-        xhr.onreadystatechange = function() { // Call a function when the state changes.
-            if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                // Request finished. Do processing here.
-                alert("Данные успешно отправлены")
-            }
-        }
 
-        //xhr.send(`name=${value.name}&surname=${value.surname}&patronymic=${value.surname}&login=${value.login}&password=${value.password}&phone_num=${value.phone_num}&duty=${value.duty}`);
-        xhr.send(JSON.stringify({value}));
-      }
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец
     //-------------------------------------------------------------------------Блок 2 начало
