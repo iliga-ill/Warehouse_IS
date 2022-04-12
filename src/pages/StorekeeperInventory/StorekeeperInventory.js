@@ -4,6 +4,7 @@ import Table from "../../components/Table/Table";
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import { TableComponent } from "../../components/Table/TableComponent";
+import ConfirmIcon from '../../images/ConfirmIcon.svg'
 const host = 'http://localhost:5000';
 
 const styles = {
@@ -152,7 +153,8 @@ export default function StorekeeperInventory(props){
         {name: 'zone',                      title:'Зона',                   editingEnabled:false,     width:90 },
         {name: 'rack',                      title:'Стеллаж',                editingEnabled:false,     width:120},
         {name: 'shelf',                     title:'Полка',                  editingEnabled:false,     width:90 },
-        {name: 'amount',                    title:'Кол-во',                 editingEnabled:false,     width:70 }
+        {name: 'amount',                    title:'Кол-во',                 editingEnabled:false,     width:70 },
+        {name: 'inventorysationStatus',     title:'Статус',                 editingEnabled:false,     width:180},
     ]) 
     var  tableSettings = {add:false, edit:false, delete:false, filter: true, select:true}
 
@@ -167,11 +169,14 @@ export default function StorekeeperInventory(props){
         shelfsSpace.map(function(item, i){
             if (item.shelf_space != null) {
                 var amount = 0
+                var inventorysatedAmount = 0
                 item.shelf_space.map(function(item1, j){
                     amount+=item1.amount
+                    if (item1.status!='Не инвентаризирован') inventorysatedAmount++
                     // buf.push({id:counter, number:++counter, shelfSpaceCode:item1.shelfCode, zone:item.zone_num, rack:item.rack_num, shelf:item.name, goodsType:item1.good, amount:item1.amount, inventaryzationStatus:item1.status})
                 })
-                buf.push({id:counter, number:++counter, zone:item.zone_num, rack:item.rack_num, shelf:item.name, amount:amount})
+                var inventorysationStatus = inventorysatedAmount==amount?"Проинвентаризировано":inventorysatedAmount!=0?"Частично проверено":"Не проверено"
+                buf.push({id:counter, number:++counter, zone:item.zone_num, rack:item.rack_num, shelf:item.name, amount:amount, inventorysationStatus:inventorysationStatus})
             } else {
                     //buf.push({id:counter, number:++counter, shelfSpaceCode:item.shelfCode, zone:item.zone_num, rack:item.rack_num, shelf:item.name, goodsType:" ", amount:0, inventaryzationStatus:"Пусто"}) 
             }
@@ -193,12 +198,35 @@ export default function StorekeeperInventory(props){
           shelfsSpace.map(function(item, i){
               if (item.shelf_space!=undefined)
                 item.shelf_space.map(function(item1, j){
-                    if (code == item1.shelfCode) item1.status = status
+                    if (code == item1.shelfCode) {
+                        console.log(status)
+                        item1.status = status
+                    }
+                    
                     return item1
                 })
             return item
           })
-          if (i==tableList1.length-1) alert(`Статусы успешно сохранены`)
+          if (i==tableList1.length-1) {
+                var buf=[]
+                var counter = 0
+                shelfsSpace.map(function(item, i){
+                    if (item.shelf_space != null && item.shelf_space != undefined) {
+                        var amount = 0
+                        var inventorysatedAmount = 0
+                        item.shelf_space.map(function(item1, j){
+                            amount+=item1.amount
+                            if (item1.status!='Не инвентаризирован') inventorysatedAmount++
+                        })
+                        item.inventorysationStatus=inventorysatedAmount==amount?"Проинвентаризировано":inventorysatedAmount!=0?"Частично проверено":"Не проверено";
+                        buf.push({id:counter, number:++counter, zone:item.zone_num, rack:item.rack_num, shelf:item.name, amount:amount, inventorysationStatus:item.inventorysationStatus})
+                    }
+                })
+                console.log('buf')
+                console.log(buf)
+                setTableList(buf)
+              //alert(`Статусы успешно сохранены`)
+            }
         }
       }
         xhr.send(null);
@@ -230,6 +258,7 @@ export default function StorekeeperInventory(props){
 
     React.useEffect(() => {
         var buf=[]
+        var buf1=[]
         var counter = 0
         shelfsSpace.map(function(item, i){
             if (i == selectedItemId.id){
@@ -242,6 +271,7 @@ export default function StorekeeperInventory(props){
             }
         })
         setTableList1(buf)
+
     }, [selectedItemId]);
 
     function btn_send_1() {

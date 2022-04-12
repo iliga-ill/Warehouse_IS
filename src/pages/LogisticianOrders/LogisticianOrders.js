@@ -88,9 +88,9 @@ export default function LogisticianOrders(props){
             var buffer = []
             answer.map(function( element, i) {
                 if (i==0)
-                    buffer.push({id:getId(), text: element.name, selected: true, code: element.id, address: element.address, cost:element.cost, deadline:element.deadline, order_status:element.order_status})
+                    buffer.push({id:getId(), text: element.name, selected: true, code: element.id, address: element.address, cost:element.cost, deadline:element.deadline.split("T")[0], order_status:element.order_status})
                 else
-                    buffer.push({id:getId(), text: element.name, selected: false, code: element.id, address: element.address, cost:element.cost, deadline:element.deadline, order_status:element.order_status})
+                    buffer.push({id:getId(), text: element.name, selected: false, code: element.id, address: element.address, cost:element.cost, deadline:element.deadline.split("T")[0], order_status:element.order_status})
             });
             setOrders(buffer)
           }
@@ -129,12 +129,14 @@ export default function LogisticianOrders(props){
     React.useEffect(() => {
         console.log("tableList")
         console.log(tableList)
-        tableList.map(item=>{
-            if (item.id == selectedItemId.id) {
-                setTableList1(item.goodsInOrder)
-                setBufferedTableList2(item.goodsInOrder)
-            }
-        })
+        if (selectedItemId!=undefined){
+            tableList.map(item=>{
+                if (item.id == selectedItemId.id) {
+                    setTableList1(item.goodsInOrder)
+                    setBufferedTableList2(item.goodsInOrder)
+                }
+            })
+        }
     }, [selectedItemId]);
         
     //-------------------------------------стол 1 конец
@@ -282,7 +284,7 @@ export default function LogisticianOrders(props){
                 answer.map(function(shipment, i){
                     //tableListBuf.push({number: i+1, shipmentNumber: shipment.name, shipmentDate: shipment.shipment_date, shipmentCost: shipment.shipment_price, shipmentStatus: shipment.status_fullness, goodsInOrder: shipment.goods})
                     var goods_array = []
-                    tableListBuf.push({number: i+1, shipmentNumber: shipment.name, orderCode:order.code, shipmentDate: shipment.shipment_date, shipmentCost: shipment.shipment_price, shipmentStatus: shipment.status_fullness, goodsInOrder: []})
+                    tableListBuf.push({number: i+1, shipmentNumber: shipment.name, orderCode:order.code, shipmentDate: shipment.shipment_date.split("T")[0], shipmentCost: shipment.shipment_price, shipmentStatus: shipment.status_fullness, goodsInOrder: []})
                     if (shipment.goods != undefined) {
                         shipment.goods.map(function(good, j){
                             goodsTypeAnswer.map(item=>{

@@ -130,41 +130,7 @@ export default function AdministratorAccounts(props){
     
 
     function btn_send_1() {
-        var accounts = tableList
-        var check=true
-
-        accounts.map(function(item,i){
-            if (check){
-                if (item.login == "" || item.login == null){
-                    check=false
-                    alert("Ошибка, логин не может быть пустым");
-                }
-                if (item.password == ""|| item.password == null){
-                    check=false
-                    alert("Ошибка, пароль не может быть пустым");
-                }
-                if (item.name == ""|| item.name == null){
-                    check=false
-                    alert("Ошибка, наименование не может быть пустым");
-                }
-                if (item.surname == ""|| item.surname == null){
-                    check=false
-                    alert("Ошибка, фамилия не может быть пустым");
-                }
-                if (item.patronymic == ""|| item.patronymic == null){
-                    check=false
-                    alert("Ошибка, отчество не может быть пустым");
-                }
-                if (item.phone_num == ""|| item.phone_num == null){
-                    check=false
-                    alert("Ошибка, телефон не может быть пустым");
-                }
-            }
-        })
-        console.log(accounts)
-        if (check) {
-            apiPostAccountTable(tableList)
-        }
+        apiPostAccountTable(tableList)
     }
 
     function apiPostAccountTable(value) {

@@ -17,7 +17,7 @@ const host = 'http://localhost:5000';
 
 export default function Authorization(props){
   let expires = new Date()
-  expires.setTime(expires.getTime() + (5 * 60 * 1000))
+  expires.setTime(expires.getTime() + (30 * 60 * 1000))
 
   function apiGetClients() {
     var xhr = new XMLHttpRequest();

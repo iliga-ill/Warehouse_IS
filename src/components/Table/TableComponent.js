@@ -105,14 +105,15 @@ const [dropdownList, setDropdownList] = React.useState([
 const [tableHeaders, setTableHeaders] = React.useState([
     {name: 'number',            title:'№',                  editingEnabled:false,   width:40, totalCount:{type:['count', 'sum', 'max', 'min', 'avg'], expantionAlign: 'right'}, isCurrency:false, isDate:false  }, 
     {name: 'surname',           title:'Фамилия',            editingEnabled:true,    width:160                                                                               }, 
-    {name: 'name',              title:'Имя',                editingEnabled:true,    width:160                                                                               }, 
+    {name: 'name',              title:'Имя',                editingEnabled:true,    width:160,  mask:/^(.)(.*)$/i,                       maskExample:"быть заполнено"       }, 
     {name: 'patronymic',        title:'Отчество',           editingEnabled:true,    width:170                                                                               }, 
     {name: 'phone',             title:'Номер телефона',     editingEnabled:true,    width:200,  mask:/^\+\d{1} \(\d{3}\) \d{3}-\d{4}$/i, maskExample:"+7 (930) 442-5665"    }, 
-    {name: 'email',             title:'Почта',              editingEnabled:true,    width:200                                                                               }, 
+    {name: 'email',             title:'Почта',              editingEnabled:true,    width:200,  mask:/^(.)(.*)(.@.*)\.(.)(.)$/i,         maskExample:"соотвестсвовать шаблону example@service.ru"   }, 
     {name: 'duty',              title:'Должность',          editingEnabled:false,   width:150                                                                               },
     {name: 'login',             title:'Логин',              editingEnabled:true,    width:130                                                                               },
     {name: 'password',          title:'Пароль',             editingEnabled:true,    width:130, dropdownList: dropdownList                                                   }
 ]) 
+
 var tableSettings = {
   editColumnWidth: 220, 
   add:true, edit:true, 
@@ -123,7 +124,7 @@ var tableSettings = {
   cell:true, 
   exportExel:true, 
   exportExelFileName:"Accounts",
-  exportCustomization: customizationSettings
+  exportCustomization: customizationSettings,
 }
 const [tableList, setTableList] = React.useState([])
 const [selectedItem, setSelectedItem] = React.useState()
@@ -198,9 +199,35 @@ export function TableComponent(props) {
     console.log("5")
     if (onSaveCheck++==0){
       workbook.xlsx.writeBuffer().then((buffer) => {
-        saveAs(new Blob([buffer], { type: 'application/octet-stream' }), `${settings.exportExelFileName}.xlsx`);
+        saveAs(new Blob([buffer], { type: 'application/octet-stream' }), `${settings.exportExelFileName!=undefined?settings.exportExelFileName:'DataGrid'}.xlsx`);
       });
     } else {onSaveCheck=0}
+  };
+
+  const customizeCell = (cell, row, column) => {
+    if (settings.exportCustomization!=undefined)
+      cell=settings.exportCustomization.customizeCell(cell, row, column)
+  
+    currencyColumns.map(item=>{
+      if (column.name==item) cell.numFmt = '0₽';
+    })
+  };
+  
+  const customizeSummaryCell = (cell) => {
+    if (settings.exportCustomization!=undefined)
+      cell=settings.exportCustomization.customizeSummaryCell(cell)
+  };
+  
+  const customizeHeader = (worksheet) => {
+    if (onCustomizeHeaderCheck++==0 && settings.exportCustomization!=undefined){
+      worksheet = settings.exportCustomization.customizeHeader(worksheet)
+    } else {onCustomizeHeaderCheck=0}
+  };
+  
+  const customizeFooter = (worksheet) => {
+    if (onCustomizeFooterCheck++==0 && settings.exportCustomization!=undefined){
+      worksheet = settings.exportCustomization.customizeFooter(worksheet)
+    } else {onCustomizeFooterCheck=0}
   };
 //---------------------------изменение таблицы-------------------------------
   const commitChanges = ({ added, changed, deleted }) => {
@@ -382,31 +409,6 @@ const DateTypeProvider = props => (
 );
 
 //---------------------------эксперименты-------------------------
-
-const customizeCell = (cell, row, column) => {
-  cell=settings.exportCustomization.customizeCell(cell, row, column)
-
-  currencyColumns.map(item=>{
-    if (column.name==item) cell.numFmt = '0₽';
-  })
-};
-
-const customizeSummaryCell = (cell) => {
-    cell=settings.exportCustomization.customizeSummaryCell(cell)
-};
-
-const customizeHeader = (worksheet) => {
-  if (onCustomizeHeaderCheck++==0){
-    worksheet = settings.exportCustomization.customizeHeader(worksheet)
-  } else {onCustomizeHeaderCheck=0}
-};
-
-const customizeFooter = (worksheet) => {
-  if (onCustomizeFooterCheck++==0){
-    worksheet = settings.exportCustomization.customizeFooter(worksheet)
-  } else {onCustomizeFooterCheck=0}
-};
-/* eslint-enable no-param-reassign */
 
 //---------------------------эксперименты-------------------------
 
