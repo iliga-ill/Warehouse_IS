@@ -9,7 +9,6 @@ import InputFile from "../../components/InputFile/InputFile";
 import InputText from "../../components/InputText/InputText";
 import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
-import SwitchHolder from "../../components/TabHolders/SwitchHolder/SwitchHolder";
 import { render } from "react-dom";
 //const API = require('../../api/api.js');
 const host = 'http://localhost:5000';
@@ -38,34 +37,12 @@ export default function StorekeeperAdvent(props){
     var id=0
     function getId(){return id++}
 
-    const [reload, setReload] = React.useState(0)
-    function reloadPage(){
-        setReload(reload+1)
-    }
-
-    var [tabs, setTabs] = React.useState([
-        {id:0, selected: true, title: "Текущие"},
-        {id:1, selected: false, title: "Выполненные"}
-    ])
-
-    function onTabClick(tab_id){
-        var mT = tabs
-        mT.map(tab => {
-            if (tab.id != tab_id){
-                tab.selected = false
-            } else {
-                tab.selected = true
-            }
-            return tab
-        })
-        setTabs(mT)
-        reloadPage()
-    }
-
+    const [isCurrent, setIsCurrent] = React.useState(true)
+    if (isCurrent!=props.isCurrent) setIsCurrent(props.isCurrent)
     React.useEffect(() => {
         apiGetGoodsType()
-    }, [reload]);
-
+    }, [isCurrent]);
+    
 //#region блоки
     //-------------------------------------------------------------------------Блок 1
    
@@ -88,6 +65,7 @@ export default function StorekeeperAdvent(props){
         // {id: 0, text: "Заказ №6566", selected: false},
 
     const [orders, setOrders] = React.useState([])
+
     React.useEffect(() => {
         apiGetGoodsByShipmentOrder()
     }, [orders]);
@@ -223,13 +201,6 @@ export default function StorekeeperAdvent(props){
         }
         xhr.send(null);
     }
-
-    const [isStart, setIsStart] = React.useState(true)
-
-    if (isStart) {
-         apiGetGoodsType()
-         setIsStart(false)
-    }
     // var goods_type_list = [
     //     {value: "Варочная поверхность Bosch PKE 645 B17E", selected: true},
     //     {value: "Варочная поверхность Bosch PKE 645 B18E", selected: false},
@@ -292,6 +263,7 @@ export default function StorekeeperAdvent(props){
                     goodsType.forEach (function(item2, j) {
                             var it = parseInt(item2.code)
                             if (it.toString() == item.goods.toString()) {
+                                
                                 //  bar[i] = [i, goodsCategories2[item2.category-1].text, goodsCategories3[item2.sub_category-1].text,  item2.text, item2.ordered, item2.amount, true]
                                 buffer[counter] = {number: counter+1, goodsCategories2: goodsCategories2[item2.category-1].text, goodsCategories3: goodsCategories3[item2.sub_category-1].text, goodsType: item2.text, orderedAmount: item.amount, amount: item.amount_real}
                                 buffer[counter].id = getId()
@@ -487,7 +459,6 @@ function apiUpdateOrderGoods(value) {
 
     return (
         <>
-            <SwitchHolder tabs={tabs} onTabClick={onTabClick}/>
             <FlexibleBlocksPage Id={getId()}>
                 <FlexibleBlock>
                     <ListWithSearch Id={getId()} item_list={orders} func={setOrdersForced} width={list_with_search_width} height={list_with_search_height}/>

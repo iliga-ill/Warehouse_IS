@@ -7,7 +7,6 @@ import InputDate from "../../components/InputDate/InputDate";
 import InputFile from "../../components/InputFile/InputFile";
 import InputText from "../../components/InputText/InputText";
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
-import SwitchHolder from "../../components/TabHolders/SwitchHolder/SwitchHolder";
 import { TableComponent } from "../../components/Table/TableComponent";
 const host = 'http://localhost:5000';
 
@@ -21,40 +20,17 @@ export default function LogisticianOrders(props){
     function getId(){return id++}
 
 //#region блоки
-    //-------------------------------------------------------------------------Табы
-    const [reload, setReload] = React.useState(0)
-    function reloadPage(){
-        setReload(reload+1)
-    }
 
+    const [isCurrent, setIsCurrent] = React.useState(true)
+    if (isCurrent!=props.isCurrent) setIsCurrent(props.isCurrent)
     React.useEffect(() => {
         setTableList2([])
         setTableList1([])
         // setTableList([{id:0, number:1, shipmentNumber:"Доставка №0000001", shipmentDate:"2022-01-14", shipmentCost:1000, shipmentStatus:"Ожидается", goodsInOrder:[]}, {id:1, number:1, shipmentNumber:"Доставка №0000001", shipmentDate:"2022-01-14", shipmentCost:1000, shipmentStatus:"Пустой", goodsInOrder:[]}])
         setTableList([])
-        
         apiGetOrders()
-    }, [reload]);
+    }, [isCurrent]);
 
-    var [tabs, setTabs] = React.useState([
-        {id:0, selected: true, title: "Текущие"},
-        {id:1, selected: false, title: "Выполненные"}
-    ])
-
-    function onTabClick(tab_id){
-        var mT = tabs
-        mT.map(tab => {
-            if (tab.id != tab_id){
-                tab.selected = false
-            } else {
-                tab.selected = true
-            }
-            return tab
-        })
-        setTabs(mT)
-        reloadPage()
-    }
-    //-------------------------------------------------------------------------Табы конец
     //-------------------------------------------------------------------------Блок 1
 
     //const [orders, setOrders] = React.useState([{id:0, text: "Ничего не найдено", selected: true, code: 0}])
@@ -71,14 +47,8 @@ export default function LogisticianOrders(props){
     
     function apiGetOrders() {
         var xhr = new XMLHttpRequest();
-        var status = 'complited'
-        tabs.forEach(tab => {
-            if (tab.selected) {
-                if (tab.title == "Текущие") status = 'in progress'
-                else status = 'complited'
-            }
-           
-        });
+        var status = isCurrent?'in progress':'complited'
+        
         xhr.open('GET', host+'/orders_all'+'?'+`status=${status}`, true);
         xhr.onreadystatechange = function() {
           if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -429,7 +399,6 @@ export default function LogisticianOrders(props){
 
     return (
         <>
-            <SwitchHolder tabs={tabs} onTabClick={onTabClick}/>
             <FlexibleBlocksPage Id={getId()}>
                 <FlexibleBlock>
                     <ListWithSearch Id={getId()} item_list={orders} func={setOrders} width={"200px"} height={"525px"}/>

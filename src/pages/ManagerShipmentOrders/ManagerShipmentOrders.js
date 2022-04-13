@@ -7,7 +7,6 @@ import InputText from "../../components/InputText/InputText";
 import InputTextArea from "../../components/InputTextArea/InputTextArea";
 import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
 import InputDate from "../../components/InputDate/InputDate";
-import SwitchHolder from "../../components/TabHolders/SwitchHolder/SwitchHolder";
 import { TableComponent } from "../../components/Table/TableComponent";
 const host = 'http://localhost:5000';
 
@@ -22,35 +21,11 @@ export default function ManagerShipmentOrders(props){
     var id=0
     function getId(){return id++}
 
-    //-------------------------------------------------------------------------Табы
-    const [reload, setReload] = React.useState(0)
-    function reloadPage(){
-        setReload(reload+1)
-    }
-
-    var [tabs, setTabs] = React.useState([
-          {id:0, selected: true, title: "Текущие"},
-          {id:1, selected: false, title: "Выполненные"}
-    ])
-
+    const [isCurrent, setIsCurrent] = React.useState(true)
+    if (isCurrent!=props.isCurrent) setIsCurrent(props.isCurrent)
     React.useEffect(() => {
         apiGetOrders()
-      }, [reload]);
-
-    function onTabClick(tab_id){
-        var mT = tabs
-        mT.map(tab => {
-            if (tab.id != tab_id){
-                tab.selected = false
-            } else {
-                tab.selected = true
-            }
-            return tab
-        })
-        setTabs(mT)
-        reloadPage()
-    }
-    //-------------------------------------------------------------------------Табы конец
+    }, [isCurrent]);
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------стол 1
     const [tableHeaders, setTableHeaders] = React.useState([
@@ -96,14 +71,8 @@ export default function ManagerShipmentOrders(props){
     
     function apiGetOrders() {
         var xhr = new XMLHttpRequest();
-        var status = 'complited'
-        tabs.forEach(tab => {
-            if (tab.selected) {
-                if (tab.title == "Текущие") status = 'in progress'
-                else status = 'complited'
-            }
-           
-        });
+        var status = isCurrent?'in progress':'complited'
+
         xhr.open('GET', host+'/orders'+'?'+`type=purchase&status=${status}`, true);
         xhr.onreadystatechange = function() {
           if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -156,7 +125,6 @@ export default function ManagerShipmentOrders(props){
 
     return (
         <>
-            <SwitchHolder tabs={tabs} onTabClick={onTabClick}/>
             <FlexibleBlocksPage>
                 <FlexibleBlock>
                     <div class="header_text">Заказы на продажу</div>

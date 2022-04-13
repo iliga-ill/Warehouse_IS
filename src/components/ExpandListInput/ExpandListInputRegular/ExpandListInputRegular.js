@@ -3,56 +3,34 @@ import './ExpandListInputRegular.css';
 
 export default function ExpandListInputRegular(props){
 
-    //requiered data
     /*
-    var id=0
-    function getId(){
-        id++
-        return id-1
-    }
-    var expand_imput_list_1 = [
-        {id: 0, value: "Морковка", selected: true},
-        {id: 1, value: "Морковка1", selected: false},
-        {id: 2, value: "Морковка2", selected: false},
-        {id: 3, value: "Морковка3", selected: false},
-    ]
-    function set_expand_list_input_1(value) {expand_imput_list_1=value}
-    */
+    let [expandList1, setExpandList1]  = React.useState([
+        {value: "Встраиваемая техника"     },
+        {value: "Стиральные машины"        },
+        {value: "Сушильные машины"         },
+        {value: "Холодильники"             },
+        {value: "Морозильные камеры"       },
+        {value: "Винные шкафы"             },
+        {value: "Вытяжки"                  },
+        {value: "Плиты"                    },
+        {value: "Посудомоечные машины"     },
+        {value: "Мелкая бытовая техника"   },
+        {value: "Микроволновые печи"       },
+        {value: "Электродуховки"           },
+        {value: "Пылесосы"                 },
+        {value: "Водонагреватели"          },
+        {value: "Кулеры и пурифайеры"      },
+        {value: "Швейные машины, оверлоки" }
+    ])
+    let [expandListValue1, setExpandListValue1]  = React.useState(expandList1[0].value)
 
-    //pattern
-    /*
-    <ExpandListInput Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/>
-    */
-    const [itemList, setItemList] = React.useState([])
-    React.useEffect(() => {console.log("work5");props.func(itemList)}, [itemList]);
-    
-    if (JSON.stringify(itemList) != JSON.stringify(props.list)){
-        setItemList(props.list)
-    }
-        
-
-    function option_selected(Id) {
-        var buf=itemList
-        buf.map(item=>{
-            if (item.value==document.getElementById(Id).value) item.selected = true
-            else item.selected = false
-        })
-        setItemList(buf)
-    }
-
-    if (itemList.toString() == ""){
-        var buf=props.list
-        buf.map(item=>{
-            if (item.value == props.defValue) item.selected = true
-            else item.selected = false
-        })
-        setItemList(buf)
-    }
+    <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><ExpandListInputRegular width={300} list={expandList1} func={setExpandListValue1}/></div>
+     */
 
     return (
-           <select id={"expand_list_"+props.Id} defaultValue={props.defValue} onChange={e => option_selected("expand_list_"+props.Id)}>
+           <select style={{width:props.width}} onChange={evt=>props.func(evt.target.value)}>
             {
-               itemList.map(function(item, i){
+               props.list.map(function(item, i){
                   return <option value={item.value}>{item.value}</option>
                })
             }

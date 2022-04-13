@@ -111,9 +111,6 @@ export default function AdministratorAccounts(props){
 
     const [tableList, setTableList] = React.useState([])
     const [selectedItem, setSelectedItem] = React.useState()
-    
-    var edit_column = {add:true, edit:true, delete:true, select:true}
-
 
     React.useEffect(() => {
         // console.log("================================")

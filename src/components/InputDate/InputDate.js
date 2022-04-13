@@ -17,12 +17,7 @@ export default function InputDate(props){
    <InputDate Id={getId()} defValue={"2022-01-14"} func={set_date}/>
    */
 
-    function onDateChange() {
-        var date_input = document.getElementById(props.Id);
-        props.func(date_input.value)
-    }
-
     return (
-       <input class="input_date" type="date" id={props.Id} defaultValue={props.defValue} onChange={onDateChange} required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"/>
+       <input class="input_date" type="date" defaultValue={props.defValue} onChange={evt=>props.func(evt.target.value)} required pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"/>
     )
 }

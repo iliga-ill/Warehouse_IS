@@ -6,6 +6,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 export default function SubTabHolder(props){
     const location = useLocation();
     const navigate = useNavigate();
+    var isContainedSupTab = false
 
     var subTabs = []
     props.tabs.map(tabs=>{
@@ -13,25 +14,52 @@ export default function SubTabHolder(props){
             subTabs=tabs
         }
     })
+
+    props.supTabs.map(item=>{
+        if (item.subHref.split("/")[1] == location.pathname.split("/")[2]) isContainedSupTab=true
+    })
     return (
-        <div class="tabHolder">
-            {subTabs.map(item=>{
-                if (location.pathname.split("/")[2] == item.href.split("/")[1]){
-                    return (
-                        <div class="tab selected">
-                            <a>{item.title}</a>
-                        </div>
-                    )
-                } else{
-                    return(
-                        <div class="tab unselected" onClick={()=>{
-                            navigate(item.roleHref + item.href)
-                        }}>
-                            <a>{item.title}</a>
-                        </div>
-                    )
-                }
-            })}
-        </div>
+        <>
+            <div class="tabHolder">
+                {subTabs.map(item=>{
+                    if (location.pathname.split("/")[2] == item.href.split("/")[1]){
+                        return (
+                            <div class="tab selected">
+                                <a>{item.title}</a>
+                            </div>
+                        )
+                    } else{
+                        return(
+                            <div class="tab unselected" onClick={()=>{
+                                navigate(item.roleHref + item.href + item.basicHref)
+                            }}>
+                                <a>{item.title}</a>
+                            </div>
+                        )
+                    }
+                })}
+            </div>
+            {isContainedSupTab &&
+                <div class="tabHolder">
+                {props.supTabs.map(item=>{
+                    if (location.pathname.split("/")[2] == item.subHref.split("/")[1] && location.pathname.split("/")[3]==item.supportHref.split("/")[1]){
+                        return (
+                            <div class="tab selected">
+                                <a>{item.title}</a>
+                            </div>
+                        )
+                    } else if (location.pathname.split("/")[2] == item.subHref.split("/")[1]) {
+                        return(
+                            <div class="tab unselected" onClick={()=>{
+                                navigate(item.roleHref + item.subHref + item.supportHref)
+                            }}>
+                                <a>{item.title}</a>
+                            </div>
+                            )
+                        }
+                    })}
+                </div>
+            }
+    </>
     )
 }

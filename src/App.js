@@ -19,7 +19,10 @@ import LogisticianProducts from './pages/LogisticianProducts/LogisticianProducts
 import LogisticianBills from './pages/LogisticianBills/LogisticianBills';
 import AccountantProducts from './pages/AccountantProducts/AccountantProducts';
 import AccountantInvoice from './pages/AccountantInvoice/AccountantInvoice';
-import AccountantReports from './pages/AccountantReports/AccountantReports';
+import PaybackOfGoods from './pages/AccountantReports/PaybackOfGoods/PaybackOfGoods';
+import ProductTurnover from './pages/AccountantReports/ProductTurnover/ProductTurnover';
+import PurchasedProducts from './pages/AccountantReports/PurchasedProducts/PurchasedProducts';
+import SelledProducts from './pages/AccountantReports/SelledProducts/SelledProducts';
 import AccountantAccounts from './pages/AccountantAccounts/AccountantAccounts';
 import Profile from './pages/Profile/Profile';
 import React from 'react';
@@ -29,37 +32,62 @@ import {useCookies} from 'react-cookie'
 const host = 'http://localhost:5000';
 
 const mainTabsArray = [
-  {title: "АРМ Кладовщика",     href:"/Storekeeper",    basicHref:"/StorekeeperAdvent"},
+  {title: "АРМ Кладовщика",     href:"/Storekeeper",    basicHref:"/StorekeeperAdvent/Current"},
   {title: "АРМ Менеджера",      href:"/Manager",        basicHref:"/ManagerProducts"},
-  {title: "АРМ Логиста",        href:"/Logistician",    basicHref:"/LogisticianOrders"},
+  {title: "АРМ Логиста",        href:"/Logistician",    basicHref:"/LogisticianOrders/Current"},
   {title: "АРМ Администратора", href:"/Administrator",  basicHref:"/AdministratorAccounts"},
   {title: "АРМ Бухгалтера",     href:"/Accountant",     basicHref:"/AccountantProducts"},
 ]
 
 const subTabsArray = [
   [
-    {title: "Приход",               roleHref:"/Storekeeper",    href:"/StorekeeperAdvent"},
-    {title: "Расход",               roleHref:"/Storekeeper",    href:"/StorekeeperExpend"},
-    {title: "Расстановка товаров",  roleHref:"/Storekeeper",    href:"/StorekeeperAllocation"},
-    {title: "Инвентаризация",       roleHref:"/Storekeeper",    href:"/StorekeeperInventory"},
+    {title: "Приход",               roleHref:"/Storekeeper",    href:"/StorekeeperAdvent", basicHref:"/Current"},
+    {title: "Расход",               roleHref:"/Storekeeper",    href:"/StorekeeperExpend", basicHref:"/Current"},
+    {title: "Расстановка товаров",  roleHref:"/Storekeeper",    href:"/StorekeeperAllocation", basicHref:""},
+    {title: "Инвентаризация",       roleHref:"/Storekeeper",    href:"/StorekeeperInventory", basicHref:""},
   ],[
-    {title: "Товары",               roleHref:"/Manager",        href:"/ManagerProducts"},
-    {title: "Создание заказа",      roleHref:"/Manager",        href:"/ManagerOrderCreation"},
-    {title: "Заказы на продажу",    roleHref:"/Manager",        href:"/ManagerSellOrders"},
-    {title: "Заказы на поставку",   roleHref:"/Manager",        href:"/ManagerShipmentOrders"},
-    {title: "Счета на оплату",      roleHref:"/Manager",        href:"/ManagerBills"},
+    {title: "Товары",               roleHref:"/Manager",        href:"/ManagerProducts", basicHref:""},
+    {title: "Создание заказа",      roleHref:"/Manager",        href:"/ManagerOrderCreation", basicHref:""},
+    {title: "Заказы на продажу",    roleHref:"/Manager",        href:"/ManagerSellOrders", basicHref:"/Current"},
+    {title: "Заказы на поставку",   roleHref:"/Manager",        href:"/ManagerShipmentOrders", basicHref:"/Current"},
+    {title: "Счета на оплату",      roleHref:"/Manager",        href:"/ManagerBills", basicHref:"/NewAccounts"},
   ],[
-    {title: "Заказы",               roleHref:"/Logistician",    href:"/LogisticianOrders"},
-    {title: "Товары",               roleHref:"/Logistician",    href:"/LogisticianProducts"},
-    {title: "Счета на оплату",      roleHref:"/Logistician",    href:"/LogisticianBills"},
+    {title: "Заказы",               roleHref:"/Logistician",    href:"/LogisticianOrders", basicHref:"/Current"},
+    {title: "Товары",               roleHref:"/Logistician",    href:"/LogisticianProducts", basicHref:""},
+    {title: "Счета на оплату",      roleHref:"/Logistician",    href:"/LogisticianBills", basicHref:"/NewAccounts"},
   ],[
-    {title: "Аккаунты",             roleHref:"/Administrator",  href:"/AdministratorAccounts"},
+    {title: "Аккаунты",             roleHref:"/Administrator",  href:"/AdministratorAccounts", basicHref:""},
   ],[
-    {title: "Товары",               roleHref:"/Accountant",     href:"/AccountantProducts"},
-    {title: "Накладные",            roleHref:"/Accountant",     href:"/AccountantInvoice"},
-    {title: "Отчеты",               roleHref:"/Accountant",     href:"/AccountantReports"},
-    {title: "Счета на оплату",      roleHref:"/Accountant",     href:"/AccountantAccounts"},
+    {title: "Товары",               roleHref:"/Accountant",     href:"/AccountantProducts", basicHref:""},
+    {title: "Накладные",            roleHref:"/Accountant",     href:"/AccountantInvoice", basicHref:"/Current"},
+    {title: "Отчеты",               roleHref:"/Accountant",     href:"/AccountantReports", basicHref:"/SelledProducts"},
+    {title: "Счета на оплату",      roleHref:"/Accountant",     href:"/AccountantAccounts", basicHref:"/NewAccounts"},
   ]
+]
+
+const supportTabsArray = [
+    {title: "Текущие",              roleHref:"/Storekeeper",    subHref:"/StorekeeperAdvent",     supportHref:"/Current"},
+    {title: "Выполненные",          roleHref:"/Storekeeper",    subHref:"/StorekeeperAdvent",     supportHref:"/Completed"},
+    {title: "Текущие",              roleHref:"/Storekeeper",    subHref:"/StorekeeperExpend",     supportHref:"/Current"},
+    {title: "Выполненные",          roleHref:"/Storekeeper",    subHref:"/StorekeeperExpend",     supportHref:"/Completed"},
+    {title: "Текущие",              roleHref:"/Manager",        subHref:"/ManagerSellOrders",     supportHref:"/Current"},
+    {title: "Выполненные",          roleHref:"/Manager",        subHref:"/ManagerSellOrders",     supportHref:"/Completed"},
+    {title: "Текущие",              roleHref:"/Manager",        subHref:"/ManagerShipmentOrders", supportHref:"/Current"},
+    {title: "Выполненные",          roleHref:"/Manager",        subHref:"/ManagerShipmentOrders", supportHref:"/Completed"},
+    {title: "Новые счета",          roleHref:"/Manager",        subHref:"/ManagerBills",          supportHref:"/NewAccounts"},
+    {title: "Закрытые счета",       roleHref:"/Manager",        subHref:"/ManagerBills",          supportHref:"/ClosedAccounts"},
+    {title: "Текущие",              roleHref:"/Logistician",    subHref:"/LogisticianOrders",     supportHref:"/Current"},
+    {title: "Выполненные",          roleHref:"/Logistician",    subHref:"/LogisticianOrders",     supportHref:"/Completed"},
+    {title: "Новые счета",          roleHref:"/Logistician",    subHref:"/LogisticianBills",      supportHref:"/NewAccounts"},
+    {title: "Закрытые счета",       roleHref:"/Logistician",    subHref:"/LogisticianBills",      supportHref:"/ClosedAccounts"},
+    {title: "Текущие",              roleHref:"/Accountant",     subHref:"/AccountantInvoice",     supportHref:"/Current"},
+    {title: "Выполненные",          roleHref:"/Accountant",     subHref:"/AccountantInvoice",     supportHref:"/Completed"},
+    {title: "Проданные товары",     roleHref:"/Accountant",     subHref:"/AccountantReports",     supportHref:"/SelledProducts"},
+    {title: "Купленные товары",     roleHref:"/Accountant",     subHref:"/AccountantReports",     supportHref:"/PurchasedProducts"},
+    {title: "Оборот товара",        roleHref:"/Accountant",     subHref:"/AccountantReports",     supportHref:"/ProductTurnover"},
+    {title: "Окупаемость товаров",  roleHref:"/Accountant",     subHref:"/AccountantReports",     supportHref:"/PaybackOfGoods"},
+    {title: "Новые счета",          roleHref:"/Accountant",     subHref:"/AccountantAccounts",    supportHref:"/NewAccounts"},
+    {title: "Закрытые счета",       roleHref:"/Accountant",     subHref:"/AccountantAccounts",    supportHref:"/ClosedAccounts"},
 ]
 
 
@@ -117,7 +145,7 @@ export default function App() {
         if (location.pathname.split("/")[1] == tab[0].roleHref.split("/")[1]) check=true
       })
       if (!isRolePage()) check = true
-      if (!check) navigate(subTabs[0][0].roleHref + subTabs[0][0].href)
+      if (!check) navigate(subTabs[0][0].roleHref + subTabs[0][0].href + subTabs[0][0].basicHref)
       return check
   }
 
@@ -144,35 +172,42 @@ export default function App() {
             <AvatarHolder cookies={cookies} setCookie={setCookie}/>
           </div>
         </div>
-        {isRolePage() && checkAccess()
-          ? <div className="header">
-              <SubTabHolder tabs={subTabs}/>
-            </div>
-          : <></>
+        {checkAccess() &&
+          <SubTabHolder tabs={subTabs} supTabs={supportTabsArray}/>
         }
         <Routes>
-          <Route path="/Storekeeper/StorekeeperAdvent" element={wrapErrorBoundary(<StorekeeperAdvent/>)}/>
-          <Route path="/Storekeeper/StorekeeperExpend" element={wrapErrorBoundary(<StorekeeperExpend/>)}/>
+          <Route path="/Storekeeper/StorekeeperAdvent/Current" element={wrapErrorBoundary(<StorekeeperAdvent isCurrent={true}/>)}/>
+          <Route path="/Storekeeper/StorekeeperAdvent/Completed" element={wrapErrorBoundary(<StorekeeperAdvent isCurrent={false}/>)}/>
+          <Route path="/Storekeeper/StorekeeperExpend/Current" element={wrapErrorBoundary(<StorekeeperExpend isCurrent={true}/>)}/>
+          <Route path="/Storekeeper/StorekeeperExpend/Completed" element={wrapErrorBoundary(<StorekeeperExpend isCurrent={false}/>)}/>
           <Route path="/Storekeeper/StorekeeperAllocation" element={wrapErrorBoundary(<StorekeeperAllocation/>)}/>
           <Route path="/Storekeeper/StorekeeperInventory" element={wrapErrorBoundary(<StorekeeperInventory/>)}/>
-          
           <Route path="/Manager/ManagerProducts" element={wrapErrorBoundary(<ManagerProducts/>)}/>
           <Route path="/Manager/ManagerOrderCreation" element={wrapErrorBoundary(<ManagerOrderCreation/>)}/>
-          <Route path="/Manager/ManagerSellOrders" element={wrapErrorBoundary(<ManagerSellOrders/>)}/>
-          <Route path="/Manager/ManagerShipmentOrders" element={wrapErrorBoundary(<ManagerShipmentOrders/>)}/>
-          <Route path="/Manager/ManagerBills" element={wrapErrorBoundary(<ManagerBills/>)}/>
-
-          <Route path="/Logistician/LogisticianOrders" element={wrapErrorBoundary(<LogisticianOrders/>)}/>
+          <Route path="/Manager/ManagerSellOrders/Current" element={wrapErrorBoundary(<ManagerSellOrders isCurrent={true}/>)}/>
+          <Route path="/Manager/ManagerSellOrders/Completed" element={wrapErrorBoundary(<ManagerSellOrders isCurrent={false}/>)}/>
+          <Route path="/Manager/ManagerShipmentOrders/Current" element={wrapErrorBoundary(<ManagerShipmentOrders isCurrent={true}/>)}/>
+          <Route path="/Manager/ManagerShipmentOrders/Completed" element={wrapErrorBoundary(<ManagerShipmentOrders isCurrent={false}/>)}/>
+          <Route path="/Manager/ManagerBills/NewAccounts" element={wrapErrorBoundary(<ManagerBills isCurrent={true}/>)}/>
+          <Route path="/Manager/ManagerBills/ClosedAccounts" element={wrapErrorBoundary(<ManagerBills isCurrent={false}/>)}/>
+          <Route path="/Logistician/LogisticianOrders/Current" element={wrapErrorBoundary(<LogisticianOrders isCurrent={true}/>)}/>
+          <Route path="/Logistician/LogisticianOrders/Completed" element={wrapErrorBoundary(<LogisticianOrders isCurrent={false}/>)}/>
           <Route path="/Logistician/LogisticianProducts" element={wrapErrorBoundary(<LogisticianProducts/>)}/>
-          <Route path="/Logistician/LogisticianBills" element={wrapErrorBoundary(<LogisticianBills/>)}/>
-
+          <Route path="/Logistician/LogisticianBills/NewAccounts" element={wrapErrorBoundary(<LogisticianBills isCurrent={true}/>)}/>
+          <Route path="/Logistician/LogisticianBills/ClosedAccounts" element={wrapErrorBoundary(<LogisticianBills isCurrent={false}/>)}/>
           <Route path="/Accountant/AccountantProducts" element={wrapErrorBoundary(<AccountantProducts/>)}/>
-          <Route path="/Accountant/AccountantInvoice" element={wrapErrorBoundary(<AccountantInvoice/>)}/>
-          <Route path="/Accountant/AccountantReports" element={wrapErrorBoundary(<AccountantReports/>)}/>
-          <Route path="/Accountant/AccountantAccounts" element={wrapErrorBoundary(<AccountantAccounts/>)}/>
+          <Route path="/Accountant/AccountantInvoice/Current" element={wrapErrorBoundary(<AccountantInvoice isCurrent={true}/>)}/>
+          <Route path="/Accountant/AccountantInvoice/Completed" element={wrapErrorBoundary(<AccountantInvoice isCurrent={false}/>)}/>
 
+          <Route path="/Accountant/AccountantReports/SelledProducts" element={wrapErrorBoundary(<SelledProducts/>)}/>
+          <Route path="/Accountant/AccountantReports/PurchasedProducts" element={wrapErrorBoundary(<PurchasedProducts/>)}/>
+          
+          <Route path="/Accountant/AccountantReports/ProductTurnover" element={wrapErrorBoundary(<ProductTurnover/>)}/>
+          <Route path="/Accountant/AccountantReports/PaybackOfGoods" element={wrapErrorBoundary(<PaybackOfGoods/>)}/>
+
+          <Route path="/Accountant/AccountantAccounts/NewAccounts" element={wrapErrorBoundary(<AccountantAccounts isCurrent={true}/>)}/>
+          <Route path="/Accountant/AccountantAccounts/ClosedAccounts" element={wrapErrorBoundary(<AccountantAccounts isCurrent={false}/>)}/>
           <Route path="/Administrator/AdministratorAccounts" element={wrapErrorBoundary(<AdministratorAccounts/>)}/>
-
           <Route path="/Profile" element={wrapErrorBoundary(<Profile cookies={cookies}/>)}/>
         </Routes>
       </div>
