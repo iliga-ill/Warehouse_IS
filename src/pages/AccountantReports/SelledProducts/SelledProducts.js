@@ -17,56 +17,89 @@ const styles = {
   
 
 export default function SelledProducts(props){
+    let accountData = props.cookies.accountData
+
 
     var id=0
     function getId(){return id++}
     
     let newDate = new Date()
+    let title = 'Проданные товары за промежуток времени'
+    
 
     const [dateFrom, setDateFrom] = React.useState(`${newDate.getFullYear()}-${newDate.getMonth()   <10?`0${newDate.getMonth()   }`:newDate.getMonth()   }-${newDate.getDate()+1<10?`0${newDate.getDate()}`:newDate.getDate()}`)
     const [dateTo, setDateTo] =     React.useState(`${newDate.getFullYear()}-${newDate.getMonth()+1 <10?`0${newDate.getMonth()+1 }`:newDate.getMonth()+1 }-${newDate.getDate()+1<10?`0${newDate.getDate()}`:newDate.getDate()}`)
 
     var customizationSettings={
-        customizeCell:(cell, row, column)=>{
-            if (row.number < 3) {
-              cell.font = { color: { argb: 'AAAAAA' } };
-            }
-            if (row.number > 4) {
-              if (column.name === 'password') {
-                cell.font = { color: { argb: '000000' } };
-                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFBB00' } };
-              }
-            }
+        customizeCell:(exportVariables, cell, row, column)=>{
+            // if (row.number < 3) {
+            //   cell.font = { color: { argb: 'AAAAAA' } };
+            // }
+            // if (row.number > 4) {
+            //   if (column.name === 'password') {
+            //     cell.font = { color: { argb: '000000' } };
+            //     cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFBB00' } };
+            //   }
+            // }
             return cell
         },
-        customizeSummaryCell: (cell)=>{
-            cell.font = { italic: true };
+        customizeSummaryCell: (exportVariables, cell)=>{
+            // cell.font = { italic: true };
             return cell
         },
-        customizeHeader: (worksheet)=>{
+        customizeHeader: (exportVariables, worksheet)=>{
             const generalStyles = {
                 font: { bold: true },
-                fill: {
-                  type: 'pattern', pattern: 'solid', fgColor: { argb: 'D3D3D3' }, bgColor: { argb: 'D3D3D3' },
-                },
                 alignment: { horizontal: 'left' },
             };
-            for (let rowIndex = 1; rowIndex < 6; rowIndex += 1) {
-                worksheet.mergeCells(rowIndex, 1, rowIndex, 3);
-                worksheet.mergeCells(rowIndex, 4, rowIndex, 6);
-                Object.assign(worksheet.getRow(rowIndex).getCell(1), generalStyles);
-                Object.assign(worksheet.getRow(rowIndex).getCell(3), generalStyles);
-            }
-            worksheet.getRow(1).height = 20;
-            worksheet.getRow(1).getCell(1).font = { bold: true, size: 16 };
-            worksheet.getRow(1).getCell(4).numFmt = 'd mmmm yyyy';
-            worksheet.getRow(1).getCell(4).font = { bold: true, size: 16 };
-            worksheet.getColumn(1).values = ['Sale Amounts:', 'Company Name:', 'Address:', 'Phone:', 'Website:'];
-            worksheet.getColumn(4).values = [new Date(), 'K&S Music', '1000 Nicllet Mall Minneapolis Minnesota', '(612) 304-6073', 'www.nowebsitemusic.com'];
+
+            const generalFont = { bold: true, size: 12 }
+            
+            //row 1 cell 1
+            console.log("1 1")
+            worksheet.getRow(1).getCell(1).value = 'Дата составления:'
+            Object.assign(worksheet.getRow(1).getCell(1), generalStyles)
+            worksheet.getRow(1).getCell(1).font = generalFont
+            //row 1 cell 3
+            console.log("1 3")
+            worksheet.getRow(1).getCell(2).value = exportVariables.currentDate
+            //row 1 cell 4
+            console.log("1 4")
+            worksheet.getRow(1).getCell(3).value = 'Составил:'
+            Object.assign(worksheet.getRow(1).getCell(3), generalStyles);
+            worksheet.getRow(1).getCell(3).font = generalFont
+            //row 1 cell 5
+            console.log("1 5")
+            worksheet.getRow(1).getCell(4).value = `${exportVariables.accountData.surname} ${exportVariables.accountData.name} ${exportVariables.accountData.patronymic}`
+
+            //row 3 cell 1
+            console.log("2")
+            worksheet.getRow(3).getCell(1).value = 'Содержание:'
+            Object.assign(worksheet.getRow(3).getCell(1), generalStyles);
+            worksheet.getRow(3).getCell(1).font = generalFont
+            //row 3 cell 3
+            console.log("3")
+            worksheet.mergeCells(3, 2, 3, 4);
+            worksheet.getRow(3).getCell(2).value = exportVariables.title
+            //row 4 cell 1
+            console.log("4")
+            worksheet.getRow(4).getCell(1).value = 'Дата от:'
+            Object.assign(worksheet.getRow(4).getCell(1), generalStyles);
+            worksheet.getRow(4).getCell(1).font = generalFont
+            //row 4 cell 3
+            worksheet.getRow(4).getCell(2).value = exportVariables.dateFrom
+            //row 4 cell 4
+            worksheet.getRow(4).getCell(3).value = 'Дата до:'
+            Object.assign(worksheet.getRow(4).getCell(3), generalStyles);
+            worksheet.getRow(4).getCell(3).font = generalFont
+            //row 4 cell 5
+            worksheet.getRow(4).getCell(4).value = exportVariables.dateTo
+
             worksheet.addRow({});
+
             return worksheet
         },
-        customizeFooter:(worksheet)=>{
+        customizeFooter:(exportVariables, worksheet)=>{
             const { lastRow } = worksheet;
             let currentRowIndex = lastRow.number + 2;
             for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
@@ -90,7 +123,7 @@ export default function SelledProducts(props){
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,   width:120   }, 
         {name: 'selledNumber',      title:'Кол-во проданного',  editingEnabled:false,   width:150   }, 
         {name: 'priceOfOneProduct', title:'Цена ед товара',     editingEnabled:false,   width:120, isCurrency:true }, 
-        {name: 'sumPrice',          title:'Цена всего',         editingEnabled:false,   width:100, totalCount:{type:['sum'], expantionAlign: 'left'}, isCurrency:true},
+        {name: 'sumPrice',          title:'Цена всего',         editingEnabled:false,   width:120, totalCount:{type:['sum'], expantionAlign: 'right'}, isCurrency:true},
     ]) 
 
     var tableSettings = {
@@ -100,17 +133,27 @@ export default function SelledProducts(props){
         filter: true,
         exportExel:true, 
         exportExelFileName:"SelledProductsReport",
-        exportCustomization: customizationSettings
+        exportCustomization: customizationSettings,
+        exportVariables:{
+            title:title, 
+            currentDate:`${newDate.getDate()<10?`0${newDate.getDate()}`:newDate.getDate()}.${newDate.getMonth()+1<10?`0${newDate.getMonth()+1}`:newDate.getMonth()}.${newDate.getFullYear()}`, 
+            accountData:accountData, 
+            dateFrom:dateFrom.replace("-", ".").replace("-", "."), 
+            dateTo:dateTo.replace("-", ".").replace("-", ".")
+        }
     }
 
-    const [tableList, setTableList] = React.useState([])
+    const [tableList, setTableList] = React.useState([
+        {id:0, number:"1",goodsCategories2:"Встраиваемая техника",goodsCategories3:"Варочные поверхности",goodsType:"Варочная поверхность Bosch PKE 645 B17E",selledNumber:30,priceOfOneProduct:44.5,sumPrice:30*44.5},
+        {id:1, number:"2",goodsCategories2:"Стиральные машины",goodsCategories3:"Духовые шкафы",goodsType:"Варочная поверхность Bosch PKE 645 B18E",selledNumber:45,priceOfOneProduct:37.3,sumPrice:45*37.3}
+    ])
     const [selectedItem, setSelectedItem] = React.useState()
 
     return (
         <>
             <FlexibleBlocksPage>
                 <FlexibleBlock>
-                    <div class="header_text">Проданные товары за промежуток времени</div>
+                    <div class="header_text">{title}</div>
                     <div style={{width:'170px'}}>
                         <div class="low_text row_with_item_equal"><div>Дата&nbsp;от&nbsp;</div><InputDate defValue={dateFrom}   func={setDateFrom}/></div>
                         <div class="low_text row_with_item_equal"><div>Дата&nbsp;до&nbsp;</div><InputDate defValue={dateTo}     func={setDateTo}/></div>

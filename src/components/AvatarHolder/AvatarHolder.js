@@ -24,7 +24,7 @@ export default function AvatarHolder(props){
     }
         
     return (
-        <>
+        <div class="userAvatar">
             <div class="avatarHolder" onClick={()=>{styles.join(' ') == "dropdownMenu open"?closeDropdown():openDropdown()}}>
                 <img src={accountData.avatar} class="icon"/>
             </div>
@@ -32,6 +32,6 @@ export default function AvatarHolder(props){
                 <div class="menuItem" onClick={profile}>Профиль</div>
                 <div class="menuItem" onClick={logout}>Выйти</div>
             </div>
-        </>
+        </div>
     )
 }

@@ -1,19 +1,21 @@
-.tabHolder {
+.main_tabHolder {
     width: 100%;
-    height: 100%;
+    height: 50px;
     overflow-x: scroll;
     overflow-y: hidden;
     background-color: white;
     vertical-align: middle;
     white-space: nowrap;
+    border-bottom: 1px solid #ccc;
 }
 
-.tab {
+.main_tab {
     list-style: none;
     display: inline-block;
     width: fit-content;
+    height: 49px;
     font-size: 25px;
-    border: 1px solid #ccc;
+    border-right: 1px solid #ccc;
     padding: 8px;
 }
 

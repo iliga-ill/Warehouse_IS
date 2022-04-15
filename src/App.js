@@ -25,6 +25,8 @@ import PurchasedProducts from './pages/AccountantReports/PurchasedProducts/Purch
 import SelledProducts from './pages/AccountantReports/SelledProducts/SelledProducts';
 import AccountantAccounts from './pages/AccountantAccounts/AccountantAccounts';
 import Profile from './pages/Profile/Profile';
+import Home from './pages/Home/Home';
+import WarehouseISicon from './images/WarehouseISicon.png';
 import React from 'react';
 import {Routes, Route, useLocation, useNavigate} from "react-router-dom"
 import {useCookies} from 'react-cookie'
@@ -165,14 +167,15 @@ export default function App() {
     return (
       <div>
         <div className="header">
+          <div className="homePage" onClick={()=>{navigate("/Home")}}>
+            <img src={WarehouseISicon} class="homeIcon"/>
+          </div>
           <div className="headTabs">
             <TabHolder tabs={mainTabs}/>
           </div>
-          <div className="userAvatar">
             <AvatarHolder cookies={cookies} setCookie={setCookie}/>
-          </div>
         </div>
-        {checkAccess() &&
+        {isRolePage() && checkAccess() &&
           <SubTabHolder tabs={subTabs} supTabs={supportTabsArray}/>
         }
         <Routes>
@@ -199,16 +202,18 @@ export default function App() {
           <Route path="/Accountant/AccountantInvoice/Current" element={wrapErrorBoundary(<AccountantInvoice isCurrent={true}/>)}/>
           <Route path="/Accountant/AccountantInvoice/Completed" element={wrapErrorBoundary(<AccountantInvoice isCurrent={false}/>)}/>
 
-          <Route path="/Accountant/AccountantReports/SelledProducts" element={wrapErrorBoundary(<SelledProducts/>)}/>
-          <Route path="/Accountant/AccountantReports/PurchasedProducts" element={wrapErrorBoundary(<PurchasedProducts/>)}/>
-          
-          <Route path="/Accountant/AccountantReports/ProductTurnover" element={wrapErrorBoundary(<ProductTurnover/>)}/>
-          <Route path="/Accountant/AccountantReports/PaybackOfGoods" element={wrapErrorBoundary(<PaybackOfGoods/>)}/>
+
+          <Route path="/Accountant/AccountantReports/SelledProducts" element={wrapErrorBoundary(<SelledProducts  cookies={cookies}/>)}/>
+          <Route path="/Accountant/AccountantReports/PurchasedProducts" element={wrapErrorBoundary(<PurchasedProducts  cookies={cookies}/>)}/>
+          <Route path="/Accountant/AccountantReports/ProductTurnover" element={wrapErrorBoundary(<ProductTurnover  cookies={cookies}/>)}/>
+          <Route path="/Accountant/AccountantReports/PaybackOfGoods" element={wrapErrorBoundary(<PaybackOfGoods  cookies={cookies}/>)}/>
+
 
           <Route path="/Accountant/AccountantAccounts/NewAccounts" element={wrapErrorBoundary(<AccountantAccounts isCurrent={true}/>)}/>
           <Route path="/Accountant/AccountantAccounts/ClosedAccounts" element={wrapErrorBoundary(<AccountantAccounts isCurrent={false}/>)}/>
           <Route path="/Administrator/AdministratorAccounts" element={wrapErrorBoundary(<AdministratorAccounts/>)}/>
           <Route path="/Profile" element={wrapErrorBoundary(<Profile cookies={cookies}/>)}/>
+          <Route path="/Home" element={wrapErrorBoundary(<Home cookies={cookies}/>)}/>
         </Routes>
       </div>
     );

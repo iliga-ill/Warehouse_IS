@@ -20,17 +20,17 @@ export default function SubTabHolder(props){
     })
     return (
         <>
-            <div class="tabHolder">
+            <div class="sub_tabHolder">
                 {subTabs.map(item=>{
                     if (location.pathname.split("/")[2] == item.href.split("/")[1]){
                         return (
-                            <div class="tab selected">
+                            <div class="sub_tab selected">
                                 <a>{item.title}</a>
                             </div>
                         )
                     } else{
                         return(
-                            <div class="tab unselected" onClick={()=>{
+                            <div class="sub_tab unselected" onClick={()=>{
                                 navigate(item.roleHref + item.href + item.basicHref)
                             }}>
                                 <a>{item.title}</a>
@@ -40,17 +40,17 @@ export default function SubTabHolder(props){
                 })}
             </div>
             {isContainedSupTab &&
-                <div class="tabHolder">
+                <div class="sub_tabHolder">
                 {props.supTabs.map(item=>{
                     if (location.pathname.split("/")[2] == item.subHref.split("/")[1] && location.pathname.split("/")[3]==item.supportHref.split("/")[1]){
                         return (
-                            <div class="tab selected">
+                            <div class="sub_tab selected">
                                 <a>{item.title}</a>
                             </div>
                         )
                     } else if (location.pathname.split("/")[2] == item.subHref.split("/")[1]) {
                         return(
-                            <div class="tab unselected" onClick={()=>{
+                            <div class="sub_tab unselected" onClick={()=>{
                                 navigate(item.roleHref + item.subHref + item.supportHref)
                             }}>
                                 <a>{item.title}</a>

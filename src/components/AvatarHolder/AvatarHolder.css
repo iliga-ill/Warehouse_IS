@@ -1,8 +1,20 @@
+.userAvatar{
+    width: 49px;
+    height: 49px;
+    display: inline-block;
+    
+    border-bottom: 1px solid darkgray;
+}
+
 .avatarHolder{
+    width: max-content;
     height: 50px;
-    width: 50px;
     background-color: white;
-    border: 1px solid darkgray;
+    display: inline-block;
+    display: block;
+    border-left: 1px solid darkgray;
+    border-right: 1px solid darkgray;
+    margin-top: -1px;
 }
 
 .avatarHolder:hover{
@@ -10,17 +22,18 @@
 }
 
 .icon{
-    width: 48px;
-    height: 48px;
+    width: 47px;
+    height: 47px;
     border-radius: 50%;
     background-color: white;
     border: 1px solid black;
+    display: block;
 }
 
 .dropdownMenu{
     position: fixed;
-    right: -151px;
-    top:52px;
+    right: -152px;
+    top:50px;
     font-size: 20px;
     width: 150px;
     transition: all .22s ease-in;

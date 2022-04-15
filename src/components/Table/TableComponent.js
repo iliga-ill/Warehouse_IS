@@ -37,7 +37,7 @@ import saveAs from 'file-saver';
 /* example
 
     var customizationSettings={
-      customizeCell:(cell, row, column)=>{
+      customizeCell:(exportVariables, cell, row, column)=>{
           if (row.number < 3) {
             cell.font = { color: { argb: 'AAAAAA' } };
           }
@@ -49,11 +49,11 @@ import saveAs from 'file-saver';
           }
           return cell
       },
-      customizeSummaryCell: (cell)=>{
+      customizeSummaryCell: (exportVariables, cell)=>{
           cell.font = { italic: true };
           return cell
       },
-      customizeHeader: (worksheet)=>{
+      customizeHeader: (exportVariables, worksheet)=>{
           const generalStyles = {
               font: { bold: true },
               fill: {
@@ -76,7 +76,7 @@ import saveAs from 'file-saver';
           worksheet.addRow({});
           return worksheet
       },
-      customizeFooter:(worksheet)=>{
+      customizeFooter:(exportVariables, worksheet)=>{
           const { lastRow } = worksheet;
           let currentRowIndex = lastRow.number + 2;
           for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
@@ -125,6 +125,7 @@ var tableSettings = {
   exportExel:true, 
   exportExelFileName:"Accounts",
   exportCustomization: customizationSettings,
+  exportVariables:{currentDate:newDate.getDate(), accountData:accountData, dateFrom:dateFrom, dateTo:dateTo}
 }
 const [tableList, setTableList] = React.useState([])
 const [selectedItem, setSelectedItem] = React.useState()
@@ -196,8 +197,9 @@ export function TableComponent(props) {
   }, [exporterRef]);
 
   const onSave = (workbook) => {
-    console.log("5")
+    
     if (onSaveCheck++==0){
+      console.log("exported")
       workbook.xlsx.writeBuffer().then((buffer) => {
         saveAs(new Blob([buffer], { type: 'application/octet-stream' }), `${settings.exportExelFileName!=undefined?settings.exportExelFileName:'DataGrid'}.xlsx`);
       });
@@ -206,7 +208,7 @@ export function TableComponent(props) {
 
   const customizeCell = (cell, row, column) => {
     if (settings.exportCustomization!=undefined)
-      cell=settings.exportCustomization.customizeCell(cell, row, column)
+      cell=settings.exportCustomization.customizeCell(settings.exportVariables, cell, row, column)
   
     currencyColumns.map(item=>{
       if (column.name==item) cell.numFmt = '0₽';
@@ -215,18 +217,19 @@ export function TableComponent(props) {
   
   const customizeSummaryCell = (cell) => {
     if (settings.exportCustomization!=undefined)
-      cell=settings.exportCustomization.customizeSummaryCell(cell)
+      cell=settings.exportCustomization.customizeSummaryCell(settings.exportVariables, cell)
   };
   
   const customizeHeader = (worksheet) => {
-    if (onCustomizeHeaderCheck++==0 && settings.exportCustomization!=undefined){
-      worksheet = settings.exportCustomization.customizeHeader(worksheet)
+    if (onCustomizeHeaderCheck++==0 && settings.exportCustomization!=undefined && onSaveCheck==0){
+
+      worksheet = settings.exportCustomization.customizeHeader(settings.exportVariables, worksheet)
     } else {onCustomizeHeaderCheck=0}
   };
   
   const customizeFooter = (worksheet) => {
     if (onCustomizeFooterCheck++==0 && settings.exportCustomization!=undefined){
-      worksheet = settings.exportCustomization.customizeFooter(worksheet)
+      worksheet = settings.exportCustomization.customizeFooter(settings.exportVariables, worksheet)
     } else {onCustomizeFooterCheck=0}
   };
 //---------------------------изменение таблицы-------------------------------
