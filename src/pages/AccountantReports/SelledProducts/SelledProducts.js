@@ -56,62 +56,68 @@ export default function SelledProducts(props){
             const generalFont = { bold: true, size: 12 }
             
             //row 1 cell 1
-            console.log("1 1")
             worksheet.getRow(1).getCell(1).value = 'Дата составления:'
             Object.assign(worksheet.getRow(1).getCell(1), generalStyles)
             worksheet.getRow(1).getCell(1).font = generalFont
             //row 1 cell 3
-            console.log("1 3")
             worksheet.getRow(1).getCell(2).value = exportVariables.currentDate
             //row 1 cell 4
-            console.log("1 4")
             worksheet.getRow(1).getCell(3).value = 'Составил:'
             Object.assign(worksheet.getRow(1).getCell(3), generalStyles);
             worksheet.getRow(1).getCell(3).font = generalFont
             //row 1 cell 5
-            console.log("1 5")
+            worksheet.mergeCells(1, 4, 1, 5);
             worksheet.getRow(1).getCell(4).value = `${exportVariables.accountData.surname} ${exportVariables.accountData.name} ${exportVariables.accountData.patronymic}`
 
             //row 3 cell 1
-            console.log("2")
             worksheet.getRow(3).getCell(1).value = 'Содержание:'
             Object.assign(worksheet.getRow(3).getCell(1), generalStyles);
             worksheet.getRow(3).getCell(1).font = generalFont
-            //row 3 cell 3
-            console.log("3")
+            //row 3 cell 2
             worksheet.mergeCells(3, 2, 3, 4);
             worksheet.getRow(3).getCell(2).value = exportVariables.title
             //row 4 cell 1
-            console.log("4")
             worksheet.getRow(4).getCell(1).value = 'Дата от:'
             Object.assign(worksheet.getRow(4).getCell(1), generalStyles);
             worksheet.getRow(4).getCell(1).font = generalFont
-            //row 4 cell 3
+            //row 4 cell 2
             worksheet.getRow(4).getCell(2).value = exportVariables.dateFrom
-            //row 4 cell 4
+            //row 4 cell 3
             worksheet.getRow(4).getCell(3).value = 'Дата до:'
             Object.assign(worksheet.getRow(4).getCell(3), generalStyles);
             worksheet.getRow(4).getCell(3).font = generalFont
-            //row 4 cell 5
+            //row 4 cell 4
             worksheet.getRow(4).getCell(4).value = exportVariables.dateTo
 
             worksheet.addRow({});
 
             return worksheet
         },
-        customizeFooter:(exportVariables, worksheet)=>{
-            const { lastRow } = worksheet;
-            let currentRowIndex = lastRow.number + 2;
-            for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
-                worksheet.mergeCells(currentRowIndex + rowIndex, 1, currentRowIndex + rowIndex, 6);
-                Object.assign(worksheet.getRow(currentRowIndex + rowIndex).getCell(1), { font: { bold: true }, alignment: { horizontal: 'right' } });
-            }
-            worksheet.getRow(currentRowIndex).getCell(1).value = 'If you have any questions, please contact John Smith.';
-            currentRowIndex += 1;
-            worksheet.getRow(currentRowIndex).getCell(1).value = 'Phone: +111-111';
-            currentRowIndex += 1;
-            worksheet.getRow(currentRowIndex).getCell(1).value = 'For demonstration purposes only';
-            worksheet.getRow(currentRowIndex).getCell(1).font = { italic: true };
+        customizeFooter:(exportVariables, worksheet, selection, rows)=>{
+            // const generalStyles = {
+            //     font: { bold: true },
+            //     alignment: { horizontal: 'left' },
+            // };
+            // const generalFont = { bold: true, size: 12 }
+            // const { lastRow } = worksheet;
+            // let currentRowIndex = lastRow.number + 2;
+
+            // let sum = 0
+            // rows.map(row=>{
+            //     var check = false
+            //     selection.map(selectedId=>{
+            //         if (row.id == selectedId) check=true
+            //     })
+            //     if (selection=="" || check)
+            //         sum+=row.sumPrice 
+            // })
+
+            // worksheet.getRow(currentRowIndex).getCell(6).value = 'Итого:'
+            // Object.assign(worksheet.getRow(currentRowIndex).getCell(6), generalStyles);
+            // worksheet.getRow(currentRowIndex).getCell(6).font = generalFont
+
+            // worksheet.getRow(currentRowIndex).getCell(7).value = sum
+            // worksheet.getRow(currentRowIndex).getCell(7).numFmt = '0₽';
             return worksheet
         },
     }
@@ -131,12 +137,14 @@ export default function SelledProducts(props){
         edit:false, 
         delete:false, 
         filter: true,
+        select:true, 
+        massSelection:true,
         exportExel:true, 
         exportExelFileName:"SelledProductsReport",
         exportCustomization: customizationSettings,
         exportVariables:{
             title:title, 
-            currentDate:`${newDate.getDate()<10?`0${newDate.getDate()}`:newDate.getDate()}.${newDate.getMonth()+1<10?`0${newDate.getMonth()+1}`:newDate.getMonth()}.${newDate.getFullYear()}`, 
+            currentDate:`${newDate.getFullYear()}.${newDate.getMonth()+1<10?`0${newDate.getMonth()+1}`:newDate.getMonth()}.${newDate.getDate()<10?`0${newDate.getDate()}`:newDate.getDate()}`, 
             accountData:accountData, 
             dateFrom:dateFrom.replace("-", ".").replace("-", "."), 
             dateTo:dateTo.replace("-", ".").replace("-", ".")
@@ -145,7 +153,13 @@ export default function SelledProducts(props){
 
     const [tableList, setTableList] = React.useState([
         {id:0, number:"1",goodsCategories2:"Встраиваемая техника",goodsCategories3:"Варочные поверхности",goodsType:"Варочная поверхность Bosch PKE 645 B17E",selledNumber:30,priceOfOneProduct:44.5,sumPrice:30*44.5},
-        {id:1, number:"2",goodsCategories2:"Стиральные машины",goodsCategories3:"Духовые шкафы",goodsType:"Варочная поверхность Bosch PKE 645 B18E",selledNumber:45,priceOfOneProduct:37.3,sumPrice:45*37.3}
+        {id:1, number:"2",goodsCategories2:"Стиральные машины",goodsCategories3:"Духовые шкафы",goodsType:"Варочная поверхность Bosch PKE 645 B18E",selledNumber:45,priceOfOneProduct:37.3,sumPrice:45*37.3},
+        {id:2, number:"3",goodsCategories2:"Стиральные машины",goodsCategories3:"Духовые шкафы",goodsType:"Варочная поверхность Bosch PKE 645 B18E",selledNumber:45,priceOfOneProduct:37.3,sumPrice:45*37.3},
+        {id:3, number:"4",goodsCategories2:"Стиральные машины",goodsCategories3:"Духовые шкафы",goodsType:"Варочная поверхность Bosch PKE 645 B18E",selledNumber:45,priceOfOneProduct:37.3,sumPrice:45*37.3},
+        {id:4, number:"5",goodsCategories2:"Стиральные машины",goodsCategories3:"Духовые шкафы",goodsType:"Варочная поверхность Bosch PKE 645 B18E",selledNumber:45,priceOfOneProduct:37.3,sumPrice:45*37.3},
+        {id:5, number:"6",goodsCategories2:"Стиральные машины",goodsCategories3:"Духовые шкафы",goodsType:"Варочная поверхность Bosch PKE 645 B18E",selledNumber:45,priceOfOneProduct:37.3,sumPrice:45*37.3},
+        {id:6, number:"7",goodsCategories2:"Стиральные машины",goodsCategories3:"Духовые шкафы",goodsType:"Варочная поверхность Bosch PKE 645 B18E",selledNumber:45,priceOfOneProduct:37.3,sumPrice:45*37.3},
+        {id:7, number:"8",goodsCategories2:"Стиральные машины",goodsCategories3:"Духовые шкафы",goodsType:"Варочная поверхность Bosch PKE 645 B18E",selledNumber:45,priceOfOneProduct:37.3,sumPrice:45*37.3},
     ])
     const [selectedItem, setSelectedItem] = React.useState()
 

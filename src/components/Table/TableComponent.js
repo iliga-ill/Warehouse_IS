@@ -4,13 +4,16 @@ import Chip from '@material-ui/core/Chip';
 import Input from '@material-ui/core/Input';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
-import { SelectionState } from '@devexpress/dx-react-grid';
 import { GridExporter } from '@devexpress/dx-react-grid-export';
 import {
+  SelectionState,
   SummaryState,
   IntegratedSummary,
   DataTypeProvider,
   EditingState,
+  IntegratedSelection,
+  FilteringState,
+  IntegratedFiltering,
 } from '@devexpress/dx-react-grid';
 import {
   Table,
@@ -27,10 +30,6 @@ import {
   Toolbar,
   ExportPanel,
 } from '@devexpress/dx-react-grid-material-ui';
-import {
-  FilteringState,
-  IntegratedFiltering,
-} from '@devexpress/dx-react-grid';
 import saveAs from 'file-saver';
 
 
@@ -76,7 +75,7 @@ import saveAs from 'file-saver';
           worksheet.addRow({});
           return worksheet
       },
-      customizeFooter:(exportVariables, worksheet)=>{
+      customizeFooter:(exportVariables, worksheet, selection, rows)=>{
           const { lastRow } = worksheet;
           let currentRowIndex = lastRow.number + 2;
           for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
@@ -120,6 +119,7 @@ var tableSettings = {
   delete:true, 
   filter: true, 
   select:true, 
+  massSelection:true,
   validation:true,
   cell:true, 
   exportExel:true, 
@@ -155,7 +155,7 @@ export function TableComponent(props) {
   var onSaveCheck = 0
   var onCustomizeHeaderCheck = 0
   var onCustomizeFooterCheck = 0
-
+  var numberCounter = 0
 
   var settings = props.tableSettings
   var EditColumnWidth = settings.editColumnWidth!=undefined?settings.editColumnWidth:220
@@ -192,8 +192,9 @@ export function TableComponent(props) {
 //---------------------------экспорт таблицы-------------------------------
   const exporterRef = useRef(null);
 
-  const startExport = useCallback(() => {
-    exporterRef.current.exportGrid();
+  const startExport = useCallback((options) => {
+    exporterRef.current.exportGrid(options);
+
   }, [exporterRef]);
 
   const onSave = (workbook) => {
@@ -206,14 +207,33 @@ export function TableComponent(props) {
     } else {onSaveCheck=0}
   };
 
-  const customizeCell = (cell, row, column) => {
-    if (settings.exportCustomization!=undefined)
-      cell=settings.exportCustomization.customizeCell(settings.exportVariables, cell, row, column)
   
+  const customizeCell = (cell, row, column) => {
+
+    if (settings.exportCustomization!=undefined) {
+      cell=settings.exportCustomization.customizeCell(settings.exportVariables, cell, row, column)
+    }
+    // if (selection!=""){
+    //   let minSelected=100000000000
+
+    //   selection.map(item=>{
+    //     if (minSelected>item) minSelected = item
+    //   })
+    
+
+    //   console.log(row)
+    //   if (column.name == 'number' && minSelected == row.id) numberCounter=0
+    // }
+
+    // if (row.id == 0) numberCounter=0
+
+    // if (column.name == 'number')
+    //   cell.value = numberCounter++
+
     currencyColumns.map(item=>{
       if (column.name==item) cell.numFmt = '0₽';
     })
-  };
+  }
   
   const customizeSummaryCell = (cell) => {
     if (settings.exportCustomization!=undefined)
@@ -229,7 +249,7 @@ export function TableComponent(props) {
   
   const customizeFooter = (worksheet) => {
     if (onCustomizeFooterCheck++==0 && settings.exportCustomization!=undefined){
-      worksheet = settings.exportCustomization.customizeFooter(settings.exportVariables, worksheet)
+      worksheet = settings.exportCustomization.customizeFooter(settings.exportVariables, worksheet, selection, rows)
     } else {onCustomizeFooterCheck=0}
   };
 //---------------------------изменение таблицы-------------------------------
@@ -287,7 +307,7 @@ export function TableComponent(props) {
         }
       });
       
-      var counter=0
+      let counter=0
       columns.map(item=>{
         if (item.name == "amount" || item.name == "cost" || item.name == "sumCost" ) counter++
       })
@@ -358,17 +378,20 @@ export function TableComponent(props) {
   );
 
   function onSelected(value) {
-    if (settings.select != undefined && settings.select) {
-      setSelection([value[value.length-1]])
-      var check = false
-      rows.map(function(element, i){
-        if (element.id == value[value.length-1]) {
-            props.onSelect(element)
-            check=true
-        }   
-    })
-    if (!check) props.onSelect(undefined)
-      
+    if (settings.massSelection==undefined || settings.massSelection==false){
+      if (settings.select != undefined && settings.select) {
+        setSelection([value[value.length-1]])
+        var check = false
+        rows.map(function(element, i){
+          if (element.id == value[value.length-1]) {
+              props.onSelect(element)
+              check=true
+          }   
+        })
+        if (!check) props.onSelect(undefined)
+      }
+    } else {
+      setSelection(value)
     }
   }
   
@@ -447,10 +470,8 @@ const DateTypeProvider = props => (
             <CurrencyTypeProvider for={currencyColumns}/>
 
 
-
+            {/* непонятно как работает */}
             <DateTypeProvider for={dateColumns} />
-
-
 
             <SummaryState
               totalItems={totalSummaryItems}
@@ -468,9 +489,11 @@ const DateTypeProvider = props => (
               onColumnWidthsChange={setColumnWidths}
             />
             <TableHeaderRow />
+            <IntegratedSelection />
             {settings.exportExel==true?<Toolbar/>:<></>}
             {settings.exportExel==true?<ExportPanel startExport={startExport}/>:<></>}
             {settings.filter==true?<TableFilterRow/>:<></>}
+            
             <TableSelection
               selectByRowClick
               highlightRow
@@ -493,11 +516,11 @@ const DateTypeProvider = props => (
             rows={rows}
             columns={columns}
             totalSummaryItems={totalSummaryItems}
-            onSave={onSave}
             customizeCell={customizeCell}
-            customizeSummaryCell={customizeSummaryCell}
             customizeHeader={customizeHeader}
             customizeFooter={customizeFooter}
+            selection={selection}
+            onSave={onSave}
           />
       </Paper>
     );
