@@ -15,6 +15,7 @@ const styles = {
   }
 
 export default function StorekeeperExpend(props){
+    let newDate = new Date()
     
     var id=0
     function getId(){return id++}
@@ -187,7 +188,7 @@ export default function StorekeeperExpend(props){
         
     //-------------------------------------стол 1 конец
 
-    const [date, setDate] = React.useState("2022-01-14")
+    let [date, setDate] = React.useState(`${newDate.getFullYear()}-${newDate.getMonth()+1<10?`0${newDate.getMonth()+1}`:newDate.getMonth()+1}-${newDate.getDate()<10?`0${newDate.getDate()}`:newDate.getDate()}`)
     const [documents, setDocuments] = React.useState()
     
     function btn_send_1() {

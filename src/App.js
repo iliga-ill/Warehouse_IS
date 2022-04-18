@@ -185,6 +185,7 @@ export default function App() {
           <Route path="/Storekeeper/StorekeeperExpend/Completed" element={wrapErrorBoundary(<StorekeeperExpend isCurrent={false}/>)}/>
           <Route path="/Storekeeper/StorekeeperAllocation" element={wrapErrorBoundary(<StorekeeperAllocation/>)}/>
           <Route path="/Storekeeper/StorekeeperInventory" element={wrapErrorBoundary(<StorekeeperInventory/>)}/>
+
           <Route path="/Manager/ManagerProducts" element={wrapErrorBoundary(<ManagerProducts/>)}/>
           <Route path="/Manager/ManagerOrderCreation" element={wrapErrorBoundary(<ManagerOrderCreation/>)}/>
           <Route path="/Manager/ManagerSellOrders/Current" element={wrapErrorBoundary(<ManagerSellOrders isCurrent={true}/>)}/>
@@ -193,25 +194,25 @@ export default function App() {
           <Route path="/Manager/ManagerShipmentOrders/Completed" element={wrapErrorBoundary(<ManagerShipmentOrders isCurrent={false}/>)}/>
           <Route path="/Manager/ManagerBills/NewAccounts" element={wrapErrorBoundary(<ManagerBills isCurrent={true}/>)}/>
           <Route path="/Manager/ManagerBills/ClosedAccounts" element={wrapErrorBoundary(<ManagerBills isCurrent={false}/>)}/>
+
           <Route path="/Logistician/LogisticianOrders/Current" element={wrapErrorBoundary(<LogisticianOrders isCurrent={true}/>)}/>
           <Route path="/Logistician/LogisticianOrders/Completed" element={wrapErrorBoundary(<LogisticianOrders isCurrent={false}/>)}/>
           <Route path="/Logistician/LogisticianProducts" element={wrapErrorBoundary(<LogisticianProducts/>)}/>
           <Route path="/Logistician/LogisticianBills/NewAccounts" element={wrapErrorBoundary(<LogisticianBills isCurrent={true}/>)}/>
           <Route path="/Logistician/LogisticianBills/ClosedAccounts" element={wrapErrorBoundary(<LogisticianBills isCurrent={false}/>)}/>
+
           <Route path="/Accountant/AccountantProducts" element={wrapErrorBoundary(<AccountantProducts/>)}/>
           <Route path="/Accountant/AccountantInvoice/Current" element={wrapErrorBoundary(<AccountantInvoice isCurrent={true}/>)}/>
           <Route path="/Accountant/AccountantInvoice/Completed" element={wrapErrorBoundary(<AccountantInvoice isCurrent={false}/>)}/>
-
-
           <Route path="/Accountant/AccountantReports/SelledProducts" element={wrapErrorBoundary(<SelledProducts  cookies={cookies}/>)}/>
           <Route path="/Accountant/AccountantReports/PurchasedProducts" element={wrapErrorBoundary(<PurchasedProducts  cookies={cookies}/>)}/>
           <Route path="/Accountant/AccountantReports/ProductTurnover" element={wrapErrorBoundary(<ProductTurnover  cookies={cookies}/>)}/>
           <Route path="/Accountant/AccountantReports/PaybackOfGoods" element={wrapErrorBoundary(<PaybackOfGoods  cookies={cookies}/>)}/>
-
-
           <Route path="/Accountant/AccountantAccounts/NewAccounts" element={wrapErrorBoundary(<AccountantAccounts isCurrent={true}/>)}/>
           <Route path="/Accountant/AccountantAccounts/ClosedAccounts" element={wrapErrorBoundary(<AccountantAccounts isCurrent={false}/>)}/>
+
           <Route path="/Administrator/AdministratorAccounts" element={wrapErrorBoundary(<AdministratorAccounts/>)}/>
+          
           <Route path="/Profile" element={wrapErrorBoundary(<Profile cookies={cookies}/>)}/>
           <Route path="/Home" element={wrapErrorBoundary(<Home cookies={cookies}/>)}/>
         </Routes>

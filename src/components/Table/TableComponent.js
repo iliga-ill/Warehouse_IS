@@ -48,7 +48,7 @@ import saveAs from 'file-saver';
           }
           return cell
       },
-      customizeSummaryCell: (exportVariables, cell)=>{
+      customizeSummaryCell: (exportVariables, cell, isExportSeletedRows, selection, rows)=>{
           cell.font = { italic: true };
           return cell
       },
@@ -75,7 +75,7 @@ import saveAs from 'file-saver';
           worksheet.addRow({});
           return worksheet
       },
-      customizeFooter:(exportVariables, worksheet, selection, rows)=>{
+      customizeFooter:(exportVariables, worksheet, isExportSeletedRows, selection, rows)=>{
           const { lastRow } = worksheet;
           let currentRowIndex = lastRow.number + 2;
           for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
@@ -155,7 +155,6 @@ export function TableComponent(props) {
   var onSaveCheck = 0
   var onCustomizeHeaderCheck = 0
   var onCustomizeFooterCheck = 0
-  var numberCounter = 0
 
   var settings = props.tableSettings
   var EditColumnWidth = settings.editColumnWidth!=undefined?settings.editColumnWidth:220
@@ -190,45 +189,40 @@ export function TableComponent(props) {
     })
   }
 //---------------------------экспорт таблицы-------------------------------
+  var counter = 0
+  var numberCounter = 0
+
   const exporterRef = useRef(null);
 
   const startExport = useCallback((options) => {
+    console.log(options)
     exporterRef.current.exportGrid(options);
-
   }, [exporterRef]);
 
   const onSave = (workbook) => {
-    
     if (onSaveCheck++==0){
       console.log("exported")
+      counter = 0
+      numberCounter=0
       workbook.xlsx.writeBuffer().then((buffer) => {
         saveAs(new Blob([buffer], { type: 'application/octet-stream' }), `${settings.exportExelFileName!=undefined?settings.exportExelFileName:'DataGrid'}.xlsx`);
       });
-    } else {onSaveCheck=0}
+    } else {
+      onSaveCheck=0
+      counter = 0
+      numberCounter=0
+    }
   };
-
   
   const customizeCell = (cell, row, column) => {
 
     if (settings.exportCustomization!=undefined) {
+      counter++
       cell=settings.exportCustomization.customizeCell(settings.exportVariables, cell, row, column)
     }
-    // if (selection!=""){
-    //   let minSelected=100000000000
 
-    //   selection.map(item=>{
-    //     if (minSelected>item) minSelected = item
-    //   })
-    
-
-    //   console.log(row)
-    //   if (column.name == 'number' && minSelected == row.id) numberCounter=0
-    // }
-
-    // if (row.id == 0) numberCounter=0
-
-    // if (column.name == 'number')
-    //   cell.value = numberCounter++
+    if (column.name == 'number')
+      cell.value = ++numberCounter
 
     currencyColumns.map(item=>{
       if (column.name==item) cell.numFmt = '0₽';
@@ -237,7 +231,9 @@ export function TableComponent(props) {
   
   const customizeSummaryCell = (cell) => {
     if (settings.exportCustomization!=undefined)
-      cell=settings.exportCustomization.customizeSummaryCell(settings.exportVariables, cell)
+      var isExportSeletedRows = counter != columns.length*rows.length
+      cell=settings.exportCustomization.customizeSummaryCell(settings.exportVariables, cell, isExportSeletedRows, selection, rows)
+      if (columns[cell._column._number-1].isCurrency) cell.numFmt = '0₽';
   };
   
   const customizeHeader = (worksheet) => {
@@ -249,7 +245,8 @@ export function TableComponent(props) {
   
   const customizeFooter = (worksheet) => {
     if (onCustomizeFooterCheck++==0 && settings.exportCustomization!=undefined){
-      worksheet = settings.exportCustomization.customizeFooter(settings.exportVariables, worksheet, selection, rows)
+      var isExportSeletedRows = counter != columns.length*rows.length
+      worksheet = settings.exportCustomization.customizeFooter(settings.exportVariables, worksheet, isExportSeletedRows, selection, rows)
     } else {onCustomizeFooterCheck=0}
   };
 //---------------------------изменение таблицы-------------------------------
@@ -392,6 +389,8 @@ export function TableComponent(props) {
       }
     } else {
       setSelection(value)
+      if (props.onSelect!=undefined)
+        props.onSelect(value)
     }
   }
   
@@ -517,6 +516,7 @@ const DateTypeProvider = props => (
             columns={columns}
             totalSummaryItems={totalSummaryItems}
             customizeCell={customizeCell}
+            customizeSummaryCell={customizeSummaryCell}
             customizeHeader={customizeHeader}
             customizeFooter={customizeFooter}
             selection={selection}

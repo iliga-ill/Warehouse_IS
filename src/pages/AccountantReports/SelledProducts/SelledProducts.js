@@ -18,33 +18,21 @@ const styles = {
 
 export default function SelledProducts(props){
     let accountData = props.cookies.accountData
-
+    let newDate = new Date()
+    let title = 'Проданные товары за промежуток времени'
 
     var id=0
     function getId(){return id++}
     
-    let newDate = new Date()
-    let title = 'Проданные товары за промежуток времени'
-    
-
     const [dateFrom, setDateFrom] = React.useState(`${newDate.getFullYear()}-${newDate.getMonth()   <10?`0${newDate.getMonth()   }`:newDate.getMonth()   }-${newDate.getDate()+1<10?`0${newDate.getDate()}`:newDate.getDate()}`)
     const [dateTo, setDateTo] =     React.useState(`${newDate.getFullYear()}-${newDate.getMonth()+1 <10?`0${newDate.getMonth()+1 }`:newDate.getMonth()+1 }-${newDate.getDate()+1<10?`0${newDate.getDate()}`:newDate.getDate()}`)
 
     var customizationSettings={
         customizeCell:(exportVariables, cell, row, column)=>{
-            // if (row.number < 3) {
-            //   cell.font = { color: { argb: 'AAAAAA' } };
-            // }
-            // if (row.number > 4) {
-            //   if (column.name === 'password') {
-            //     cell.font = { color: { argb: '000000' } };
-            //     cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFBB00' } };
-            //   }
-            // }
             return cell
         },
-        customizeSummaryCell: (exportVariables, cell)=>{
-            // cell.font = { italic: true };
+        customizeSummaryCell: (exportVariables, cell, isExportSeletedRows, selection, rows)=>{
+            cell.value = ""
             return cell
         },
         customizeHeader: (exportVariables, worksheet)=>{
@@ -93,31 +81,35 @@ export default function SelledProducts(props){
 
             return worksheet
         },
-        customizeFooter:(exportVariables, worksheet, selection, rows)=>{
-            // const generalStyles = {
-            //     font: { bold: true },
-            //     alignment: { horizontal: 'left' },
-            // };
-            // const generalFont = { bold: true, size: 12 }
-            // const { lastRow } = worksheet;
-            // let currentRowIndex = lastRow.number + 2;
+        customizeFooter:(exportVariables, worksheet, isExportSeletedRows, selection, rows)=>{
+            const generalStyles = {
+                font: { bold: true },
+                alignment: { horizontal: 'left' },
+            };
+            const generalFont = { bold: true, size: 12 }
+            const { lastRow, columnCount } = worksheet;
+            let currentRowIndex = lastRow.number + 1;
 
-            // let sum = 0
-            // rows.map(row=>{
-            //     var check = false
-            //     selection.map(selectedId=>{
-            //         if (row.id == selectedId) check=true
-            //     })
-            //     if (selection=="" || check)
-            //         sum+=row.sumPrice 
-            // })
+            let sumRevenue = 0
+            rows.map(row=>{
+                var isSelected = false
+                selection.map(selectedId=>{
+                    if (row.id == selectedId) isSelected=true
+                })
+                if (!isExportSeletedRows || isSelected){
+                    sumRevenue+=row.sumPrice
+                }
+            })
 
-            // worksheet.getRow(currentRowIndex).getCell(6).value = 'Итого:'
-            // Object.assign(worksheet.getRow(currentRowIndex).getCell(6), generalStyles);
-            // worksheet.getRow(currentRowIndex).getCell(6).font = generalFont
+            //Ожидаемый остаток на складе
+            worksheet.mergeCells(currentRowIndex, columnCount-2, currentRowIndex, columnCount-1);
+            worksheet.getRow(currentRowIndex).getCell(columnCount-2).value = 'Cуммарная выручка:'
+            Object.assign(worksheet.getRow(currentRowIndex).getCell(columnCount-2), generalStyles);
+            worksheet.getRow(currentRowIndex).getCell(columnCount-2).font = generalFont
 
-            // worksheet.getRow(currentRowIndex).getCell(7).value = sum
-            // worksheet.getRow(currentRowIndex).getCell(7).numFmt = '0₽';
+            worksheet.getRow(currentRowIndex).getCell(columnCount).value = sumRevenue
+            worksheet.getRow(currentRowIndex).getCell(columnCount).numFmt = '0₽';
+            
             return worksheet
         },
     }
@@ -129,7 +121,7 @@ export default function SelledProducts(props){
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,   width:120   }, 
         {name: 'selledNumber',      title:'Кол-во проданного',  editingEnabled:false,   width:150   }, 
         {name: 'priceOfOneProduct', title:'Цена ед товара',     editingEnabled:false,   width:120, isCurrency:true }, 
-        {name: 'sumPrice',          title:'Цена всего',         editingEnabled:false,   width:120, totalCount:{type:['sum'], expantionAlign: 'right'}, isCurrency:true},
+        {name: 'sumPrice',          title:'Цена всего',         editingEnabled:false,   width:140, totalCount:{type:['sum'], expantionAlign: 'left'}, isCurrency:true},
     ]) 
 
     var tableSettings = {

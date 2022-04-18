@@ -17,68 +17,107 @@ const styles = {
   
 
 export default function PaybackOfGoods(props){
+    let accountData = props.cookies.accountData
+    let newDate = new Date()
+    let title = "Окупаемость товаров за промежуток времени"
 
     var id=0
     function getId(){return id++}
-    
-    let newDate = new Date()
 
     const [dateFrom, setDateFrom] = React.useState(`${newDate.getFullYear()}-${newDate.getMonth()   <10?`0${newDate.getMonth()   }`:newDate.getMonth()   }-${newDate.getDate()+1<10?`0${newDate.getDate()}`:newDate.getDate()}`)
     const [dateTo, setDateTo] =     React.useState(`${newDate.getFullYear()}-${newDate.getMonth()+1 <10?`0${newDate.getMonth()+1 }`:newDate.getMonth()+1 }-${newDate.getDate()+1<10?`0${newDate.getDate()}`:newDate.getDate()}`)
 
     var customizationSettings={
-        customizeCell:(cell, row, column)=>{
-            if (row.number < 3) {
-              cell.font = { color: { argb: 'AAAAAA' } };
-            }
-            if (row.number > 4) {
-              if (column.name === 'password') {
-                cell.font = { color: { argb: '000000' } };
-                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFBB00' } };
-              }
-            }
+        customizeCell:(exportVariables, cell, row, column)=>{
+
+            if (column.name == "profit" && cell.value<=0)
+                cell.font = { color: { argb: 'FF0000' } }
+                
+            if (column.name == "profit" && cell.value>0)
+                cell.font = { color: { argb: '00B050' } }
+
             return cell
         },
-        customizeSummaryCell: (cell)=>{
-            cell.font = { italic: true };
+        customizeSummaryCell: (exportVariables, cell, isExportSeletedRows, selection, rows)=>{
+            cell.value = ""
             return cell
         },
-        customizeHeader: (worksheet)=>{
+        customizeHeader: (exportVariables, worksheet)=>{
             const generalStyles = {
                 font: { bold: true },
-                fill: {
-                  type: 'pattern', pattern: 'solid', fgColor: { argb: 'D3D3D3' }, bgColor: { argb: 'D3D3D3' },
-                },
                 alignment: { horizontal: 'left' },
             };
-            for (let rowIndex = 1; rowIndex < 6; rowIndex += 1) {
-                worksheet.mergeCells(rowIndex, 1, rowIndex, 3);
-                worksheet.mergeCells(rowIndex, 4, rowIndex, 6);
-                Object.assign(worksheet.getRow(rowIndex).getCell(1), generalStyles);
-                Object.assign(worksheet.getRow(rowIndex).getCell(3), generalStyles);
-            }
-            worksheet.getRow(1).height = 20;
-            worksheet.getRow(1).getCell(1).font = { bold: true, size: 16 };
-            worksheet.getRow(1).getCell(4).numFmt = 'd mmmm yyyy';
-            worksheet.getRow(1).getCell(4).font = { bold: true, size: 16 };
-            worksheet.getColumn(1).values = ['Sale Amounts:', 'Company Name:', 'Address:', 'Phone:', 'Website:'];
-            worksheet.getColumn(4).values = [new Date(), 'K&S Music', '1000 Nicllet Mall Minneapolis Minnesota', '(612) 304-6073', 'www.nowebsitemusic.com'];
+
+            const generalFont = { bold: true, size: 12 }
+            
+            //row 1 cell 1
+            worksheet.getRow(1).getCell(1).value = 'Дата составления:'
+            Object.assign(worksheet.getRow(1).getCell(1), generalStyles)
+            worksheet.getRow(1).getCell(1).font = generalFont
+            //row 1 cell 3
+            worksheet.getRow(1).getCell(2).value = exportVariables.currentDate
+            //row 1 cell 4
+            worksheet.getRow(1).getCell(3).value = 'Составил:'
+            Object.assign(worksheet.getRow(1).getCell(3), generalStyles);
+            worksheet.getRow(1).getCell(3).font = generalFont
+            //row 1 cell 5
+            worksheet.mergeCells(1, 4, 1, 5);
+            worksheet.getRow(1).getCell(4).value = `${exportVariables.accountData.surname} ${exportVariables.accountData.name} ${exportVariables.accountData.patronymic}`
+
+            //row 3 cell 1
+            worksheet.getRow(3).getCell(1).value = 'Содержание:'
+            Object.assign(worksheet.getRow(3).getCell(1), generalStyles);
+            worksheet.getRow(3).getCell(1).font = generalFont
+            //row 3 cell 2
+            worksheet.mergeCells(3, 2, 3, 4);
+            worksheet.getRow(3).getCell(2).value = exportVariables.title
+            //row 4 cell 1
+            worksheet.getRow(4).getCell(1).value = 'Дата от:'
+            Object.assign(worksheet.getRow(4).getCell(1), generalStyles);
+            worksheet.getRow(4).getCell(1).font = generalFont
+            //row 4 cell 2
+            worksheet.getRow(4).getCell(2).value = exportVariables.dateFrom
+            //row 4 cell 3
+            worksheet.getRow(4).getCell(3).value = 'Дата до:'
+            Object.assign(worksheet.getRow(4).getCell(3), generalStyles);
+            worksheet.getRow(4).getCell(3).font = generalFont
+            //row 4 cell 4
+            worksheet.getRow(4).getCell(4).value = exportVariables.dateTo
+
             worksheet.addRow({});
+
             return worksheet
         },
-        customizeFooter:(worksheet)=>{
-            const { lastRow } = worksheet;
-            let currentRowIndex = lastRow.number + 2;
-            for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
-                worksheet.mergeCells(currentRowIndex + rowIndex, 1, currentRowIndex + rowIndex, 6);
-                Object.assign(worksheet.getRow(currentRowIndex + rowIndex).getCell(1), { font: { bold: true }, alignment: { horizontal: 'right' } });
-            }
-            worksheet.getRow(currentRowIndex).getCell(1).value = 'If you have any questions, please contact John Smith.';
-            currentRowIndex += 1;
-            worksheet.getRow(currentRowIndex).getCell(1).value = 'Phone: +111-111';
-            currentRowIndex += 1;
-            worksheet.getRow(currentRowIndex).getCell(1).value = 'For demonstration purposes only';
-            worksheet.getRow(currentRowIndex).getCell(1).font = { italic: true };
+        customizeFooter:(exportVariables, worksheet, isExportSeletedRows, selection, rows)=>{
+            const generalStyles = {
+                font: { bold: true },
+                alignment: { horizontal: 'left' },
+            };
+            const generalFont = { bold: true, size: 12 }
+            const { lastRow, columnCount } = worksheet;
+            console.log(worksheet)
+            let currentRowIndex = lastRow.number + 1;
+
+            let sumProfit = 0
+            rows.map(row=>{
+                var isSelected = false
+                selection.map(selectedId=>{
+                    if (row.id == selectedId) isSelected=true
+                })
+                if (!isExportSeletedRows || isSelected){
+                    sumProfit+=row.profit
+                }
+            })
+
+            //Ожидаемый остаток на складе
+            worksheet.mergeCells(currentRowIndex, columnCount-2, currentRowIndex, columnCount-1);
+            worksheet.getRow(currentRowIndex).getCell(columnCount-2).value = 'Чистая прибыль:'
+            Object.assign(worksheet.getRow(currentRowIndex).getCell(columnCount-2), generalStyles);
+            worksheet.getRow(currentRowIndex).getCell(columnCount-2).font = generalFont
+
+            worksheet.getRow(currentRowIndex).getCell(columnCount).value = sumProfit
+            worksheet.getRow(currentRowIndex).getCell(columnCount).numFmt = '0₽';
+            
             return worksheet
         },
     }
@@ -91,7 +130,7 @@ export default function PaybackOfGoods(props){
         {name: 'selledNumber',      title:'Кол-во проданного',      editingEnabled:false,   width:150   }, 
         {name: 'avgPurchaseCost',   title:'Средняя цена закупки',   editingEnabled:false,   width:165, isCurrency:true }, 
         {name: 'avgSellCost',       title:'Средняя цена продажи',   editingEnabled:false,   width:175, isCurrency:true }, 
-        {name: 'profit',            title:'Прибыль',                editingEnabled:false,   width:100, totalCount:{type:['sum'], expantionAlign: 'left'}, isCurrency:true},
+        {name: 'profit',            title:'Прибыль',                editingEnabled:false,   width:120, totalCount:{type:['sum'], expantionAlign: 'left'}, isCurrency:true},
     ]) 
 
     var tableSettings = {
@@ -99,19 +138,32 @@ export default function PaybackOfGoods(props){
         edit:false, 
         delete:false, 
         filter: true,
+        select:true, 
+        massSelection:true,
         exportExel:true, 
         exportExelFileName:"SelledProductsReport",
-        exportCustomization: customizationSettings
+        exportCustomization: customizationSettings,
+        exportVariables:{
+            title:title, 
+            currentDate:`${newDate.getFullYear()}.${newDate.getMonth()+1<10?`0${newDate.getMonth()+1}`:newDate.getMonth()}.${newDate.getDate()<10?`0${newDate.getDate()}`:newDate.getDate()}`, 
+            accountData:accountData, 
+            dateFrom:dateFrom.replace("-", ".").replace("-", "."), 
+            dateTo:dateTo.replace("-", ".").replace("-", "."),
+        }
     }
 
-    const [tableList, setTableList] = React.useState([])
-    const [selectedItem, setSelectedItem] = React.useState()
+    const [tableList, setTableList] = React.useState([
+        {id:0, number:"1",goodsCategories2:"Встраиваемая техника",goodsCategories3:"Варочные поверхности",goodsType:"Варочная поверхность Bosch PKE 645 B17E",selledNumber:30,avgPurchaseCost:44.5,avgSellCost:54.5, profit:30*54.5-30*44.5},
+        {id:1, number:"2",goodsCategories2:"Встраиваемая техника",goodsCategories3:"Варочные поверхности",goodsType:"Варочная поверхность Bosch PKE 645 B17E",selledNumber:14,avgPurchaseCost:34.5,avgSellCost:24.5, profit:14*24.5-14*34.5},
+        {id:2, number:"3",goodsCategories2:"Встраиваемая техника",goodsCategories3:"Варочные поверхности",goodsType:"Варочная поверхность Bosch PKE 645 B17E",selledNumber:25,avgPurchaseCost:24.5,avgSellCost:34.5, profit:25*34.5-25*24.5},
+    ])
+
 
     return (
         <>
             <FlexibleBlocksPage>
                 <FlexibleBlock>
-                    <div class="header_text">Окупаемость товаров за промежуток времени</div>
+                    <div class="header_text">{title}</div>
                     <div style={{width:'170px'}}>
                         <div class="low_text row_with_item_equal"><div>Дата&nbsp;от&nbsp;</div><InputDate defValue={dateFrom}   func={setDateFrom}/></div>
                         <div class="low_text row_with_item_equal"><div>Дата&nbsp;до&nbsp;</div><InputDate defValue={dateTo}     func={setDateTo}/></div>

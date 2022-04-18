@@ -33,6 +33,7 @@ const apiGetRacksByZones = function apiGetRacksByZones() {
 
 
 export default function StorekeeperAdvent(props){
+    let newDate = new Date()
 
     var id=0
     function getId(){return id++}
@@ -283,7 +284,11 @@ export default function StorekeeperAdvent(props){
         
     //-------------------------------------стол 1 конец
 
-    const [date, setDate] = React.useState("2022-01-14")
+    let [date, setDate] = React.useState(`${newDate.getFullYear()}-${newDate.getMonth()+1<10?`0${newDate.getMonth()+1}`:newDate.getMonth()+1}-${newDate.getDate()<10?`0${newDate.getDate()}`:newDate.getDate()}`)
+    // React.useEffect(() => {
+    //     console.log(`dateFrom: ${dateFrom}`)
+    // }, [dateFrom]);
+
     const [documents, setDocuments] = React.useState()
     
     function btn_send_1() {
@@ -468,7 +473,7 @@ function apiUpdateOrderGoods(value) {
                     <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={date} func={setDate}/></div>
                     {/* <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div> */}
                     {/* <InputText styles = "row_with_ite   m_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/> */}
-                    {/* <div class="low_text"><InputFile Id={getId()} func={setDocuments}/></div> */}
+                    <div class="low_text"><InputFile Id={getId()} func={setDocuments}/></div>
                     {/* <Table Id={getId()} table_headers={tableHeaders} table_field_height={table_field_height} table_list={tableList} func={setTableList} numb={0} search="true" add="true" delete="true"/> */}
                 
                     <div style={{width:"min-content", display:'inline-table'}} >
