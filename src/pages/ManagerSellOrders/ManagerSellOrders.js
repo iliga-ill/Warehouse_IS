@@ -34,10 +34,20 @@ export default function ManagerSellOrders(props){
         {name: 'shipmentDate', title:'Срок поставки',             editingEnabled:false,     width:120   }, 
         {name: 'orderCost',    title:'Стоимость заказа (руб)',    editingEnabled:false,     width:180   }, 
     ]) 
-    var tableSettings = {add:false, edit:false, delete:false, select:true}
+    var tableSettings = {
+        add:false,
+        edit:false,
+        delete:false,
+        select:true,
+        defaultSelection:true,
+    }
 
-    //const [tableList, setTableList] = React.useState([{number:1, orderNumber:"Заказ №0000001", shipmentDate:"2022-01-14", orderCost:1000}])
     const [tableList, setTableList] = React.useState([])
+    const [selectedItemId, setSelectedItemId] = React.useState()
+
+    React.useEffect(() => {
+        if (tableList.length > 0) apiGetOrderGoods(selectedItemId)
+    }, [selectedItemId]);
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец
 
@@ -47,11 +57,7 @@ export default function ManagerSellOrders(props){
     const [shipmentDeadline, setShipmentDeadline] = React.useState("")
     const [orderCost, setOrderCost] = React.useState(0)
 
-    const [selectedItemId, setSelectedItemId] = React.useState()
-
-    React.useEffect(() => {
-        if (tableList.length > 0) apiGetOrderGoods(selectedItemId)
-    }, [selectedItemId]);
+    
 
     
     const [tableHeaders1, setTableHeaders1] = React.useState([
@@ -83,6 +89,7 @@ export default function ManagerSellOrders(props){
                 buffer[i].code = element.id;
             });
             setTableList(buffer)
+            setSelectedItemId(buffer[0])
           }
         }
         
@@ -112,7 +119,7 @@ export default function ManagerSellOrders(props){
             setTableList1(buffer)
             setOrder(value.orderNumber)
             setShipmentAddress(value.address)
-            setShipmentDeadline(value.deadline)
+            setShipmentDeadline(value.deadline.split("T")[0].replace("-", ".").replace("-", "."))
             setOrderCost(value.orderCost)
           }
         }

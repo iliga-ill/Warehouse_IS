@@ -102,7 +102,7 @@ const [dropdownList, setDropdownList] = React.useState([
 ])
 
 const [tableHeaders, setTableHeaders] = React.useState([
-    {name: 'number',            title:'№',                  editingEnabled:false,   width:40, totalCount:{type:['count', 'sum', 'max', 'min', 'avg'], expantionAlign: 'right'}, isCurrency:false, isDate:false  }, 
+    {name: 'number',            title:'№',                  editingEnabled:false,   width:40, totalCount:{type:['count', 'sum', 'max', 'min', 'avg'], expantionAlign: 'right'}, isCurrency:false }, 
     {name: 'surname',           title:'Фамилия',            editingEnabled:true,    width:160                                                                               }, 
     {name: 'name',              title:'Имя',                editingEnabled:true,    width:160,  mask:/^(.)(.*)$/i,                       maskExample:"быть заполнено"       }, 
     {name: 'patronymic',        title:'Отчество',           editingEnabled:true,    width:170                                                                               }, 
@@ -118,9 +118,9 @@ var tableSettings = {
   add:true, edit:true, 
   delete:true, 
   filter: true, 
-  select:true, 
+  select:true,
+  defaultSelection:true,
   massSelection:true,
-  validation:true,
   cell:true, 
   exportExel:true, 
   exportExelFileName:"Accounts",
@@ -150,7 +150,6 @@ export function TableComponent(props) {
   const [tableColumnExtensions] = useState([]);
   const [totalSummaryItems] = useState([]);
   const [currencyColumns] = useState([]);
-  const [dateColumns] = useState([])
 
   var onSaveCheck = 0
   var onCustomizeHeaderCheck = 0
@@ -185,8 +184,9 @@ export function TableComponent(props) {
         });
       }
       if(item.isCurrency) currencyColumns.push(item.name)
-      if(item.isDate) dateColumns.push(item.name)
     })
+    if (settings.defaultSelection && selection == '')
+      selection.push(0)
   }
 //---------------------------экспорт таблицы-------------------------------
   var counter = 0
@@ -296,7 +296,7 @@ export function TableComponent(props) {
             var keys = Object.keys(changed[row.id])
             keys.map(key=>{
               if (item.name == key && item.mask!=undefined && changed[row.id][key].match(item.mask)==null){
-                alert(`Значение в поле ${item.title} в строке №${row.id+1} должно ${item.maskExample}`)
+                alert(`Значение в поле ${item.title} в строке №${row.number} должно ${item.maskExample}`)
                 changedRows[row.id][key] = rows[row.id][key]
               }
             });
@@ -320,7 +320,10 @@ export function TableComponent(props) {
     if (deleted) {
       const deletedSet = new Set(deleted);
       changedRows = rows.filter(row => !deletedSet.has(row.id));
-      if (columns[0].name=='number') changedRows.map(function(item,i){changedRows[i].number=i+1})
+      if (columns[0].name=='number') changedRows.map(function(item,i){
+        changedRows[i].number=i+1
+        changedRows[i].id=i
+      })
     }
     setRows(changedRows);
     props.setNewTableList(changedRows)
@@ -467,10 +470,6 @@ const DateTypeProvider = props => (
               onSelectionChange={onSelected}
             />
             <CurrencyTypeProvider for={currencyColumns}/>
-
-
-            {/* непонятно как работает */}
-            <DateTypeProvider for={dateColumns} />
 
             <SummaryState
               totalItems={totalSummaryItems}

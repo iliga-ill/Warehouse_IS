@@ -156,7 +156,14 @@ export default function StorekeeperInventory(props){
         {name: 'amount',                    title:'Кол-во',                 editingEnabled:false,     width:70 },
         {name: 'inventorysationStatus',     title:'Статус',                 editingEnabled:false,     width:180},
     ]) 
-    var  tableSettings = {add:false, edit:false, delete:false, filter: true, select:true}
+    var  tableSettings = {
+        add:false, 
+        edit:false, 
+        delete:false, 
+        filter: true, 
+        select:true,
+        defaultSelection:true,
+    }
 
     const [tableList, setTableList] = React.useState([])
     const [selectedItemId, setSelectedItemId] = React.useState()
@@ -182,8 +189,8 @@ export default function StorekeeperInventory(props){
             }
         })
         setTableList(buf)
+        setSelectedItemId(buf[0])
     }
-
     //-------------------------------------стол 1 конец
     function apiUpdateOrderStatus(status, code, i) {
         var xhr = new XMLHttpRequest();
@@ -222,8 +229,6 @@ export default function StorekeeperInventory(props){
                         buf.push({id:counter, number:++counter, zone:item.zone_num, rack:item.rack_num, shelf:item.name, amount:amount, inventorysationStatus:item.inventorysationStatus})
                     }
                 })
-                console.log('buf')
-                console.log(buf)
                 setTableList(buf)
               //alert(`Статусы успешно сохранены`)
             }
@@ -251,7 +256,11 @@ export default function StorekeeperInventory(props){
         {name: 'weight',                    title:'Вес',                    editingEnabled:false,     width:60    },
         {name: 'inventaryzationStatus',     title:'Статус инвентаризации',  editingEnabled:true,      width:180, dropdownList: dropdownList1    },
     ]) 
-    var  tableSettings1 = {add:false, edit:true, delete:false}
+    var  tableSettings1 = {
+        add:false, 
+        edit:true, 
+        delete:false
+    }
 
     // const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"вв", amount:10, cost:10, sumCost:10}])
     const [tableList1, setTableList1] = React.useState([])

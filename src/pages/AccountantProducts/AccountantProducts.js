@@ -38,6 +38,7 @@ export default function AccountantProducts(props){
                 buffer[i].description = element.description
             });
             setTableList(buffer)
+            setSelectedItemId(buffer[0])
           }
         }
         
@@ -55,16 +56,26 @@ export default function AccountantProducts(props){
         {name: 'amountOnWarehouse', title:'Кол-во на складе',   editingEnabled:false,    width:135   }, 
         {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:125   },
     ]) 
-    var tableSettings = {add:false, edit:false, delete:false, select:true, filter: true}
+    var tableSettings = {
+        add:false, 
+        edit:false, 
+        delete:false, 
+        select:true, 
+        defaultSelection:true,
+        filter:true
+    }
+
+    const [tableList, setTableList] = React.useState([])
+    if (tableList.toString()=="")
+        apiGetGoodsTypeCats()
+
     const [selectedItemId, setSelectedItemId] = React.useState()
 
     React.useEffect(() => {
        if (selectedItemId != undefined && tableList.length > 0) setDataInTable2(selectedItemId)
     }, [selectedItemId]);
 
-    const [tableList, setTableList] = React.useState([])
-    if (tableList.toString()=="")
-        apiGetGoodsTypeCats()
+    
 
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец

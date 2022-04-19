@@ -38,6 +38,7 @@ export default function ManagerProducts(props){
                 buffer[i].description = element.description
             });
             setTableList(buffer)
+            setSelectedItemId(buffer[0])
           }
         }
         
@@ -56,14 +57,22 @@ export default function ManagerProducts(props){
         {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:125   },
         {name: 'goodsLimit',        title:'Лимит товара',       editingEnabled:true,     width:120   },
     ]) 
-    var tableSettings = {add:false, edit:false, delete:false, select:true, filter: true}
+    var tableSettings = {
+        add:false, 
+        edit:false, 
+        delete:false, 
+        select:true, 
+        defaultSelection:true,
+        filter: true
+    }
+    
+    const [tableList, setTableList] = React.useState([])
     const [selectedItemId, setSelectedItemId] = React.useState()
 
     React.useEffect(() => {
        if (selectedItemId != undefined && tableList.length > 0) setDataInTable2(selectedItemId)
     }, [selectedItemId]);
 
-    const [tableList, setTableList] = React.useState([])
     if (tableList.toString()=="")
         apiGetGoodsTypeCats()
 

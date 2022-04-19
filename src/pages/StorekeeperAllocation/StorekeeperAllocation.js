@@ -270,7 +270,11 @@ export default function StorekeeperAllocation(props){
         {name: 'rack',              title:'Стеллаж',            editingEnabled:true,     width:125, dropdownList: dropdownList2 },
         {name: 'shelf',             title:'Полка',              editingEnabled:true,     width:105,  dropdownList: dropdownList3 }
     ]) 
-    var  tableSettings = {add:false, edit:true, delete:false}
+    var  tableSettings = {
+        add:false, 
+        edit:true, 
+        delete:false,
+    }
 
     const [tableList, setTableList] = React.useState([])
     React.useEffect(() => {

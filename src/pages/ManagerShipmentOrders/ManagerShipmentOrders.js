@@ -36,7 +36,13 @@ export default function ManagerShipmentOrders(props){
         {name: 'amount',        title:'Количество',             editingEnabled:false,     width:100   }, 
         {name: 'delay',         title:'Опоздание (дней)',       editingEnabled:false,     width:140   }, 
     ]) 
-    var tableSettings = {add:false, edit:false, delete:false, select:true}
+    var tableSettings = {
+        add:false, 
+        edit:false, 
+        delete:false, 
+        select:true,
+        defaultSelection:true,
+    }
 
     // const [tableList, setTableList] = React.useState([{number:1, orderNumber:"Заказ №0000001", shipmentDate:"2022-01-14", orderCost:1000, amount:"10", delay:"10"}])
     const [tableList, setTableList] = React.useState([])
@@ -86,6 +92,7 @@ export default function ManagerShipmentOrders(props){
                 buffer[i].code = element.id;
             });
             setTableList(buffer)
+            setSelectedItemId(buffer[0])
           }
         }
         
@@ -113,7 +120,7 @@ export default function ManagerShipmentOrders(props){
             setTableList1(buffer)
             setOrder(value.orderNumber)
             setShipmentAddress(value.address)
-            setShipmentDeadline(value.deadline)
+            setShipmentDeadline(value.deadline.split("T")[0].replace("-", ".").replace("-", "."))
             setOrderCost(value.orderCost)
           }
         }

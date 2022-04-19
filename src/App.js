@@ -37,8 +37,8 @@ const mainTabsArray = [
   {title: "АРМ Кладовщика",     href:"/Storekeeper",    basicHref:"/StorekeeperAdvent/Current"},
   {title: "АРМ Менеджера",      href:"/Manager",        basicHref:"/ManagerProducts"},
   {title: "АРМ Логиста",        href:"/Logistician",    basicHref:"/LogisticianOrders/Current"},
-  {title: "АРМ Администратора", href:"/Administrator",  basicHref:"/AdministratorAccounts"},
   {title: "АРМ Бухгалтера",     href:"/Accountant",     basicHref:"/AccountantProducts"},
+  {title: "АРМ Администратора", href:"/Administrator",  basicHref:"/AdministratorAccounts"},
 ]
 
 const subTabsArray = [
@@ -58,12 +58,12 @@ const subTabsArray = [
     {title: "Товары",               roleHref:"/Logistician",    href:"/LogisticianProducts", basicHref:""},
     {title: "Счета на оплату",      roleHref:"/Logistician",    href:"/LogisticianBills", basicHref:"/NewAccounts"},
   ],[
-    {title: "Аккаунты",             roleHref:"/Administrator",  href:"/AdministratorAccounts", basicHref:""},
-  ],[
     {title: "Товары",               roleHref:"/Accountant",     href:"/AccountantProducts", basicHref:""},
     {title: "Накладные",            roleHref:"/Accountant",     href:"/AccountantInvoice", basicHref:"/Current"},
     {title: "Отчеты",               roleHref:"/Accountant",     href:"/AccountantReports", basicHref:"/SelledProducts"},
     {title: "Счета на оплату",      roleHref:"/Accountant",     href:"/AccountantAccounts", basicHref:"/NewAccounts"},
+  ],[
+    {title: "Аккаунты",             roleHref:"/Administrator",  href:"/AdministratorAccounts", basicHref:""},
   ]
 ]
 

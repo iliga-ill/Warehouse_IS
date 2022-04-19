@@ -228,9 +228,14 @@ export default function StorekeeperAdvent(props){
         {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,   width:170   }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,   width:200   }, 
         {name: 'orderedAmount',     title:'Ожидаемое кол-во',   editingEnabled:false,   width:150   },
-        {name: 'amount',            title:'Кол-во коробок',     editingEnabled:true,    width:130   }
+        {name: 'amount',            title:'Кол-во коробок',     editingEnabled:true,    width:130,  mask:/^[0-9]{0,10}$/i, maskExample:"быть числом больше нуля"}
     ]) 
-    var  tableSettings = {add:false, edit:true, delete:false}
+    var  tableSettings = {
+        add:false, 
+        edit:false, 
+        delete:false,
+        cell:true, 
+    }
 
     //var table_field_height = "160px"
 
@@ -267,9 +272,8 @@ export default function StorekeeperAdvent(props){
                                 
                                 //  bar[i] = [i, goodsCategories2[item2.category-1].text, goodsCategories3[item2.sub_category-1].text,  item2.text, item2.ordered, item2.amount, true]
                                 buffer[counter] = {number: counter+1, goodsCategories2: goodsCategories2[item2.category-1].text, goodsCategories3: goodsCategories3[item2.sub_category-1].text, goodsType: item2.text, orderedAmount: item.amount, amount: item.amount_real}
-                                buffer[counter].id = getId()
                                 buffer[counter].code = item.code;
-                                counter++
+                                buffer[counter].id = counter++
                             }   
                         })
                     })

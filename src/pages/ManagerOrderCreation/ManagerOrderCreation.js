@@ -15,17 +15,10 @@ const styles = {
   }
 
 export default function ManagerOrderCreation(props){
+    let newDate = new Date()
 
     var id=0
     function getId(){return id++}
-
-    const [reload, setReload] = React.useState(0)
-
-    function reloadPage(){
-        setReload(reload+1)
-    }
-
-
 
     //-------------------------------------------------------------------------query
     function apiGetGoodsTypeCats() {
@@ -77,24 +70,33 @@ export default function ManagerOrderCreation(props){
     //-------------------------------------------------------------------------query end
     //-------------------------------------------------------------------------Блок 1
 
-    const [orderTypeList, setOrderTypeList] = React.useState([
-        {id: 0, value: "На продажу", selected: true},
-        {id: 1, value: "На поставку", selected: false},
+    let [orderTypeList, setOrderTypeList]  = React.useState([
+        {value: "На продажу"},
+        {value: "На поставку"},
     ])
+    let [orderTypeListValue, setOrderTypeListValue]  = React.useState(orderTypeList[0].value)
+
     const [orderNumber, setOrderNumber] = React.useState("")
-    const [shipmentDate, setShipmentDate] = React.useState("")
+    const [shipmentDate, setShipmentDate] = React.useState(`${newDate.getFullYear()}-${newDate.getMonth()+1<10?`0${newDate.getMonth()+1}`:newDate.getMonth()+1}-${newDate.getDate()<10?`0${newDate.getDate()}`:newDate.getDate()}`)
     const [shipmentAddress, setShipmentAddress] = React.useState("")
     const [sumCost, setSumCost] = React.useState(0)
     const [note, setNote] = React.useState("")
 
     //-------------------------------------стол 1
     const [tableHeaders, setTableHeaders] = React.useState([
+        {name: 'number',            title:'№',                  editingEnabled:false,   width:40    }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,     width:120   }, 
-        {name: 'amount',            title:'Кол-во',             editingEnabled:true,     width:70    }, 
-        {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:120   },
-        {name: 'sumCost',           title:'Итог цена',          editingEnabled:false,     width:120   },
+        {name: 'amount',            title:'Кол-во',             editingEnabled:true,     width:70,  mask:/^[0-9]{0,10}$/i, maskExample:"быть числом больше нуля"    }, 
+        {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:120,  mask:/^[0-9]{0,10}$/i, maskExample:"быть числом больше нуля", isCurrency:true   },
+        {name: 'sumCost',           title:'Итог цена',          editingEnabled:false,     width:120, totalCount:{type:['sum'], expantionAlign: 'right'}, isCurrency:true   },
     ]) 
-    var tableSettings = {add:false, edit:true, delete:true}
+    var tableSettings = {
+        editColumnWidth: 100, 
+        add:false, 
+        edit:false, 
+        delete:true,
+        cell:true
+    }
 
     const [tableList, setTableList] = React.useState([])
     React.useEffect(() => {
@@ -149,16 +151,15 @@ export default function ManagerOrderCreation(props){
             var sumCost = 0
             if (!isNaN(parseInt(0)) && !isNaN(parseInt(selectedItemId1.cost)))
                 sumCost=0*selectedItemId1.cost
-            selectedRow = {id: getId(), goodsType: selectedItemId1.goodsType, amount: 0, cost: selectedItemId1.cost, sumCost: sumCost, goodCode: selectedItemId1.code}
+            if (tableList == "")
+                selectedRow = {id: 0, number: 1, goodsType: selectedItemId1.goodsType, amount: 0, cost: selectedItemId1.cost, sumCost: sumCost, goodCode: selectedItemId1.code}
+            else 
+                selectedRow = {id: tableList[tableList.length-1].id+1, number: tableList[tableList.length-1].number+1, goodsType: selectedItemId1.goodsType, amount: 0, cost: selectedItemId1.cost, sumCost: sumCost, goodCode: selectedItemId1.code}
             var check = true
             buf.map(function(element,i){
                 if (element.goodCode == selectedRow.goodCode) check = false
             })
             if (check) buf.push(selectedRow)
-
-            buf.map(function(element, i){
-                element.id = getId()
-            }) 
             
             setBufferedTableList(buf)
             setTableList(buf)
@@ -175,13 +176,7 @@ export default function ManagerOrderCreation(props){
             alert('Нельзя создать заказ без товаров')
         }
         else {
-            var orderType = 'На продажу'
-            orderTypeList.map(item=>{
-                if (item.selected){
-                    orderType = item.value
-                }
-            })
-
+            var orderType = orderTypeListValue
             var accounts = tableList
             var check=true
 
@@ -243,10 +238,7 @@ export default function ManagerOrderCreation(props){
                 // Request finished. Do processing here.
                 console.log("new order posted")
                 alert("Заказ успешно создан")
-                setOrderTypeList([
-                    {id: 0, value: "На продажу", selected: true},
-                    {id: 1, value: "На поставку", selected: false},
-                ])
+                setOrderTypeListValue("На продажу")
                 // setOrderNumber("")
                 // setShipmentDate("")
                 // setShipmentAddress("")
@@ -263,10 +255,9 @@ export default function ManagerOrderCreation(props){
         <FlexibleBlocksPage>
             <FlexibleBlock>
                 <div class="header_text">Создание заказа</div>
-                <div class="low_text row_with_item_wide"><div>Тип&nbsp;заказа&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={orderTypeList[0].value} list={orderTypeList} func={setOrderTypeList}  i={0} j={0}/></div> 
+                <div class="low_text row_with_item_wide"><div>Тип&nbsp;заказа&nbsp;</div><ExpandListInputRegular list={orderTypeList} func={setOrderTypeListValue}/></div> 
                 <InputText styles = "row_with_item_wide" Id={getId()} label="Заказ&nbsp;№&nbsp;" placeholder="номер заказа" set={setOrderNumber}/> 
                 <div class="low_text row_with_item_wide"><div>Дата&nbsp;доставки&nbsp;</div><InputDate Id={getId()} defValue={shipmentDate} func={setShipmentDate}/></div>
-                <div class="low_text row_with_item_wide"><div>Итоговая&nbsp;цена:&nbsp;{sumCost}&nbsp;руб</div></div>
                 <InputTextArea styles = "" Id={getId()} label="Адрес доставки:" placeholder="адрес" set={setShipmentAddress} defValue={shipmentAddress}/>
                 <InputTextArea styles = "" Id={getId()} label="Примечание:" placeholder="примечание" set={setNote} defValue={note}/>
                 <div class="header_text">Заказываемые товары:</div>

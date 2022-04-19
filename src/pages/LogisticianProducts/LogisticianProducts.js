@@ -37,6 +37,7 @@ export default function LogisticianProducts(props){
                 buffer[i].description = element.description
             });
             setTableList(buffer)
+            setSelectedItemId(buffer[0])
           }
         }
         
@@ -54,7 +55,16 @@ export default function LogisticianProducts(props){
         {name: 'cost',              title:'Цена ед товара (руб)',     editingEnabled:true,     width:160   },
         {name: 'weight',            title:'Вес ед товара (кг)',      editingEnabled:true,     width:140   },
     ]) 
-    var tableSettings = {add:false, edit:false, delete:false, select:true}
+    var tableSettings = {
+        add:false, 
+        edit:false, 
+        delete:false, 
+        select:true,
+        defaultSelection:true,
+    }
+    const [tableList, setTableList] = React.useState([])
+    if (tableList.toString()=="")
+        apiGetGoodsTypeCats()
 
     const [selectedItemId, setSelectedItemId] = React.useState()
 
@@ -63,9 +73,8 @@ export default function LogisticianProducts(props){
     }, [selectedItemId]);
 
     //const [tableList, setTableList] = React.useState([{number:1, goodsCategories2:"вв", goodsCategories3:"вв", goodsType:"вв", amountOnWarehouse:10, cost:1000, weight:100}])
-    const [tableList, setTableList] = React.useState([])
-    if (tableList.toString()=="")
-        apiGetGoodsTypeCats()
+    
+    
     
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец

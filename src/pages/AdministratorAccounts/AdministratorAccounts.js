@@ -17,96 +17,27 @@ var buf = {value: []}
   
 export default function AdministratorAccounts(props){
 
-    var id=0
-    function getId(){return id++}
-
-    const [reload, setReload] = React.useState(0)
-    function reloadPage(){
-        setReload(reload+1)
-    }
-
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------стол 1
-
-    var customizationSettings={
-        customizeCell:(cell, row, column)=>{
-            if (row.number < 3) {
-              cell.font = { color: { argb: 'AAAAAA' } };
-            }
-            if (row.number > 4) {
-              if (column.name === 'password') {
-                cell.font = { color: { argb: '000000' } };
-                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFBB00' } };
-              }
-            }
-            return cell
-        },
-        customizeSummaryCell: (cell)=>{
-            cell.font = { italic: true };
-            return cell
-        },
-        customizeHeader: (worksheet)=>{
-            const generalStyles = {
-                font: { bold: true },
-                fill: {
-                  type: 'pattern', pattern: 'solid', fgColor: { argb: 'D3D3D3' }, bgColor: { argb: 'D3D3D3' },
-                },
-                alignment: { horizontal: 'left' },
-            };
-            for (let rowIndex = 1; rowIndex < 6; rowIndex += 1) {
-                worksheet.mergeCells(rowIndex, 1, rowIndex, 3);
-                worksheet.mergeCells(rowIndex, 4, rowIndex, 6);
-                Object.assign(worksheet.getRow(rowIndex).getCell(1), generalStyles);
-                Object.assign(worksheet.getRow(rowIndex).getCell(3), generalStyles);
-            }
-            worksheet.getRow(1).height = 20;
-            worksheet.getRow(1).getCell(1).font = { bold: true, size: 16 };
-            worksheet.getRow(1).getCell(4).numFmt = 'd mmmm yyyy';
-            worksheet.getRow(1).getCell(4).font = { bold: true, size: 16 };
-            worksheet.getColumn(1).values = ['Sale Amounts:', 'Company Name:', 'Address:', 'Phone:', 'Website:'];
-            worksheet.getColumn(4).values = [new Date(), 'K&S Music', '1000 Nicllet Mall Minneapolis Minnesota', '(612) 304-6073', 'www.nowebsitemusic.com'];
-            worksheet.addRow({});
-            return worksheet
-        },
-        customizeFooter:(worksheet)=>{
-            const { lastRow } = worksheet;
-            let currentRowIndex = lastRow.number + 2;
-            for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
-                worksheet.mergeCells(currentRowIndex + rowIndex, 1, currentRowIndex + rowIndex, 6);
-                Object.assign(worksheet.getRow(currentRowIndex + rowIndex).getCell(1), { font: { bold: true }, alignment: { horizontal: 'right' } });
-            }
-            worksheet.getRow(currentRowIndex).getCell(1).value = 'If you have any questions, please contact John Smith.';
-            currentRowIndex += 1;
-            worksheet.getRow(currentRowIndex).getCell(1).value = 'Phone: +111-111';
-            currentRowIndex += 1;
-            worksheet.getRow(currentRowIndex).getCell(1).value = 'For demonstration purposes only';
-            worksheet.getRow(currentRowIndex).getCell(1).font = { italic: true };
-            return worksheet
-        },
-    }
     
     const [tableHeaders, setTableHeaders] = React.useState([
-        {name: 'number',            title:'№',                  editingEnabled:false,   width:40                               }, 
+        {name: 'number',            title:'№',                  editingEnabled:false,   width:40    }, 
         {name: 'surname',           title:'Фамилия',            editingEnabled:true,    width:100,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                }, 
         {name: 'name',              title:'Имя',                editingEnabled:true,    width:80,   mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                }, 
         {name: 'patronymic',        title:'Отчество',           editingEnabled:true,    width:120,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                }, 
-        {name: 'phone',             title:'Номер телефона',     editingEnabled:true,    width:130,  mask:/^\+\d{1} \(\d{3}\) \d{3}-\d{4}$/i,    maskExample:"соотвестсвовать шаблону +7 (930) 442-5665"     }, 
-        {name: 'email',             title:'Почта',              editingEnabled:true,    width:160,  mask:/^(.)(.*)(.@.*)\.(.)(.)$/i,            maskExample:"соотвестсвовать шаблону example@service.ru"    }, 
+        {name: 'phone',             title:'Номер телефона',     editingEnabled:true,    width:130,  mask:/^\+\d{1} \(\d{3}\) \d{3}-\d{4}$/i,    maskExample:"соответствовать шаблону +7 (930) 442-5665"     }, 
+        {name: 'email',             title:'Почта',              editingEnabled:true,    width:160,  mask:/^(.)(.*)(.@.*)\.(.)(.)$/i,            maskExample:"соответствовать шаблону example@service.ru"    }, 
         {name: 'duty',              title:'Должность',          editingEnabled:false,   width:170                                                                                                           },
         {name: 'login',             title:'Логин',              editingEnabled:true,    width:130,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                },
         {name: 'password',          title:'Пароль',             editingEnabled:true,    width:130,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                }
-    ]) 
+    ])
 
     var tableSettings = {
         add:true, 
         edit:true, 
         delete:true, 
         select:true, 
-        validation:true, 
-        cell:false, 
-        exportExel:true, 
-        exportExelFileName:"Accounts",
-        exportCustomization: customizationSettings
+        cell:false
     }
 
     const [tableList, setTableList] = React.useState([])

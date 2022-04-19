@@ -83,22 +83,22 @@ export default function LogisticianOrders(props){
     }
 
     const [tableHeaders, setTableHeaders] = React.useState([
-        {name: 'number',            title:'№',                          editingEnabled:false,   width:40    }, 
-        {name: 'shipmentNumber',    title:'Номер доставки',             editingEnabled:true,    width:155   }, 
-        {name: 'shipmentDate',      title:'Дата доставки',              editingEnabled:true,    width:120   }, 
-        {name: 'shipmentCost',      title:'Стоимость доставки (руб)',   editingEnabled:true,    width:200   }, 
-        {name: 'shipmentStatus',    title:'Статус',                     editingEnabled:false,   width:110   }, 
+        {name: 'number',            title:'№',                    editingEnabled:false,   width:40    }, 
+        {name: 'shipmentNumber',    title:'Номер доставки',       editingEnabled:true,    width:155, mask:/^(.)(.*)$/i, maskExample:"быть заполнено"   }, 
+        {name: 'shipmentDate',      title:'Дата доставки',        editingEnabled:true,    width:120, mask:/^[0-9]{4}\.[0-9]{2}\.[0-9]{2}$/i, maskExample:"соответствовать шаблону 2021.01.01"   }, 
+        {name: 'shipmentCost',      title:'Стоимость доставки',   editingEnabled:true,    width:200, mask:/^[0-9]{0,10}$/i, maskExample:"быть числом больше нуля", isCurrency:true   }, 
+        {name: 'shipmentStatus',    title:'Статус',               editingEnabled:false,   width:110   }, 
     ]) 
-    var tableSettings = {add:true, edit:true, delete:true, select:true}
-
-//     const [tableList, setTableList] = React.useState([{id:0, number:1, shipmentNumber:"Доставка №0000001", shipmentDate:"2022-01-14", shipmentCost:1000, shipmentStatus:"Ожидается", goodsInOrder:[]},
-//     {id:1, number:1, shipmentNumber:"Доставка №0000001", shipmentDate:"2022-01-14", shipmentCost:1000, shipmentStatus:"Пустой", goodsInOrder:[]}
-// ])
+    var tableSettings = {
+        add:true, 
+        edit:true, 
+        delete:true, 
+        select:true
+    }
+    
     const [tableList, setTableList] = React.useState([])
     const [selectedItemId, setSelectedItemId] = React.useState()
     React.useEffect(() => {
-        console.log("tableList")
-        console.log(tableList)
         if (selectedItemId!=undefined){
             tableList.map(item=>{
                 if (item.id == selectedItemId.id) {
@@ -112,15 +112,21 @@ export default function LogisticianOrders(props){
     //-------------------------------------стол 1 конец
     //-------------------------------------стол 2
     const [tableHeaders1, setTableHeaders1] = React.useState([
-        {name: 'goodsType',       title:'Товар',                 editingEnabled:true,    width:140   }, 
-        {name: 'weight',          title:'Вес ед продукции (кг)', editingEnabled:true,    width:159   }, 
-        {name: 'expectingAmount', title:'Ожидаемое количество',  editingEnabled:true,    width:175   }, 
+        {name: 'number',          title:'№',                     editingEnabled:false,   width:40    }, 
+        {name: 'goodsType',       title:'Товар',                 editingEnabled:false,   width:228   }, 
+        {name: 'weight',          title:'Вес ед продукции (кг)', editingEnabled:true,    width:159, mask:/^[0-9]{0,10}$/i, maskExample:"быть числом больше нуля"},
+        {name: 'expectingAmount', title:'Ожидаемое количество',  editingEnabled:true,    width:175, mask:/^[0-9]{0,10}$/i, maskExample:"быть числом больше нуля"},
         {name: 'realAmount',      title:'Пришедшее кол-во',      editingEnabled:false,   width:144   }, 
         
     ]) 
-    var tableSettings1 = {add:false, edit:true, delete:true}
+    var tableSettings1 = {
+        editColumnWidth: 100,
+        add:false, 
+        edit:false, 
+        delete:true,
+        cell:true,
+    }
 
-    //const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"bb", weight:100, expectingAmount:10, realAmount:10}])
     const [tableList1, setTableList1] = React.useState([])
     React.useEffect(() => {
         var buf = tableList
@@ -132,11 +138,6 @@ export default function LogisticianOrders(props){
             }
         })
         setTableList(buf)
-        
-        console.log(order)
-        console.log("tableList")
-        console.log(tableList)
-        //console.log(tableList2)
     }, [tableList1]);
 
         
@@ -184,8 +185,11 @@ export default function LogisticianOrders(props){
 
             tableList2.map(function(element, i){
                 if (element.id == selectedItemId2.id) {
-                    selectedRow = {id: getId(), goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode, shipmentOrderGoodsCode:0, orderCode:order.code}
-                }     
+                    if (tableList1 == "")
+                        selectedRow = {id: 0, number:1, goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode, shipmentOrderGoodsCode:0, orderCode:order.code}
+                    else
+                        selectedRow = {id: tableList1[tableList1.length-1].id+1, number:tableList1[tableList1.length-1].number+1, goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode, shipmentOrderGoodsCode:0, orderCode:order.code}
+                    }     
             })
             var check = true
             buf.map(function(element,i){
@@ -193,11 +197,6 @@ export default function LogisticianOrders(props){
             })
             if (check) buf.push(selectedRow)
 
-            buf.map(function(element, i){
-                element.id = getId()
-            }) 
-            console.log("buf")
-            console.log(buf)
             setBufferedTableList2(buf)
             setTableList1(buf)
         }
@@ -251,21 +250,20 @@ export default function LogisticianOrders(props){
                 console.log("goodsTypeAnswer");
                 console.log(goodsTypeAnswer);
 
+                let counter1 = 0;
                 answer.map(function(shipment, i){
                     //tableListBuf.push({number: i+1, shipmentNumber: shipment.name, shipmentDate: shipment.shipment_date, shipmentCost: shipment.shipment_price, shipmentStatus: shipment.status_fullness, goodsInOrder: shipment.goods})
                     var goods_array = []
-                    tableListBuf.push({number: i+1, shipmentNumber: shipment.name, orderCode:order.code, shipmentDate: shipment.shipment_date.split("T")[0], shipmentCost: shipment.shipment_price, shipmentStatus: shipment.status_fullness, goodsInOrder: []})
                     if (shipment.goods != undefined) {
                         shipment.goods.map(function(good, j){
+                            let counter2 = 0;
                             goodsTypeAnswer.map(item=>{
                                 if (item.code == good.goods)
-                                    goods_array.push({id: getId(), goodsType: item.text, weight:item.weight, expectingAmount:good.amount, realAmount:0, goodCode: good.goods, shipmentOrderGoodsCode:good.code})
+                                    goods_array.push({id: counter2++, goodsType: item.text, weight:item.weight, expectingAmount:good.amount, realAmount:0, goodCode: good.goods, shipmentOrderGoodsCode:good.code})
                             })
                         })
                     }
-                    tableListBuf[i].goodsInOrder = goods_array
-                    tableListBuf[i].id = getId()
-                    tableListBuf[i].code = shipment.code
+                    tableListBuf.push({id:counter1, number: counter1+++1, shipmentNumber: shipment.name, orderCode:order.code, shipmentDate: shipment.shipment_date.split("T")[0], shipmentCost: shipment.shipment_price , shipmentStatus: shipment.status_fullness, goodsInOrder: goods_array, code: shipment.code})
                 })
                 console.log("tableListBuf")
                 console.log(tableListBuf)
@@ -311,7 +309,7 @@ export default function LogisticianOrders(props){
                 else
                     setOrderType("На поставку")
                 setOrder(order.text)
-                setShipmentDeadline(order.deadline)
+                setShipmentDeadline(order.deadline.replace("-", ".").replace("-", "."))
                 setOrderCost(order.cost)
                 setAddress(order.address)
                 setTableList2(buffer)
