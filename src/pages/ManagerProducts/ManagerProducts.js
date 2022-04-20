@@ -32,10 +32,18 @@ export default function ManagerProducts(props){
             console.log(answer)
             var buffer = []
             answer.map(function( element, i) {
-                buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: parseFloat(element.price), goodsLimit: element.amount_limit})
-                buffer[i].id = i
-                buffer[i].code = element.code;
-                buffer[i].description = element.description
+                buffer.push({
+                    id:i,
+                    number:i+1, 
+                    goodsCategories2: element.category, 
+                    goodsCategories3: element.subcategory_2, 
+                    goodsType: element.name, 
+                    amountOnWarehouse: element.amount, 
+                    cost: parseFloat(element.price), 
+                    goodsLimit: element.amount_limit,
+                    code: element.code,
+                    description: element.description,
+                })
             });
             setTableList(buffer)
             setSelectedItemId(buffer[0])
@@ -54,12 +62,12 @@ export default function ManagerProducts(props){
         {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,    width:200   }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,    width:330   }, 
         {name: 'amountOnWarehouse', title:'Кол-во на складе',   editingEnabled:false,    width:135   }, 
-        {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:125, isCurrency:true},
-        {name: 'goodsLimit',        title:'Лимит товара',       editingEnabled:true,     width:120   },
+        {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:125, isCurrency:true,  mask:/^[0-9]{0,10}$/i, maskExample:"быть числом больше нуля"},
+        {name: 'goodsLimit',        title:'Лимит товара',       editingEnabled:true,     width:120,  mask:/^[0-9]{0,10}$/i, maskExample:"быть числом больше нуля"   },
     ]) 
     var tableSettings = {
         add:false, 
-        edit:false, 
+        edit:true, 
         delete:false, 
         select:true, 
         defaultSelection:true,
@@ -68,6 +76,10 @@ export default function ManagerProducts(props){
     
     const [tableList, setTableList] = React.useState([])
     const [selectedItemId, setSelectedItemId] = React.useState()
+
+    React.useEffect(() => {
+        console.log("table changed")
+     }, [tableList]);
 
     React.useEffect(() => {
        if (selectedItemId != undefined && tableList.length > 0) setDataInTable2(selectedItemId)

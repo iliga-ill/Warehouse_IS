@@ -295,14 +295,22 @@ export function TableComponent(props) {
           columns.map(item=>{
             var keys = Object.keys(changed[row.id])
             keys.map(key=>{
+              if (item.name == key && item.isCurrency!=undefined && item.isCurrency){
+                changedRows[row.id][key] = parseFloat(changedRows[row.id][key])
+              }
               if (item.name == key && item.mask!=undefined && changed[row.id][key].match(item.mask)==null){
                 alert(`Значение в поле ${item.title} в строке №${row.number} должно ${item.maskExample}`)
                 changedRows[row.id][key] = rows[row.id][key]
               }
+              
             });
           });
         }
       });
+      rows.map(row =>{
+
+      })
+      console.log(changedRows)
       
       let counter=0
       columns.map(item=>{
