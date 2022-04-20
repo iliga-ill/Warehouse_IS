@@ -33,7 +33,7 @@ export default function ManagerOrderCreation(props){
             console.log(answer)
             var buffer = []
             answer.map(function( element, i) {
-                buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: element.price, goodsLimit: element.amount_limit})
+                buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: parseFloat(element.price), goodsLimit: element.amount_limit})
                 buffer[i].id = getId()
                 buffer[i].code = element.code;
                 buffer[i].description = element.description
@@ -119,7 +119,7 @@ export default function ManagerOrderCreation(props){
         {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,    width:168, dropdownList:[]   }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,    width:310, dropdownList:[]   }, 
         {name: 'amountOnWarehouse', title:'Кол-во на складе',   editingEnabled:false,    width:135, dropdownList:[]   }, 
-        {name: 'cost',              title:'Цена ед товара',     editingEnabled:false,     width:125, dropdownList:[]   },
+        {name: 'cost',              title:'Цена ед товара',     editingEnabled:false,     width:125, dropdownList:[], isCurrency:true   },
         {name: 'goodsLimit',        title:'Лимит товара',       editingEnabled:false,     width:120, dropdownList:[]   },
     ]) 
     var tableSettings1 = {add:false, edit:false, delete:false, select:true, filter: true}
@@ -152,9 +152,9 @@ export default function ManagerOrderCreation(props){
             if (!isNaN(parseInt(0)) && !isNaN(parseInt(selectedItemId1.cost)))
                 sumCost=0*selectedItemId1.cost
             if (tableList == "")
-                selectedRow = {id: 0, number: 1, goodsType: selectedItemId1.goodsType, amount: 0, cost: selectedItemId1.cost, sumCost: sumCost, goodCode: selectedItemId1.code}
+                selectedRow = {id: 0, number: 1, goodsType: selectedItemId1.goodsType, amount: 0, cost: parseFloat(selectedItemId1.cost), sumCost: sumCost, goodCode: selectedItemId1.code}
             else 
-                selectedRow = {id: tableList[tableList.length-1].id+1, number: tableList[tableList.length-1].number+1, goodsType: selectedItemId1.goodsType, amount: 0, cost: selectedItemId1.cost, sumCost: sumCost, goodCode: selectedItemId1.code}
+                selectedRow = {id: tableList[tableList.length-1].id+1, number: tableList[tableList.length-1].number+1, goodsType: selectedItemId1.goodsType, amount: 0, cost: parseFloat(selectedItemId1.cost), sumCost: sumCost, goodCode: selectedItemId1.code}
             var check = true
             buf.map(function(element,i){
                 if (element.goodCode == selectedRow.goodCode) check = false

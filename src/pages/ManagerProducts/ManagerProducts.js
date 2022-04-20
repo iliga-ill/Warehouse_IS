@@ -32,8 +32,8 @@ export default function ManagerProducts(props){
             console.log(answer)
             var buffer = []
             answer.map(function( element, i) {
-                buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: element.price, goodsLimit: element.amount_limit})
-                buffer[i].id = getId()
+                buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: parseFloat(element.price), goodsLimit: element.amount_limit})
+                buffer[i].id = i
                 buffer[i].code = element.code;
                 buffer[i].description = element.description
             });
@@ -54,7 +54,7 @@ export default function ManagerProducts(props){
         {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,    width:200   }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,    width:330   }, 
         {name: 'amountOnWarehouse', title:'Кол-во на складе',   editingEnabled:false,    width:135   }, 
-        {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:125   },
+        {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:125, isCurrency:true},
         {name: 'goodsLimit',        title:'Лимит товара',       editingEnabled:true,     width:120   },
     ]) 
     var tableSettings = {
@@ -113,7 +113,7 @@ export default function ManagerProducts(props){
                     <div class="header_text">Товар:&nbsp;<label class="normal">{good}</label></div>
                     <div class="low_text bold">Категория:&nbsp;<label class="normal">{category}</label></div>
                     <div class="low_text bold">Подкатегория:&nbsp;<label class="normal">{subCategory}</label></div>
-                    <div class="low_text bold">Цена&nbsp;ед&nbsp;товара&nbsp;<label class="normal">{cost}</label></div>
+                    <div class="low_text bold">Цена&nbsp;ед&nbsp;товара&nbsp;<label class="normal">{cost} ₽</label></div>
                     <div class="low_text bold">Лимит&nbsp;товара&nbsp;(кг):&nbsp;<label class="normal">{goodLimit}</label></div>
                     <div class="low_text bold">Хар-ки&nbsp;товара:&nbsp;</div><div class="low_text normal">{goodCharacteristics}</div>
                 </div>

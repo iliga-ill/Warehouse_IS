@@ -102,7 +102,7 @@ const [dropdownList, setDropdownList] = React.useState([
 ])
 
 const [tableHeaders, setTableHeaders] = React.useState([
-    {name: 'number',            title:'№',                  editingEnabled:false,   width:40, totalCount:{type:['count', 'sum', 'max', 'min', 'avg'], expantionAlign: 'right'}, isCurrency:false }, 
+    {name: 'number',            title:'№',                  editingEnabled:false,   width:40, totalCount:{type:['count', 'sum', 'max', 'min', 'avg'], expantionAlign: 'right'}, isCurrency:true }, 
     {name: 'surname',           title:'Фамилия',            editingEnabled:true,    width:160                                                                               }, 
     {name: 'name',              title:'Имя',                editingEnabled:true,    width:160,  mask:/^(.)(.*)$/i,                       maskExample:"быть заполнено"       }, 
     {name: 'patronymic',        title:'Отчество',           editingEnabled:true,    width:170                                                                               }, 

@@ -32,7 +32,7 @@ export default function AccountantProducts(props){
             console.log(answer)
             var buffer = []
             answer.map(function( element, i) {
-                buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: element.price})
+                buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: parseFloat(element.price)})
                 buffer[i].id = getId()
                 buffer[i].code = element.code;
                 buffer[i].description = element.description
@@ -54,7 +54,7 @@ export default function AccountantProducts(props){
         {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,    width:200   }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,    width:330   }, 
         {name: 'amountOnWarehouse', title:'Кол-во на складе',   editingEnabled:false,    width:135   }, 
-        {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:125   },
+        {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:125, isCurrency:true   },
     ]) 
     var tableSettings = {
         add:false, 
@@ -116,7 +116,7 @@ export default function AccountantProducts(props){
                     <div class="header_text">Товар:&nbsp;<label class="normal">{good}</label></div>
                     <div class="low_text bold">Категория:&nbsp;<label class="normal">{category}</label></div>
                     <div class="low_text bold">Подкатегория:&nbsp;<label class="normal">{subCategory}</label></div>
-                    <div class="low_text bold">Цена&nbsp;ед&nbsp;товара&nbsp;<label class="normal">{cost}</label></div>
+                    <div class="low_text bold">Цена&nbsp;ед&nbsp;товара&nbsp;<label class="normal">{cost} ₽</label></div>
                     <div class="low_text bold">Хар-ки&nbsp;товара:&nbsp;</div><div class="low_text normal">{goodCharacteristics}</div>
                 </div>
             </FlexibleBlock>

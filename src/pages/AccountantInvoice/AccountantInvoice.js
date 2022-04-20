@@ -61,8 +61,8 @@ export default function AccountantInvoice(props){
         {name: 'number',            title:'№',                  editingEnabled:false,     width:40    }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,     width:300   }, 
         {name: 'amount',            title:'Кол-во',             editingEnabled:false,     width:70    }, 
-        {name: 'cost',              title:'Цена ед товара',     editingEnabled:false,     width:120   },
-        {name: 'sumCost',           title:'Итог цена',          editingEnabled:false,     width:120   },
+        {name: 'cost',              title:'Цена ед товара',     editingEnabled:false,     width:120, isCurrency:true   },
+        {name: 'sumCost',           title:'Итог цена',          editingEnabled:false,     width:120, isCurrency:true   },
     ]) 
         
     var tableSettings1 = {add:false, edit:false, delete:false}
@@ -83,8 +83,8 @@ export default function AccountantInvoice(props){
         {name: 'number',            title:'№',                  editingEnabled:false,     width:40    }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,     width:300   }, 
         {name: 'amount',            title:'Кол-во',             editingEnabled:false,     width:70    }, 
-        {name: 'cost',              title:'Цена ед товара',     editingEnabled:false,     width:120   },
-        {name: 'sumCost',           title:'Итог цена',          editingEnabled:false,     width:120   },
+        {name: 'cost',              title:'Цена ед товара',     editingEnabled:false,     width:120, isCurrency:true   },
+        {name: 'sumCost',           title:'Итог цена',          editingEnabled:false,     width:120, isCurrency:true   },
     ]) 
         
     var tableSettings2 = {add:false, edit:false, delete:false}

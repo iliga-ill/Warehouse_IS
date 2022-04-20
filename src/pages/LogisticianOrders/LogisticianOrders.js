@@ -130,10 +130,8 @@ export default function LogisticianOrders(props){
     const [tableList1, setTableList1] = React.useState([])
     React.useEffect(() => {
         var buf = tableList
-        var shipmentOrder
         tableList.map(function(item,i){
             if (item.id==selectedItemId){
-                shipmentOrder = item
                 buf[i].goodsInOrder=tableList1
             }
         })
@@ -156,7 +154,7 @@ export default function LogisticianOrders(props){
     const [tableHeaders2, setTableHeaders2] = React.useState([
         {name: 'number',            title:'№',                      editingEnabled:false,   width:40    }, 
         {name: 'goodsType',         title:'Товар',                  editingEnabled:false,   width:140   }, 
-        {name: 'goodsCost',         title:'Цена продукции',         editingEnabled:false,   width:124   }, 
+        {name: 'goodsCost',         title:'Цена продукции',         editingEnabled:false,   width:124, isCurrency:true   }, 
         {name: 'shipmentProgress',  title:'Прогресс доставки',      editingEnabled:false,   width:142   }, 
         {name: 'weight',            title:'Вес ед продукции (кг)',  editingEnabled:false,   width:159   }, 
     ])
@@ -263,7 +261,7 @@ export default function LogisticianOrders(props){
                             })
                         })
                     }
-                    tableListBuf.push({id:counter1, number: counter1+++1, shipmentNumber: shipment.name, orderCode:order.code, shipmentDate: shipment.shipment_date.split("T")[0], shipmentCost: shipment.shipment_price , shipmentStatus: shipment.status_fullness, goodsInOrder: goods_array, code: shipment.code})
+                    tableListBuf.push({id:counter1, number: counter1+++1, shipmentNumber: shipment.name, orderCode:order.code, shipmentDate: shipment.shipment_date.split("T")[0], shipmentCost: parseFloat(shipment.shipment_price) , shipmentStatus: shipment.status_fullness, goodsInOrder: goods_array, code: shipment.code})
                 })
                 console.log("tableListBuf")
                 console.log(tableListBuf)
@@ -297,7 +295,7 @@ export default function LogisticianOrders(props){
                 console.log(answer)
                 var buffer = []
                 answer.map(function( element, i) {
-                    buffer.push({number:i+1, goodsType: element.name, weight: element.weight, goodsCost: element.price, shipmentProgress:"10/100", goodCode:element.code})
+                    buffer.push({number:i+1, goodsType: element.name, weight: element.weight, goodsCost: parseFloat(element.price), shipmentProgress:"10/100", goodCode:element.code})
                     buffer[i].id = getId()
                     buffer[i].code = element.code;
                 });
@@ -418,7 +416,7 @@ export default function LogisticianOrders(props){
                     <div style={{width:500+"px"}}>
                         <div class="header_text"><label class="header_text">{order}</label></div>
                         <div class="low_text bold">Крайний срок поставки:&nbsp;&nbsp;<label class="normal">{shipmentDeadline}</label></div>
-                        <div class="low_text bold">Полная&nbsp;стоимость&nbsp;заказа:&nbsp;<label class="normal">{orderCost}</label></div>
+                        <div class="low_text bold">Полная&nbsp;стоимость&nbsp;заказа:&nbsp;<label class="normal">{orderCost} ₽</label></div>
                         <div class="low_text bold">Адрес:&nbsp;<label class="normal">{address}</label></div>
                         <div class="low_text bold">Тип&nbsp;заказа:&nbsp;<label class="normal">{orderType}</label></div>
                         <div class="low_text bold">Товары&nbsp;в&nbsp;заказе:&nbsp;</div>

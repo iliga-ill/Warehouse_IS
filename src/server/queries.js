@@ -1,20 +1,20 @@
 const Pool = require('pg').Pool
 
-const pool = new Pool({
-  user: 'test_user',
-  host: '176.53.182.224',
-  database: 'test_base',
-  password: 'testuser',
-  port: 54322,
-})
-
 // const pool = new Pool({
-//   user: 'postgres',
-//   host: 'localhost',
-//   database: 'warehouse',
-//   password: 'admin',
-//   port: 5432,
+//   user: 'test_user',
+//   host: '176.53.182.224',
+//   database: 'test_base',
+//   password: 'testuser',
+//   port: 54322,
 // })
+
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'warehouse',
+  password: 'iliga',
+  port: 5432,
+  })
 
 pool.connect((err, client, release) => {
     if (err) {

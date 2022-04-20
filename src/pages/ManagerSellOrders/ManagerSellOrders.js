@@ -29,10 +29,10 @@ export default function ManagerSellOrders(props){
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------стол 1
     const [tableHeaders, setTableHeaders] = React.useState([
-        {name: 'number',       title:'№',                         editingEnabled:false,     width:40    }, 
-        {name: 'orderNumber',  title:'№ Заказа',                  editingEnabled:false,     width:130   }, 
-        {name: 'shipmentDate', title:'Срок поставки',             editingEnabled:false,     width:120   }, 
-        {name: 'orderCost',    title:'Стоимость заказа (руб)',    editingEnabled:false,     width:180   }, 
+        {name: 'number',       title:'№',                 editingEnabled:false,     width:40    }, 
+        {name: 'orderNumber',  title:'№ Заказа',          editingEnabled:false,     width:130   }, 
+        {name: 'shipmentDate', title:'Срок поставки',     editingEnabled:false,     width:120   }, 
+        {name: 'orderCost',    title:'Стоимость заказа',  editingEnabled:false,     width:140, isCurrency:true   }, 
     ]) 
     var tableSettings = {
         add:false,
@@ -64,8 +64,8 @@ export default function ManagerSellOrders(props){
         {name: 'number',            title:'№',                  editingEnabled:false,    width:40    }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:true,     width:320   }, 
         {name: 'amount',            title:'Кол-во',             editingEnabled:true,     width:70    }, 
-        {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:120   },
-        {name: 'sumCost',           title:'Итог цена',          editingEnabled:true,     width:120   },
+        {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:120, isCurrency:true   },
+        {name: 'sumCost',           title:'Итог цена',          editingEnabled:true,     width:120, isCurrency:true   },
     ]) 
     var tableSettings1 = {add:false, edit:false, delete:false}
 
@@ -84,7 +84,7 @@ export default function ManagerSellOrders(props){
             console.log("answer")
             console.log(answer)
             answer.map(function( element, i) {
-                buffer.push({number:i+1, orderNumber: element.name, orderCost: element.cost, address: element.address, cost:element.cost, deadline:element.deadline})
+                buffer.push({number:i+1, orderNumber: element.name, orderCost: parseFloat(element.cost), address: element.address, cost:element.cost, deadline:element.deadline})
                 buffer[i].id = getId()
                 buffer[i].code = element.id;
             });
@@ -144,7 +144,7 @@ export default function ManagerSellOrders(props){
                     <div style={{width:500+"px"}}>
                         <div class="header_text"><label class="header_text">{order}</label></div>
                         <div class="low_text bold">Крайний срок поставки:&nbsp;&nbsp;<label class="normal">{shipmentDeadline}</label></div>
-                        <div class="low_text bold">Полная&nbsp;стоимость&nbsp;заказа:&nbsp;<label class="normal">{orderCost}</label></div>
+                        <div class="low_text bold">Полная&nbsp;стоимость&nbsp;заказа:&nbsp;<label class="normal">{orderCost} ₽</label></div>
                         <div class="low_text bold">Адрес:&nbsp;<label class="normal">{address}</label></div>
                         <div class="low_text bold">Товары&nbsp;в&nbsp;заказе:&nbsp;</div>
                     </div>
