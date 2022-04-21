@@ -22,6 +22,7 @@
     "dom": "^0.0.3",
     "express": "^4.17.2",
     "file-saver": "^2.0.5",
+    "orbit-controls-es6": "^2.0.1",
     "pg": "^8.7.1",
     "react": "^16.14.0",
     "react-avatar-edit": "^1.1.0",

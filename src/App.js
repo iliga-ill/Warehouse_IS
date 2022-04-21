@@ -24,6 +24,7 @@ import ProductTurnover from './pages/AccountantReports/ProductTurnover/ProductTu
 import PurchasedProducts from './pages/AccountantReports/PurchasedProducts/PurchasedProducts';
 import SelledProducts from './pages/AccountantReports/SelledProducts/SelledProducts';
 import AccountantAccounts from './pages/AccountantAccounts/AccountantAccounts';
+import StorekeeperVirtualWarehouse from './pages/StorekeeperVirtualWarehouse/StorekeeperVirtualWarehouse';
 import Profile from './pages/Profile/Profile';
 import Home from './pages/Home/Home';
 import WarehouseISicon from './images/WarehouseISicon.png';
@@ -47,6 +48,7 @@ const subTabsArray = [
     {title: "Расход",               roleHref:"/Storekeeper",    href:"/StorekeeperExpend", basicHref:"/Current"},
     {title: "Расстановка товаров",  roleHref:"/Storekeeper",    href:"/StorekeeperAllocation", basicHref:""},
     {title: "Инвентаризация",       roleHref:"/Storekeeper",    href:"/StorekeeperInventory", basicHref:""},
+    {title: "Виртуальный склад",    roleHref:"/Storekeeper",    href:"/StorekeeperVirtualWarehouse", basicHref:""},
   ],[
     {title: "Товары",               roleHref:"/Manager",        href:"/ManagerProducts", basicHref:""},
     {title: "Создание заказа",      roleHref:"/Manager",        href:"/ManagerOrderCreation", basicHref:""},
@@ -185,6 +187,7 @@ export default function App() {
           <Route path="/Storekeeper/StorekeeperExpend/Completed" element={wrapErrorBoundary(<StorekeeperExpend isCurrent={false}/>)}/>
           <Route path="/Storekeeper/StorekeeperAllocation" element={wrapErrorBoundary(<StorekeeperAllocation/>)}/>
           <Route path="/Storekeeper/StorekeeperInventory" element={wrapErrorBoundary(<StorekeeperInventory/>)}/>
+          <Route path="/Storekeeper/StorekeeperVirtualWarehouse" element={wrapErrorBoundary(<StorekeeperVirtualWarehouse/>)}/>
 
           <Route path="/Manager/ManagerProducts" element={wrapErrorBoundary(<ManagerProducts/>)}/>
           <Route path="/Manager/ManagerOrderCreation" element={wrapErrorBoundary(<ManagerOrderCreation/>)}/>
