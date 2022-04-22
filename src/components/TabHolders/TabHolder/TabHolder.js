@@ -6,17 +6,18 @@ export default function TabHolder(props){
     const location = useLocation();
     const navigate = useNavigate();
     return (
-        <div class="main_tabHolder">
-            {props.tabs.map(item=>{
+        <div className="main_tabHolder">
+            {props.tabs.map(function(item,i){
                 if (location.pathname.split("/")[1] == item.href.split("/")[1]){
                     return (
-                        <div class="main_tab selected">
+                        <div className="main_tab selected" key={i}>
                             <a>{item.title}</a>
                         </div>
                     )
                 } else{
                     return(
-                        <div class="main_tab unselected" onClick={()=>{
+                        <div className="main_tab unselected" key={i} 
+                        onClick={()=>{
                             navigate(item.href + item.basicHref)
                         }}>
                             <a>{item.title}</a>

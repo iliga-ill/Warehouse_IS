@@ -24,13 +24,13 @@ export default function AvatarHolder(props){
     }
         
     return (
-        <div class="userAvatar">
-            <div class="avatarHolder" onClick={()=>{styles.join(' ') == "dropdownMenu open"?closeDropdown():openDropdown()}}>
-                <img src={accountData.avatar} class="icon"/>
+        <div className="userAvatar">
+            <div className="avatarHolder" onClick={()=>{styles.join(' ') == "dropdownMenu open"?closeDropdown():openDropdown()}}>
+                <img src={accountData.avatar} className="icon"/>
             </div>
-            <div class={styles.join(' ')}>
-                <div class="menuItem" onClick={profile}>Профиль</div>
-                <div class="menuItem" onClick={logout}>Выйти</div>
+            <div className={styles.join(' ')}>
+                <div className="menuItem" onClick={profile}>Профиль</div>
+                <div className="menuItem" onClick={logout}>Выйти</div>
             </div>
         </div>
     )
