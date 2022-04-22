@@ -20,19 +20,21 @@ export default function SubTabHolder(props){
     })
     return (
         <>
-            <div class="sub_tabHolder">
-                {subTabs.map(item=>{
+            <div className="sub_tabHolder">
+                {subTabs.map(function(item, i){
                     if (location.pathname.split("/")[2] == item.href.split("/")[1]){
                         return (
-                            <div class="sub_tab selected">
+                            <div className="sub_tab selected" key={i}>
                                 <a>{item.title}</a>
                             </div>
                         )
                     } else{
                         return(
-                            <div class="sub_tab unselected" onClick={()=>{
-                                navigate(item.roleHref + item.href + item.basicHref)
-                            }}>
+                            <div className="sub_tab unselected" key={i} 
+                                onClick={()=>{
+                                    navigate(item.roleHref + item.href + item.basicHref)
+                                }}
+                            >
                                 <a>{item.title}</a>
                             </div>
                         )
@@ -40,19 +42,21 @@ export default function SubTabHolder(props){
                 })}
             </div>
             {isContainedSupTab &&
-                <div class="sub_tabHolder">
-                {props.supTabs.map(item=>{
+                <div className="sub_tabHolder">
+                {props.supTabs.map(function(item, i){
                     if (location.pathname.split("/")[2] == item.subHref.split("/")[1] && location.pathname.split("/")[3]==item.supportHref.split("/")[1]){
                         return (
-                            <div class="sub_tab selected">
+                            <div className="sub_tab selected" key={i}>
                                 <a>{item.title}</a>
                             </div>
                         )
                     } else if (location.pathname.split("/")[2] == item.subHref.split("/")[1]) {
                         return(
-                            <div class="sub_tab unselected" onClick={()=>{
-                                navigate(item.roleHref + item.subHref + item.supportHref)
-                            }}>
+                            <div className="sub_tab unselected" key={i} 
+                                onClick={()=>{
+                                    navigate(item.roleHref + item.subHref + item.supportHref)
+                                }}
+                            >
                                 <a>{item.title}</a>
                             </div>
                             )

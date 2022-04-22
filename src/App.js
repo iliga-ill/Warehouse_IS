@@ -32,8 +32,6 @@ import React from 'react';
 import {Routes, Route, useLocation, useNavigate} from "react-router-dom"
 import {useCookies} from 'react-cookie'
 
-const host = 'http://localhost:5000';
-
 const mainTabsArray = [
   {title: "АРМ Кладовщика",     href:"/Storekeeper",    basicHref:"/StorekeeperAdvent/Current"},
   {title: "АРМ Менеджера",      href:"/Manager",        basicHref:"/ManagerProducts"},
@@ -106,21 +104,21 @@ export default function App() {
   var [subTabs, setSubTabs] = React.useState(subTabsArray)
 
   React.useEffect(() => {
-    if (cookies.accountData!=undefined){
+    if (cookies.accountData!==undefined){
       var mainTabsBuff = []
       var subTabsBuff = []
       var admin = false
       cookies.accountData.roles.map(role=>{
-        if (role=="Администратор"){admin=true}
-        if (role=="Кладовщик"){
+        if (role==="Администратор"){admin=true}
+        if (role==="Кладовщик"){
           mainTabsBuff.push(mainTabsArray[0])
           subTabsBuff.push(subTabsArray[0])
         }
-        if (role=="Менеджер"){
+        if (role==="Менеджер"){
           mainTabsBuff.push(mainTabsArray[1])
           subTabsBuff.push(subTabsArray[1])
         }
-        if (role=="Логист"){
+        if (role==="Логист"){
           mainTabsBuff.push(mainTabsArray[2])
           subTabsBuff.push(subTabsArray[2])
         }
@@ -138,7 +136,7 @@ export default function App() {
   function isRolePage(){
     var check = false
     mainTabsArray.map(tab=>{
-      if (tab.href.split("/")[1]==location.pathname.split("/")[1]) check = true
+      if (tab.href.split("/")[1]===location.pathname.split("/")[1]) check = true
     })
     return check
   }
@@ -146,7 +144,7 @@ export default function App() {
   function checkAccess(){
       var check=false
       subTabs.map(tab=>{
-        if (location.pathname.split("/")[1] == tab[0].roleHref.split("/")[1]) check=true
+        if (location.pathname.split("/")[1] === tab[0].roleHref.split("/")[1]) check=true
       })
       if (!isRolePage()) check = true
       if (!check) navigate(subTabs[0][0].roleHref + subTabs[0][0].href + subTabs[0][0].basicHref)
@@ -165,12 +163,12 @@ export default function App() {
 
   console.log("cookies.get('Authorization'): " + cookies.access_token)
   
-  if (cookies.access_token != undefined){
+  if (cookies.access_token !== undefined){
     return (
-      <div>
+      <>
         <div className="header">
           <div className="homePage" onClick={()=>{navigate("/Home")}}>
-            <img src={WarehouseISicon} class="homeIcon"/>
+            <img src={WarehouseISicon} className="homeIcon"/>
           </div>
           <div className="headTabs">
             <TabHolder tabs={mainTabs}/>
@@ -219,7 +217,7 @@ export default function App() {
           <Route path="/Profile" element={wrapErrorBoundary(<Profile cookies={cookies}/>)}/>
           <Route path="/Home" element={wrapErrorBoundary(<Home cookies={cookies}/>)}/>
         </Routes>
-      </div>
+      </>
     );
   } else {
     return <Authorization setCookie={setCookie}/> 
