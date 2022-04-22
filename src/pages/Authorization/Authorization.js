@@ -3,14 +3,14 @@ import './Authorization.css';
 import Table from "../../components/Table/Table";
 import cookie from "react-cookie";
 import ManIcon from '../../images/ManIcon.svg'
-
+import { Api } from "../../api/authorizationApi"
 
 var accounts = [
   {name: "Владимир", surname: "Владимирович", patronymic:"Путин", login: "Путин", password: "1", phone_num:"+8 495 606 36 02", duty:"Кладовщик"},
 // {name: "Николай", password:"111"},
 // {name: "Сергей", password:"3"}
 ];
-
+var api = new Api()
 var authorizated = false 
 
 const host = 'http://localhost:5000';
@@ -18,23 +18,12 @@ const host = 'http://localhost:5000';
 export default function Authorization(props){
   let expires = new Date()
   expires.setTime(expires.getTime() + (30 * 60 * 1000))
-
-  function apiGetClients() {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', host+'/clients', true);
-    console.log("Authorization apiGetClients was launched")
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == XMLHttpRequest.DONE) {
-        var answer = JSON.parse(this.response)
-        console.log("Authorization apiGetClients answer: ")
-        console.log(answer)
-        answer.map( function(item, i) {
-          accounts[i] = {name: item.name, surname: item.surname, patronymic: item.patronymic, login: item.login, password: item.password, phone_num: item.phone_num, duty: item.duty}
-        })
-        
-      }
-    } 
-    xhr.send(null);
+  
+  async function apiGetClients(){
+    var result = await api.getClients()
+    console.log(result.length)
+    console.log(JSON.stringify(result))
+    accounts = result
   }
 
   if (!authorizated) {

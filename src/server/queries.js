@@ -928,17 +928,19 @@ const updateOrderStatus = (request, response) => {
 }
 
 const updateShelfSpaceStatus = (request, response) => {
-  pool.query(`UPDATE shelf_space SET status = $1 WHERE code=$2`, [request.query.status, request.query.code], (error, results) => {
-    if (error) {
-      throw error
-    }
-    console.log("request.query.code")
-    console.log(request.query.code)
+  var value = request.body
 
-    response.status(201).send(`User added with ID: ${results.insertId}`)
+  value.map(item => {
+    pool.query(`UPDATE shelf_space SET status = $1 WHERE code=$2`, [item.inventaryzationStatus, item.shelfSpaceCode], (error, results) => {
+      if (error) {
+        throw error
+      }
+      console.log("item.shelfSpaceCode")
+      console.log(item.shelfSpaceCode)
+    })
   })
+  response.status(201).send(`User added with ID`)
 }
-
 
 module.exports = {
   getColors,

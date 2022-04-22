@@ -8,8 +8,9 @@ import InputFile from "../../components/InputFile/InputFile";
 import InputText from "../../components/InputText/InputText";
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
 import { TableComponent } from "../../components/Table/TableComponent";
-const host = 'http://localhost:5000';
+import { Api } from "../../api/storekeeperApi"
 
+var api = new Api()
 const styles = {
 
   }
@@ -36,25 +37,9 @@ export default function StorekeeperExpend(props){
     React.useEffect(() => {
         if (orders.length>0) apiGetGoodsByShipmentOrder()
     }, [orders]);
-    function apiGetShipmentOrders() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/shipment_order_goods'+'?'+'type=purchase&status=opened', true);
-        console.log("StorekeeperAdvent apiGetOrders was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                var answer = JSON.parse(this.response)
-                console.log("StorekeeperAdvent apiGetOrders answer: ")
-                console.log(answer)
-                var counter = 0
-                var order = [{id:0, text: "Ничего не найдено", selected: true, code: 0}]
-                answer.map( function(item, i) {
-                    if (i === 0 & item.status != "closed")  order[i] = {id:counter++, text: item.name, selected: true, code: item.code}
-                    else if (item.status != "closed") order[i] = {id:counter++, text: item.name, selected: false, code: item.code}
-                })
-                setOrders(order)
-            }
-        }
-        xhr.send(null);
+    async function apiGetShipmentOrders() {
+        var order = await api.getShipmentOrders()
+        setOrders(order)
     }
     //-------------------------------------------------------------------------Блок 1 конец
 
@@ -62,69 +47,24 @@ export default function StorekeeperExpend(props){
     //-------------------------------------стол 1
     
     const [goodsCategories2, setGoodsCategories2] = React.useState([])
-    function apiGetGoodsSubCat2() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/goods_subcat2', true);
-        console.log("StorekeeperAdvent apiGetGoodsSubCat2 was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                var answer = JSON.parse(this.response)
-                console.log("StorekeeperAdvent apiGetGoodsSubCat2 answer: ")
-                console.log(answer)
-                var goods = [{id:0, text: "ошибка", code: 0}]
-                answer.map( function(item, i) {
-                    goods[i] = {id:i, text: item.name, code: item.code}
-                })
-                setGoodsCategories2(goods)
-                apiGetGoodsSubCat3()
-            }
-        }
-        xhr.send(null);
+    async function apiGetGoodsSubCat2() {
+        var goods = await api.getGoodsSubCat2()
+        setGoodsCategories2(goods)
+        apiGetGoodsSubCat3()
     }
 
     const [goodsCategories3, setGoodsCategories3] = React.useState([])
-    function apiGetGoodsSubCat3() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/goods_subcat3', true);
-        console.log("StorekeeperAdvent apiGetGoodsSubCat3 was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                var answer = JSON.parse(this.response)
-                console.log("StorekeeperAdvent apiGetGoodsSubCat3 answer: ")
-                console.log(answer)
-                var goods = [{id:0, text: "ошибка", code: 0}]
-                answer.map( function(item, i) {
-                    goods[i] = {id:i, text: item.name, code: item.code}
-                })
-                setGoodsCategories3(goods)
-                apiGetShipmentOrders()
-            }
-        }
-        xhr.send(null);
+    async function apiGetGoodsSubCat3() {
+        var goods = await api.getGoodsSubCat3()
+        setGoodsCategories3(goods)
+        apiGetShipmentOrders()
     }
 
     const [goodsType, setGoodsType] = React.useState([])
-    function apiGetGoodsType() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/goods_type', true);
-        console.log("StorekeeperAdvent apiGetGoodsType was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                if (this.response != "") {
-                    console.log("StorekeeperAdvent apiGetGoodsType answer: ")
-                    console.log(this.response)
-                    var answer = JSON.parse(this.response)
-                 
-                    var goods = [{id:0, text: "Ошибка", category: "Ошибка", sub_category: "Ошибка", ordered: 0, amount: 0, code: 0}]
-                    answer.map( function(item, i) {
-                        goods[i] = {id:i, text: item.name, category: item.category, sub_category: item.subcategory_2, ordered: item.amount_ordered, amount: item.amount, code: item.code}
-                    })
-                    setGoodsType(goods)
-                }
-                apiGetGoodsSubCat2()
-            }
-        }
-        xhr.send(null);
+    async function apiGetGoodsType() {
+        var goods = await api.getGoodsType()
+        setGoodsType(goods)
+        apiGetGoodsSubCat2()
     }
 
     const [isStart, setIsStart] = React.useState(true)
@@ -151,44 +91,16 @@ export default function StorekeeperExpend(props){
 
     const [tableList, setTableList] = React.useState([])
     
-    function apiGetGoodsByShipmentOrder() {
-        var xhr = new XMLHttpRequest();
+    async function apiGetGoodsByShipmentOrder(goodsType, goodsCategories2, goodsCategories3) {
         var order = ''
         orders.forEach(element => {
           if (element.selected == true) order = element
         });
     
         if (order != ''){
-             //console.log("Selected order " + order.code)
-            xhr.open('GET', host+'/shipment_order_goods_by_order'+'?'+`code=${order.code}`, true);
-            console.log("StorekeeperAdvent apiGetGoodsByOrder was launched")
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == XMLHttpRequest.DONE) {
-                    var answer = JSON.parse(this.response)
-                    console.log("StorekeeperAdvent apiGetGoodsByOrder answer: ")
-                    console.log(answer)
-                    var buffer = []
-                    var counter = 0;
-                    answer.map( function(item, i) {
-                    //goods_by_order[i] = {id:i, category: "goods_categories[answer.category-1]", sub_category: "goods_categories2[answer.sub_category_2-1]",  text: "answer.name", amount_ordered: "answer.amount_ordered", amount: "answer.amount", code: foo}
-                    goodsType.forEach (function(item2, j) {
-                            var it = parseInt(item2.code)
-                            if (it.toString() == item.goods.toString()) {
-                                //  bar[i] = [i, goodsCategories2[item2.category-1].text, goodsCategories3[item2.sub_category-1].text,  item2.text, item2.ordered, item2.amount, true]
-                                buffer[counter] = {number: counter+1, goodsCategories2: goodsCategories2[item2.category-1].text, goodsCategories3: goodsCategories3[item2.sub_category-1].text, goodsType: item2.text, orderedAmount: item.amount, amount: item.amount_real}
-                                buffer[counter].code = item.code;
-                                buffer[counter].id = counter++
-                                
-                            }   
-                        })
-                    })
-                    setTableList(buffer)
-            
-                }
-            }
-            xhr.send(null);
-        }
-       
+            var buffer = await api.getGoodsByShipmentOrder(order, goodsType, goodsCategories2, goodsCategories3)
+            setTableList(buffer)
+        }  
     }
         
     //-------------------------------------стол 1 конец
@@ -245,26 +157,13 @@ export default function StorekeeperExpend(props){
     }
     //-------------------------------------------------------------------------Блок 2 конец
     
-    function apiUpdateOrderGoods(amount, code) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('PUT', host+'/update_order_goods_expend'+'?'+`amount=${amount}&code=${code}`, true);
-      
-        //Send the proper header information along with the request
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == XMLHttpRequest.DONE) {
-            console.log(this.responseText);
-            alert("Изменения успешно приняты")
-            setOrders([])
-            setTableList([])
-            apiGetGoodsType()
-          }
-        }
-        
-        xhr.send(null);
+    async function apiUpdateOrderGoods(amount, code) {
+        var response = await api.updateOrderGoodsExpend(amount, code)
+        alert(response)
+        setOrders([])
+        setTableList([])
+        apiGetGoodsType()
     }
-
 
     //-------------------------------------------------------------------------Блок 3
     function onBlock3FileUploaded(files){

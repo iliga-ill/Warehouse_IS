@@ -47,7 +47,7 @@ app.put('/update_order', db.updateOrder)
 app.put('/update_order_goods', db.updateOrderGoods)
 app.put('/update_order_goods_expend', db.updateOrderGoodsExpend)
 app.put('/update_order_status', db.updateOrderStatus)
-app.put('/update_shelf_space_status', db.updateShelfSpaceStatus)
+app.post('/update_shelf_space_status', db.updateShelfSpaceStatus)
 app.post('/update_shipment_orders', db.updateShipmentOrders1)
 
 app.use('/login', (req, res) => {
