@@ -6,42 +6,22 @@ import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/Flexibl
 import InputText from "../../components/InputText/InputText";
 import InputTextArea from "../../components/InputTextArea/InputTextArea";
 import { TableComponent } from "../../components/Table/TableComponent";
-const host = 'http://localhost:5000';
+import { Api } from "../../api/logisticianApi"
 
+var api = new Api()
 const styles = {
 
   }
-
-  
 
 export default function LogisticianProducts(props){
 
     var id=0
     function getId(){return id++}
 
-    function apiGetGoodsTypeCats() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/goods_type_cats', true);
-        console.log("ManagerProducts apiGetGoodsTypeCats was launched")
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == XMLHttpRequest.DONE) {
-            //console.log(this.response);
-            var answer = JSON.parse(this.response)
-            console.log("ManagerProducts apiGetGoodsTypeCats answer: ")
-            console.log(answer)
-            var buffer = []
-            answer.map(function( element, i) {
-                buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: parseFloat(element.price), weight: element.weight})
-                buffer[i].id = getId()
-                buffer[i].code = element.code;
-                buffer[i].description = element.description
-            });
-            setTableList(buffer)
-            setSelectedItemId(buffer[0])
-          }
-        }
-        
-        xhr.send(null);
+    async function apiGetGoodsTypeCats() {
+        var buffer = await api.getGoodsTypeCats()
+        setTableList(buffer)
+        setSelectedItemId(buffer[0])
     }
 
     //-------------------------------------------------------------------------Блок 1

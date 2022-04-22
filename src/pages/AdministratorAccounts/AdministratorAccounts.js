@@ -3,9 +3,8 @@ import './AdministratorAccounts.css';
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import { TableComponent } from "../../components/Table/TableComponent";
-import { Api } from "../../api/api"
+import { Api } from "../../api/administatoApi"
 
-const host = 'http://localhost:5000';
 const styles = {
 
   }
@@ -55,7 +54,7 @@ export default function AdministratorAccounts(props){
         // }
 
         async function apiGetClients(){
-            var result = await api.getClients("GET", "/clients")
+            var result = await api.getClients()
             console.log(result.length)
             console.log(JSON.stringify(result))
             setTableList(result)
@@ -71,10 +70,10 @@ export default function AdministratorAccounts(props){
     }
 
     function btn_send_1() {
-        async function test(value) {
-            await api.postClients("POST", "/post_user", value)
+        async function apiPostClients(value) {
+            await api.postClients(value)
         }
-        test(tableList)
+        apiPostClients(tableList)
     }
 
 

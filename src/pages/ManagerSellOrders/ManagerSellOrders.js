@@ -8,13 +8,12 @@ import InputTextArea from "../../components/InputTextArea/InputTextArea";
 import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
 import InputDate from "../../components/InputDate/InputDate";
 import { TableComponent } from "../../components/Table/TableComponent";
-const host = 'http://localhost:5000';
+import { Api } from "../../api/managerApi"
 
+var api = new Api()
 const styles = {
 
-  }
-
-  
+}
 
 export default function ManagerSellOrders(props){
 
@@ -56,9 +55,6 @@ export default function ManagerSellOrders(props){
     const [address, setShipmentAddress] = React.useState("")
     const [shipmentDeadline, setShipmentDeadline] = React.useState("")
     const [orderCost, setOrderCost] = React.useState(0)
-
-    
-
     
     const [tableHeaders1, setTableHeaders1] = React.useState([
         {name: 'number',            title:'№',                  editingEnabled:false,    width:40    }, 
@@ -72,59 +68,19 @@ export default function ManagerSellOrders(props){
     // const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"вв", amount:10, cost:10, sumCost:10}])
     const [tableList1, setTableList1] = React.useState([])
 
-    function apiGetOrders() {
-        var xhr = new XMLHttpRequest();
-        var status = isCurrent?'in progress':'complited'
-            
-        xhr.open('GET', host+'/orders'+'?'+`type=sell&status=${status}`, true);
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == XMLHttpRequest.DONE) {
-            var answer = JSON.parse(this.response)
-            var buffer = []
-            console.log("answer")
-            console.log(answer)
-            answer.map(function( element, i) {
-                buffer.push({number:i+1, orderNumber: element.name, orderCost: parseFloat(element.cost), address: element.address, cost:element.cost, deadline:element.deadline})
-                buffer[i].id = getId()
-                buffer[i].code = element.id;
-            });
-            setTableList(buffer)
-            setSelectedItemId(buffer[0])
-          }
-        }
-        
-        xhr.send(null);
+    async function apiGetOrders() {
+        var buffer = await api.getOrders('sell' ,isCurrent)
+        setTableList(buffer)
+        setSelectedItemId(buffer[0])
     }
 
-    function apiGetOrderGoods(value) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/orders_goods'+ "?" + `order_id=${value.code}`, true);
-        
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == XMLHttpRequest.DONE) {
-            var answer = JSON.parse(this.response)
-            console.log("ManagerSellProducts apiGetOrderGoods answer: ")
-            console.log(answer)
-            var buffer = []
-            answer.map(function( element, i) {
-                var sumCost = 0
-                if (!isNaN(parseInt(element.amount)) && !isNaN(parseInt(element.price)))
-                sumCost=element.amount*element.price
-                buffer.push({number:i+1, goodsType: element.name, amount: element.amount, cost: element.price, sumCost: sumCost})
-                buffer[i].id = getId()
-                buffer[i].code = element.code;
-            });
-            console.log("elm")
-            console.log(value)
-            setTableList1(buffer)
-            setOrder(value.orderNumber)
-            setShipmentAddress(value.address)
-            setShipmentDeadline(value.deadline.split("T")[0].replace("-", ".").replace("-", "."))
-            setOrderCost(value.orderCost)
-          }
-        }
-        
-        xhr.send(null);
+    async function apiGetOrderGoods(value) {
+        var buffer = await api.getOrderGoods(value)
+        setTableList1(buffer)
+        setOrder(value.orderNumber)
+        setShipmentAddress(value.address)
+        setShipmentDeadline(value.deadline.split("T")[0].replace("-", ".").replace("-", "."))
+        setOrderCost(value.orderCost)
     }
 
     //{number:i+1, orderNumber: element.name, orderCost: element.cost, address: element.address, cost:element.cost, deadline:element.deadline}

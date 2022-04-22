@@ -6,7 +6,9 @@ import Table from "../../components/Table/Table";
 import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
 import InputDate from "../../components/InputDate/InputDate";
 import { TableComponent } from "../../components/Table/TableComponent";
-const host = 'http://localhost:5000';
+import { Api } from "../../api/storekeeperApi"
+
+var api = new Api()
 
 export default function StorekeeperAllocation(props){
 
@@ -21,203 +23,65 @@ export default function StorekeeperAllocation(props){
 
     //-------------------------------------------------------------------------query
     const [zones, setZones] = React.useState([])
-    function apiGetZones() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/zones', true);
-        //console.log("StorekeeperAllocation apiGetZones was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                var answer = JSON.parse(this.response)
-                //console.log("StorekeeperAllocation apiGetZones answer: ")
-                //console.log(answer)
-                var buf = []
-                answer.map( function(item, i) {
-                    buf[i] = {name: item.name}
-                })
-                setZones(buf)
-                apiGetRacks(buf)
-            }
-            
-        }
-        xhr.send(null);
+    async function apiGetZones() {
+        var buf = await api.getZones()
+        setZones(buf)
+        apiGetRacks(buf)
     }
     
     if (zones.toString()=="")
     apiGetZones()
     
     const [racks, setRacks] = React.useState([])
-    function apiGetRacks(zonesAnswer) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/racks', true);
-        console.log("StorekeeperAllocation apiGetRacks was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                var answer = JSON.parse(this.response)
-                console.log("StorekeeperAllocation apiGetRacks answer: ")
-                console.log(answer)
-                var buf = []
-                answer.map( function(item, i) {
-                    buf[i] = {code: item.code, name: item.name, racks_num: item.racks_num, zone_num: zonesAnswer[item.zone_num-1].name}
-                })
-                setRacks(buf)
-                apiGetShelfs(buf)
-            }
-        }
-        xhr.send(null);
+    async function apiGetRacks(zonesAnswer) {
+        var buf = await api.getRacks(zonesAnswer)
+        setRacks(buf)
+        apiGetShelfs(buf)
     }
 
     const [shelfs, setShelfs] = React.useState([])
-    function apiGetShelfs(racksAnswer) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/shelfs', true);
-        console.log("StorekeeperAllocation apiGetShelfs was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                var answer = JSON.parse(this.response)
-                console.log("StorekeeperAllocation apiGetShelfs answer: ")
-                console.log(answer)
-                var buf = []
-                answer.map( function(item, i) {
-                    buf[i] = {code: item.code, name: item.name, shelfCode: item.code, rack_num: racksAnswer[item.rack_num-1].name, zone_num: racksAnswer[item.rack_num-1].zone_num, capacity: item.capacity, shelf_space: item.shelf_space}
-                })
-                setShelfs(buf)
-                apiGetShelfsSpace(buf)
-            }
-        }
-        xhr.send(null);
+    async function apiGetShelfs(racksAnswer) {
+        var buf = await api.getShelfs(racksAnswer)
+        setShelfs(buf)
+        apiGetShelfsSpace(buf)
     }
 
     const [shelfsSpace, setShelfsSpace] = React.useState([])
-    function apiGetShelfsSpace(shelfsAnswer) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/shelf_space', true);
-        console.log("StorekeeperAllocation apiGetShelfsSpace was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                var answer = JSON.parse(this.response)
-                console.log("StorekeeperAllocation apiGetShelfsSpace answer: ")
-                console.log(answer)
-                console.log("shelfsAnswer")
-                console.log(shelfsAnswer)
-                var buf = shelfsAnswer
-                answer.map( function(item, i) {
-                    shelfsAnswer.map(function(item1,j){
-                        if (item1.shelfCode == item.shelf_num) {
-                            if (item1.shelf_space == null) buf[j].shelf_space = []
-                            buf[j].shelf_space.push({good:item.good, amount:item.amount})
-                        }
-                    })
-                })
-                console.log("StorekeeperAllocation apiGetShelfsSpace changed answer: ")
-                console.log(buf)
-                setShelfsSpace(buf)
-            }
-        }
-        xhr.send(null);
+    async function apiGetShelfsSpace(shelfsAnswer) {
+        var buf = await api.getShelfSpaces(shelfsAnswer)
+        setShelfsSpace(buf)
     }
 
     const [goodsType, setGoodsType] = React.useState([])
-    function apiGetGoodsType() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/goods_type', true);
-        console.log("StorekeeperAllocation apiGetGoodsType was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                if (this.response != "") {
-                    console.log("StorekeeperAllocation apiGetGoodsType answer: ")
-                    console.log(this.response)
-                    var answer = JSON.parse(this.response)
-                 
-                    var buf = []
-                    answer.map( function(item, i) {
-                        buf[i] = item
-                    })
-                    setGoodsType(buf)
-                    apiGetGoodsSubCat2(buf)
-                }
-                
-            }
-
-        }
-        xhr.send(null);
+    async function apiGetGoodsType() {
+        var buf = await api.getGoodsType()
+        setGoodsType(buf)
+        apiGetGoodsSubCat2(buf)
     }
+
     if (goodsType.toString()=="")
         apiGetGoodsType()
 
     const [goodsCategories2, setGoodsCategories2] = React.useState([])
-    function apiGetGoodsSubCat2(goodsTypeAnswer) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/goods_subcat2', true);
-        console.log("StorekeeperAllocation apiGetGoodsSubCat2 was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                var answer = JSON.parse(this.response)
-                console.log("StorekeeperAllocation apiGetGoodsSubCat2 answer: ")
-                console.log(answer)
-                var buf = [{id:0, text: "ошибка", code: 0}]
-                answer.map( function(item, i) {
-                    buf[i] = item
-                })
-                setGoodsCategories2(buf)
-                apiGetGoodsSubCat3(goodsTypeAnswer, buf)
-            }
-        }
-        xhr.send(null);
+    async function apiGetGoodsSubCat2(goodsTypeAnswer) {
+        var buf = await api.getGoodsSubCat2()
+        setGoodsCategories2(buf)
+        apiGetGoodsSubCat3(goodsTypeAnswer, buf)
     }
 
     const [goodsCategories3, setGoodsCategories3] = React.useState([])
-    function apiGetGoodsSubCat3(goodsTypeAnswer, goodsCategories2Answer) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/goods_subcat3', true);
-        console.log("StorekeeperAllocation apiGetGoodsSubCat3 was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                var answer = JSON.parse(this.response)
-                console.log("StorekeeperAllocation apiGetGoodsSubCat3 answer: ")
-                console.log(answer)
-                var buf = [{id:0, text: "ошибка", code: 0}]
-                answer.map( function(item, i) {
-                    buf[i] = item
-                })
-                setGoodsCategories3(buf)
-                apiGetShipmentOrdersGoods(goodsTypeAnswer, goodsCategories2Answer, buf)
-            }
-        }
-        xhr.send(null);
+    async function apiGetGoodsSubCat3(goodsTypeAnswer, goodsCategories2Answer) {
+        var buf = await api.getGoodsSubCat3()
+        setGoodsCategories3(buf)
+        apiGetShipmentOrdersGoods(goodsTypeAnswer, goodsCategories2Answer, buf)
     }
 
     const [shipmentOrdersGoods, setShipmentOrdersGoods] = React.useState([])
-    function apiGetShipmentOrdersGoods(goodsTypeAnswer, goodsCategories2Answer, goodsCategories3Answer) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/shipment_order_goods_all', true);
-        console.log("StorekeeperAllocation apiGetShipmentOrdersGoods was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                var answer = JSON.parse(this.response)
-                console.log("StorekeeperAllocation apiGetShipmentOrdersGoods answer: ")
-                console.log(answer)
-                var buf = []
-                var counter = 0
-                answer.map( function(item, i) {
-                    if (item.amount_real > item.placed_amount) {
-                        var good
-                        goodsTypeAnswer.map(item1=>{
-                            if (item1.code == item.goods)
-                                good=item1
-                        })
-                        buf[counter] = {id: counter++, code:item.code, goodCode:item.goods, amount: item.amount, amount_real: item.amount_real, weight:good.weight, placed_amount:item.placed_amount , code: item.code, good_name: good.name, goodsCategories2:goodsCategories2Answer[good.subcategory_2-1].name, goodsCategories3:goodsCategories3Answer[good.subcategory_3-1].name , order_num: item.order_num}
-                    }
-                })
-                console.log("StorekeeperAllocation apiGetShipmentOrdersGoods answer changed: ")
-                console.log(buf)
-                setShipmentOrdersGoods(buf)
-            }
-        }
-        xhr.send(null);
+    async function apiGetShipmentOrdersGoods(goodsTypeAnswer, goodsCategories2Answer, goodsCategories3Answer) {
+        var buf = await api.getShipmentOrdersGoods(goodsTypeAnswer, goodsCategories2Answer, goodsCategories3Answer)
+        setShipmentOrdersGoods(buf)
     }
 
-    
-        
     //-------------------------------------------------------------------------query end
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------выпадающий список приходной накладной
@@ -292,35 +156,17 @@ export default function StorekeeperAllocation(props){
         }
     }, [shipmentOrdersGoods]);
 
-    
+    async function apiPostGoodsToShelfs(value) {
+        var response = await api.postGoodsToShelfs(value)
+        console.log(response)
+        setTableList([])
+        setTableList2([])
 
-    function apiPostGoodsToShelfs(value) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", host+'/post_goods_to_shelfs', true);
-      
-        //Send the proper header information along with the request
-        xhr.setRequestHeader("Content-Type", "application/json");
-      
-        xhr.onreadystatechange = function() { // Call a function when the state changes.
-            // console.log("this.readyState")
-            // console.log(this.readyState)
-            // console.log("this.status")
-            // console.log(this.status)
-            if (this.readyState === XMLHttpRequest.DONE) {
-                // Request finished. Do processing here.
-                alert("Изменения успешно приняты")
-                console.log("Изменения успешно приняты")
-                setTableList([])
-                setTableList2([])
+        setShelfsSpace("")
+        setShipmentOrdersGoods("")
 
-                setShelfsSpace("")
-                setShipmentOrdersGoods("")
-
-                apiGetGoodsType()
-                apiGetZones()
-            }
-        }
-        xhr.send(JSON.stringify(value));
+        apiGetGoodsType()
+        apiGetZones()
     }
     //{id: counter++, amount: item.amount, amount_real: item.amount_real, placed_amount:item.placed_amount, code: item.code, good_name: goodsTypeAnswer[item.goods-1].name, goodsCategories2:goodsCategories2Answer[goodsTypeAnswer[item.goods-1].subcategory_2-1].name, goodsCategories3:goodsCategories3Answer[goodsTypeAnswer[item.goods-1].subcategory_3-1].name , order_num: item.order_num}
     

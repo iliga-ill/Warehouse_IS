@@ -8,8 +8,9 @@ import InputTextArea from "../../components/InputTextArea/InputTextArea";
 import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
 import InputDate from "../../components/InputDate/InputDate";
 import { TableComponent } from "../../components/Table/TableComponent";
-const host = 'http://localhost:5000';
+import { Api } from "../../api/managerApi"
 
+var api = new Api()
 const styles = {
 
   }
@@ -21,50 +22,14 @@ export default function ManagerOrderCreation(props){
     function getId(){return id++}
 
     //-------------------------------------------------------------------------query
-    function apiGetGoodsTypeCats() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/goods_type_cats', true);
-        console.log("ManagerOrderCreation apiGetGoodsTypeCats was launched")
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == XMLHttpRequest.DONE) {
-            //console.log(this.response);
-            var answer = JSON.parse(this.response)
-            console.log("ManagerOrderCreation apiGetGoodsTypeCats answer: ")
-            console.log(answer)
-            var buffer = []
-            answer.map(function( element, i) {
-                buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: parseFloat(element.price), goodsLimit: element.amount_limit})
-                buffer[i].id = getId()
-                buffer[i].code = element.code;
-                buffer[i].description = element.description
-            });
-            setTableList1(buffer)
-          }
-        }
-        
-        xhr.send(null);
+    async function apiGetGoodsTypeCats() {
+        var buffer = await api.getGoodsTypeCats()
+        setTableList1(buffer)
     }
 
-    function apiGetShipmentOrders(tableHeadersBuf) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/shipment_order_goods'+'?'+'type=sell&status=opened', true);
-        console.log("ManagerOrderCreation apiGetShipmentOrders was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                var answer = JSON.parse(this.response)
-                console.log("ManagerOrderCreation apiGetShipmentOrders answer: ")
-                console.log(answer)
-
-                console.log("tableHeadersBuf")
-                console.log(tableHeadersBuf)
-                setTimeout(() => {
-                    setTableList(tableHeadersBuf)
-                }, 1000);
-                
-                setTableList(tableHeadersBuf)
-            }
-        }
-        xhr.send(null);
+    async function apiGetShipmentOrders(tableHeadersBuf) {
+        var tableHeadersBuf2 = await api.getShipmentOrders(tableHeadersBuf)
+        setTableList(tableHeadersBuf2)
     }
     //---
     //-------------------------------------------------------------------------query end
