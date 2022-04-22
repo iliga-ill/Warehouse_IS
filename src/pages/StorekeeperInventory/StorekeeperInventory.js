@@ -5,13 +5,12 @@ import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPa
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import { TableComponent } from "../../components/Table/TableComponent";
 import ConfirmIcon from '../../images/ConfirmIcon.svg'
-const host = 'http://localhost:5000';
+import { Api } from "../../api/storekeeperApi"
 
+var api = new Api()
 const styles = {
 
-  }
-
-  
+}
 
 export default function StorekeeperInventory(props){
 
@@ -21,129 +20,27 @@ export default function StorekeeperInventory(props){
 
     //-------------------------------------------------------------------------query
     const [zones, setZones] = React.useState([])
-    function apiGetZones() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/zones', true);
-        //console.log("StorekeeperAllocation apiGetZones was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                var answer = JSON.parse(this.response)
-                //console.log("StorekeeperAllocation apiGetZones answer: ")
-                //console.log(answer)
-                var buf = []
-                answer.map( function(item, i) {
-                    buf[i] = {name: item.name}
-                })
-                setZones(buf)
-                apiGetRacks(buf)
-            }
-            
-        }
-        xhr.send(null);
-    }
-    
-    if (zones.toString()=="")
-    apiGetZones()
-    
     const [racks, setRacks] = React.useState([])
-    function apiGetRacks(zonesAnswer) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/racks', true);
-        console.log("StorekeeperAllocation apiGetRacks was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                var answer = JSON.parse(this.response)
-                console.log("StorekeeperAllocation apiGetRacks answer: ")
-                console.log(answer)
-                var buf = []
-                answer.map( function(item, i) {
-                    buf[i] = {code: item.code, name: item.name, racks_num: item.racks_num, zone_num: zonesAnswer[item.zone_num-1].name}
-                })
-                setRacks(buf)
-                apiGetShelfs(buf)
-            }
-        }
-        xhr.send(null);
-    }
-
     const [shelfs, setShelfs] = React.useState([])
-    function apiGetShelfs(racksAnswer) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/shelfs', true);
-        console.log("StorekeeperAllocation apiGetShelfs was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                var answer = JSON.parse(this.response)
-                console.log("StorekeeperAllocation apiGetShelfs answer: ")
-                console.log(answer)
-                var buf = []
-                answer.map( function(item, i) {
-                    buf[i] = {shelfCode: item.code, name: item.name, shelfCode: item.code, rack_num: racksAnswer[item.rack_num-1].name, zone_num: racksAnswer[item.rack_num-1].zone_num, capacity: item.capacity, shelf_space: item.shelf_space}
-                })
-                setShelfs(buf)
-                apiGetGoodsType(buf)
-                
-            }
-        }
-        xhr.send(null);
-    }
-
     const [goodsType, setGoodsType] = React.useState([])
-    function apiGetGoodsType(shelfsAnswer) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/goods_type', true);
-        console.log("StorekeeperAllocation apiGetGoodsType was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                if (this.response != "") {
-                    console.log("StorekeeperAllocation apiGetGoodsType answer: ")
-                    console.log(this.response)
-                    var answer = JSON.parse(this.response)
-                    var buf = []
-                    answer.map( function(item, i) {
-                        buf[i] = item
-                    })
-                    setGoodsType(buf)
-                    apiGetShelfsSpace(shelfsAnswer, buf)
-                }
-            }
-        }
-        xhr.send(null);
-    }
-
     const [shelfsSpace, setShelfsSpace] = React.useState([])
-    function apiGetShelfsSpace(shelfsAnswer, goodsType) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/shelf_space', true);
-        console.log("StorekeeperAllocation apiGetShelfsSpace was launched")
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState == XMLHttpRequest.DONE) {
-                var answer = JSON.parse(this.response)
-                console.log("StorekeeperAllocation apiGetShelfsSpace answer: ")
-                console.log(answer)
-                var buf = shelfsAnswer
 
-                answer.map( function(item, i) {
-                    shelfsAnswer.map(function(item1,j){
-                        if (item1.shelfCode == item.shelf_num) {
-                            goodsType.map(item2=>{
-                                if (item2.code == item.good){
-                                    if (item1.shelf_space == null) buf[j].shelf_space = []
-                                    buf[j].shelf_space.push({good:item2.name, goodCode:item.good, amount:item.amount, weight: item2.weight, status:item.status, shelfCode:item.code})
-                                }
-                            })
-                        }
-                    })
-                })
-                console.log("StorekeeperAllocation apiGetShelfsSpace changed answer: ")
-                console.log(buf)
-                setShelfsSpace(buf)
-            }
+    if (zones.toString()=="") {
+        async function startGettingAnswers() {
+            var zonesArray = await api.getZones()
+            setZones(zonesArray)
+            var racksArray = await api.getRacks(zonesArray)
+            setRacks(racksArray)
+            var shelfsArray = await api.getShelfs(racksArray)
+            setShelfs(shelfsArray)
+            var goodsTypeArray = await api.getGoodsType()
+            setGoodsType(goodsTypeArray)
+            var shelfSpaceArray = await api.getShelfSpaces(shelfsArray, goodsTypeArray)
+            setShelfsSpace(shelfSpaceArray)
         }
-        xhr.send(null);
+        startGettingAnswers()
     }
 
-    
     //-------------------------------------------------------------------------query end
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------стол 1
@@ -285,10 +182,11 @@ export default function StorekeeperInventory(props){
 
     function btn_send_1() {
         if (selectedItemId!=undefined){
-            tableList1.map(function(item1,j){
-                // console.log(item1.shelfSpaceCode)
-                apiUpdateOrderStatus(item1.inventaryzationStatus, item1.shelfSpaceCode, j)
-            })
+            async function updateOrders(shelfsSpace, tableList1) {
+                var res = await api.updateOrderStatus("POST", shelfsSpace, tableList1)
+                setTableList(res)
+            }
+            updateOrders(shelfsSpace, tableList1)
         }
     }
 

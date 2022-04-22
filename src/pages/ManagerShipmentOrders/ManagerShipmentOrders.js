@@ -8,14 +8,13 @@ import InputTextArea from "../../components/InputTextArea/InputTextArea";
 import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
 import InputDate from "../../components/InputDate/InputDate";
 import { TableComponent } from "../../components/Table/TableComponent";
-const host = 'http://localhost:5000';
+import { Api } from "../../api/managerApi"
 
+var api = new Api()
 const styles = {
 
-  }
-
-  
-
+}
+ 
 export default function ManagerShipmentOrders(props){
 
     var id=0
@@ -75,57 +74,19 @@ export default function ManagerShipmentOrders(props){
     // const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"вв", amount:10, price:10}])
     const [tableList1, setTableList1] = React.useState([])
     
-    function apiGetOrders() {
-        var xhr = new XMLHttpRequest();
-        var status = isCurrent?'in progress':'complited'
-
-        xhr.open('GET', host+'/orders'+'?'+`type=purchase&status=${status}`, true);
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == XMLHttpRequest.DONE) {
-            var answer = JSON.parse(this.response)
-            console.log("ManagerShipmentOrders apiGetOrders answer: ")
-            console.log(answer)
-            var buffer = []
-            answer.map(function( element, i) {
-                buffer.push({number:i+1, orderNumber: element.name, orderCost: parseFloat(element.cost), address: element.address, cost:parseFloat(element.cost), deadline:element.deadline})
-                buffer[i].id = getId()
-                buffer[i].code = element.id;
-            });
-            setTableList(buffer)
-            setSelectedItemId(buffer[0])
-          }
-        }
-        
-        xhr.send(null);
+    async function apiGetOrders() {
+        var buffer = await api.getOrders('purchase', isCurrent)
+        setTableList(buffer)
+        setSelectedItemId(buffer[0])
     }
 
-    function apiGetOrderGoods(value) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/orders_goods'+ "?" + `order_id=${value.code}`, true);
-        
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == XMLHttpRequest.DONE) {
-            var answer = JSON.parse(this.response)
-            console.log("ManagerShipmentOrders apiGetOrderGoods answer: ")
-            console.log(answer)
-            var buffer = []
-            answer.map(function( element, i) {
-                var sumCost = 0
-                if (!isNaN(parseInt(element.amount)) && !isNaN(parseInt(element.price)))
-                sumCost=element.amount*element.price
-                buffer.push({number:i+1, goodsType: element.name, amount: element.amount, cost: element.price, sumCost:sumCost})
-                buffer[i].id = getId()
-                buffer[i].code = element.code;
-            });
-            setTableList1(buffer)
-            setOrder(value.orderNumber)
-            setShipmentAddress(value.address)
-            setShipmentDeadline(value.deadline.split("T")[0].replace("-", ".").replace("-", "."))
-            setOrderCost(value.orderCost)
-          }
-        }
-        
-        xhr.send(null);
+    async function apiGetOrderGoods(value) {
+        var buffer = await api.getOrderGoods(value)
+        setTableList1(buffer)
+        setOrder(value.orderNumber)
+        setShipmentAddress(value.address)
+        setShipmentDeadline(value.deadline.split("T")[0].replace("-", ".").replace("-", "."))
+        setOrderCost(value.orderCost)
     }
 
     //-------------------------------------------------------------------------Блок 2 конец
