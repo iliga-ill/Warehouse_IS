@@ -1,8 +1,9 @@
+const host = 'http://127.0.0.1:8000/';
+
 export class Api {
 
     getShipmentOrders(type, status) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+`/shipment_order_goods'+'?'+'type=${type}&status=${status}`, true);
@@ -27,7 +28,6 @@ export class Api {
 
     getGoodsSubCat2() {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/goods_subcat2', true);
@@ -50,7 +50,6 @@ export class Api {
 
     getGoodsSubCat3() {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/goods_subcat3', true);
@@ -73,7 +72,6 @@ export class Api {
 
     getGoodsType() {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/goods_type', true);
@@ -100,7 +98,6 @@ export class Api {
 
     getGoodsByShipmentOrder(order, goodsType, goodsCategories2, goodsCategories3) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
     
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/shipment_order_goods_by_order'+'?'+`code=${order.code}`, true);
@@ -134,7 +131,6 @@ export class Api {
 
     getGoodsCat() {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/goods_cat', true);
@@ -153,7 +149,6 @@ export class Api {
 
     getGoodsSubCat4() {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/goods_subcat4', true);
@@ -168,7 +163,6 @@ export class Api {
 
     updateOrderGoods(element) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('PUT', host+'/update_order_goods'+'?'+`amount=${element.amount}&code=${element.code}`, true);
@@ -184,7 +178,6 @@ export class Api {
 
     getZones() {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/zones', true);
@@ -207,7 +200,6 @@ export class Api {
 
     getRacks(zonesAnswer) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/racks', true);
@@ -230,7 +222,6 @@ export class Api {
 
     getShelfs(racksAnswer) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/shelfs', true);
@@ -252,7 +243,6 @@ export class Api {
     
     getGoodsType() {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/goods_type', true);
             xhr.onreadystatechange = function() {
@@ -275,7 +265,6 @@ export class Api {
 
     getShelfSpaces(shelfsAnswer, goodsType = "") {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/shelf_space', true);
@@ -316,7 +305,6 @@ export class Api {
 
     getShipmentOrdersGoods(goodsTypeAnswer, goodsCategories2Answer, goodsCategories3Answer) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/shipment_order_goods_all', true);
@@ -349,7 +337,6 @@ export class Api {
 
     postGoodsToShelfs(value) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open("POST", host+'/post_goods_to_shelfs', true);
@@ -372,7 +359,6 @@ export class Api {
 
     getShipmentOrders() {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/shipment_order_goods'+'?'+'type=purchase&status=opened', true);
@@ -397,7 +383,6 @@ export class Api {
 
     updateOrderGoodsExpend(amount, code) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('PUT', host+'/update_order_goods_expend'+'?'+`amount=${amount}&code=${code}`, true);
@@ -417,7 +402,7 @@ export class Api {
         var connection = connectionType
         var route = route
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
+
         return new Promise(function(resolve, reject){
             xhr.open(connection, host+'/update_shelf_space_status', true);
             xhr.setRequestHeader("Content-Type", "application/json");
@@ -458,6 +443,51 @@ export class Api {
                 }
             }
             xhr.send(JSON.stringify(space));
+        })
+    }
+
+    updateOrderStatus2(status, code, i, shelfsSpace, tableList1) {
+        var xhr = new XMLHttpRequest();
+
+        return new Promise(function(resolve, reject){
+            xhr.open('PUT', host+'/update_shelf_space_status'+'?'+`status=${status}&code=${code}`, true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    console.log(this.responseText);
+                    shelfsSpace.map(function(item, i){
+                        if (item.shelf_space!=undefined)
+                            item.shelf_space.map(function(item1, j){
+                                if (code == item1.shelfCode) {
+                                    console.log(status)
+                                    item1.status = status
+                                }
+                                
+                                return item1
+                            })
+                        return item
+                    })
+                    if (i==tableList1.length-1) {
+                        var buf=[]
+                        var counter = 0
+                        shelfsSpace.map(function(item, i){
+                            if (item.shelf_space != null && item.shelf_space != undefined) {
+                                var amount = 0
+                                var inventorysatedAmount = 0
+                                item.shelf_space.map(function(item1, j){
+                                    amount+=item1.amount
+                                    if (item1.status!='Не инвентаризирован') inventorysatedAmount++
+                                })
+                                item.inventorysationStatus=inventorysatedAmount==amount?"Проинвентаризировано":inventorysatedAmount!=0?"Частично проверено":"Не проверено";
+                                buf.push({id:counter, number:++counter, zone:item.zone_num, rack:item.rack_num, shelf:item.name, amount:amount, inventorysationStatus:item.inventorysationStatus})
+                            }
+                        })
+                        resolve(buf)
+                        //alert(`Статусы успешно сохранены`)
+                    }
+                }
+            }
+            xhr.send(null);
         })
     }
 

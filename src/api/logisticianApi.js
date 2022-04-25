@@ -1,8 +1,11 @@
-export class Api {
+var id=0
+const host = 'http://127.0.0.1:8000/';
 
-    getOrders(status) {
+export class Api {
+    static getId() {return id++}
+
+    getOrders(isCurrent) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
         var status = isCurrent?'in progress':'complited'
         
         return new Promise(function(resolve, reject){
@@ -15,9 +18,9 @@ export class Api {
                     var buffer = []
                     answer.map(function( element, i) {
                         if (i==0)
-                            buffer.push({id:getId(), text: element.name, selected: true, code: element.id, address: element.address, cost:element.cost, deadline:element.deadline.split("T")[0], order_status:element.order_status})
+                            buffer.push({id:Api.getId(), text: element.name, selected: true, code: element.id, address: element.address, cost:element.cost, deadline:element.deadline.split("T")[0], order_status:element.order_status})
                         else
-                            buffer.push({id:getId(), text: element.name, selected: false, code: element.id, address: element.address, cost:element.cost, deadline:element.deadline.split("T")[0], order_status:element.order_status})
+                            buffer.push({id: Api.getId(), text: element.name, selected: false, code: element.id, address: element.address, cost:element.cost, deadline:element.deadline.split("T")[0], order_status:element.order_status})
                     });
                     resolve(buffer)
                 }
@@ -28,7 +31,6 @@ export class Api {
 
     getGoodsType() {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
         
         return new Promise(function(resolve, reject){
             console.log("StorekeeperAdvent apiGetGoodsType was launched")
@@ -52,9 +54,8 @@ export class Api {
         })
     }
 
-    getShipmentOrderGoodsByOrderId(goodsTypeAnswer) {
+    getShipmentOrderGoodsByOrderId(order, goodsTypeAnswer) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
         var tableListBuf = []
 
         return new Promise(function(resolve, reject){
@@ -92,9 +93,8 @@ export class Api {
         })
     }
 
-    getOrderGoods() {
+    getOrderGoods(order) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
         return new Promise(function(resolve, reject){
             xhr.open("GET", host+'/orders_goods'+ "?" + `order_id=${order.code}`, true);
             xhr.onreadystatechange = function() {
@@ -105,7 +105,7 @@ export class Api {
                     var buffer = []
                     answer.map(function( element, i) {
                         buffer.push({number:i+1, goodsType: element.name, weight: element.weight, goodsCost: parseFloat(element.price), shipmentProgress:"10/100", goodCode:element.code})
-                        buffer[i].id = getId()
+                        buffer[i].id = Api.getId()
                         buffer[i].code = element.code;
                     });
     
@@ -118,7 +118,6 @@ export class Api {
 
     updateShipmentOrder(value) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
         return new Promise(function(resolve, reject){
             xhr.open('POST', host+'/update_shipment_orders', true);
             //Send the proper header information along with the request
@@ -136,7 +135,6 @@ export class Api {
 
     updateOrderStatus(order) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
         return new Promise(function(resolve, reject){
             xhr.open('PUT', host+'/update_order_status'+'?'+`id=${order.code}`, true);
             xhr.onreadystatechange = function() {
@@ -145,14 +143,13 @@ export class Api {
                     resolve("Responsed")
                 }
             }
-            xhr.send(JSON.stringify(value));
+            xhr.send(JSON.stringify(order));
         })
     
     }
 
     getGoodsTypeCats() {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/goods_type_cats', true);
             console.log("ManagerProducts apiGetGoodsTypeCats was launched")
@@ -165,7 +162,7 @@ export class Api {
                     var buffer = []
                     answer.map(function( element, i) {
                         buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: parseFloat(element.price), weight: element.weight})
-                        buffer[i].id = getId()
+                        buffer[i].id = Api.getId()
                         buffer[i].code = element.code;
                         buffer[i].description = element.description
                     });

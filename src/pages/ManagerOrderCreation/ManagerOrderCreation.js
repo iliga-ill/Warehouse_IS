@@ -191,30 +191,17 @@ export default function ManagerOrderCreation(props){
         }
     }
 
-    function apiPostNewOrderAndGoods(value) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", host+'/post_order', true);
-      
-        //Send the proper header information along with the request
-        xhr.setRequestHeader("Content-Type", "application/json");
-      
-        xhr.onreadystatechange = function() { // Call a function when the state changes.
-            if (this.readyState === XMLHttpRequest.DONE) {
-                // Request finished. Do processing here.
-                console.log("new order posted")
-                alert("Заказ успешно создан")
-                setOrderTypeListValue("На продажу")
-                // setOrderNumber("")
-                // setShipmentDate("")
-                // setShipmentAddress("")
-                // setSumCost(200)
-                // setNote("")
-                setTableList([])
-                // reloadPage()
-            }
-        }
-        xhr.send(JSON.stringify(value));
-      }
+    async function apiPostNewOrderAndGoods(value) {
+        var response = await api.postNewOrderAndGoods(value)
+        setOrderTypeListValue("На продажу")
+        // setOrderNumber("")
+        // setShipmentDate("")
+        // setShipmentAddress("")
+        // setSumCost(200)
+        // setNote("")
+        setTableList([])
+        // reloadPage())
+    }
 
     return (
         <FlexibleBlocksPage>

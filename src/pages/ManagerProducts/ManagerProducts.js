@@ -16,9 +16,6 @@ const styles = {
 
 export default function ManagerProducts(props){
 
-    var id=0
-    function getId(){return id++}
-
     async function apiGetGoodsTypeCats() {
         var buffer = await api.getGoodsTypeCats()
         setTableList(buffer)

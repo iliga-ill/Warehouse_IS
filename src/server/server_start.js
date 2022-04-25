@@ -2,8 +2,9 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
 const db = require('./queries')
-const port = 5000
-const host = 'http://localhost:5000'
+const port = 8000
+// const host = 'http://localhost:5000'
+const host = 'http://127.0.0.1:8000/'
 const XMLHttpRequest = require('xhr2');
 var cors = require('cors')
 

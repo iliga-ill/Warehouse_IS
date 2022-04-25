@@ -89,49 +89,9 @@ export default function StorekeeperInventory(props){
         setSelectedItemId(buf[0])
     }
     //-------------------------------------стол 1 конец
-    function apiUpdateOrderStatus(status, code, i) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('PUT', host+'/update_shelf_space_status'+'?'+`status=${status}&code=${code}`, true);
-      
-       //Send the proper header information along with the request
-       xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState == XMLHttpRequest.DONE) {
-          console.log(this.responseText);
-          shelfsSpace.map(function(item, i){
-              if (item.shelf_space!=undefined)
-                item.shelf_space.map(function(item1, j){
-                    if (code == item1.shelfCode) {
-                        console.log(status)
-                        item1.status = status
-                    }
-                    
-                    return item1
-                })
-            return item
-          })
-          if (i==tableList1.length-1) {
-                var buf=[]
-                var counter = 0
-                shelfsSpace.map(function(item, i){
-                    if (item.shelf_space != null && item.shelf_space != undefined) {
-                        var amount = 0
-                        var inventorysatedAmount = 0
-                        item.shelf_space.map(function(item1, j){
-                            amount+=item1.amount
-                            if (item1.status!='Не инвентаризирован') inventorysatedAmount++
-                        })
-                        item.inventorysationStatus=inventorysatedAmount==amount?"Проинвентаризировано":inventorysatedAmount!=0?"Частично проверено":"Не проверено";
-                        buf.push({id:counter, number:++counter, zone:item.zone_num, rack:item.rack_num, shelf:item.name, amount:amount, inventorysationStatus:item.inventorysationStatus})
-                    }
-                })
-                setTableList(buf)
-              //alert(`Статусы успешно сохранены`)
-            }
-        }
-      }
-        xhr.send(null);
+    async function apiUpdateOrderStatus(status, code, i) {
+        var buf = await api.updateOrderStatus2(status, code, i, shelfsSpace, tableList1)
+        setTableList(buf)
     }
     //-------------------------------------------------------------------------Блок 1 конец
     //-------------------------------------------------------------------------Блок 2

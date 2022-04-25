@@ -1,8 +1,11 @@
+var id=0
+const host = 'http://127.0.0.1:8000/';
+
 export class Api {
+    static getId() {return id++}
 
     getGoodsTypeCats() {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/goods_type_cats', true);
@@ -16,7 +19,7 @@ export class Api {
                     var buffer = []
                     answer.map(function( element, i) {
                         buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: parseFloat(element.price), goodsLimit: element.amount_limit})
-                        buffer[i].id = getId()
+                        buffer[i].id = Api.getId()
                         buffer[i].code = element.code;
                         buffer[i].description = element.description
                     });
@@ -29,7 +32,6 @@ export class Api {
 
     getShipmentOrders(tableHeadersBuf) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/shipment_order_goods'+'?'+'type=sell&status=opened', true);
@@ -51,7 +53,6 @@ export class Api {
 
     getGoodsTypeCats() {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/goods_type_cats', true);
@@ -86,7 +87,6 @@ export class Api {
 
     getOrders(type, isCurrent) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
         var status = isCurrent?'in progress':'complited'
 
         return new Promise(function(resolve, reject){
@@ -99,7 +99,7 @@ export class Api {
                     console.log(answer)
                     answer.map(function( element, i) {
                         buffer.push({number:i+1, orderNumber: element.name, orderCost: parseFloat(element.cost), address: element.address, cost:parseFloat(element.cost), deadline:element.deadline})
-                        buffer[i].id = getId()
+                        buffer[i].id = Api.getId()
                         buffer[i].code = element.id;
                     });
                     resolve(buffer)
@@ -111,7 +111,6 @@ export class Api {
 
     getOrderGoods(value) {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
 
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'/orders_goods'+ "?" + `order_id=${value.code}`, true);
@@ -126,7 +125,7 @@ export class Api {
                         if (!isNaN(parseInt(element.amount)) && !isNaN(parseInt(element.price)))
                         sumCost=element.amount*element.price
                         buffer.push({number:i+1, goodsType: element.name, amount: element.amount, cost: element.price, sumCost: sumCost})
-                        buffer[i].id = getId()
+                        buffer[i].id = Api.getId()
                         buffer[i].code = element.code;
                     });
                     console.log("elm")
@@ -138,6 +137,23 @@ export class Api {
         })       
     }
 
-    
+    postNewOrderAndGoods(value) {
+        var xhr = new XMLHttpRequest();
+
+        return new Promise(function(resolve, reject){
+            xhr.open("POST", host+'/post_order', true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() { // Call a function when the state changes.
+                if (this.readyState === XMLHttpRequest.DONE) {
+                    // Request finished. Do processing here.
+                    console.log("new order posted")
+                    alert("Заказ успешно создан")
+                    resolve("На продажу")
+                }
+            }
+            xhr.send(JSON.stringify(value));
+        })       
+    }
+
 }
 

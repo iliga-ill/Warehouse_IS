@@ -311,7 +311,7 @@ async function apiGetGoodsSubCat4() {
 }
 
 async function apiUpdateOrderGoods(value) {
-    value.map(function(element, i){
+    value.map(async function(element, i){
         var response = await api.updateOrderGoods(element)
         setOrders([])
         setTableList([])

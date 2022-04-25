@@ -1,13 +1,16 @@
+const host = 'http://127.0.0.1:8000/';
+
 export class Api {
 
     getClients () {
         var xhr = new XMLHttpRequest();
-        const host = 'http://localhost:5000';
         return new Promise(function(resolve, reject){
-            xhr.open("GET", host+"/clients", true);
+            xhr.open("GET", host+"clients/", true);
             var accounts = []
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
+                    console.log("GetClients answer: ")
+                    console.log(this.response)
                     var answer = JSON.parse(this.response)
                     console.log("GetClients answer: ")
                     console.log(answer)

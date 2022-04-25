@@ -47,8 +47,7 @@ export default function LogisticianOrders(props){
     }, [orders]);
     
     async function apiGetOrders() {
-        var status = isCurrent?'in progress':'complited'
-        var result = await api.getOrders(status)
+        var result = await api.getOrders(isCurrent)
         setOrders(result)
     }
     if (orders.toString()=="")
@@ -203,7 +202,7 @@ export default function LogisticianOrders(props){
         });
 
         if (order != '') {
-            var tableListBuf = await api.getShipmentOrderGoodsByOrderId(goodsTypeAnswer)
+            var tableListBuf = await api.getShipmentOrderGoodsByOrderId(order, goodsTypeAnswer)
             setTableList(tableListBuf)
         } else {
             setTableList([])
@@ -220,7 +219,7 @@ export default function LogisticianOrders(props){
         }
         });
         if (order != '') {
-            var result = await api.getOrderGoods()
+            var result = await api.getOrderGoods(order)
             if (order.order_status == "sell")
                 setOrderType("На продажу")
             else
