@@ -26,15 +26,7 @@
     height: 1000px;
 }
 
-#content {
-    position: absolute;
-    top: 0; width: 100%;
-    z-index: 1;
-    padding: 3em 0 0 0;
-    height: 100%;
-    scroll-behavior: smooth;
-    overflow: auto;
-}
+
 
 .list-item {
     display: inline-block;
