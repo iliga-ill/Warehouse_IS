@@ -1,4 +1,5 @@
-const host = 'http://127.0.0.1:8000/';
+// const host = 'http://127.0.0.1:8000/';
+const host = 'http://localhost:5000/';
 
 export class Api {
 
@@ -6,7 +7,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open("GET", host+"clients", true);
+            xhr.open("GET", host+"clients/", true);
             var accounts = []
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -40,7 +41,7 @@ export class Api {
       var xhr = new XMLHttpRequest();
  
       return new Promise(function(resolve, reject){
-          xhr.open("POST", host+"post_user", true);
+          xhr.open("POST", host+"post_user/", true);
          //Send the proper header information along with the request
           xhr.setRequestHeader("Content-Type", "application/json");
       

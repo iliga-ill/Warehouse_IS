@@ -1,4 +1,5 @@
-const host = 'http://127.0.0.1:8000/';
+// const host = 'http://127.0.0.1:8000/';
+const host = 'http://localhost:5000/';
 
 export class Api {
 
@@ -6,7 +7,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+`/shipment_order_goods'+'?'+'type=${type}&status=${status}`, true);
+            xhr.open('GET', host+`shipment_order_goods/'+'?'+'type=${type}&status=${status}`, true);
             console.log("StorekeeperAdvent apiGetShipmentOrders was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -30,7 +31,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/goods_subcat2', true);
+            xhr.open('GET', host+'goods_subcat2/', true);
             console.log("StorekeeperAdvent apiGetGoodsSubCat2 was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -52,7 +53,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/goods_subcat3', true);
+            xhr.open('GET', host+'goods_subcat3/', true);
             console.log("StorekeeperAdvent apiGetGoodsSubCat3 was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -74,7 +75,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/goods_type', true);
+            xhr.open('GET', host+'goods_type/', true);
             console.log("StorekeeperAdvent apiGetGoodsType was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -100,7 +101,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
     
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/shipment_order_goods_by_order'+'?'+`code=${order.code}`, true);
+            xhr.open('GET', host+'shipment_order_goods_by_order/'+'?'+`code=${order.code}`, true);
             console.log("StorekeeperAdvent apiGetGoodsByOrder was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -133,7 +134,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/goods_cat', true);
+            xhr.open('GET', host+'goods_cat/', true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     var answer = JSON.parse(this.response)
@@ -151,7 +152,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/goods_subcat4', true);
+            xhr.open('GET', host+'goods_subcat4/', true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     resolve(this.responseText);
@@ -165,7 +166,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('PUT', host+'/update_order_goods'+'?'+`amount=${element.amount}&code=${element.code}`, true);
+            xhr.open('PUT', host+'update_order_goods/'+'?'+`amount=${element.amount}&code=${element.code}`, true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -180,7 +181,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/zones', true);
+            xhr.open('GET', host+'zones/', true);
             //Send the proper header information along with the request
             xhr.onreadystatechange = function() {
             if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -202,7 +203,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/racks', true);
+            xhr.open('GET', host+'racks/', true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     var answer = JSON.parse(this.response)
@@ -224,7 +225,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/shelfs', true);
+            xhr.open('GET', host+'shelfs/', true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     var answer = JSON.parse(this.response)
@@ -244,7 +245,7 @@ export class Api {
     getGoodsType() {
         var xhr = new XMLHttpRequest();
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/goods_type', true);
+            xhr.open('GET', host+'goods_type/', true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     if (this.response != "") {
@@ -267,7 +268,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/shelf_space', true);
+            xhr.open('GET', host+'shelf_space/', true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     var answer = JSON.parse(this.response)
@@ -307,7 +308,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/shipment_order_goods_all', true);
+            xhr.open('GET', host+'shipment_order_goods_all/', true);
             console.log("StorekeeperAllocation apiGetShipmentOrdersGoods was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -339,7 +340,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open("POST", host+'/post_goods_to_shelfs', true);
+            xhr.open("POST", host+'post_goods_to_shelfs/', true);
             //Send the proper header information along with the request
             xhr.setRequestHeader("Content-Type", "application/json");
           
@@ -361,7 +362,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/shipment_order_goods'+'?'+'type=purchase&status=opened', true);
+            xhr.open('GET', host+'shipment_order_goods/'+'?'+'type=purchase&status=opened', true);
             console.log("StorekeeperAdvent apiGetOrders was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -385,7 +386,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('PUT', host+'/update_order_goods_expend'+'?'+`amount=${amount}&code=${code}`, true);
+            xhr.open('PUT', host+'update_order_goods_expend/'+'?'+`amount=${amount}&code=${code}`, true);
             //Send the proper header information along with the request
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); 
             xhr.onreadystatechange = function() {
@@ -404,7 +405,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open(connection, host+'/update_shelf_space_status', true);
+            xhr.open(connection, host+'update_shelf_space_status/', true);
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -450,7 +451,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('PUT', host+'/update_shelf_space_status'+'?'+`status=${status}&code=${code}`, true);
+            xhr.open('PUT', host+'update_shelf_space_status/'+'?'+`status=${status}&code=${code}`, true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {

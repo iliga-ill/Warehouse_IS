@@ -1,5 +1,6 @@
 var id=0
-const host = 'http://127.0.0.1:8000/';
+// const host = 'http://127.0.0.1:8000/';
+const host = 'http://localhost:5000/';
 
 export class Api {
     static getId() {return id++}
@@ -9,7 +10,7 @@ export class Api {
         var status = isCurrent?'in progress':'complited'
         
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/orders_all'+'?'+`status=${status}`, true);
+            xhr.open('GET', host+'orders_all/'+'?'+`status=${status}`, true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     var answer = JSON.parse(this.response)
@@ -34,7 +35,7 @@ export class Api {
         
         return new Promise(function(resolve, reject){
             console.log("StorekeeperAdvent apiGetGoodsType was launched")
-            xhr.open('GET', host+'/goods_type', true);
+            xhr.open('GET', host+'goods_type/', true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     if (this.response != "") {
@@ -59,7 +60,7 @@ export class Api {
         var tableListBuf = []
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/shipment_order_goods_id'+'?'+`order_id=${order.code}`, true);
+            xhr.open('GET', host+'shipment_order_goods_id/'+'?'+`order_id=${order.code}`, true);
             console.log("StorekeeperAdvent apiGetShipmentOrderGoodsByOrderId was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -96,7 +97,7 @@ export class Api {
     getOrderGoods(order) {
         var xhr = new XMLHttpRequest();
         return new Promise(function(resolve, reject){
-            xhr.open("GET", host+'/orders_goods'+ "?" + `order_id=${order.code}`, true);
+            xhr.open("GET", host+'orders_goods/'+ "?" + `order_id=${order.code}`, true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     var answer = JSON.parse(this.response)
@@ -119,7 +120,7 @@ export class Api {
     updateShipmentOrder(value) {
         var xhr = new XMLHttpRequest();
         return new Promise(function(resolve, reject){
-            xhr.open('POST', host+'/update_shipment_orders', true);
+            xhr.open('POST', host+'update_shipment_orders/', true);
             //Send the proper header information along with the request
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onreadystatechange = function() {
@@ -136,7 +137,7 @@ export class Api {
     updateOrderStatus(order) {
         var xhr = new XMLHttpRequest();
         return new Promise(function(resolve, reject){
-            xhr.open('PUT', host+'/update_order_status'+'?'+`id=${order.code}`, true);
+            xhr.open('PUT', host+'update_order_status/'+'?'+`id=${order.code}`, true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     alert(`${order.text} успешно завершен`)
@@ -151,7 +152,7 @@ export class Api {
     getGoodsTypeCats() {
         var xhr = new XMLHttpRequest();
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/goods_type_cats', true);
+            xhr.open('GET', host+'goods_type_cats/', true);
             console.log("ManagerProducts apiGetGoodsTypeCats was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {

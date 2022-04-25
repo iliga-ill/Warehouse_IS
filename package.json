@@ -35,6 +35,7 @@
     "react-scripts": "4.0.3",
     "router": "^1.3.6",
     "start": "^5.1.0",
+    "three": "^0.139.2",
     "web-vitals": "^0.2.4",
     "workbox-background-sync": "^5.1.4",
     "workbox-broadcast-update": "^5.1.4",

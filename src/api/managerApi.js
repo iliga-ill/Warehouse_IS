@@ -8,7 +8,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/goods_type_cats', true);
+            xhr.open('GET', host+'goods_type_cats/', true);
             console.log("ManagerOrderCreation apiGetGoodsTypeCats was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -34,7 +34,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/shipment_order_goods'+'?'+'type=sell&status=opened', true);
+            xhr.open('GET', host+'shipment_order_goods/'+'?'+'type=sell&status=opened', true);
             console.log("ManagerOrderCreation apiGetShipmentOrders was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -55,7 +55,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/goods_type_cats', true);
+            xhr.open('GET', host+'goods_type_cats/', true);
             console.log("ManagerProducts apiGetGoodsTypeCats was launched")
             xhr.onreadystatechange = function() {
               if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -90,7 +90,7 @@ export class Api {
         var status = isCurrent?'in progress':'complited'
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/orders'+'?'+`type=${type}&status=${status}`, true);
+            xhr.open('GET', host+'orders/'+'?'+`type=${type}&status=${status}`, true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     var answer = JSON.parse(this.response)
@@ -113,7 +113,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'/orders_goods'+ "?" + `order_id=${value.code}`, true);
+            xhr.open('GET', host+'orders_goods/'+ "?" + `order_id=${value.code}`, true);
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     var answer = JSON.parse(this.response)
@@ -141,7 +141,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open("POST", host+'/post_order', true);
+            xhr.open("POST", host+'post_order/', true);
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onreadystatechange = function() { // Call a function when the state changes.
                 if (this.readyState === XMLHttpRequest.DONE) {
