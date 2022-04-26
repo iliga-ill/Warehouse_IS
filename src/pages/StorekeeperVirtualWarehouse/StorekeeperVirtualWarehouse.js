@@ -322,13 +322,13 @@ function animateHint() {
     render();
 }
 
-function setModelOnCoordinates(model, coordinates){
+function setModelOnCoordinates(model, coordinates, inObjects){
     const voxel = model.mesh;
     voxel.position.divideScalar( 1 ).floor().multiplyScalar( 1 ).addScalar( 1 );
     voxel.position.set(coordinates.x + model.translation.x, coordinates.y + model.translation.y, coordinates.z + model.translation.z)
     voxel.name = model.name;
     scene.add( voxel );
-    objects.push( voxel );
+    if (inObjects) objects.push( voxel );
 }
 
 //#region Controls
@@ -391,7 +391,7 @@ function onPointerMove(event) {
     warehouseSettings.zones.map(zone=>{
         let zoneBorderModel = modelCreator.createZoneBorder(zone.name, 0xffffff, zone.width, zone.length, 3, new Vector3(0,0,0))
         
-        setModelOnCoordinates(zoneBorderModel, new Vector3(zone.centerPoint.x,0,zone.centerPoint.y))
+        setModelOnCoordinates(zoneBorderModel, new Vector3(zone.centerPoint.x,0,zone.centerPoint.y), false)
         lockedModels.push(zone.name)
     })
   }
