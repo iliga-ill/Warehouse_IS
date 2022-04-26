@@ -5,20 +5,112 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import DropdownListWithModels from "../../components/DropdownListWithModels/DropdownListWithModels";
 import ModelCreator from "../../classes/ModelCreator/ModelCreator.js";
-import { Vector3 } from "three";
+import Colors from "../../classes/Colors/Colors.js";
+import { Vector2, Vector3 } from "three";
 
 
 const styles = {
 
   }
 
+let modelCreator = new ModelCreator()
+let colors = new Colors()
+
 //ширина и длинна склада задаются в см
+
+let racksType = [
+    {
+        racksTypeId: "0001",
+        depth:50,
+        shelfs:[
+            {
+                shelfTypeId: "0001/0",
+                liftingCapacity:50,
+                height:40,
+                width:40,
+            },
+            {
+                shelfTypeId: "0001/1",
+                liftingCapacity:50,
+                height:40,
+                width:40,
+            },
+        ]
+    }
+]
 
 
 let warehouseSettings = {
     width:1000,
     length:1000,
+    zones:[
+        {
+            name:"Зона 1",
+            centerPoint:new Vector2(-250,-348),
+            width:500,
+            length:300,
+            racks:[
+                {
+                    name:"Стеллаж 1",
+                    centerPoint:new Vector2(0,0),
+                    racksTypeId: "0001",
+                    depth:50,
+                    shelfs:[
+                        {
+                            name:"Стеллаж 1/Полка 1",
+                            shelfTypeId: "0001/0",
+                            liftingCapacity:50,
+                            height:40,
+                            width:40,
+                            shelfSpace:{}
+                        },
+                        {
+                            name:"Стеллаж 1/Полка 2",
+                            shelfTypeId: "0001/1",
+                            liftingCapacity:50,
+                            height:40,
+                            width:40,
+                            shelfSpace:{}
+                        },
+                    ]
+                },
 
+            ]
+        },
+        {
+            name:"Зона 1",
+            centerPoint:new Vector2(-250,-0),
+            width:500,
+            length:300,
+            racks:[
+                {
+                    name:"Стеллаж 1",
+                    centerPoint:new Vector2(0,0),
+                    racksTypeId: "0001",
+                    depth:50,
+                    shelfs:[
+                        {
+                            name:"Стеллаж 1/Полка 1",
+                            shelfTypeId: "0001/0",
+                            liftingCapacity:50,
+                            height:40,
+                            width:40,
+                            shelfSpace:{}
+                        },
+                        {
+                            name:"Стеллаж 1/Полка 2",
+                            shelfTypeId: "0001/1",
+                            liftingCapacity:50,
+                            height:40,
+                            width:40,
+                            shelfSpace:{}
+                        },
+                    ]
+                },
+
+            ]
+        },
+    ]
 }
 
 
@@ -182,7 +274,6 @@ function createHint(){
         const intersect = intersects[0];
 
         if (intersect != undefined && !lockedModels.includes(intersect.object.name)) {
-            console.log(intersect)
             hintModel = {
                 name: "Hint", 
                 modelName: "Hint",
@@ -206,10 +297,8 @@ function animateHint() {
     raycaster.setFromCamera( pointer, camera );
     const intersects = raycaster.intersectObjects( objects );
     const intersect = intersects[0];
-    console.log(editingMod)
     if (intersect!=undefined && hintModel != undefined && editingMod != "viewing") {
         //hintMesh.visible = true;
-        
         
         hintModel.mesh.position.copy( intersect.point ).add( intersect.face.normal );
         hintModel.mesh.position.divideScalar(1).floor().multiplyScalar(1).addScalar( 1 );
@@ -233,8 +322,8 @@ function animateHint() {
     render();
 }
 
-function setModelOnCoordinates(coordinates, model){
-    const voxel = new THREE.Mesh( model.geometry, model.material);
+function setModelOnCoordinates(model, coordinates){
+    const voxel = model.mesh;
     voxel.position.divideScalar( 1 ).floor().multiplyScalar( 1 ).addScalar( 1 );
     voxel.position.set(coordinates.x + model.translation.x, coordinates.y + model.translation.y, coordinates.z + model.translation.z)
     voxel.name = model.name;
@@ -291,55 +380,20 @@ function onPointerMove(event) {
         renderer.render( scene, camera );
     }
 //#endregion
-
-/* Зона бесполезного кода
-
-  function setCorrectTranslation(intersect, ObjName) {
-      console.log("Clicked obj: " + intersect.object.name + "; Placed obj: " + ObjName)
-
-      switch(String(intersect.object.name)){
-          case "Shelter": switch(ObjName){ 
-                  case "Cube": switch(intersect.faceIndex){ 
-                      case (31||25||27||29): SetModel_cube(30, 30, 30, 0, -5, 0); break;
-                      default: SetModel_cube(40, 40, 40, 0, -5, 0); break;
-                  }break;
-                  case "Shelter": switch(intersect.faceIndex){  
-                      default: SetModel_shelter(50, 50, 50, 5, 0, -25, -25); break;
-                  }break;
-          }break;
-
-          case "Cube": switch(ObjName){ 
-                  case "Cube": switch(intersect.faceIndex){ 
-                      case 5: SetModel_cube(40, 40, 40, 0, -15, 0); break;
-                      default: SetModel_cube(40, 40, 40, 0, -5, 0); break;
-                  }break;
-                  case "Shelter": switch(intersect.faceIndex){  
-                      default: break;
-                  }break;
-          }break;
-
-          case "Mesh": switch(ObjName){ 
-                  default: SetModel_shelter(50, 50, 50, 5, 0, -25, -25); break;
-          }break;
-
-          default: SetModel_cube(40, 40, 40, 0, -5, 0); break;
-      }
-  }
-
-  */
- //#endregion
   
-  function warehouseGeneration(warehouseSettings){
-    let color = 0x885aaa
+  function warehouseGeneration(warehouseSettings, racksType){
+
+    let floorModel = modelCreator.createFloor("Floor", 0x808080, warehouseSettings.width, warehouseSettings.length, 4, new Vector3(0,-2,0))
         
-    let floor = {
-        name: "Floor", 
-        material: new THREE.MeshLambertMaterial( { color: color}), 
-        geometry: new THREE.BoxBufferGeometry(warehouseSettings.length, 4, warehouseSettings.width), 
-        translation: new Vector3(0,-2,0),
-    }
+    setModelOnCoordinates(floorModel, new Vector3(0,0,0))
     lockedModels.push("Floor")
-    setModelOnCoordinates(new Vector3(0,0,0), floor)
+
+    warehouseSettings.zones.map(zone=>{
+        let zoneBorderModel = modelCreator.createZoneBorder(zone.name, 0xffffff, zone.width, zone.length, 3, new Vector3(0,0,0))
+        
+        setModelOnCoordinates(zoneBorderModel, new Vector3(zone.centerPoint.x,0,zone.centerPoint.y))
+        lockedModels.push(zone.name)
+    })
   }
 
   
@@ -358,7 +412,7 @@ class StorekeeperVirtualWarehouse extends Component {
         // model = modelCreator.createShelter("Большая полка", 0x885aaa, 150, 100, 50, 5, new THREE.Vector3(0, -25, -25))
         // model = modelCreator.createShelter("Широкая полка", 0x885aaa, 150, 50, 50, 5, new THREE.Vector3(0, -1, -25))
         createHint()
-        warehouseGeneration(warehouseSettings)
+        warehouseGeneration(warehouseSettings, racksType)
     }
 
     render(){

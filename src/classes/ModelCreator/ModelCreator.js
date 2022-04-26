@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline';
 
 export default class ModelCreator {
 
@@ -52,6 +53,55 @@ export default class ModelCreator {
                 new THREE.ExtrudeGeometry(frame, extrudeSettings), 
                 new THREE.MeshLambertMaterial( { color: color})
             ), 
+            translation: translation,
+        }
+    }
+
+    createZoneBorder(name, color, width, length, lineWidth, translation){
+
+        let points = [];
+        points.push(
+            new THREE.Vector3(width/2, 0, length/2),
+            new THREE.Vector3(width/2, 0, -length/2),
+            new THREE.Vector3(-width/2, 0, -length/2),
+            new THREE.Vector3(-width/2, 0, length/2),
+            new THREE.Vector3(width/2, 0, length/2),
+        );
+        let geometry = new THREE.BufferGeometry().setFromPoints(points);
+        const line = new MeshLine();
+        line.setGeometry(geometry);
+        line.setPoints(points, p => lineWidth);
+
+        let material = new MeshLineMaterial({
+            color: color
+        });
+
+        let mesh = new THREE.Mesh(line, material);
+        mesh.raycast = MeshLineRaycast;
+
+        return {
+            name: name, 
+            modelName: "ZoneBorder",
+            material: material, 
+            geometry: line,
+            mesh: mesh, 
+            translation: translation,
+        }
+    }
+
+    createFloor(name, color, width, length, height, translation){
+
+        let geometry = new THREE.BoxBufferGeometry(length, height, width)
+        let material = new THREE.MeshLambertMaterial( { color: color})
+
+        var mesh = new THREE.Mesh( geometry, material);
+            
+        return {
+            name: name, 
+            modelName: "Floor",
+            material: material, 
+            geometry: geometry,
+            mesh: mesh, 
             translation: translation,
         }
     }
