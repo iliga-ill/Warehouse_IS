@@ -7,7 +7,9 @@ import DropdownListWithModels from "../../components/DropdownListWithModels/Drop
 import ModelCreator from "../../classes/ModelCreator/ModelCreator.js";
 import Colors from "../../classes/Colors/Colors.js";
 import { Vector2, Vector3 } from "three";
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
+import WarehouseSettingsModel from "../../classes/ModelCreator/WarehouseSettingsModel.js";
 
 const styles = {
 
@@ -16,103 +18,12 @@ const styles = {
 let modelCreator = new ModelCreator()
 let colors = new Colors()
 
-//ширина и длинна склада задаются в см
-
-let racksType = [
-    {
-        racksTypeId: "0001",
-        depth:50,
-        shelfs:[
-            {
-                shelfTypeId: "0001/0",
-                liftingCapacity:50,
-                height:40,
-                width:40,
-            },
-            {
-                shelfTypeId: "0001/1",
-                liftingCapacity:50,
-                height:40,
-                width:40,
-            },
-        ]
-    }
-]
+let warehouseSettingsModel = new WarehouseSettingsModel()
 
 
-let warehouseSettings = {
-    width:1000,
-    length:1000,
-    zones:[
-        {
-            name:"Зона 1",
-            centerPoint:new Vector2(-250,-348),
-            width:500,
-            length:300,
-            racks:[
-                {
-                    name:"Стеллаж 1",
-                    centerPoint:new Vector2(0,0),
-                    racksTypeId: "0001",
-                    depth:50,
-                    shelfs:[
-                        {
-                            name:"Стеллаж 1/Полка 1",
-                            shelfTypeId: "0001/0",
-                            liftingCapacity:50,
-                            height:40,
-                            width:40,
-                            shelfSpace:{}
-                        },
-                        {
-                            name:"Стеллаж 1/Полка 2",
-                            shelfTypeId: "0001/1",
-                            liftingCapacity:50,
-                            height:40,
-                            width:40,
-                            shelfSpace:{}
-                        },
-                    ]
-                },
-
-            ]
-        },
-        {
-            name:"Зона 1",
-            centerPoint:new Vector2(-250,-0),
-            width:500,
-            length:300,
-            racks:[
-                {
-                    name:"Стеллаж 1",
-                    centerPoint:new Vector2(0,0),
-                    racksTypeId: "0001",
-                    depth:50,
-                    shelfs:[
-                        {
-                            name:"Стеллаж 1/Полка 1",
-                            shelfTypeId: "0001/0",
-                            liftingCapacity:50,
-                            height:40,
-                            width:40,
-                            shelfSpace:{}
-                        },
-                        {
-                            name:"Стеллаж 1/Полка 2",
-                            shelfTypeId: "0001/1",
-                            liftingCapacity:50,
-                            height:40,
-                            width:40,
-                            shelfSpace:{}
-                        },
-                    ]
-                },
-
-            ]
-        },
-    ]
-}
-
+let racksType = warehouseSettingsModel.getRacksType()
+let goodsType = warehouseSettingsModel.getGoodsType()
+let warehouseSettings = warehouseSettingsModel.getWarehouseSettings()
 
 
 //#region Scene settings -------------------------------------------------
@@ -121,6 +32,7 @@ let warehouseSettings = {
 let camera, scene, renderer;
 let plane;
 let pointer, raycaster; 
+let font = null
 
 let editingMod = "viewing"
 
@@ -386,33 +298,82 @@ function onPointerMove(event) {
     let floorModel = modelCreator.createFloor("Floor", 0x808080, warehouseSettings.width, warehouseSettings.length, 4, new Vector3(0,-2,0))
         
     setModelOnCoordinates(floorModel, new Vector3(0,0,0))
-    lockedModels.push("Floor")
+    lockedModels.push(floorModel.name)
 
     warehouseSettings.zones.map(zone=>{
-        let zoneBorderModel = modelCreator.createZoneBorder(zone.name, 0xffffff, zone.width, zone.length, 3, new Vector3(0,0,0))
-        
+        let zoneBorderModel = modelCreator.createZoneBorder(zone.name, 0xffffff, zone.width, zone.length, 1, new Vector3(0,0,0), font)
         setModelOnCoordinates(zoneBorderModel, new Vector3(zone.centerPoint.x,0,zone.centerPoint.y), false)
         lockedModels.push(zone.name)
+
+        zone.racks.map(rack=>{
+            let rackType = racksType[`rack_${rack.racksTypeId}`]
+            let rackModel = modelCreator.createRack(rack.name, 0x885aaa, rackType.shelfWidth, rackType.shelfHeight, rackType.depth, rackType.horisontalShelfAmount, rackType.verticalShelfAmount, rackType.borderWidth, rackType.translation)
+            setModelOnCoordinates(
+                rackModel, 
+                new Vector3(
+                    zone.centerPoint.x + rack.centerPoint.x,
+                    0,
+                    zone.centerPoint.y + rack.centerPoint.y
+                ),
+                true
+            )
+            lockedModels.push(rack.name)
+            rack.shelfs.map(shelf=>{
+                if (shelf.space != ""){
+                    //console.log(`${zone.name} ${rack.name} ${shelf.name}`)
+                    shelf.space.map(good=>{
+                        let goodType = goodsType[`good_${good.goodTypeId}`]
+                        let goodModel = modelCreator.createCube(good.name, 0x885aff, goodType.width, goodType.height, goodType.depth, goodType.translation)
+                        let rackCenterX = zone.centerPoint.x + rack.centerPoint.x
+                        let rackCenterZ = zone.centerPoint.y + rack.centerPoint.y
+                        let shelfOneX = rackCenterX-((rackType.shelfWidth*rackType.horisontalShelfAmount + rackType.borderWidth*(rackType.horisontalShelfAmount+1))/2 - (rackType.shelfWidth/2 + rackType.borderWidth) )
+                        let shelfOneY = rackType.borderWidth*2
+                        let shelfOneZ = rackCenterZ
+                        setModelOnCoordinates(
+                            goodModel, 
+                            new Vector3(
+                                shelfOneX + (rackType.shelfWidth  + rackType.borderWidth)*rackType.shelfs[`shelf_${shelf.number}`].column,
+                                shelfOneY + (rackType.shelfHeight + rackType.borderWidth)*rackType.shelfs[`shelf_${shelf.number}`].row,
+                                shelfOneZ
+                            ),
+                            true
+                        )
+                    })
+                }
+            })
+        })
     })
   }
 
-  
+    
 
 class StorekeeperVirtualWarehouse extends Component {
 
     componentDidMount(){
-        init()
-        render()
-        let modelCreator = new ModelCreator()
+        var manager = new THREE.LoadingManager();
+        manager.onLoad = function() { // when all resources are loaded
+            init()
+            render()
+            let modelCreator = new ModelCreator()
 
-        model = modelCreator.createCube("Маленький товар", 0x885aaa, 16, 16, 16, new THREE.Vector3(0,8-2,0))
-        //model = modelCreator.createCube("Большой товар", 0x885aaa, 30, 80, 36, new THREE.Vector3(0, (80/2-1), 0))
-        // model = modelCreator.createShelter("Маленькая полка", 0x885aaa, 50, 50, 50, 5, new THREE.Vector3(0, -25, -25))
-        // model = modelCreator.createShelter("Высокая полка", 0x885aaa, 50, 100, 50, 5, new THREE.Vector3(0, -25, -25))
-        // model = modelCreator.createShelter("Большая полка", 0x885aaa, 150, 100, 50, 5, new THREE.Vector3(0, -25, -25))
-        // model = modelCreator.createShelter("Широкая полка", 0x885aaa, 150, 50, 50, 5, new THREE.Vector3(0, -1, -25))
-        createHint()
-        warehouseGeneration(warehouseSettings, racksType)
+            //model = modelCreator.createCube("Пиксель", 0x885aaa, 2, 2, 2, new THREE.Vector3(-1,-1,-1))
+            //model = modelCreator.createCube("Пиксель", 0x885aaa, 1, 1, 1, new THREE.Vector3(-0.5,-0.5,-0.5))
+            model = modelCreator.createCube("Маленький товар", 0x885aaa, 16, 16, 16, new THREE.Vector3(0,8-2,0))
+            //model = modelCreator.createCube("Большой товар", 0x885aaa, 30, 80, 36, new THREE.Vector3(0, (80/2-1), 0))
+            // model = modelCreator.createShelter("Маленькая полка", 0x885aaa, 50, 50, 50, 5, new THREE.Vector3(0, -25, -25))
+            // model = modelCreator.createShelter("Высокая полка", 0x885aaa, 50, 100, 50, 5, new THREE.Vector3(0, -25, -25))
+            // model = modelCreator.createShelter("Большая полка", 0x885aaa, 150, 100, 50, 5, new THREE.Vector3(0, -25, -25))
+            // model = modelCreator.createShelter("Широкая полка", 0x885aaa, 150, 50, 50, 5, new THREE.Vector3(0, -1, -25))
+            createHint()
+            warehouseGeneration(warehouseSettings, racksType)
+        }
+        let fontWeight = 'regular';
+        //fontWeight = 'bold';
+        let fontName = 'helvetiker' // helvetiker, optimer, gentilis, droid sans, droid serif
+        var loader = new FontLoader(manager);
+        loader.load('https://threejs.org/examples/fonts/droid/droid_serif_bold.typeface.json', function(response) {
+            font = response;
+        });
     }
 
     render(){
