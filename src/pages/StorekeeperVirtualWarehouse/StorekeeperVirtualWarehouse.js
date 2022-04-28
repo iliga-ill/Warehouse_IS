@@ -307,7 +307,7 @@ function onPointerMove(event) {
 
         zone.racks.map(rack=>{
             let rackType = racksType[`rack_${rack.racksTypeId}`]
-            let rackModel = modelCreator.createRack(rack.name, 0x885aaa, rackType.shelfWidth, rackType.shelfHeight, rackType.depth, rackType.horisontalShelfAmount, rackType.verticalShelfAmount, rackType.borderWidth, rackType.translation)
+            let rackModel = modelCreator.createRack(rack.name, 0x885aaa, rackType.shelfWidth, rackType.shelfHeight, rackType.depth, rackType.columsAmount, rackType.rowsAmount, rackType.borderWidth, rackType.translation)
             setModelOnCoordinates(
                 rackModel, 
                 new Vector3(
@@ -323,10 +323,10 @@ function onPointerMove(event) {
                     //console.log(`${zone.name} ${rack.name} ${shelf.name}`)
                     shelf.space.map(good=>{
                         let goodType = goodsType[`good_${good.goodTypeId}`]
-                        let goodModel = modelCreator.createCube(good.name, 0x885aff, goodType.width, goodType.height, goodType.depth, goodType.translation)
+                        let goodModel = modelCreator.createCube(good.name, goodType.color, goodType.width, goodType.height, goodType.depth, goodType.translation)
                         let rackCenterX = zone.centerPoint.x + rack.centerPoint.x
                         let rackCenterZ = zone.centerPoint.y + rack.centerPoint.y
-                        let shelfOneX = rackCenterX-((rackType.shelfWidth*rackType.horisontalShelfAmount + rackType.borderWidth*(rackType.horisontalShelfAmount+1))/2 - (rackType.shelfWidth/2 + rackType.borderWidth) )
+                        let shelfOneX = rackCenterX-((rackType.shelfWidth*rackType.columsAmount + rackType.borderWidth*(rackType.columsAmount+1))/2 - (rackType.shelfWidth/2 + rackType.borderWidth) )
                         let shelfOneY = rackType.borderWidth*2
                         let shelfOneZ = rackCenterZ
                         setModelOnCoordinates(
