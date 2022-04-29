@@ -1,5 +1,6 @@
 var id=0
-const host = 'http://127.0.0.1:8000/';
+// const host = 'http://127.0.0.1:8000/';
+const host = 'http://localhost:5000/';
 
 export class Api {
     static getId() {return id++}

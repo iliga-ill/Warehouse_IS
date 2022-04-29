@@ -1,5 +1,5 @@
-const host = 'http://127.0.0.1:8000/';
-// const host = 'http://localhost:5000/';
+// const host = 'http://127.0.0.1:8000/';
+const host = 'http://localhost:5000/';
 
 export class Api {
 
@@ -99,7 +99,14 @@ export class Api {
 
     getGoodsByShipmentOrder(order, goodsType, goodsCategories2, goodsCategories3) {
         var xhr = new XMLHttpRequest();
-    
+        console.log('subcat2')
+        console.log(goodsCategories2)
+
+        console.log('subcat3')
+        console.log(goodsCategories3)
+
+        console.log('goodsType')
+        console.log(goodsType)
         return new Promise(function(resolve, reject){
             xhr.open('GET', host+'shipment_order_goods_by_order/'+'?'+`code=${order.code}`, true);
             console.log("StorekeeperAdvent apiGetGoodsByOrder was launched")
@@ -115,9 +122,8 @@ export class Api {
                     goodsType.forEach (function(item2, j) {
                             var it = parseInt(item2.code)
                             if (it.toString() == item.goods.toString()) {
-                                
                                 //  bar[i] = [i, goodsCategories2[item2.category-1].text, goodsCategories3[item2.sub_category-1].text,  item2.text, item2.ordered, item2.amount, true]
-                                buffer[counter] = {number: counter+1, goodsCategories2: goodsCategories2[item2.category-1].text, goodsCategories3: goodsCategories3[item2.sub_category-1].text, goodsType: item2.text, orderedAmount: item.amount, amount: item.amount_real}
+                                buffer[counter] = {number: counter+1, goodsCategories2: goodsCategories2[item2.category-1].text, goodsCategories3: goodsCategories3[item2.subcategory_2-1].text, goodsType: item2.name, orderedAmount: item.amount, amount: item.amount_real}
                                 buffer[counter].code = item.code;
                                 buffer[counter].id = counter++
                             }   

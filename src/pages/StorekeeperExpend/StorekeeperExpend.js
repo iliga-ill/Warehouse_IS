@@ -35,7 +35,7 @@ export default function StorekeeperExpend(props){
 
     const [orders, setOrders] = React.useState([])
     React.useEffect(() => {
-        if (orders.length>0) apiGetGoodsByShipmentOrder()
+        if (orders.length>0) apiGetGoodsByShipmentOrder(goodsType, goodsCategories2, goodsCategories3)
     }, [orders]);
     async function apiGetShipmentOrders() {
         var order = await api.getShipmentOrders()
@@ -49,6 +49,8 @@ export default function StorekeeperExpend(props){
     const [goodsCategories2, setGoodsCategories2] = React.useState([])
     async function apiGetGoodsSubCat2() {
         var goods = await api.getGoodsSubCat2()
+        console.log("subcat2")
+        console.log(goods)
         setGoodsCategories2(goods)
         apiGetGoodsSubCat3()
     }
@@ -56,6 +58,8 @@ export default function StorekeeperExpend(props){
     const [goodsCategories3, setGoodsCategories3] = React.useState([])
     async function apiGetGoodsSubCat3() {
         var goods = await api.getGoodsSubCat3()
+        console.log("subcat3")
+        console.log(goods)
         setGoodsCategories3(goods)
         apiGetShipmentOrders()
     }
@@ -63,6 +67,8 @@ export default function StorekeeperExpend(props){
     const [goodsType, setGoodsType] = React.useState([])
     async function apiGetGoodsType() {
         var goods = await api.getGoodsType()
+        console.log('goodsType')
+        console.log(goods)
         setGoodsType(goods)
         apiGetGoodsSubCat2()
     }
@@ -91,7 +97,7 @@ export default function StorekeeperExpend(props){
 
     const [tableList, setTableList] = React.useState([])
     
-    async function apiGetGoodsByShipmentOrder(goodsType, goodsCategories2, goodsCategories3) {
+    async function apiGetGoodsByShipmentOrder() {
         var order = ''
         orders.forEach(element => {
           if (element.selected == true) order = element

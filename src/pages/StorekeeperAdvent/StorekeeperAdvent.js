@@ -174,7 +174,7 @@ export default function StorekeeperAdvent(props){
 
         console.log("order.code")
         console.log(order.code)
-    
+  
         if (order != ''){
             var buffer = await api.getGoodsByShipmentOrder(order, goodsType, goodsCategories2, goodsCategories3)
             setTableList(buffer)
