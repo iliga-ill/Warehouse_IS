@@ -1,12 +1,24 @@
 import * as THREE from 'three';
-import { MeshLine, MeshLineMaterial, MeshLineRaycast } from 'three.meshline';
+import { Vector3 } from 'three';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+
+//import font from './../../font/OpenSansSemiCondensedLight_Regular.json'
+
 
 export default class ModelCreator {
 
     constructor(){
         
     }
+    //#region supportFunctions
+    rotateGeometry(geometry, rotation){
+        geometry.rotateX(rotation.x * Math.PI / 180)
+        geometry.rotateY(rotation.y * Math.PI / 180)
+        geometry.rotateZ(rotation.z * Math.PI / 180)
+        return geometry
+    }
+    
+    //#endregion
 
     createCube(name, color, width, height, depth, translation){
         // cubes (модель куба, который будет создан)
@@ -58,10 +70,10 @@ export default class ModelCreator {
         }
     }
 
-    createRack(name, color, shelfWidth, shelfHeight, shelfDepth, horisontalShelfAmount, verticalShelfAmount, borderWidth, translation){
+    createRack(name, color, shelfWidth, shelfHeight, shelfDepth, columsAmount, rowsAmount, borderWidth, translation){
 
-        let fullRackWidth = shelfWidth*horisontalShelfAmount + borderWidth*(horisontalShelfAmount+1)
-        let fullRackHight = shelfHeight*verticalShelfAmount + borderWidth*(verticalShelfAmount+1)
+        let fullRackWidth = shelfWidth*columsAmount + borderWidth*(columsAmount+1)
+        let fullRackHight = shelfHeight*rowsAmount + borderWidth*(rowsAmount+1)
 
         let frame = new THREE.Shape();
         frame.moveTo( fullRackWidth/2,  0,               shelfDepth/2);
@@ -69,11 +81,11 @@ export default class ModelCreator {
         frame.lineTo(-fullRackWidth/2,  fullRackHight,   shelfDepth/2);
         frame.lineTo(-fullRackWidth/2,  0,               shelfDepth/2);
 
-        for (let verticalIndex = 0; verticalIndex < verticalShelfAmount; verticalIndex++){
-            for (let horisontalIndex = 0; horisontalIndex < horisontalShelfAmount; horisontalIndex++){
+        for (let rowIndex = 0; rowIndex < rowsAmount; rowIndex++){
+            for (let columnIndex = 0; columnIndex < columsAmount; columnIndex++){
                 
-                let yShift = (shelfHeight*verticalIndex + borderWidth*(verticalIndex+1))
-                let xShift = (shelfWidth*horisontalIndex + borderWidth*(horisontalIndex+1)) - (fullRackWidth/2-shelfWidth/2)
+                let yShift = (shelfHeight*rowIndex + borderWidth*(rowIndex+1))
+                let xShift = (shelfWidth*columnIndex + borderWidth*(columnIndex+1)) - (fullRackWidth/2-shelfWidth/2)
                 
                 var hole = new THREE.Path();
                 hole.moveTo(xShift +   shelfWidth/2 ,  yShift, shelfDepth/2);
@@ -83,23 +95,24 @@ export default class ModelCreator {
                 frame.holes.push(hole);
             }
         }
-
     //  Extrude the shape into a geometry, and create a mesh from it:
-        var extrudeSettings = {
+        let extrudeSettings = {
             steps: 1,
             depth: shelfDepth,
             bevelEnabled: false,
         };
-        
+
+        let material = new THREE.MeshLambertMaterial( { color: color})
+        let geometry = new THREE.ExtrudeGeometry(frame, extrudeSettings)
+
+        let mesh = new THREE.Mesh(geometry, material)
+
         return {
             name: name, 
             modelName: "Rack",
-            material: new THREE.MeshLambertMaterial( { color: color}), 
-            geometry: new THREE.ExtrudeGeometry(frame, extrudeSettings),
-            mesh: new THREE.Mesh( 
-                new THREE.ExtrudeGeometry(frame, extrudeSettings), 
-                new THREE.MeshLambertMaterial( { color: color})
-            ), 
+            material: material, 
+            geometry: geometry,
+            mesh: mesh, 
             translation: translation,
         }
     }
@@ -186,78 +199,108 @@ export default class ModelCreator {
     }
     */
 
-    createZoneBorder(name, color, width, length, lineWidth, translation, font){
-
-        // line material
-        var edgeLength = 1
-
+    createZoneBorder(name, color, width, length, borderWidth, font, chamferLendth, translation){
+        let geometry
+        let material
+        let mesh
+        let messageLength = 30
         let points = [];
-        points.push(
+        for (let i=0;i<4;i++){
+            if (i==0) {
+                points.push(
+                    new THREE.Vector3(width/2-chamferLendth, 0, length/2  ),
+                    new THREE.Vector3(width/2  , 0, length/2-chamferLendth),
 
-            new THREE.Vector3(width/2-edgeLength, 0, length/2  ),
-            new THREE.Vector3(width/2  , 0, length/2-edgeLength),
+                    new THREE.Vector3(width/2  , 0, messageLength),
+                );
+                geometry = new THREE.TubeGeometry(
+                    new THREE.CatmullRomCurve3(points, false, "catmullrom", 0.01),
+                    Math.max(width,length)*2,// path segments
+                    borderWidth,// THICKNESS
+                    150, //Roundness of Tube
+                    false //closed
+                );
+                material = new THREE.LineBasicMaterial({ color: color });
+                mesh = new THREE.Line(geometry, material);
+            }
+            if (i==1) {
+                points.push(
+                    new THREE.Vector3(width/2  , 0, -messageLength),
 
-            new THREE.Vector3(width/2  , 0, -length/2+edgeLength),
-            new THREE.Vector3(width/2-edgeLength, 0, -length/2  ),
+                    new THREE.Vector3(width/2  , 0, -length/2+chamferLendth),
+                    new THREE.Vector3(width/2-chamferLendth, 0, -length/2  ),
 
-            new THREE.Vector3(-width/2+edgeLength, 0, -length/2),
-            new THREE.Vector3(-width/2  , 0, -length/2+edgeLength),
+                    new THREE.Vector3(messageLength, 0, -length/2  ),
+                );
+            }
+            if (i==2) {
+                points.push(
+                    new THREE.Vector3(-messageLength, 0, -length/2),
 
-            new THREE.Vector3(-width/2  , 0, length/2-edgeLength),
-            new THREE.Vector3(-width/2+edgeLength, 0, length/2),
+                    new THREE.Vector3(-width/2+chamferLendth, 0, -length/2),
+                    new THREE.Vector3(-width/2  , 0, -length/2+chamferLendth),
 
-            new THREE.Vector3(width/2-edgeLength, 0, length/2  ),
-            new THREE.Vector3(width/2  , 0, length/2-edgeLength),
-        );
+                    new THREE.Vector3(-width/2  , 0, -messageLength),
+                );
+            }
+            if (i==3) {
+                points.push(
+                    new THREE.Vector3(-width/2  , 0, messageLength),
 
-        // Create Tube Geometry
-        var geometry = new THREE.TubeGeometry(
-            new THREE.CatmullRomCurve3(points, false, "catmullrom", 0.01),
-            1000,// path segments
-            lineWidth,// THICKNESS
-            150, //Roundness of Tube
-            false //closed
-        );
-        var material = new THREE.LineBasicMaterial({ color: color });
+                    new THREE.Vector3(-width/2  , 0, length/2-chamferLendth),
+                    new THREE.Vector3(-width/2+chamferLendth, 0, length/2),
 
-        let mesh = new THREE.Line(geometry, material);
+                    new THREE.Vector3(-messageLength, 0, length/2),
+                    new THREE.Vector3(messageLength, 0, length/2  ),
 
-/*
-        const textColor = 0x006699;
+                    new THREE.Vector3(width/2-chamferLendth, 0, length/2  ),
+                    new THREE.Vector3(width/2  , 0, length/2-chamferLendth),
+                );
+            }
 
-        const matDark = new THREE.LineBasicMaterial( {
-            color: textColor,
-            side: THREE.DoubleSide
-        } );
+            // Create Tube Geometry
+            if (i!=0){
+                geometry = new THREE.TubeGeometry(
+                    new THREE.CatmullRomCurve3(points, false, "catmullrom", 0.01),
+                    Math.max(width,length)*2,// path segments
+                    borderWidth,// THICKNESS
+                    150, //Roundness of Tube
+                    false //closed
+                );
+                material = new THREE.LineBasicMaterial({ color: color });
+                mesh.add(new THREE.Line(geometry, material))
+            }
+            // const textColor = 0x006699;
+            const textColor = 0xffffff;
+
+            //Create normal vector material
+            var meshMaterial = new THREE.MeshNormalMaterial({
+                flatShading: THREE.FlatShading,
+                transparent: true,
+                color: textColor,
+                opacity: 1,
+            });
 
         
-        // loader.load( '//raw.githubusercontent.com/mrdoob/three.js/master/examples/fonts/helvetiker_regular.typeface.json', function ( response ) {
-        //     font = response;
-        // } );
-
-        geometry = new TextGeometry( name, {
-            font: font,
-            size: 80,
-            height: 5,
-            curveSegments: 12,
-            bevelEnabled: true,
-            bevelThickness: 10,
-            bevelSize: 8,
-            bevelSegments: 5
-        } );
-        //Create normal vector material
-        var meshMaterial = new THREE.MeshNormalMaterial({
-            flatShading: THREE.FlatShading,
-            transparent: true,
-            opacity: 0.9
-    });
-        var textMesh = new THREE.Mesh(geometry, meshMaterial);
-        textMesh.position.set(0, 5, 0);
-
-        mesh.add(textMesh)
-        console.log(textMesh)
-        console.log(mesh)
-*/
+            let textGeometry = new TextGeometry( `${name}`, {
+                font: font,
+                size: 15,
+                height: 1,
+                curveSegments: 1,
+                bevelEnabled: false,
+                bevelThickness: 1,
+                bevelSize: 1,
+                bevelSegments: 1,
+            } );
+            textGeometry = this.rotateGeometry(textGeometry, {x:-90,y:90 * -i,z:0})
+            var textMesh = new THREE.Mesh(textGeometry, meshMaterial);
+            if (i==0) textMesh.position.set(-30, 0, length/2+7);
+            if (i==1) textMesh.position.set(-width/2-7, 0, -30);
+            if (i==2) textMesh.position.set(+30, 0, -length/2-7);
+            if (i==3) textMesh.position.set(width/2+7, 0, +30);
+            
+            mesh.add(textMesh)
+        }
 
         return {
             name: name, 

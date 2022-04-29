@@ -7,6 +7,20 @@ export default class WarehouseSettingsModel {
         
     }
 
+	getZonesType(){
+		return(
+			{
+				zone_0001:{
+					width:500,
+					length:300,
+					color:0xffffff,
+					lineWidth:1,
+					chamferLendth:10,
+				},
+			}
+		)
+	}
+
 	getRacksType(){
 		return(
 			{
@@ -17,6 +31,7 @@ export default class WarehouseSettingsModel {
 					columsAmount:4,
 					rowsAmount:3,
 					borderWidth:2,
+					color:0x885aaa,
 					translation:new Vector3(0,0,-50/2),
 					shelfs:{
 						shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
@@ -40,6 +55,7 @@ export default class WarehouseSettingsModel {
 					columsAmount:2,
 					rowsAmount:3,
 					borderWidth:2,
+					color:0x885aaa,
 					translation:new Vector3(0,0,-50/2),
 					shelfs:{
 						shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
@@ -91,13 +107,14 @@ export default class WarehouseSettingsModel {
 				zones:[
 					{
 						name:"Зона 1",
-						centerPoint:new Vector2(-250,-348),
-						width:500,
-						length:300,
+						centerPoint:new Vector3(-240,0,-340),
+						rotation:{x:0,y:0,z:0},
+						zoneTypeId: "0001",
 						racks:[
 							{
 								name:"Стеллаж 1",
-								centerPoint:new Vector2(120,-120),
+								centerPoint:new Vector3(120,0,-120),
+								rotation:{x:0,y:0,z:0},
 								racksTypeId: "0001",
 								shelfs:[
 									{name:"Полка 1",number:1,space:[
@@ -124,7 +141,8 @@ export default class WarehouseSettingsModel {
 							},
 							{
 								name:"Стеллаж 2",
-								centerPoint:new Vector2(-120,-120),
+								centerPoint:new Vector3(-120,0,-120),
+								rotation:{x:0,y:0,z:0},
 								racksTypeId: "0001",
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},
@@ -149,7 +167,26 @@ export default class WarehouseSettingsModel {
 							},
 							{
 								name:"Стеллаж 3",
-								centerPoint:new Vector2(-120,110),
+								centerPoint:new Vector3(-245,0,20),
+								rotation:{x:0,y:90,z:0},
+								racksTypeId: "0002",
+								shelfs:[
+									{name:"Полка 1",number:1,space:[]},
+									{name:"Полка 2",number:2,space:[]},
+									{name:"Полка 3",number:3,space:[
+										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+									]},
+									{name:"Полка 4",number:4,space:[]},
+									{name:"Полка 5",number:5,space:[]},
+									{name:"Полка 6",number:6,space:[
+										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+									]},
+								]
+							},
+							{
+								name:"Стеллаж 4",
+								centerPoint:new Vector3(-120,0,110),
+								rotation:{x:0,y:0,z:0},
 								racksTypeId: "0001",
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},
@@ -178,8 +215,9 @@ export default class WarehouseSettingsModel {
 							},
 
 							{
-								name:"Стеллаж 4",
-								centerPoint:new Vector2(55,110),
+								name:"Стеллаж 5",
+								centerPoint:new Vector3(55,0,110),
+								rotation:{x:0,y:0,z:0},
 								racksTypeId: "0002",
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},
@@ -196,8 +234,9 @@ export default class WarehouseSettingsModel {
 							},
 
 							{
-								name:"Стеллаж 5",
-								centerPoint:new Vector2(180,110),
+								name:"Стеллаж 6",
+								centerPoint:new Vector3(180,0,110),
+								rotation:{x:0,y:0,z:0},
 								racksTypeId: "0002",
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},
@@ -216,13 +255,16 @@ export default class WarehouseSettingsModel {
 					},
 					{
 						name:"Зона 2",
-						centerPoint:new Vector2(-250,-0),
+						centerPoint:new Vector3(-240,0,0),
+						rotation:{x:0,y:0,z:0},
+						zoneTypeId: "0001",
 						width:500,
 						length:300,
 						racks:[
 							{
 								name:"Стеллаж 1",
-								centerPoint:new Vector2(120,-120),
+								centerPoint:new Vector3(120,0,-120),
+								rotation:{x:0,y:0,z:0},
 								racksTypeId: "0001",
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},
@@ -250,8 +292,9 @@ export default class WarehouseSettingsModel {
 								]
 							},
 							{
-								name:"Стеллаж 1",
-								centerPoint:new Vector2(-180,-120),
+								name:"Стеллаж 2",
+								centerPoint:new Vector3(-180,0,-120),
+								rotation:{x:0,y:0,z:0},
 								racksTypeId: "0002",
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},
@@ -268,8 +311,9 @@ export default class WarehouseSettingsModel {
 							},
 
 							{
-								name:"Стеллаж 2",
-								centerPoint:new Vector2(-60,-120),
+								name:"Стеллаж 3",
+								centerPoint:new Vector3(-60,0,-120),
+								rotation:{x:0,y:0,z:0},
 								racksTypeId: "0002",
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},
@@ -286,34 +330,28 @@ export default class WarehouseSettingsModel {
 									]},
 								]
 							},
-
-
-							// {
-							// 	name:"Стеллаж 3",
-							// 	centerPoint:new Vector2(-120,-120),
-							// 	racksTypeId: "0001",
-							// 	shelfs:[
-							// 		{name:"Полка 1",number:1,space:[]},
-							// 		{name:"Полка 2",number:2,space:[]},
-							// 		{name:"Полка 3",number:3,space:[]},
-							// 		{name:"Полка 4",number:4,space:[
-							// 			{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
-							// 		]},
-							// 		{name:"Полка 5",number:5,space:[]},
-							// 		{name:"Полка 6",number:6,space:[
-							// 			{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
-							// 		]},
-							// 		{name:"Полка 7",number:7,space:[]},
-							// 		{name:"Полка 8",number:8,space:[]},
-							// 		{name:"Полка 9",number:9,space:[]},
-							// 		{name:"Полка 10",number:10,space:[]},
-							// 		{name:"Полка 11",number:11,space:[]},
-							// 		{name:"Полка 12",number:12,space:[]},
-							// 	]
-							// },
 							{
 								name:"Стеллаж 4",
-								centerPoint:new Vector2(-120,110),
+								centerPoint:new Vector3(-245,0,20),
+								rotation:{x:0,y:90,z:0},
+								racksTypeId: "0002",
+								shelfs:[
+									{name:"Полка 1",number:1,space:[]},
+									{name:"Полка 2",number:2,space:[]},
+									{name:"Полка 3",number:3,space:[
+										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+									]},
+									{name:"Полка 4",number:4,space:[]},
+									{name:"Полка 5",number:5,space:[]},
+									{name:"Полка 6",number:6,space:[
+										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+									]},
+								]
+							},
+							{
+								name:"Стеллаж 5",
+								centerPoint:new Vector3(-120,0,110),
+								rotation:{x:0,y:0,z:0},
 								racksTypeId: "0001",
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},
@@ -338,8 +376,9 @@ export default class WarehouseSettingsModel {
 							},
 
 							{
-								name:"Стеллаж 5",
-								centerPoint:new Vector2(120,110),
+								name:"Стеллаж 6",
+								centerPoint:new Vector3(120,0,110),
+								rotation:{x:0,y:0,z:0},
 								racksTypeId: "0001",
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},
@@ -368,13 +407,16 @@ export default class WarehouseSettingsModel {
 					},
 					{
 						name:"Зона 3",
-						centerPoint:new Vector2(-250,348),
+						centerPoint:new Vector3(-240,0,340),
+						rotation:{x:0,y:0,z:0},
+						zoneTypeId: "0001",
 						width:500,
 						length:300,
 						racks:[
 							{
 								name:"Стеллаж 1",
-								centerPoint:new Vector2(120,-120),
+								centerPoint:new Vector3(120,0,-120),
+								rotation:{x:0,y:0,z:0},
 								racksTypeId: "0001",
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},
@@ -401,7 +443,8 @@ export default class WarehouseSettingsModel {
 							},
 							{
 								name:"Стеллаж 2",
-								centerPoint:new Vector2(-120,-120),
+								centerPoint:new Vector3(-120,0,-120),
+								rotation:{x:0,y:0,z:0},
 								racksTypeId: "0001",
 								shelfs:[
 									{name:"Полка 1",number:1,space:[
@@ -428,7 +471,26 @@ export default class WarehouseSettingsModel {
 							},
 							{
 								name:"Стеллаж 3",
-								centerPoint:new Vector2(-120,110),
+								centerPoint:new Vector3(-245,0,20),
+								rotation:{x:0,y:90,z:0},
+								racksTypeId: "0002",
+								shelfs:[
+									{name:"Полка 1",number:1,space:[]},
+									{name:"Полка 2",number:2,space:[]},
+									{name:"Полка 3",number:3,space:[
+										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+									]},
+									{name:"Полка 4",number:4,space:[]},
+									{name:"Полка 5",number:5,space:[]},
+									{name:"Полка 6",number:6,space:[
+										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+									]},
+								]
+							},
+							{
+								name:"Стеллаж 4",
+								centerPoint:new Vector3(-120,0,110),
+								rotation:{x:0,y:0,z:0},
 								racksTypeId: "0001",
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},
@@ -453,8 +515,9 @@ export default class WarehouseSettingsModel {
 							},
 
 							{
-								name:"Стеллаж 4",
-								centerPoint:new Vector2(120,110),
+								name:"Стеллаж 5",
+								centerPoint:new Vector3(120,0,110),
+								rotation:{x:0,y:0,z:0},
 								racksTypeId: "0001",
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},

@@ -21,6 +21,7 @@ let colors = new Colors()
 let warehouseSettingsModel = new WarehouseSettingsModel()
 
 
+let zonesType = warehouseSettingsModel.getZonesType()
 let racksType = warehouseSettingsModel.getRacksType()
 let goodsType = warehouseSettingsModel.getGoodsType()
 let warehouseSettings = warehouseSettingsModel.getWarehouseSettings()
@@ -292,6 +293,71 @@ function onPointerMove(event) {
         renderer.render( scene, camera );
     }
 //#endregion
+
+    function getPivotPoint(pointToRotate, axisStart, axisEnd) {
+        const d = new Vector3().subVectors(axisEnd, axisStart).normalize()
+        const v = new Vector3().subVectors(pointToRotate, axisStart)
+        const t = v.dot(d)
+        const pivotPoint = axisStart.add(d.multiplyScalar(t))
+        return pivotPoint
+    }
+
+    function rotatePointAroundAxis(pointToRotate, axisStart, axisEnd, radians) {
+        const axisDirection = new Vector3().subVectors(axisEnd, axisStart).normalize()
+        const pivotPoint = getPivotPoint(pointToRotate, axisStart, axisEnd)
+        const translationToWorldCenter = new Vector3().subVectors(pointToRotate, pivotPoint)
+        const translatedRotated = translationToWorldCenter.clone().applyAxisAngle(axisDirection, radians)
+        const destination = pointToRotate.clone().add(translatedRotated).sub(translationToWorldCenter)
+        return destination
+    }
+
+    function translatePoint(point,{x,y,z}){
+        return new Vector3(point.x+x,point.y+y,point.z+z)
+    }
+
+    function rotatePointAroundAxisMass(pointToRotate, zoneCenter, rotation){
+        pointToRotate = rotatePointAroundAxis(
+            pointToRotate, 
+            translatePoint(zoneCenter, {x:-1,y:0,z:0}), 
+            translatePoint(zoneCenter, {x:1,y:0,z:0}), 
+            rotation.x * Math.PI / 180
+        )
+        pointToRotate = rotatePointAroundAxis(
+            pointToRotate, 
+            translatePoint(zoneCenter, {x:0,y:-1,z:0}), 
+            translatePoint(zoneCenter, {x:0,y:1,z:0}), 
+            rotation.y * Math.PI / 180
+        )
+        pointToRotate = rotatePointAroundAxis(
+            pointToRotate, 
+            translatePoint(zoneCenter, {x:0,y:0,z:-1}), 
+            translatePoint(zoneCenter, {x:0,y:0,z:1}), 
+            rotation.z * Math.PI / 180
+        )
+        return pointToRotate
+    }
+
+    function rotateMeshOnAxis(mesh, axis, rotationAngle){
+        mesh.rotateOnAxis ( axis, rotationAngle * Math.PI / 180 )
+        return mesh
+    }
+
+    function rotateMeshOnAllAxis(mesh, rotation){
+        mesh.rotateOnAxis ( new Vector3(1,0,0), rotation.x * Math.PI / 180 )
+        mesh.rotateOnAxis ( new Vector3(0,1,0), rotation.y * Math.PI / 180 )
+        mesh.rotateOnAxis ( new Vector3(0,0,1), rotation.z * Math.PI / 180 )
+        return mesh
+    }
+
+    function sumRotations(rotations){
+        let res={x:0,y:0,z:0}
+        rotations.map(rotation=>{
+            res.x+=rotation.x
+            res.y+=rotation.y
+            res.z+=rotation.z
+        })
+        return res
+    }
   
   function warehouseGeneration(warehouseSettings, racksType){
 
@@ -300,42 +366,63 @@ function onPointerMove(event) {
     setModelOnCoordinates(floorModel, new Vector3(0,0,0))
     lockedModels.push(floorModel.name)
 
+    //zones
     warehouseSettings.zones.map(zone=>{
-        let zoneBorderModel = modelCreator.createZoneBorder(zone.name, 0xffffff, zone.width, zone.length, 1, new Vector3(0,0,0), font)
-        setModelOnCoordinates(zoneBorderModel, new Vector3(zone.centerPoint.x,0,zone.centerPoint.y), false)
+        let zoneType = zonesType[`zone_${zone.zoneTypeId}`]
+        let zoneBorderModel = modelCreator.createZoneBorder(zone.name, zoneType.color, zoneType.width, zoneType.length, 1, font, zoneType.chamferLendth, new Vector3(0,0,0))
+        zoneBorderModel.mesh = rotateMeshOnAllAxis(zoneBorderModel.mesh, zone.rotation)
+        let zoneCenterGlobalCoordinate = zone.centerPoint
+        setModelOnCoordinates(zoneBorderModel, zoneCenterGlobalCoordinate, false)
         lockedModels.push(zone.name)
-
+        //racks
         zone.racks.map(rack=>{
             let rackType = racksType[`rack_${rack.racksTypeId}`]
-            let rackModel = modelCreator.createRack(rack.name, 0x885aaa, rackType.shelfWidth, rackType.shelfHeight, rackType.depth, rackType.columsAmount, rackType.rowsAmount, rackType.borderWidth, rackType.translation)
+            let rackModel = modelCreator.createRack(rack.name, rackType.color, rackType.shelfWidth, rackType.shelfHeight, rackType.depth, rackType.columsAmount, rackType.rowsAmount, rackType.borderWidth, rackType.translation)
+            let rackCenterGlobalCoordinate = new Vector3(
+                zoneCenterGlobalCoordinate.x + rack.centerPoint.x, 
+                zoneCenterGlobalCoordinate.y + rack.centerPoint.y, 
+                zoneCenterGlobalCoordinate.z + rack.centerPoint.z
+            )
+            rackModel.mesh = rotateMeshOnAllAxis(rackModel.mesh, sumRotations([zone.rotation, rack.rotation]))
+            let rotatedRackCenterGlobalCoordinate = rotatePointAroundAxisMass(
+                rackCenterGlobalCoordinate.clone(), 
+                translatePoint(zoneCenterGlobalCoordinate.clone(), {x:-rackType.translation.x,y:-rackType.translation.y,z:-rackType.translation.z}), 
+                zone.rotation
+            )
             setModelOnCoordinates(
                 rackModel, 
-                new Vector3(
-                    zone.centerPoint.x + rack.centerPoint.x,
-                    0,
-                    zone.centerPoint.y + rack.centerPoint.y
-                ),
+                rotatedRackCenterGlobalCoordinate,
                 true
             )
             lockedModels.push(rack.name)
+            //shelfs
             rack.shelfs.map(shelf=>{
                 if (shelf.space != ""){
                     //console.log(`${zone.name} ${rack.name} ${shelf.name}`)
                     shelf.space.map(good=>{
                         let goodType = goodsType[`good_${good.goodTypeId}`]
                         let goodModel = modelCreator.createCube(good.name, goodType.color, goodType.width, goodType.height, goodType.depth, goodType.translation)
-                        let rackCenterX = zone.centerPoint.x + rack.centerPoint.x
-                        let rackCenterZ = zone.centerPoint.y + rack.centerPoint.y
-                        let shelfOneX = rackCenterX-((rackType.shelfWidth*rackType.columsAmount + rackType.borderWidth*(rackType.columsAmount+1))/2 - (rackType.shelfWidth/2 + rackType.borderWidth) )
-                        let shelfOneY = rackType.borderWidth*2
-                        let shelfOneZ = rackCenterZ
+                        let firstShelfCenterGlobalCoordinate = new Vector3(
+                            rackCenterGlobalCoordinate.x-((rackType.shelfWidth*rackType.columsAmount + rackType.borderWidth*(rackType.columsAmount+1))/2 - (rackType.shelfWidth/2 + rackType.borderWidth) ),
+                            rackCenterGlobalCoordinate.y + rackType.borderWidth*2,
+                            rackCenterGlobalCoordinate.z
+                        )
+                        let shiftedFirstShelfCenterGlobalCoordinate = new Vector3(
+                            firstShelfCenterGlobalCoordinate.x + (rackType.shelfWidth  + rackType.borderWidth)*rackType.shelfs[`shelf_${shelf.number}`].column,
+                            firstShelfCenterGlobalCoordinate.y + (rackType.shelfHeight + rackType.borderWidth)*rackType.shelfs[`shelf_${shelf.number}`].row,
+                            firstShelfCenterGlobalCoordinate.z
+                        )
+                        goodModel.mesh = rotateMeshOnAllAxis(goodModel.mesh, sumRotations([zone.rotation, rack.rotation]))
+                        let rotatedZoneShiftedFirstShelfCenterGlobalCoordinate = rotatePointAroundAxisMass(shiftedFirstShelfCenterGlobalCoordinate.clone(), zoneCenterGlobalCoordinate.clone(), zone.rotation)
+                        let rotatedRackShiftedFirstShelfCenterGlobalCoordinate = rotatePointAroundAxisMass(
+                            rotatedZoneShiftedFirstShelfCenterGlobalCoordinate.clone(), 
+                            translatePoint(rotatedRackCenterGlobalCoordinate.clone(), {x:rackType.translation.x,y:rackType.translation.y,z:rackType.translation.z}),
+                            rack.rotation
+                        )
+
                         setModelOnCoordinates(
                             goodModel, 
-                            new Vector3(
-                                shelfOneX + (rackType.shelfWidth  + rackType.borderWidth)*rackType.shelfs[`shelf_${shelf.number}`].column,
-                                shelfOneY + (rackType.shelfHeight + rackType.borderWidth)*rackType.shelfs[`shelf_${shelf.number}`].row,
-                                shelfOneZ
-                            ),
+                            rotatedRackShiftedFirstShelfCenterGlobalCoordinate,
                             true
                         )
                     })
