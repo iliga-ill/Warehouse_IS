@@ -58,9 +58,10 @@ export class Api {
     getShipmentOrderGoodsByOrderId(order, goodsTypeAnswer) {
         var xhr = new XMLHttpRequest();
         var tableListBuf = []
+        var status = 'opened'
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'shipment_order_goods_id/'+'?'+`order_id=${order.code}`, true);
+            xhr.open('GET', host+'shipment_order_goods_id/'+'?'+`order_id=${order.code}&status=${status}`, true);
             console.log("StorekeeperAdvent apiGetShipmentOrderGoodsByOrderId was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
