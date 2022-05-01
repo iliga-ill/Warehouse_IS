@@ -199,114 +199,113 @@ export default class ModelCreator {
     }
     */
 
-    createZoneBorder(name, color, width, length, borderWidth, font, chamferLendth, translation){
+
+    createBorderPart(width, length, borderWidth, chamferLendth, gapLengthX, gapLengthY, color, xMultiplier, yMultiplier){
         let geometry
         let material
         let mesh
-        let messageLength = 30
         let points = [];
-        for (let i=0;i<4;i++){
-            if (i==0) {
-                points.push(
-                    new THREE.Vector3(width/2-chamferLendth, 0, length/2  ),
-                    new THREE.Vector3(width/2  , 0, length/2-chamferLendth),
+        points.push(
+            new THREE.Vector3(xMultiplier*(gapLengthX)              , 0, yMultiplier * (length/2)                ),
 
-                    new THREE.Vector3(width/2  , 0, messageLength),
-                );
-                geometry = new THREE.TubeGeometry(
-                    new THREE.CatmullRomCurve3(points, false, "catmullrom", 0.01),
-                    Math.max(width,length)*2,// path segments
-                    borderWidth,// THICKNESS
-                    150, //Roundness of Tube
-                    false //closed
-                );
-                material = new THREE.LineBasicMaterial({ color: color });
-                mesh = new THREE.Line(geometry, material);
-            }
-            if (i==1) {
-                points.push(
-                    new THREE.Vector3(width/2  , 0, -messageLength),
+            new THREE.Vector3(xMultiplier*(width/2-chamferLendth)   , 0, yMultiplier * (length/2)                ),
+            new THREE.Vector3(xMultiplier*(width/2)                 , 0, yMultiplier * (length/2-chamferLendth)  ),
 
-                    new THREE.Vector3(width/2  , 0, -length/2+chamferLendth),
-                    new THREE.Vector3(width/2-chamferLendth, 0, -length/2  ),
+            new THREE.Vector3(xMultiplier*(width/2)                 , 0, yMultiplier * (gapLengthY)           ),
+        );
+        geometry = new THREE.TubeGeometry(
+            new THREE.CatmullRomCurve3(points, false, "catmullrom", 0.01),
+            Math.max(width,length)*2,// path segments
+            borderWidth,// THICKNESS
+            Math.min(width,length)/2, //Roundness of Tube
+            false //closed
+        );
+        material = new THREE.LineBasicMaterial({ color: color });
+        mesh = new THREE.Line(geometry, material);
+        return mesh
+    }
 
-                    new THREE.Vector3(messageLength, 0, -length/2  ),
-                );
-            }
-            if (i==2) {
-                points.push(
-                    new THREE.Vector3(-messageLength, 0, -length/2),
+    createBorderMessage(name, width, length, font, size, alignment){
+        // const textColor = 0x006699;
+        const textColor = 0xffffff;
+        let geometry
+        let material
+        let mesh
 
-                    new THREE.Vector3(-width/2+chamferLendth, 0, -length/2),
-                    new THREE.Vector3(-width/2  , 0, -length/2+chamferLendth),
+        //Create normal vector material
+        material = new THREE.MeshNormalMaterial({
+            flatShading: THREE.FlatShading,
+            transparent: true,
+            color: textColor,
+            opacity: 1,
+        });
 
-                    new THREE.Vector3(-width/2  , 0, -messageLength),
-                );
-            }
-            if (i==3) {
-                points.push(
-                    new THREE.Vector3(-width/2  , 0, messageLength),
-
-                    new THREE.Vector3(-width/2  , 0, length/2-chamferLendth),
-                    new THREE.Vector3(-width/2+chamferLendth, 0, length/2),
-
-                    new THREE.Vector3(-messageLength, 0, length/2),
-                    new THREE.Vector3(messageLength, 0, length/2  ),
-
-                    new THREE.Vector3(width/2-chamferLendth, 0, length/2  ),
-                    new THREE.Vector3(width/2  , 0, length/2-chamferLendth),
-                );
-            }
-
-            // Create Tube Geometry
-            if (i!=0){
-                geometry = new THREE.TubeGeometry(
-                    new THREE.CatmullRomCurve3(points, false, "catmullrom", 0.01),
-                    Math.max(width,length)*2,// path segments
-                    borderWidth,// THICKNESS
-                    150, //Roundness of Tube
-                    false //closed
-                );
-                material = new THREE.LineBasicMaterial({ color: color });
-                mesh.add(new THREE.Line(geometry, material))
-            }
-            // const textColor = 0x006699;
-            const textColor = 0xffffff;
-
-            //Create normal vector material
-            var meshMaterial = new THREE.MeshNormalMaterial({
-                flatShading: THREE.FlatShading,
-                transparent: true,
-                color: textColor,
-                opacity: 1,
-            });
-
+        geometry = new TextGeometry( `${name}`, {
+            font: font,
+            size: size,
+            height: 1,
+            curveSegments: 1,
+            bevelEnabled: false,
+            bevelThickness: 1,
+            bevelSize: 1,
+            bevelSegments: 1,
+        } );
         
-            let textGeometry = new TextGeometry( `${name}`, {
-                font: font,
-                size: 15,
-                height: 1,
-                curveSegments: 1,
-                bevelEnabled: false,
-                bevelThickness: 1,
-                bevelSize: 1,
-                bevelSegments: 1,
-            } );
-            textGeometry = this.rotateGeometry(textGeometry, {x:-90,y:90 * -i,z:0})
-            var textMesh = new THREE.Mesh(textGeometry, meshMaterial);
-            if (i==0) textMesh.position.set(-30, 0, length/2+7);
-            if (i==1) textMesh.position.set(-width/2-7, 0, -30);
-            if (i==2) textMesh.position.set(+30, 0, -length/2-7);
-            if (i==3) textMesh.position.set(width/2+7, 0, +30);
-            
-            mesh.add(textMesh)
+        if (alignment == "bottom") {
+            geometry = this.rotateGeometry(geometry, {x:-90,y:90 * 0,z:0})
+            mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(-size*2, 0, length/2+size/2);
         }
+        if (alignment == "left")  {
+            geometry = this.rotateGeometry(geometry, {x:-90,y:90 * -1,z:0})
+            mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(-width/2-size/2, 0, -size*2);
+        }
+        if (alignment == "top")  {
+            geometry = this.rotateGeometry(geometry, {x:-90,y:90 * -2,z:0})
+            mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(size*2, 0, -length/2-size/2);
+        }
+        if (alignment == "right")  {
+            geometry = this.rotateGeometry(geometry, {x:-90,y:90 * -3,z:0})
+            mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(width/2+size/2, 0, size*2);
+        }
+
+        return mesh
+    }
+
+    createZoneBorder(name, color, width, length, borderWidth, chamferLendth, message, messageAlighment, font, textSize, gapLengthX, gapLengthY, translation){
+        let mesh = new THREE.Mesh
+        let gaps = {
+            top:0,
+            bottom:0,
+            left:0,
+            right:0,
+        }
+
+        messageAlighment.map(function(alignment,i){
+            if (alignment == "top" || alignment == "bottom")
+                gaps[`${alignment}`] = gapLengthX/2
+            if (alignment == "left" || alignment == "right")
+                gaps[`${alignment}`] = gapLengthY/2
+        })
+
+        //addLines
+        mesh.add(this.createBorderPart(width, length, borderWidth, chamferLendth, gaps["bottom"], gaps["right"], color, 1, 1))
+        mesh.add(this.createBorderPart(width, length, borderWidth, chamferLendth, gaps["top"], gaps["right"], color, 1, -1))
+        mesh.add(this.createBorderPart(width, length, borderWidth, chamferLendth, gaps["top"], gaps["left"], color, -1, -1))
+        mesh.add(this.createBorderPart(width, length, borderWidth, chamferLendth, gaps["bottom"], gaps["left"], color, -1, 1))
+
+        messageAlighment.map(alignment=>{
+            mesh.add(this.createBorderMessage(message, width, length, font, textSize, alignment))
+        })
 
         return {
             name: name, 
             modelName: "ZoneBorder",
-            material: material, 
-            geometry: geometry,
+            material: null, 
+            geometry: null,
             mesh: mesh, 
             translation: translation,
         }

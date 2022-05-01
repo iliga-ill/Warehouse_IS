@@ -9,7 +9,10 @@ import Colors from "../../classes/Colors/Colors.js";
 import { Vector2, Vector3 } from "three";
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
+import AdjustingInterval from 'self-adjusting-interval';
+
 import WarehouseSettingsModel from "../../classes/ModelCreator/WarehouseSettingsModel.js";
+import zIndex from "@material-ui/core/styles/zIndex";
 
 const styles = {
 
@@ -107,6 +110,7 @@ function init() {
 
     var warehouseScene = document.getElementById("warehouseScene")
     warehouseScene.appendChild( renderer.domElement );
+    warehouseScene.addEventListener('mousemove', onMouseMove)
 
     const controls = new OrbitControls( camera, renderer.domElement );
     controls.update()
@@ -114,6 +118,7 @@ function init() {
     document.addEventListener( 'keydown', onDocumentKeyDown );
     document.addEventListener( 'keyup', onDocumentKeyUp );
     window.addEventListener( 'resize', onWindowResize );
+
 }
 
 //#region Listeners -------------------------------------------------
@@ -125,6 +130,47 @@ function getScreenX(X){
 function getScreenY(Y){
     return -((Y - sceneMarginTop) / height) * 2 + 1 
 }
+
+let hintTimer = setTimeout(onMouseStop, 1000);
+
+function onMouseMove(){
+    clearTimeout(hintTimer);
+    hintTimer = setTimeout(onMouseStop, 1000)
+    var hint = document.getElementById("hint")
+    console.log(hint)
+    if (hint != null){
+        hint.remove()
+    }
+}
+
+function onMouseStop(){
+    if (pointer != undefined){
+        pointer.set(getScreenX(lastX), getScreenY(lastY));
+        raycaster.setFromCamera( pointer, camera );
+        const intersects = raycaster.intersectObjects( objects );
+        const intersect = intersects[0];
+        if (intersects.length > 0 && !lockedModels.includes(intersect.object.name)) {
+            generateHint(intersect, lastX, lastY)
+        }
+    }
+}
+
+function generateHint(intersect, lastX, lastY){
+    console.log(intersect)
+    var warehouseScene = document.getElementById("warehouseSceneWrap")
+    var hint = document.createElement("div");
+    hint.id = "hint";
+    hint.style.position = "absolute";
+    hint.style.top = `${lastY - 50}px`;
+    hint.style.left = `${lastX}px`;
+    hint.style.width = `${100}px`;
+    hint.style.height = `${50}px`;
+    hint.style.background = "white";
+    hint.style.zIndex = 100;
+    hint.innerHTML = `${intersect.object.name}`;
+    warehouseScene.appendChild(hint);
+}
+
 
 function onPointerDown( event ) {
     pointer.set(getScreenX(event.clientX), getScreenY(event.clientY));
@@ -294,6 +340,8 @@ function onPointerMove(event) {
     }
 //#endregion
 
+//#region support functions
+
     function getPivotPoint(pointToRotate, axisStart, axisEnd) {
         const d = new Vector3().subVectors(axisEnd, axisStart).normalize()
         const v = new Vector3().subVectors(pointToRotate, axisStart)
@@ -358,6 +406,8 @@ function onPointerMove(event) {
         })
         return res
     }
+
+    //#endregion
   
   function warehouseGeneration(warehouseSettings, racksType){
 
@@ -369,7 +419,7 @@ function onPointerMove(event) {
     //zones
     warehouseSettings.zones.map(zone=>{
         let zoneType = zonesType[`zone_${zone.zoneTypeId}`]
-        let zoneBorderModel = modelCreator.createZoneBorder(zone.name, zoneType.color, zoneType.width, zoneType.length, 1, font, zoneType.chamferLendth, new Vector3(0,0,0))
+        let zoneBorderModel = modelCreator.createZoneBorder(zone.name, zoneType.color, zoneType.width, zoneType.length, 1, zoneType.chamferLendth, zone.message, zone.messageAlighment, font, zone.textSize, zone.gapLengthX, zone.gapLengthY, new Vector3(0,0,0))
         zoneBorderModel.mesh = rotateMeshOnAllAxis(zoneBorderModel.mesh, zone.rotation)
         let zoneCenterGlobalCoordinate = zone.centerPoint
         setModelOnCoordinates(zoneBorderModel, zoneCenterGlobalCoordinate, false)
@@ -398,7 +448,6 @@ function onPointerMove(event) {
             //shelfs
             rack.shelfs.map(shelf=>{
                 if (shelf.space != ""){
-                    //console.log(`${zone.name} ${rack.name} ${shelf.name}`)
                     shelf.space.map(good=>{
                         let goodType = goodsType[`good_${good.goodTypeId}`]
                         let goodModel = modelCreator.createCube(good.name, goodType.color, goodType.width, goodType.height, goodType.depth, goodType.translation)
@@ -419,7 +468,7 @@ function onPointerMove(event) {
                             translatePoint(rotatedRackCenterGlobalCoordinate.clone(), {x:rackType.translation.x,y:rackType.translation.y,z:rackType.translation.z}),
                             rack.rotation
                         )
-
+                            
                         setModelOnCoordinates(
                             goodModel, 
                             rotatedRackShiftedFirstShelfCenterGlobalCoordinate,
@@ -476,11 +525,12 @@ class StorekeeperVirtualWarehouse extends Component {
                         <button id="btn_models" type="button" className="collapsible" style={{width: "80px", height: "28px"}}>Модели</button>
                     </div>
                 </div>
-
-                <div id="warehouseScene"
-                    onPointerMove={onPointerMove}
-                    onPointerDown={onPointerDown}
-                />
+                <div id="warehouseSceneWrap">
+                    <div id="warehouseScene"
+                        onPointerMove={onPointerMove}
+                        onPointerDown={onPointerDown}
+                    />
+                </div>
 
                 <DropdownListWithModels setModel={setModel}/>
                 

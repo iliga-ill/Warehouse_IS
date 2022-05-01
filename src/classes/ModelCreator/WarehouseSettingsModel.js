@@ -15,7 +15,7 @@ export default class WarehouseSettingsModel {
 					length:300,
 					color:0xffffff,
 					lineWidth:1,
-					chamferLendth:10,
+					chamferLendth:10
 				},
 			}
 		)
@@ -110,6 +110,12 @@ export default class WarehouseSettingsModel {
 						centerPoint:new Vector3(-240,0,-340),
 						rotation:{x:0,y:0,z:0},
 						zoneTypeId: "0001",
+						message:"Зона 1",
+						textSize:15,
+						gapLengthX: "Зона 1".length * 15,
+						gapLengthY: "Зона 1".length * 15,
+						messageAlighment:["right"],
+						// messageAlighment:["top", "bottom", "left", "right"],
 						racks:[
 							{
 								name:"Стеллаж 1",
@@ -128,14 +134,14 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 7",number:7,space:[]},
 									{name:"Полка 8",number:8,space:[]},
 									{name:"Полка 9",number:9,space:[
-										{goodTypeId: "0003", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 10",number:10,space:[]},
 									{name:"Полка 11",number:11,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 12",number:12,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 								]
 							},
@@ -147,7 +153,7 @@ export default class WarehouseSettingsModel {
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},
 									{name:"Полка 2",number:2,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 3",number:3,space:[]},
 									{name:"Полка 4",number:4,space:[]},
@@ -155,12 +161,12 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 6",number:6,space:[]},
 									{name:"Полка 7",number:7,space:[]},
 									{name:"Полка 8",number:8,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 9",number:9,space:[]},
 									{name:"Полка 10",number:10,space:[]},
 									{name:"Полка 11",number:11,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 12",number:12,space:[]},
 								]
@@ -174,12 +180,12 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 1",number:1,space:[]},
 									{name:"Полка 2",number:2,space:[]},
 									{name:"Полка 3",number:3,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 4",number:4,space:[]},
 									{name:"Полка 5",number:5,space:[]},
 									{name:"Полка 6",number:6,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 								]
 							},
@@ -191,17 +197,17 @@ export default class WarehouseSettingsModel {
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},
 									{name:"Полка 2",number:2,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 3",number:3,space:[
-										{goodTypeId: "0003", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 4",number:4,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 5",number:5,space:[]},
 									{name:"Полка 6",number:6,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 7",number:7,space:[]},
 									{name:"Полка 8",number:8,space:[]},
@@ -209,7 +215,7 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 10",number:10,space:[]},
 									{name:"Полка 11",number:11,space:[]},
 									{name:"Полка 12",number:12,space:[
-										{goodTypeId: "0003", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 								]
 							},
@@ -223,12 +229,12 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 1",number:1,space:[]},
 									{name:"Полка 2",number:2,space:[]},
 									{name:"Полка 3",number:3,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 4",number:4,space:[]},
 									{name:"Полка 5",number:5,space:[]},
 									{name:"Полка 6",number:6,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 								]
 							},
@@ -242,12 +248,12 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 1",number:1,space:[]},
 									{name:"Полка 2",number:2,space:[]},
 									{name:"Полка 3",number:3,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 4",number:4,space:[]},
 									{name:"Полка 5",number:5,space:[]},
 									{name:"Полка 6",number:6,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 								]
 							},
@@ -258,8 +264,11 @@ export default class WarehouseSettingsModel {
 						centerPoint:new Vector3(-240,0,0),
 						rotation:{x:0,y:0,z:0},
 						zoneTypeId: "0001",
-						width:500,
-						length:300,
+						message:"Зона 2",
+						textSize:15,
+						gapLengthX: "Зона 1".length * 15,
+						gapLengthY: "Зона 1".length * 15,
+						messageAlighment:["right"],
 						racks:[
 							{
 								name:"Стеллаж 1",
@@ -269,23 +278,23 @@ export default class WarehouseSettingsModel {
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},
 									{name:"Полка 2",number:2,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 3",number:3,space:[]},
 									{name:"Полка 4",number:4,space:[]},
 									{name:"Полка 5",number:5,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 6",number:6,space:[
-										{goodTypeId: "0003", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 7",number:7,space:[]},
 									{name:"Полка 8",number:8,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 9",number:9,space:[]},
 									{name:"Полка 10",number:10,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 11",number:11,space:[]},
 									{name:"Полка 12",number:12,space:[]},
@@ -300,12 +309,12 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 1",number:1,space:[]},
 									{name:"Полка 2",number:2,space:[]},
 									{name:"Полка 3",number:3,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 4",number:4,space:[]},
 									{name:"Полка 5",number:5,space:[]},
 									{name:"Полка 6",number:6,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 								]
 							},
@@ -319,14 +328,14 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 1",number:1,space:[]},
 									{name:"Полка 2",number:2,space:[]},
 									{name:"Полка 3",number:3,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 4",number:4,space:[
-										{goodTypeId: "0003", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 5",number:5,space:[]},
 									{name:"Полка 6",number:6,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 								]
 							},
@@ -339,12 +348,12 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 1",number:1,space:[]},
 									{name:"Полка 2",number:2,space:[]},
 									{name:"Полка 3",number:3,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 4",number:4,space:[]},
 									{name:"Полка 5",number:5,space:[]},
 									{name:"Полка 6",number:6,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 								]
 							},
@@ -358,16 +367,16 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 2",number:2,space:[]},
 									{name:"Полка 3",number:3,space:[]},
 									{name:"Полка 4",number:4,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 5",number:5,space:[]},
 									{name:"Полка 6",number:6,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 7",number:7,space:[]},
 									{name:"Полка 8",number:8,space:[]},
 									{name:"Полка 9",number:9,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 10",number:10,space:[]},
 									{name:"Полка 11",number:11,space:[]},
@@ -386,19 +395,19 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 3",number:3,space:[]},
 									{name:"Полка 4",number:4,space:[]},
 									{name:"Полка 5",number:5,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 6",number:6,space:[]},
 									{name:"Полка 7",number:7,space:[
-										{goodTypeId: "0003", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 8",number:8,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 9",number:9,space:[]},
 									{name:"Полка 10",number:10,space:[]},
 									{name:"Полка 11",number:11,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 12",number:12,space:[]},
 								]
@@ -410,8 +419,11 @@ export default class WarehouseSettingsModel {
 						centerPoint:new Vector3(-240,0,340),
 						rotation:{x:0,y:0,z:0},
 						zoneTypeId: "0001",
-						width:500,
-						length:300,
+						message:"Зона 3",
+						textSize:15,
+						gapLengthX: "Зона 1".length * 15,
+						gapLengthY: "Зона 1".length * 15,
+						messageAlighment:["right"],
 						racks:[
 							{
 								name:"Стеллаж 1",
@@ -421,22 +433,22 @@ export default class WarehouseSettingsModel {
 								shelfs:[
 									{name:"Полка 1",number:1,space:[]},
 									{name:"Полка 2",number:2,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 3",number:3,space:[]},
 									{name:"Полка 4",number:4,space:[]},
 									{name:"Полка 5",number:5,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 6",number:6,space:[]},
 									{name:"Полка 7",number:7,space:[]},
 									{name:"Полка 8",number:8,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 9",number:9,space:[]},
 									{name:"Полка 10",number:10,space:[]},
 									{name:"Полка 11",number:11,space:[
-										{goodTypeId: "0003", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 12",number:12,space:[]},
 								]
@@ -448,21 +460,21 @@ export default class WarehouseSettingsModel {
 								racksTypeId: "0001",
 								shelfs:[
 									{name:"Полка 1",number:1,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 2",number:2,space:[]},
 									{name:"Полка 3",number:3,space:[]},
 									{name:"Полка 4",number:4,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 5",number:5,space:[]},
 									{name:"Полка 6",number:6,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 7",number:7,space:[]},
 									{name:"Полка 8",number:8,space:[]},
 									{name:"Полка 9",number:9,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 10",number:10,space:[]},
 									{name:"Полка 11",number:11,space:[]},
@@ -478,12 +490,12 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 1",number:1,space:[]},
 									{name:"Полка 2",number:2,space:[]},
 									{name:"Полка 3",number:3,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 4",number:4,space:[]},
 									{name:"Полка 5",number:5,space:[]},
 									{name:"Полка 6",number:6,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 								]
 							},
@@ -496,17 +508,17 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 1",number:1,space:[]},
 									{name:"Полка 2",number:2,space:[]},
 									{name:"Полка 3",number:3,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 4",number:4,space:[]},
 									{name:"Полка 5",number:5,space:[]},
 									{name:"Полка 6",number:6,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 7",number:7,space:[]},
 									{name:"Полка 8",number:8,space:[]},
 									{name:"Полка 9",number:9,space:[
-										{goodTypeId: "0002", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 10",number:10,space:[]},
 									{name:"Полка 11",number:11,space:[]},
@@ -523,16 +535,16 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 1",number:1,space:[]},
 									{name:"Полка 2",number:2,space:[]},
 									{name:"Полка 3",number:3,space:[
-										{goodTypeId: "0003", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 4",number:4,space:[]},
 									{name:"Полка 5",number:5,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 6",number:6,space:[]},
 									{name:"Полка 7",number:7,space:[]},
 									{name:"Полка 8",number:8,space:[
-										{goodTypeId: "0001", good: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 9",number:9,space:[]},
 									{name:"Полка 10",number:10,space:[]},
