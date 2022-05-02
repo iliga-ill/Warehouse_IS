@@ -434,6 +434,7 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 1",number:1,space:[]},
 									{name:"Полка 2",number:2,space:[
 										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
+										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', goodCode: 6, amount: 1, weight: 44, status: 'Проинвентаризирован', shelfCode:1},
 									]},
 									{name:"Полка 3",number:3,space:[]},
 									{name:"Полка 4",number:4,space:[]},
