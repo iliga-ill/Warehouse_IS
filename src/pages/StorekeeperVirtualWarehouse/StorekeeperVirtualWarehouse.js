@@ -3,7 +3,7 @@ import './StorekeeperVirtualWarehouse.css';
 import * as THREE from 'three';
 import { MapControls, OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 //import {PointerLockControls} from 'https://threejs.org/examples/jsm/controls/PointerLockControls.js';
-import { FirstPersonControls } from "three/examples/jsm/controls/FirstPersonControls";
+import FirstPersonControls from 'first-person-controls'
 
 import DropdownListWithModels from "../../components/DropdownListWithModels/DropdownListWithModels";
 import ModelCreator from "../../classes/ModelCreator/ModelCreator.js";
@@ -36,6 +36,8 @@ let camera, scene, renderer;
 let plane;
 let pointer, raycaster; 
 let font = null
+let controls
+const clock = new THREE.Clock();
 
 let editingMod = "viewing" //viewing, adding, deleting
 let viewMod = "first-person" //observasion, first-person
@@ -116,6 +118,8 @@ function init() {
 }
 
 function render() {
+    if (controls != undefined)
+    controls.update( clock.getDelta() );
     renderer.render( scene, camera );
 }
 
@@ -173,7 +177,7 @@ function setObservationViewMod(){
     camera.position.set( 500, 800, 1300 );
     // camera.lookAt( 0, 0, 0 );
 
-    let controls = new OrbitControls( camera, renderer.domElement );
+    controls = new OrbitControls( camera, renderer.domElement );
     controls.update()
 }
 
@@ -181,26 +185,20 @@ function setFirstPersonViewMod(){
     viewMod = "first-person"
     //camera
     camera = new THREE.PerspectiveCamera( 45, width/ height, 1, 10000 );
-    camera.position.set(0, player.height, 0);
-    camera.lookAt(new THREE.Vector3(-5, 5, 0));
-    // const controls = new FirstPersonControls( camera );
-				
-    // controls.lookSpeed = 0.4;
-    // controls.movementSpeed = 20;
-    // controls.noFly = true;
-    // controls.lookVertical = true;
-    // controls.constrainVertical = true;
-    // controls.verticalMin = 1.0;
-    // controls.verticalMax = 2.0;
-    // controls.lon = -150;
-    // controls.lat = 120;
+    camera.position.y = getY( Math.max(warehouseSettings.width, warehouseSettings.length), Math.max(warehouseSettings.width, warehouseSettings.length) ) * 100 + 100;
+    //camera.lookAt(new THREE.Vector3(-5, 5, 0));
+    //lastCameraPoint = new THREE.Vector3(-5, 5, 0)
+
+    controls = new FirstPersonControls( camera, renderer.domElement );
+    controls.movementSpeed = 1000;
+    controls.lookSpeed = 0.125;
+    controls.lookVertical = true;
+
     // scene.add( controls.object );
     // const controls = new PointerLockControls( camera, renderer.domElement )
     //controls.update()
 }
 
-
-let controls = {};
 let player = {
   height: 5,
   turnSpeed: .1,
@@ -211,44 +209,134 @@ let player = {
   
   playerJumps: false
 };
-var scale = 150;
+var scale = 5;
  // this is not the default
 let radians = .025
-function onMouseMoveControls(e){
+let ray, radious = 1600, theta = 45, onMouseDownTheta = 45, phi = 60, onMouseDownPhi = 60
+
+let unprojectDirection = (function(){
+    var deg2radHalf = Math.PI/360;
+    var tang = 0;
+    return function ( vector, camera ) {
+        tang = Math.tan(camera.fov * deg2radHalf);
+        vector.x*=tang*camera.aspect; 
+        vector.y*=tang; 
+        vector.z = -1;
+        return vector.transformDirection(camera.matrixWorld);
+    };
+ })();
+ let lastCameraPoint
+ let sumEventMovement = new Vector2(0,0)
+function onMouseMoveControls(event){
     if (viewMod == "first-person" && mouseRightButton) {
-        // camera.rotation.x = -getScreenY(lastY) / scale + 135;
-        // camera.rotation.y = getScreenX(lastX) / scale;
-
-
-        console.log(`
-        x:${Math.round(camera.rotation.x/(Math.PI / 180))} 
-        y:${Math.round(camera.rotation.y/(Math.PI / 180))} 
-        z:${Math.round(camera.rotation.z/(Math.PI / 180))} 
-        x*:${Math.cos(camera.rotation.y)} 
-        z*:${Math.sin(camera.rotation.y)}`)
+        // console.log(`
+        // x:${Math.round(camera.rotation.x/(Math.PI / 180))} 
+        // y:${Math.round(camera.rotation.y/(Math.PI / 180))} 
+        // z:${Math.round(camera.rotation.z/(Math.PI / 180))} 
+        // x*:${Math.cos(camera.rotation.y)} 
+        // z*:${Math.sin(camera.rotation.y)}`)
+        
 
         // camera.rotation.y += e.movementX / scale
         //camera.rotation.x += (e.movementY / scale) * Math.abs(Math.cos(camera.rotation.y))
         //camera.rotation.z += (e.movementY / scale) * Math.abs(Math.sin(camera.rotation.y))
-        console.log(camera)
+        //console.log(camera)
 
         
         //camera.rotation.getRotationFromMatrix( camera.matrix );
         
+        // camera.rotation.x = -getScreenY(lastY) / scale;
+        // camera.rotation.y = getScreenX(lastX) / scale;
+
+        // camera.rotation.y += event.movementX / scale
+        // camera.rotation.x += event.movementY / scale
+
+        /*
+        rotateMeshOnAllAxis(camera, {x:event.movementY / scale,y:0,z:0})
+        rotateMeshOnAllAxis(camera, {x:0,y:event.movementX / scale,z:0})
+        if (camera.rotation.y/(Math.PI / 180)>90) rotateMeshOnAllAxis(camera, {x:0,y:0,z:event.movementX / scale})
+        if (camera.rotation.y/(Math.PI / 180)<=-90) rotateMeshOnAllAxis(camera, {x:0,y:0,z:-event.movementX / scale})
+        */
+
+
+        // if (camera.rotation.y/(Math.PI / 180)>0) camera.rotation.z = -camera.rotation.x
+        // if (camera.rotation.y/(Math.PI / 180)<=0) camera.rotation.z = camera.rotation.x
         
+        /*почти работает
+        sumEventMovement.x += event.movementX
+        sumEventMovement.y += event.movementY
+
+        let rotationX = 0
+        let rotationY = 0
+        let rotationZ = 0
+
+        if (camera.rotation.y/(Math.PI / 360)>0) {
+            // if (camera.rotation.y/(Math.PI / 360)>90) {
+            //     rotationX = -event.movementY / scale * Math.abs(Math.sin(camera.rotation.y))
+            //     rotationZ = event.movementY / scale * Math.abs(Math.cos(camera.rotation.y))
+            // } else {
+            //     rotationX = event.movementY / scale * Math.abs(Math.cos(camera.rotation.y))
+            //     rotationZ = -event.movementY / scale * Math.abs(Math.sin(camera.rotation.y))
+            // }
+
+            rotationX = event.movementY / scale * Math.abs(Math.cos(camera.rotation.y))
+            rotationZ = -event.movementY / scale
+        }
+
+        if (camera.rotation.y/(Math.PI / 360)<=0) {
+            // if (camera.rotation.y/(Math.PI / 360)<90) {
+            //     rotationX = -event.movementY / scale * Math.abs(Math.sin(camera.rotation.y))
+            //     rotationZ = -event.movementY / scale * Math.abs(Math.cos(camera.rotation.y))
+            // } else {
+            //     rotationX = event.movementY / scale * Math.abs(Math.cos(camera.rotation.y))
+            //     rotationZ = event.movementY / scale * Math.abs(Math.sin(camera.rotation.y))
+            // }
+            rotationX = event.movementY / scale * Math.abs(Math.cos(camera.rotation.y))
+            rotationZ = event.movementY / scale
+        }
+
+        rotationY = event.movementX / scale
+
+        lastCameraPoint = rotatePointAroundAxisMass(
+            lastCameraPoint, 
+            camera.position, 
+            {
+                x:rotationX,
+                y:rotationY,
+                z:rotationZ
+            }
+        )
+        camera.lookAt(lastCameraPoint);
+
+        console.log(`
+        x:${Math.round(camera.rotation.x/(Math.PI / 360))} 
+        y:${Math.round(camera.rotation.y/(Math.PI / 360))} 
+        z:${Math.round(camera.rotation.z/(Math.PI / 360))} 
+        x,Math.cos(y):${Math.cos(camera.rotation.y)} 
+        z,Math.sin(y):${Math.sin(camera.rotation.y)}
+        atan:${Math.atan(camera.rotation.y)}
+        sumEventMovement.x:${sumEventMovement.x}
+        sumEventMovement.y:${sumEventMovement.y}
+        `)
+
+        */
+        // rotateMeshOnAllAxis(camera, {x:0,y:0,z:event.movementX / scale * Math.abs(Math.sin(camera.rotation.y))})
+        // camera.rotation.z = 0
         
-        camera.rotation.setFromRotationMatrix(camera.matrix.makeRotationX( camera.rotation.y + e.movementY / scale ))
-        camera.rotation.setFromRotationMatrix(camera.matrix.makeRotationY( camera.rotation.x + e.movementX / scale ))
+        // camera.rotation.setFromRotationMatrix(camera.matrix.makeRotationX( camera.rotation.y + e.movementY / scale ))
+        // camera.rotation.setFromRotationMatrix(camera.matrix.makeRotationY( camera.rotation.x + e.movementX / scale ))
         
 
-        //camera.matrix.makeRotationX( radians + e.movementY / scale );
-        //camera.rotation.getRotationFromMatrix( camera.matrix );
+        // camera.matrix.makeRotationX( radians + e.movementY / scale );
+        // camera.rotation.getRotationFromMatrix( camera.matrix );
 
         // e.x -= e.movementX
         // e.y -= e.movementY
         
     }
 }
+
+
 
 
 
@@ -450,6 +538,7 @@ function onWindowResize() {
 
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
+    controls.handleResize();
 
     renderer.setSize( width, height);
 }
