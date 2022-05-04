@@ -2,16 +2,16 @@ import { React, Component, Fragment } from "react";
 import './StorekeeperVirtualWarehouse.css';
 import * as THREE from 'three';
 import { MapControls, OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-//import {PointerLockControls} from 'https://threejs.org/examples/jsm/controls/PointerLockControls.js';
 import FirstPersonControls from 'first-person-controls'
 
 import DropdownListWithModels from "../../components/DropdownListWithModels/DropdownListWithModels";
-import ModelCreator from "../../classes/ModelCreator/ModelCreator.js";
-import Colors from "../../classes/Colors/Colors.js";
+import ModelCreator from "../../classes/ModelCreator.js";
+import Colors from "../../classes/Colors.js";
 import { MOUSE, Vector2, Vector3 } from "three";
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
-import WarehouseSettingsModel from "../../classes/ModelCreator/WarehouseSettingsModel.js";
+import AuxiliaryMath from "../../classes/AuxiliaryMath.js";
+import WarehouseSettingsModel from "../../classes/WarehouseSettingsModel.js";
 import zIndex from "@material-ui/core/styles/zIndex";
 
 const styles = {
@@ -20,6 +20,7 @@ const styles = {
 
 let modelCreator = new ModelCreator()
 let colors = new Colors()
+let auxMath = new AuxiliaryMath()
 
 let warehouseSettingsModel = new WarehouseSettingsModel()
 
@@ -32,36 +33,66 @@ let warehouseSettings = warehouseSettingsModel.getWarehouseSettings()
 //#region Scene settings -------------------------------------------------
 
 //#region Variables
-let camera, scene, renderer;
-let plane;
-let pointer, raycaster; 
-let font = null
-let controls
+
 const clock = new THREE.Clock();
+let font = null
 
-let editingMod = "viewing" //viewing, adding, deleting
-let viewMod = "first-person" //observasion, first-person
+//is mouse button pressed
+let mouseLeftButton = false
+let mouseRightButton = false
 
-
-let hintModel = undefined;
-let model = undefined;
-
-let selectionLockedModels = [""]
-let hintLockedModels = [""]
+//mouse last x and y
+let lastX;
+let lastY;
 
 function setModel(value){
     model = value
     if (scene!=undefined) createHint();
 }
 
+
+
+//scene variables
 let width, height;
+let sceneMarginTop = 0;
+
+let camera, scene, renderer;
+let plane;
+let pointer, raycaster; 
 
 const objects = [];
 
-let sceneMarginTop = 0;
+let editingMod = "viewing" //viewing, adding, deleting /change mode of interacting with models
 
-let lastX;
-let lastY;
+let selectionLockedModels = [""] //models locked for selecting them
+let hintLockedModels = [""] //models locked for creating hint fore them
+
+let hintModel = undefined; //currently placed hint model
+let model = undefined; //currently placed model
+
+let viewMod = "first-person" //observasion, first-person /change mode of viewing
+let controls
+
+let player = {
+    height: 70,
+    turnSpeed: 0.2,
+    speed: 10,
+    jumpHeight: .2,
+    gravity: 0,
+    velocity: 0,
+    jump:false
+  }; //characteristics of first-person viewMod
+
+//first-person view mod variables
+let onPointerDownMouseX = 0
+let onPointerDownMouseY = 0
+let lon = 0
+let lat = 0
+let onPointerDownLon = 0
+let onPointerDownLat = 0
+let phi = 0
+let theta = 0
+let lookedPoint
 
 //#endregion
 
@@ -106,8 +137,7 @@ function init() {
     renderer.setPixelRatio( window.devicePixelRatio );
     renderer.setSize( width, height );
 
-    if (viewMod == "first-person") setFirstPersonViewMod();
-    if (viewMod == "observasion") setObservationViewMod();
+    setFirstPersonViewMod();
 
     //addingSceneOnScreen
     var warehouseScene = document.getElementById("warehouseScene")
@@ -118,10 +148,15 @@ function init() {
 }
 
 function render() {
-    if (controls != undefined)
-    controls.update( clock.getDelta() );
-    renderer.render( scene, camera );
+    if (viewMod == "first-person" && mouseRightButton) {
+        lon += 0.1;
+        updatelookedPoint()
+        camera.lookAt(lookedPoint);
+    }
+    if (renderer!=undefined)
+        renderer.render( scene, camera );
 }
+
 
 function getScreenX(X){
     return ( X / width ) * 2 - 1
@@ -158,187 +193,102 @@ function setListeners(){
     warehouseScene.addEventListener('pointerdown', onPointerDown)
 
     //listener for flicking view mod
-    btnViewMode.addEventListener('click', onChangeViewMode)
-    warehouseScene.addEventListener('mousemove', onMouseMoveControls)
+    btnViewMode.addEventListener('pointerup', onChangeViewMode)
+    warehouseScene.addEventListener( 'mousemove', onMouseMoveControls );
+    warehouseScene.addEventListener( 'wheel', onSceneMouseWheel );
 }
 
 //#region flicking view mod
 function onChangeViewMode(){
-    if (viewMod == "observasion") setFirstPersonViewMod();
-    if (viewMod == "first-person") setObservationViewMod();
-    console.log(viewMod)
+    switch (viewMod){
+        case "observasion": setFirstPersonViewMod(); break;
+        case "first-person": setObservationViewMod(); break;
+    }
 }
 
 function setObservationViewMod(){
     viewMod = "observasion"
-    console.log("happened")
-    //camera
+    
     camera = new THREE.PerspectiveCamera( 45, width/ height, 1, 10000 );
     camera.position.set( 500, 800, 1300 );
     // camera.lookAt( 0, 0, 0 );
 
     controls = new OrbitControls( camera, renderer.domElement );
     controls.update()
+    controls.enabled = true;
+
+    render()
 }
 
 function setFirstPersonViewMod(){
     viewMod = "first-person"
-    //camera
+    if (controls != undefined)
+        controls.enabled = false;
+
     camera = new THREE.PerspectiveCamera( 45, width/ height, 1, 10000 );
-    camera.position.y = getY( Math.max(warehouseSettings.width, warehouseSettings.length), Math.max(warehouseSettings.width, warehouseSettings.length) ) * 100 + 100;
-    //camera.lookAt(new THREE.Vector3(-5, 5, 0));
-    //lastCameraPoint = new THREE.Vector3(-5, 5, 0)
+    camera.position.set(0, player.height, 0);
 
-    controls = new FirstPersonControls( camera, renderer.domElement );
-    controls.movementSpeed = 1000;
-    controls.lookSpeed = 0.125;
-    controls.lookVertical = true;
+    lookedPoint = auxMath.translatePoint(camera.position, {x:1,y:0,z:0})
+    camera.lookAt(lookedPoint);
 
-    // scene.add( controls.object );
-    // const controls = new PointerLockControls( camera, renderer.domElement )
-    //controls.update()
+    onPointerDownMouseX = 0
+    onPointerDownMouseY = 0
+    lon = 0
+    lat = 0
+    onPointerDownLon = 0
+    onPointerDownLat = 0
+    phi = 0
+    theta = 0
+    updatelookedPoint()
+
+    render()
 }
 
-let player = {
-  height: 5,
-  turnSpeed: .1,
-  speed: 5,
-  jumpHeight: .2,
-  gravity: 0,
-  velocity: 0,
-  
-  playerJumps: false
-};
-var scale = 5;
- // this is not the default
-let radians = .025
-let ray, radious = 1600, theta = 45, onMouseDownTheta = 45, phi = 60, onMouseDownPhi = 60
+function onMouseDown(e){
+    if (e.button == 0) mouseLeftButton = true
+    if (e.button == 2) {
+        mouseRightButton = true
+        if ( e.isPrimary === false ) return;
 
-let unprojectDirection = (function(){
-    var deg2radHalf = Math.PI/360;
-    var tang = 0;
-    return function ( vector, camera ) {
-        tang = Math.tan(camera.fov * deg2radHalf);
-        vector.x*=tang*camera.aspect; 
-        vector.y*=tang; 
-        vector.z = -1;
-        return vector.transformDirection(camera.matrixWorld);
-    };
- })();
- let lastCameraPoint
- let sumEventMovement = new Vector2(0,0)
-function onMouseMoveControls(event){
-    if (viewMod == "first-person" && mouseRightButton) {
-        // console.log(`
-        // x:${Math.round(camera.rotation.x/(Math.PI / 180))} 
-        // y:${Math.round(camera.rotation.y/(Math.PI / 180))} 
-        // z:${Math.round(camera.rotation.z/(Math.PI / 180))} 
-        // x*:${Math.cos(camera.rotation.y)} 
-        // z*:${Math.sin(camera.rotation.y)}`)
-        
+        onPointerDownMouseX = e.clientX;
+        onPointerDownMouseY = e.clientY;
 
-        // camera.rotation.y += e.movementX / scale
-        //camera.rotation.x += (e.movementY / scale) * Math.abs(Math.cos(camera.rotation.y))
-        //camera.rotation.z += (e.movementY / scale) * Math.abs(Math.sin(camera.rotation.y))
-        //console.log(camera)
-
-        
-        //camera.rotation.getRotationFromMatrix( camera.matrix );
-        
-        // camera.rotation.x = -getScreenY(lastY) / scale;
-        // camera.rotation.y = getScreenX(lastX) / scale;
-
-        // camera.rotation.y += event.movementX / scale
-        // camera.rotation.x += event.movementY / scale
-
-        /*
-        rotateMeshOnAllAxis(camera, {x:event.movementY / scale,y:0,z:0})
-        rotateMeshOnAllAxis(camera, {x:0,y:event.movementX / scale,z:0})
-        if (camera.rotation.y/(Math.PI / 180)>90) rotateMeshOnAllAxis(camera, {x:0,y:0,z:event.movementX / scale})
-        if (camera.rotation.y/(Math.PI / 180)<=-90) rotateMeshOnAllAxis(camera, {x:0,y:0,z:-event.movementX / scale})
-        */
-
-
-        // if (camera.rotation.y/(Math.PI / 180)>0) camera.rotation.z = -camera.rotation.x
-        // if (camera.rotation.y/(Math.PI / 180)<=0) camera.rotation.z = camera.rotation.x
-        
-        /*почти работает
-        sumEventMovement.x += event.movementX
-        sumEventMovement.y += event.movementY
-
-        let rotationX = 0
-        let rotationY = 0
-        let rotationZ = 0
-
-        if (camera.rotation.y/(Math.PI / 360)>0) {
-            // if (camera.rotation.y/(Math.PI / 360)>90) {
-            //     rotationX = -event.movementY / scale * Math.abs(Math.sin(camera.rotation.y))
-            //     rotationZ = event.movementY / scale * Math.abs(Math.cos(camera.rotation.y))
-            // } else {
-            //     rotationX = event.movementY / scale * Math.abs(Math.cos(camera.rotation.y))
-            //     rotationZ = -event.movementY / scale * Math.abs(Math.sin(camera.rotation.y))
-            // }
-
-            rotationX = event.movementY / scale * Math.abs(Math.cos(camera.rotation.y))
-            rotationZ = -event.movementY / scale
-        }
-
-        if (camera.rotation.y/(Math.PI / 360)<=0) {
-            // if (camera.rotation.y/(Math.PI / 360)<90) {
-            //     rotationX = -event.movementY / scale * Math.abs(Math.sin(camera.rotation.y))
-            //     rotationZ = -event.movementY / scale * Math.abs(Math.cos(camera.rotation.y))
-            // } else {
-            //     rotationX = event.movementY / scale * Math.abs(Math.cos(camera.rotation.y))
-            //     rotationZ = event.movementY / scale * Math.abs(Math.sin(camera.rotation.y))
-            // }
-            rotationX = event.movementY / scale * Math.abs(Math.cos(camera.rotation.y))
-            rotationZ = event.movementY / scale
-        }
-
-        rotationY = event.movementX / scale
-
-        lastCameraPoint = rotatePointAroundAxisMass(
-            lastCameraPoint, 
-            camera.position, 
-            {
-                x:rotationX,
-                y:rotationY,
-                z:rotationZ
-            }
-        )
-        camera.lookAt(lastCameraPoint);
-
-        console.log(`
-        x:${Math.round(camera.rotation.x/(Math.PI / 360))} 
-        y:${Math.round(camera.rotation.y/(Math.PI / 360))} 
-        z:${Math.round(camera.rotation.z/(Math.PI / 360))} 
-        x,Math.cos(y):${Math.cos(camera.rotation.y)} 
-        z,Math.sin(y):${Math.sin(camera.rotation.y)}
-        atan:${Math.atan(camera.rotation.y)}
-        sumEventMovement.x:${sumEventMovement.x}
-        sumEventMovement.y:${sumEventMovement.y}
-        `)
-
-        */
-        // rotateMeshOnAllAxis(camera, {x:0,y:0,z:event.movementX / scale * Math.abs(Math.sin(camera.rotation.y))})
-        // camera.rotation.z = 0
-        
-        // camera.rotation.setFromRotationMatrix(camera.matrix.makeRotationX( camera.rotation.y + e.movementY / scale ))
-        // camera.rotation.setFromRotationMatrix(camera.matrix.makeRotationY( camera.rotation.x + e.movementX / scale ))
-        
-
-        // camera.matrix.makeRotationX( radians + e.movementY / scale );
-        // camera.rotation.getRotationFromMatrix( camera.matrix );
-
-        // e.x -= e.movementX
-        // e.y -= e.movementY
-        
+        onPointerDownLon = lon;
+        onPointerDownLat = lat;
+    }
+}
+function onMouseUp(e){
+    if (e.button == 0) mouseLeftButton = false
+    if (e.button == 2) {
+        mouseRightButton = false
+        if ( e.isPrimary === false ) return;
     }
 }
 
+function onMouseMoveControls(event){
+    if (viewMod == "first-person" && mouseRightButton) {
+        if ( event.isPrimary === false ) return;
+        lon = ( onPointerDownMouseX - event.clientX ) * player.turnSpeed + onPointerDownLon;
+        lat = ( event.clientY - onPointerDownMouseY ) * player.turnSpeed + onPointerDownLat;
+    }
+}
 
+function onSceneMouseWheel( event ) {
+    const fov = camera.fov + event.deltaY * 0.05;
+    camera.fov = THREE.MathUtils.clamp( fov, 10, 100 );
+    camera.updateProjectionMatrix();
+}
 
+function updatelookedPoint(){
+    lat = Math.max( - 85, Math.min( 85, lat ) );
+    phi = THREE.MathUtils.degToRad( 90 - lat );
+    theta = THREE.MathUtils.degToRad( lon );
 
+    const x = 500 * Math.sin( phi ) * Math.cos( theta );
+    const y = 500 * Math.cos( phi );
+    const z = 500 * Math.sin( phi ) * Math.sin( theta );
+    lookedPoint = new Vector3(x,y,z)
+}
 
 //#endregion
 
@@ -366,7 +316,6 @@ function onMouseStop(){
 }
 
 function generateHint(intersect, lastX, lastY){
-    console.log(intersect)
     var warehouseScene = document.getElementById("warehouseSceneWrap")
     var hint = document.createElement("div");
     hint.id = "hint";
@@ -376,6 +325,8 @@ function generateHint(intersect, lastX, lastY){
     hint.style.background = "white";
     hint.style.height = 0;
     hint.style.zIndex = 100;
+    hint.style.border = "1px solid #000000";
+    hint.style.borderRadius = "10px";
     if (intersect.object.userData.space != undefined){
         intersect.object.userData.space.map(function(good,i){
             hint.style.top = `${lastY - 25*(i+1)}px`;
@@ -393,85 +344,27 @@ function generateHint(intersect, lastX, lastY){
 }
 //#endregion
 
-let mouseLeftButton = false
-let mouseRightButton = false
-
-function onMouseDown(e){
-    if (e.button == 0) mouseLeftButton = true
-    if (e.button == 2) mouseRightButton = true
-}
-function onMouseUp(e){
-    if (e.button == 0) mouseLeftButton = false
-    if (e.button == 2) mouseRightButton = false
-}
-
 //#region controls and creating model hint
 let isShiftDown = false
 let isCtrlDown = false
+let pressedKeys = []
 
 function onDocumentKeyDown( event ) {
+    event.preventDefault()
+    if (!pressedKeys.includes(event.keyCode))
+        pressedKeys.push(event.keyCode)
+
     switch ( event.keyCode ) {
-        case 16: //shift
-            isShiftDown = true; 
-            changeEditingMod(); 
-            createHint(); 
-            break;
-        case 17:  //shift 
-            isCtrlDown = true; 
-            changeEditingMod(); 
-            createHint(); 
-            break;
-        case 87: // w
-        console.log(viewMod)
-            if (viewMod == "first-person") {
-                camera.position.x -= Math.sin(camera.rotation.y) * player.speed;
-                camera.position.z -= -Math.cos(camera.rotation.y) * player.speed;
-                render()
-            }
-            break;
-        case 83: // s
-            if (viewMod == "first-person") {
-                camera.position.x += Math.sin(camera.rotation.y) * player.speed;
-                camera.position.z += -Math.cos(camera.rotation.y) * player.speed;
-                render()
-            }
-            break;
-        case 65: // a
-            if (viewMod == "first-person") {
-                camera.position.x += Math.sin(camera.rotation.y + Math.PI / 2) * player.speed;
-                camera.position.z += -Math.cos(camera.rotation.y + Math.PI / 2) * player.speed;
-                render()
-            }
-            break;
-        case 68: // d
-            if (viewMod == "first-person") {
-                camera.position.x += Math.sin(camera.rotation.y - Math.PI / 2) * player.speed;
-                camera.position.z += -Math.cos(camera.rotation.y - Math.PI / 2) * player.speed;
-                render()
-            }
-            break;
-        case 37: // la
-            if (viewMod == "first-person")
-                camera.rotation.y -= player.turnSpeed;
-                render()
-            break;
-        case 39: // ra
-            if (viewMod == "first-person")
-                camera.rotation.y += player.turnSpeed;
-                render()
-            break;
-        case 32: // space
-            if (viewMod == "first-person") {
-                if(player.jumps) return false;
-                player.jumps = true;
-                player.velocity = -player.jumpHeight;
-                render()
-            }
-            break;
+        case 16: isShiftDown = true; changeEditingMod(); createHint(); break;
+        case 17: isCtrlDown = true; changeEditingMod(); createHint(); break;
     }
 }
 
 function onDocumentKeyUp( event ) {
+    event.preventDefault()
+    if (pressedKeys.includes(event.keyCode))
+        pressedKeys.splice(pressedKeys.indexOf(event.keyCode), 1);
+
     switch ( event.keyCode ) {
         case 16: isShiftDown = false; changeEditingMod(); createHint(); break;
         case 17: isCtrlDown = false; changeEditingMod(); createHint(); break;
@@ -482,6 +375,105 @@ function changeEditingMod(){
     if (!isShiftDown && !isCtrlDown || isShiftDown && isCtrlDown) editingMod = "viewing"
     else if (isShiftDown && !isCtrlDown) editingMod = "adding"
     else if (!isShiftDown && isCtrlDown) editingMod = "deleting"
+}
+
+let keyListener = setTimeout(onKeyPressed, 100);
+function onKeyPressed(){
+
+    if (pressedKeys.includes(87)){// w
+        if (viewMod == "first-person" && lookedPoint!=undefined) {
+            var vector = lookedPoint.multiplyScalar( player.speed/1000, player.speed/1000, player.speed/1000 );
+            camera.position.x += vector.x;
+            camera.position.y += vector.y;
+            camera.position.z += vector.z;
+            lookedPoint.x += vector.x;
+            lookedPoint.y += vector.y;
+            lookedPoint.z += vector.z;
+            updatelookedPoint()
+            render()
+        }
+    }
+    if (pressedKeys.includes(83)){// s
+        if (viewMod == "first-person" && lookedPoint!=undefined) {
+            var vector = lookedPoint.multiplyScalar( player.speed/1000 * -1, player.speed/1000, player.speed/1000 * -1 );
+            camera.position.x += vector.x;
+            camera.position.y += vector.y;
+            camera.position.z += vector.z;
+            lookedPoint.x += vector.x;
+            lookedPoint.y += vector.y;
+            lookedPoint.z += vector.z;
+            updatelookedPoint()
+            render()
+        }
+    }
+    if (pressedKeys.includes(65)){// a
+        if (viewMod == "first-person" && lookedPoint!=undefined) {
+            // let point = getPointPerpendicularToLine(lookedPoint, camera.position, new Vector3(10,0,0))
+
+            // var vector = point.multiplyScalar( player.speed/1000, 1, player.speed/1000 );
+            // camera.position.x += vector.x;
+            // //camera.position.y += vector.y;
+            // camera.position.z += vector.z;
+            // lookedPoint.x += vector.x
+            // lookedPoint.z += vector.z
+            let point = new Vector3(lookedPoint.x, camera.position.y, lookedPoint.z )
+            var distinct = auxMath.rotatePointAroundAxis(
+                point, 
+                auxMath.translatePoint(camera.position, {x:0,y:-1,z:0}),
+                auxMath.translatePoint(camera.position, {x:0,y:1,z:0}), 
+                90 * Math.PI / 180
+            )
+
+            var vector = distinct.multiplyScalar( player.speed/1000, 0, player.speed/1000 );
+            camera.position.x += vector.x;
+            //camera.position.y += vector.y;
+            camera.position.z += vector.z;
+            lookedPoint.x += vector.x
+            lookedPoint.z += vector.z
+            updatelookedPoint()
+            render()
+        }
+    }
+    if (pressedKeys.includes(68)){// d
+        if (viewMod == "first-person" && lookedPoint!=undefined) {
+            let point = new Vector3(lookedPoint.x, camera.position.y, lookedPoint.z )
+            var distinct = auxMath.rotatePointAroundAxis(
+                point, 
+                auxMath.translatePoint(camera.position, {x:0,y:-1,z:0}),
+                auxMath.translatePoint(camera.position, {x:0,y:1,z:0}), 
+                -90 * Math.PI / 180
+            )
+            var vector = distinct.multiplyScalar( player.speed/1000, 0, player.speed/1000 );
+            camera.position.x += vector.x;
+            //camera.position.y += vector.y;
+            camera.position.z += vector.z;
+            lookedPoint.x += vector.x
+            lookedPoint.z += vector.z
+            updatelookedPoint()
+            render()
+        }
+    }
+    if (pressedKeys.includes(18)){// left alt
+        if (viewMod == "first-person" && lookedPoint!=undefined) {
+            var vector = camera.position.multiplyScalar( 1, player.speed/1000, 1 );
+            camera.position.y -= vector.y/50;
+
+            vector = lookedPoint.multiplyScalar( 1, player.speed/1000, 1 );
+            lookedPoint.y -= vector.y/50;
+        }
+        render()
+    }
+    if (pressedKeys.includes(32)){// space
+        if (viewMod == "first-person" && lookedPoint!=undefined){
+            var vector = camera.position.multiplyScalar( 1, player.speed/1000, 1 );
+            camera.position.y += vector.y/50;
+
+            vector = lookedPoint.multiplyScalar( 1, player.speed/1000, 1 );
+            lookedPoint.y += vector.y/50;
+        }
+        render()
+    }
+    keyListener = setTimeout(onKeyPressed, 1);
 }
 
 function createHint(){
@@ -538,7 +530,6 @@ function onWindowResize() {
 
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
-    controls.handleResize();
 
     renderer.setSize( width, height);
 }
@@ -616,78 +607,7 @@ function onPointerDown( event ) {
 }
 //#endregion
 
-//#endregion
-
-//#region math methods
-
-function getPivotPoint(pointToRotate, axisStart, axisEnd) {
-    const d = new Vector3().subVectors(axisEnd, axisStart).normalize()
-    const v = new Vector3().subVectors(pointToRotate, axisStart)
-    const t = v.dot(d)
-    const pivotPoint = axisStart.add(d.multiplyScalar(t))
-    return pivotPoint
-}
-
-function rotatePointAroundAxis(pointToRotate, axisStart, axisEnd, radians) {
-    const axisDirection = new Vector3().subVectors(axisEnd, axisStart).normalize()
-    const pivotPoint = getPivotPoint(pointToRotate, axisStart, axisEnd)
-    const translationToWorldCenter = new Vector3().subVectors(pointToRotate, pivotPoint)
-    const translatedRotated = translationToWorldCenter.clone().applyAxisAngle(axisDirection, radians)
-    const destination = pointToRotate.clone().add(translatedRotated).sub(translationToWorldCenter)
-    return destination
-}
-
-//#endregion
-
-//#region work with vectors, models and scene
-
-function translatePoint(point,{x,y,z}){
-    return new Vector3(point.x+x,point.y+y,point.z+z)
-}
-
-function rotatePointAroundAxisMass(pointToRotate, zoneCenter, rotation){
-    pointToRotate = rotatePointAroundAxis(
-        pointToRotate, 
-        translatePoint(zoneCenter, {x:-1,y:0,z:0}), 
-        translatePoint(zoneCenter, {x:1,y:0,z:0}), 
-        rotation.x * Math.PI / 180
-    )
-    pointToRotate = rotatePointAroundAxis(
-        pointToRotate, 
-        translatePoint(zoneCenter, {x:0,y:-1,z:0}), 
-        translatePoint(zoneCenter, {x:0,y:1,z:0}), 
-        rotation.y * Math.PI / 180
-    )
-    pointToRotate = rotatePointAroundAxis(
-        pointToRotate, 
-        translatePoint(zoneCenter, {x:0,y:0,z:-1}), 
-        translatePoint(zoneCenter, {x:0,y:0,z:1}), 
-        rotation.z * Math.PI / 180
-    )
-    return pointToRotate
-}
-
-function rotateMeshOnAxis(mesh, axis, rotationAngle){
-    mesh.rotateOnAxis ( axis, rotationAngle * Math.PI / 180 )
-    return mesh
-}
-
-function rotateMeshOnAllAxis(mesh, rotation){
-    mesh.rotateOnAxis ( new Vector3(1,0,0), rotation.x * Math.PI / 180 )
-    mesh.rotateOnAxis ( new Vector3(0,1,0), rotation.y * Math.PI / 180 )
-    mesh.rotateOnAxis ( new Vector3(0,0,1), rotation.z * Math.PI / 180 )
-    return mesh
-}
-
-function sumRotations(rotations){
-    let res={x:0,y:0,z:0}
-    rotations.map(rotation=>{
-        res.x+=rotation.x
-        res.y+=rotation.y
-        res.z+=rotation.z
-    })
-    return res
-}
+//#region work with models and scene
 
 function setModelOnCoordinates(model, coordinates, inObjects){
     const voxel = model.mesh;
@@ -709,7 +629,7 @@ function warehouseGeneration(warehouseSettings, racksType){
     warehouseSettings.zones.map(zone=>{
         let zoneType = zonesType[`zone_${zone.zoneTypeId}`]
         let zoneBorderModel = modelCreator.createZoneBorder(zone.name, zoneType.color, zoneType.width, zoneType.length, 1, zoneType.chamferLendth, zone.message, zone.messageAlighment, font, zone.textSize, zone.gapLengthX, zone.gapLengthY, new Vector3(0,0,0))
-        zoneBorderModel.mesh = rotateMeshOnAllAxis(zoneBorderModel.mesh, zone.rotation)
+        zoneBorderModel.mesh = auxMath.rotateMeshOnAllAxis(zoneBorderModel.mesh, zone.rotation)
         let zoneCenterGlobalCoordinate = zone.centerPoint
         setModelOnCoordinates(zoneBorderModel, zoneCenterGlobalCoordinate, false)
         selectionLockedModels.push(zone.name)
@@ -723,10 +643,10 @@ function warehouseGeneration(warehouseSettings, racksType){
                 zoneCenterGlobalCoordinate.y + rack.centerPoint.y, 
                 zoneCenterGlobalCoordinate.z + rack.centerPoint.z
             )
-            rackModel.mesh = rotateMeshOnAllAxis(rackModel.mesh, sumRotations([zone.rotation, rack.rotation]))
-            let rotatedRackCenterGlobalCoordinate = rotatePointAroundAxisMass(
+            rackModel.mesh = auxMath.rotateMeshOnAllAxis(rackModel.mesh, auxMath.sumRotations([zone.rotation, rack.rotation]))
+            let rotatedRackCenterGlobalCoordinate = auxMath.rotatePointAroundAxisMass(
                 rackCenterGlobalCoordinate.clone(), 
-                translatePoint(zoneCenterGlobalCoordinate.clone(), {x:-rackType.translation.x,y:-rackType.translation.y,z:-rackType.translation.z}), 
+                auxMath.translatePoint(zoneCenterGlobalCoordinate.clone(), {x:-rackType.translation.x,y:-rackType.translation.y,z:-rackType.translation.z}), 
                 zone.rotation
             )
             setModelOnCoordinates(
@@ -743,7 +663,6 @@ function warehouseGeneration(warehouseSettings, racksType){
                         let goodType = goodsType[`good_${good.goodTypeId}`]
                         let goodModel = modelCreator.createCube(good.name, goodType.color, goodType.width, goodType.height, goodType.depth, goodType.translation)
                         goodModel.mesh.userData.space = shelf.space
-                        //console.log(model.mesh)
                         
                         let firstShelfCenterGlobalCoordinate = new Vector3(
                             rackCenterGlobalCoordinate.x-((rackType.shelfWidth*rackType.columsAmount + rackType.borderWidth*(rackType.columsAmount+1))/2 - (rackType.shelfWidth/2 + rackType.borderWidth) ),
@@ -755,11 +674,11 @@ function warehouseGeneration(warehouseSettings, racksType){
                             firstShelfCenterGlobalCoordinate.y + (rackType.shelfHeight + rackType.borderWidth)*rackType.shelfs[`shelf_${shelf.number}`].row,
                             firstShelfCenterGlobalCoordinate.z
                         )
-                        goodModel.mesh = rotateMeshOnAllAxis(goodModel.mesh, sumRotations([zone.rotation, rack.rotation]))
-                        let rotatedZoneShiftedFirstShelfCenterGlobalCoordinate = rotatePointAroundAxisMass(shiftedFirstShelfCenterGlobalCoordinate.clone(), zoneCenterGlobalCoordinate.clone(), zone.rotation)
-                        let rotatedRackShiftedFirstShelfCenterGlobalCoordinate = rotatePointAroundAxisMass(
+                        goodModel.mesh = auxMath.rotateMeshOnAllAxis(goodModel.mesh, auxMath.sumRotations([zone.rotation, rack.rotation]))
+                        let rotatedZoneShiftedFirstShelfCenterGlobalCoordinate = auxMath.rotatePointAroundAxisMass(shiftedFirstShelfCenterGlobalCoordinate.clone(), zoneCenterGlobalCoordinate.clone(), zone.rotation)
+                        let rotatedRackShiftedFirstShelfCenterGlobalCoordinate = auxMath.rotatePointAroundAxisMass(
                             rotatedZoneShiftedFirstShelfCenterGlobalCoordinate.clone(), 
-                            translatePoint(rotatedRackCenterGlobalCoordinate.clone(), {x:rackType.translation.x,y:rackType.translation.y,z:rackType.translation.z}),
+                            auxMath.translatePoint(rotatedRackCenterGlobalCoordinate.clone(), {x:rackType.translation.x,y:rackType.translation.y,z:rackType.translation.z}),
                             rack.rotation
                         )
                             

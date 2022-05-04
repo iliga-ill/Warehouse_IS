@@ -2,7 +2,7 @@ import { React, Component, Fragment } from "react";
 import './DropdownListWithModels.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import ModelCreator from "../../classes/ModelCreator/ModelCreator.js";
+import ModelCreator from "../../classes/ModelCreator.js";
 
     
     //#region Dropdown list -------------------------------------------------
