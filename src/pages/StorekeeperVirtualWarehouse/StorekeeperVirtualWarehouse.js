@@ -2,7 +2,6 @@ import { React, Component, Fragment } from "react";
 import './StorekeeperVirtualWarehouse.css';
 import * as THREE from 'three';
 import { MapControls, OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import FirstPersonControls from 'first-person-controls'
 
 import DropdownListWithModels from "../../components/DropdownListWithModels/DropdownListWithModels";
 import ModelCreator from "../../classes/ModelCreator.js";
@@ -12,6 +11,7 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
 import AuxiliaryMath from "../../classes/AuxiliaryMath.js";
 import WarehouseSettingsModel from "../../classes/WarehouseSettingsModel.js";
+import FirstPersonControls from "../../classes/FirstPersonControls.js";
 import zIndex from "@material-ui/core/styles/zIndex";
 
 const styles = {
@@ -21,6 +21,9 @@ const styles = {
 let modelCreator = new ModelCreator()
 let colors = new Colors()
 let auxMath = new AuxiliaryMath()
+
+let firstPersonControls
+let orbitControls
 
 let warehouseSettingsModel = new WarehouseSettingsModel()
 
@@ -149,9 +152,13 @@ function init() {
 
 function render() {
     if (viewMod == "first-person" && mouseRightButton) {
+        // firstPersonControls.render()
         lon += 0.1;
+        // console.log(lon)
+        // console.log(firstPersonControls.getLoockedPoint())
         updatelookedPoint()
         camera.lookAt(lookedPoint);
+        // camera.lookAt(firstPersonControls.getLoockedPoint());
     }
     if (renderer!=undefined)
         renderer.render( scene, camera );
@@ -230,6 +237,10 @@ function setFirstPersonViewMod(){
 
     lookedPoint = auxMath.translatePoint(camera.position, {x:1,y:0,z:0})
     camera.lookAt(lookedPoint);
+
+    // firstPersonControls = new FirstPersonControls( camera, renderer.domElement )
+    // firstPersonControls.connect()
+    // firstPersonControls.refreshControls()
 
     onPointerDownMouseX = 0
     onPointerDownMouseY = 0
@@ -377,7 +388,7 @@ function changeEditingMod(){
     else if (!isShiftDown && isCtrlDown) editingMod = "deleting"
 }
 
-let keyListener = setTimeout(onKeyPressed, 100);
+let keyListener = setTimeout(onKeyPressed, 10);
 function onKeyPressed(){
 
     if (pressedKeys.includes(87)){// w
@@ -473,7 +484,7 @@ function onKeyPressed(){
         }
         render()
     }
-    keyListener = setTimeout(onKeyPressed, 1);
+    keyListener = setTimeout(onKeyPressed, 10);
 }
 
 function createHint(){
@@ -723,6 +734,10 @@ class StorekeeperVirtualWarehouse extends Component {
         loader.load('https://threejs.org/examples/fonts/droid/droid_serif_bold.typeface.json', function(response) {
             font = response;
         });
+    }
+
+    componentWillUnmount() {
+        clearInterval(keyListener);
     }
 
     render(){

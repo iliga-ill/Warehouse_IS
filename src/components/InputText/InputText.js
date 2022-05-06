@@ -35,7 +35,9 @@ export default function InputText(props){
             <div>{props.label}</div>
             {props.type=="phone"
                 ?<PhoneInput country={'ru'} placeholder="phone" value={props.defValue} onChange={phone => props.set(phone)} disableDropdown={true}/>
-                :<input defaultValue={props.defValue} placeholder={props.placeholder} onEndedCapture={console.log("signal")} onChange={evt => props.set(evt.target.value)}/>
+                :<input defaultValue={props.defValue} placeholder={props.placeholder} 
+                // onEndedCapture={} 
+                onChange={evt => props.set(evt.target.value)}/>
             }
             
             

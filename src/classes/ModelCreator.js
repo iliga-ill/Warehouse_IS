@@ -37,13 +37,13 @@ export default class ModelCreator {
     }
 
     createShelter(name, color, width, height, depth, borderWidth, translation){
-        var frame = new THREE.Shape();
+        let frame = new THREE.Shape();
         frame.moveTo( width/2, 0, 25);
         frame.lineTo( width/2, height, 25);
         frame.lineTo(-width/2, height, 25);
         frame.lineTo(-width/2, 0, 25);
         
-        var hole = new THREE.Path();
+        let hole = new THREE.Path();
         hole.moveTo( width/2 - borderWidth, borderWidth, 25);
         hole.lineTo( width/2 - borderWidth, height - borderWidth, 25);
         hole.lineTo(-(width/2 - borderWidth), height - borderWidth, 25);
@@ -51,7 +51,7 @@ export default class ModelCreator {
         frame.holes.push(hole);
 
     //  Extrude the shape into a geometry, and create a mesh from it:
-        var extrudeSettings = {
+        let extrudeSettings = {
             steps: 1,
             depth: depth,
             bevelEnabled: false,
@@ -72,8 +72,8 @@ export default class ModelCreator {
 
     createRack(name, color, shelfWidth, shelfHeight, shelfDepth, columsAmount, rowsAmount, borderWidth, translation){
 
-        let fullRackWidth = shelfWidth*columsAmount + borderWidth*(columsAmount+1)
-        let fullRackHight = shelfHeight*rowsAmount + borderWidth*(rowsAmount+1)
+        const fullRackWidth = shelfWidth*columsAmount + borderWidth*(columsAmount+1)
+        const fullRackHight = shelfHeight*rowsAmount + borderWidth*(rowsAmount+1)
 
         let frame = new THREE.Shape();
         frame.moveTo( fullRackWidth/2,  0,               shelfDepth/2);
@@ -87,7 +87,7 @@ export default class ModelCreator {
                 let yShift = (shelfHeight*rowIndex + borderWidth*(rowIndex+1))
                 let xShift = (shelfWidth*columnIndex + borderWidth*(columnIndex+1)) - (fullRackWidth/2-shelfWidth/2)
                 
-                var hole = new THREE.Path();
+                let hole = new THREE.Path();
                 hole.moveTo(xShift +   shelfWidth/2 ,  yShift, shelfDepth/2);
                 hole.lineTo(xShift +   shelfWidth/2 ,  yShift +  shelfHeight, shelfDepth/2);
                 hole.lineTo(xShift + -(shelfWidth/2),  yShift +  shelfHeight, shelfDepth/2);

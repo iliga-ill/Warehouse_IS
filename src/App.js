@@ -10,6 +10,7 @@ import StorekeeperInventory from './pages/StorekeeperInventory/StorekeeperInvent
 import ManagerProducts from './pages/ManagerProducts/ManagerProducts';
 import Authorization from './pages/Authorization/Authorization';
 import AdministratorAccounts from './pages/AdministratorAccounts/AdministratorAccounts';
+import AdministratorRackCreating from './pages/AdministratorRackCreating/AdministratorRackCreating';
 import ManagerOrderCreation from './pages/ManagerOrderCreation/ManagerOrderCreation';
 import ManagerSellOrders from './pages/ManagerSellOrders/ManagerSellOrders';
 import ManagerShipmentOrders from './pages/ManagerShipmentOrders/ManagerShipmentOrders';
@@ -42,28 +43,29 @@ const mainTabsArray = [
 
 const subTabsArray = [
   [
-    {title: "Приход",               roleHref:"/Storekeeper",    href:"/StorekeeperAdvent", basicHref:"/Current"},
-    {title: "Расход",               roleHref:"/Storekeeper",    href:"/StorekeeperExpend", basicHref:"/Current"},
-    {title: "Расстановка товаров",  roleHref:"/Storekeeper",    href:"/StorekeeperAllocation", basicHref:""},
-    {title: "Инвентаризация",       roleHref:"/Storekeeper",    href:"/StorekeeperInventory", basicHref:""},
-    {title: "Виртуальный склад",    roleHref:"/Storekeeper",    href:"/StorekeeperVirtualWarehouse", basicHref:""},
+    {title: "Приход",                     roleHref:"/Storekeeper",    href:"/StorekeeperAdvent", basicHref:"/Current"},
+    {title: "Расход",                     roleHref:"/Storekeeper",    href:"/StorekeeperExpend", basicHref:"/Current"},
+    {title: "Расстановка товаров",        roleHref:"/Storekeeper",    href:"/StorekeeperAllocation", basicHref:""},
+    {title: "Инвентаризация",             roleHref:"/Storekeeper",    href:"/StorekeeperInventory", basicHref:""},
+    {title: "Виртуальный склад",          roleHref:"/Storekeeper",    href:"/StorekeeperVirtualWarehouse", basicHref:""},
   ],[
-    {title: "Товары",               roleHref:"/Manager",        href:"/ManagerProducts", basicHref:""},
-    {title: "Создание заказа",      roleHref:"/Manager",        href:"/ManagerOrderCreation", basicHref:""},
-    {title: "Заказы на продажу",    roleHref:"/Manager",        href:"/ManagerSellOrders", basicHref:"/Current"},
-    {title: "Заказы на поставку",   roleHref:"/Manager",        href:"/ManagerShipmentOrders", basicHref:"/Current"},
-    {title: "Счета на оплату",      roleHref:"/Manager",        href:"/ManagerBills", basicHref:"/NewAccounts"},
+    {title: "Товары",                     roleHref:"/Manager",        href:"/ManagerProducts", basicHref:""},
+    {title: "Создание заказа",            roleHref:"/Manager",        href:"/ManagerOrderCreation", basicHref:""},
+    {title: "Заказы на продажу",          roleHref:"/Manager",        href:"/ManagerSellOrders", basicHref:"/Current"},
+    {title: "Заказы на поставку",         roleHref:"/Manager",        href:"/ManagerShipmentOrders", basicHref:"/Current"},
+    {title: "Счета на оплату",            roleHref:"/Manager",        href:"/ManagerBills", basicHref:"/NewAccounts"},
   ],[
-    {title: "Заказы",               roleHref:"/Logistician",    href:"/LogisticianOrders", basicHref:"/Current"},
-    {title: "Товары",               roleHref:"/Logistician",    href:"/LogisticianProducts", basicHref:""},
-    {title: "Счета на оплату",      roleHref:"/Logistician",    href:"/LogisticianBills", basicHref:"/NewAccounts"},
+    {title: "Заказы",                     roleHref:"/Logistician",    href:"/LogisticianOrders", basicHref:"/Current"},
+    {title: "Товары",                     roleHref:"/Logistician",    href:"/LogisticianProducts", basicHref:""},
+    {title: "Счета на оплату",            roleHref:"/Logistician",    href:"/LogisticianBills", basicHref:"/NewAccounts"},
   ],[
-    {title: "Товары",               roleHref:"/Accountant",     href:"/AccountantProducts", basicHref:""},
-    {title: "Накладные",            roleHref:"/Accountant",     href:"/AccountantInvoice", basicHref:"/Current"},
-    {title: "Отчеты",               roleHref:"/Accountant",     href:"/AccountantReports", basicHref:"/SelledProducts"},
-    {title: "Счета на оплату",      roleHref:"/Accountant",     href:"/AccountantAccounts", basicHref:"/NewAccounts"},
+    {title: "Товары",                     roleHref:"/Accountant",     href:"/AccountantProducts", basicHref:""},
+    {title: "Накладные",                  roleHref:"/Accountant",     href:"/AccountantInvoice", basicHref:"/Current"},
+    {title: "Отчеты",                     roleHref:"/Accountant",     href:"/AccountantReports", basicHref:"/SelledProducts"},
+    {title: "Счета на оплату",            roleHref:"/Accountant",     href:"/AccountantAccounts", basicHref:"/NewAccounts"},
   ],[
-    {title: "Аккаунты",             roleHref:"/Administrator",  href:"/AdministratorAccounts", basicHref:""},
+    {title: "Аккаунты",                   roleHref:"/Administrator",  href:"/AdministratorAccounts", basicHref:""},
+    {title: "Создание элементов склада",  roleHref:"/Administrator",  href:"/AdministratorCreating", basicHref:"/RackCreating"},
   ]
 ]
 
@@ -90,6 +92,10 @@ const supportTabsArray = [
     {title: "Окупаемость товаров",  roleHref:"/Accountant",     subHref:"/AccountantReports",     supportHref:"/PaybackOfGoods"},
     {title: "Новые счета",          roleHref:"/Accountant",     subHref:"/AccountantAccounts",    supportHref:"/NewAccounts"},
     {title: "Закрытые счета",       roleHref:"/Accountant",     subHref:"/AccountantAccounts",    supportHref:"/ClosedAccounts"},
+
+    {title: "Создание зоны",       roleHref:"/Administrator",     subHref:"/AdministratorCreating",    supportHref:"/RackCreating"},
+    {title: "Создание стеллажа",   roleHref:"/Administrator",     subHref:"/AdministratorCreating",    supportHref:"/GoodCreating"},
+    {title: "Создание товара",     roleHref:"/Administrator",     subHref:"/AdministratorCreating",    supportHref:"/ZoneCreating"},
 ]
 
 
@@ -213,6 +219,9 @@ export default function App() {
           <Route path="/Accountant/AccountantAccounts/ClosedAccounts" element={wrapErrorBoundary(<AccountantAccounts isCurrent={false}/>)}/>
 
           <Route path="/Administrator/AdministratorAccounts" element={wrapErrorBoundary(<AdministratorAccounts/>)}/>
+          <Route path="/Administrator/AdministratorCreating/RackCreating" element={wrapErrorBoundary(<AdministratorRackCreating/>)}/>
+          {/* <Route path="/Administrator/AdministratorCreating/GoodCreating" element={wrapErrorBoundary(<AdministratorGoodCreating/>)}/>
+          <Route path="/Administrator/AdministratorCreating/ZoneCreating" element={wrapErrorBoundary(<AdministratorZoneCreating/>)}/> */}
           
           <Route path="/Profile" element={wrapErrorBoundary(<Profile cookies={cookies}/>)}/>
           <Route path="/Home" element={wrapErrorBoundary(<Home cookies={cookies}/>)}/>
