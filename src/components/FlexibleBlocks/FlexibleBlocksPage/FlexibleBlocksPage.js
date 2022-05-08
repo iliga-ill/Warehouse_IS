@@ -23,7 +23,7 @@ export default function FlexibleBlocksPage(props){
     )
 
     return (
-        <div style={pageStyle} id={props.Id}>
+        <div style={pageStyle}>
             {props.children}
         </div>
     )

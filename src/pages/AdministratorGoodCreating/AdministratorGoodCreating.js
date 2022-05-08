@@ -3,9 +3,10 @@ import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/Flexibl
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
 import InputText from "../../components/InputText/InputText";
 import InputColor from 'react-input-color';
+import InputTextArea from "../../components/InputTextArea/InputTextArea";
 
 import { React, Component, Fragment } from "react";
-import './AdministratorRackCreating.css';
+import './AdministratorGoodCreating.css';
 import * as THREE from 'three';
 import { MapControls, OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import ModelCreator from "../../classes/ModelCreator.js";
@@ -157,71 +158,61 @@ function setModelOnCoordinates(model, coordinates, inObjects){
     if (inObjects) objects.push( voxel );
 }
 
-class AdministratorRackCreating extends Component {
+class AdministratorGoodCreating extends Component {
 
     constructor(props){
         super(props)
         this.state = {
-            reload:0,
-            racks:[
-                {id: 0, text: "Стеллаж 1"},
-                {id: 1, text: "Стеллаж 2"},
-                {id: 2, text: "Стеллаж 3"},
+            goods:[
+                {id: 0, text: "Товар 1"},
+                {id: 1, text: "Товар 2"},
+                {id: 2, text: "Товар 3"},
             ],
-            selRack:{id: 0, text: "Стеллаж 1"},
-            depth:50,
-            shelfWidth:50,
-            shelfHeight:50,
-            columsAmount:4,
-            rowsAmount:3,
-            borderWidth:2,
+            selGood:{id: 0, text: "Товар 1"},
+            goodName:"Варочная поверхность Bosch PKE 645 B17E",
+            depth:16,
+            width:16,
+            height:16,
             color:{a: 100, b: 170, g: 90, h: 275, hex: "#885aaa", r: 136, rgba: "rgba(136,90,170,1)", s: 47, v: 67},
             translationX:0,
-            translationY:0,
-            translationZ:-50/2,
-            liftingCapacity:50
+            translationY:8,
+            translationZ:0,
         }
     }
 
-    setReload = ()=>{this.setState({reload: this.state.reload+1});}
-    setRacks = (value)=>{this.setState({racks: value});}
-    setRack = (value)=>{this.setState({selRack: value});}
+    setGoods = (value)=>{this.setState({goods: value});}
+    setSelGood = (value)=>{this.setState({selGood: value});}
+    setGoodName = (value)=>{this.setState({goodName: value});}
     setDepth = (value)=>{this.setState({depth: Number(value)});}
-    setShelfWidth = (value)=>{this.setState({shelfWidth: Number(value)});}
-    setShelfHeight = (value)=>{this.setState({shelfHeight: Number(value)});}
-    setColumsAmount = (value)=>{this.setState({columsAmount: Number(value)});}
-    setRowsAmount = (value)=>{this.setState({rowsAmount: Number(value)});}
-    setBorderWidth = (value)=>{this.setState({borderWidth: Number(value)});}
+    setWidth = (value)=>{this.setState({width: Number(value)});}
+    setHeight = (value)=>{this.setState({height: Number(value)});}
     setColor = (value)=>{this.setState({color: value});}
     setTranslationX = (value)=>{this.setState({translationX: Number(value)});}
     setTranslationY = (value)=>{this.setState({translationY: Number(value)});}
     setTranslationZ = (value)=>{this.setState({translationZ: Number(value)});}
-    setLiftingCapacity = (value)=>{this.setState({liftingCapacity: Number(value)});}
+    
 
 
     componentDidMount(){
         var manager = new THREE.LoadingManager();
         manager.onLoad = () => { // when all resources are loaded
             init(
-                this.state.shelfWidth*this.state.columsAmount + this.state.borderWidth*(this.state.columsAmount+1), 
+                this.state.width, 
                 this.state.depth, 
-                this.state.shelfHeight*this.state.rowsAmount + this.state.borderWidth*(this.state.rowsAmount+1)
+                this.state.height
             )
             render()
-            model = modelCreator.createRack(
+            model = modelCreator.createCube(
                 "Модель", 
                 this.state.color.rgba, 
-                this.state.shelfWidth, 
-                this.state.shelfHeight, 
-                this.state.depth, 
-                this.state.columsAmount, 
-                this.state.rowsAmount, 
-                this.state.borderWidth, 
+                this.state.width, 
+                this.state.height, 
+                this.state.depth,
                 new Vector3(0,0,0),
             )
             setModelOnCoordinates(
-                model, 
-                new Vector3(this.state.translationX,this.state.translationY,this.state.translationZ), 
+                model,
+                new Vector3(this.state.translationX,this.state.translationY,this.state.translationZ),
                 true
             )
             render()
@@ -239,28 +230,23 @@ class AdministratorRackCreating extends Component {
     componentWillUnmount() {clearInterval(this.timerID);}
 
     updateModel = ()=>{
-        let shelfWidth = (this.state.shelfWidth*this.state.columsAmount + this.state.borderWidth*(this.state.columsAmount+1)) 
-        let shelfDepth = this.state.depth
         scene.children.map(obj=>{
             if (obj.type == "GridHelper"){
                 scene.remove( obj );
                 objects.splice( objects.indexOf( obj ), 1 );
-                const gridHelper = new THREE.GridHelper( Math.max(shelfWidth, shelfDepth), Math.max(shelfWidth, shelfDepth) );
+                const gridHelper = new THREE.GridHelper( Math.max(this.state.width, this.state.depth), Math.max(this.state.width, this.state.depth) );
                 gridHelper.name = "GridHelper"
                 scene.add( gridHelper );
             }
             if (obj.name == "Модель"){
                 scene.remove( obj );
                 objects.splice( objects.indexOf( obj ), 1 );
-                model = modelCreator.createRack(
+                model = modelCreator.createCube(
                     "Модель", 
                     this.state.color.rgba, 
-                    this.state.shelfWidth, 
-                    this.state.shelfHeight, 
-                    this.state.depth, 
-                    this.state.columsAmount, 
-                    this.state.rowsAmount, 
-                    this.state.borderWidth, 
+                    this.state.width, 
+                    this.state.height, 
+                    this.state.depth,
                     new Vector3(0,0,0),
                 )
                 setModelOnCoordinates(
@@ -275,13 +261,13 @@ class AdministratorRackCreating extends Component {
     }
 
     btn_send_1=()=> {
-        this.state.racks.push(
+        this.state.goods.push(
             {
-                id: (Number(this.state.racks[this.state.racks.length - 1].id) + 1),
-                text: `Стеллаж ${Number(this.state.racks[this.state.racks.length - 1].text.split(" ")[1])+1}`, 
+                id: (Number(this.state.goods[this.state.goods.length - 1].id) + 1),
+                text: `Товар ${Number(this.state.goods[this.state.goods.length - 1].text.split(" ")[1])+1}`, 
             }
         )
-        this.setRack(this.state.racks[this.state.racks.length-1])
+        this.setSelGood(this.state.goods[this.state.goods.length-1])
     }
 
     btn_send_2=()=> {
@@ -290,41 +276,35 @@ class AdministratorRackCreating extends Component {
 
     render(){
         return (
-            <div id = "pageWrap">
+            <>
             <FlexibleBlocksPage>
                 <FlexibleBlock>
-                    <ListWithSearch item_list={this.state.racks} selItem={this.state.selRack} func={this.setRack} width={"200px"} height={"390px"}/>
+                    <ListWithSearch item_list={this.state.goods} selItem={this.state.selGood} func={this.setSelGood} width={"200px"} height={"390px"}/>
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div class="header_text">Настройка</div>
-                    <InputText styles = "row_with_item_wide" Id={0}  label="Глубина&nbsp;полки&nbsp;(см)&nbsp;"            placeholder="глубина полки"          defValue={this.state.depth}            set={this.setDepth}/> 
-                    <InputText styles = "row_with_item_wide" Id={1}  label="Ширина&nbsp;полки&nbsp;(см)&nbsp;"             placeholder="ширина полки"           defValue={this.state.shelfWidth}       set={this.setShelfWidth}/> 
-                    <InputText styles = "row_with_item_wide" Id={2}  label="Высота&nbsp;полки&nbsp;(см)&nbsp;"             placeholder="высота полки"           defValue={this.state.shelfHeight}      set={this.setShelfHeight}/> 
-                    <InputText styles = "row_with_item_wide" Id={3}  label="Количество&nbsp;столбцов&nbsp;"                placeholder="кол-во столбцов"        defValue={this.state.columsAmount}     set={this.setColumsAmount}/> 
-                    <InputText styles = "row_with_item_wide" Id={4}  label="Количество&nbsp;рядов&nbsp;"                   placeholder="кол-во рядов"           defValue={this.state.rowsAmount}       set={this.setRowsAmount}/> 
-                    <InputText styles = "row_with_item_wide" Id={5}  label="Толщина&nbsp;стенки&nbsp;(см)&nbsp;"           placeholder="толщина стенки"         defValue={this.state.borderWidth}      set={this.setBorderWidth}/> 
-                    <div class = "low_text row_with_item_wide">
-                        <div>Цвет&nbsp;стеллажа:&nbsp;</div>
-                        <InputColor initialValue={this.state.color.hex} onChange={this.setColor} placement="right"/>
-                    </div>
-                    <InputText styles = "row_with_item_wide" Id={7}  label="Смещение&nbsp;по&nbsp;x&nbsp;"                 placeholder="смещение по x"          defValue={this.state.translationX}     set={this.setTranslationX}/> 
-                    <InputText styles = "row_with_item_wide" Id={8}  label="Смещение&nbsp;по&nbsp;y&nbsp;"                 placeholder="смещение по y"          defValue={this.state.translationY}     set={this.setTranslationY}/> 
-                    <InputText styles = "row_with_item_wide" Id={9}  label="Смещение&nbsp;по&nbsp;z&nbsp;"                 placeholder="смещение по z"          defValue={this.state.translationZ}     set={this.setTranslationZ}/> 
-                    <InputText styles = "row_with_item_wide" Id={10} label="Грузоподьемность&nbsp;полки&nbsp;(кг)&nbsp;"   placeholder="грузоподьемность полки" defValue={this.state.liftingCapacity}  set={this.setLiftingCapacity}/> 
+                    <InputTextArea styles = "" Id={0} label="Название&nbsp;товара&nbsp;:" placeholder="название товара" set={this.setGoodName} defValue={this.state.goodName}/>
+                    <InputText styles = "row_with_item_wide" Id={1}  label="Ширина&nbsp;товара&nbsp;(см)&nbsp;"     placeholder="ширина товара"         defValue={this.state.width}             set={this.setWidth}/> 
+                    <InputText styles = "row_with_item_wide" Id={2}  label="Глубина&nbsp;товара&nbsp;(см)&nbsp;"    placeholder="глубина товара"        defValue={this.state.depth}             set={this.setDepth}/> 
+                    <InputText styles = "row_with_item_wide" Id={3}  label="Высота&nbsp;товара&nbsp;(см)&nbsp;"     placeholder="высота товара"         defValue={this.state.height}            set={this.setHeight}/> 
+                    <div class = "low_text row_with_item_wide"><div>Цвет&nbsp;товара:&nbsp;</div><InputColor initialValue={this.state.color.hex} onChange={this.setColor} placement="right"/></div>
+                    <InputText styles = "row_with_item_wide" Id={4}  label="Смещение&nbsp;по&nbsp;x&nbsp;"          placeholder="смещение по x"         defValue={this.state.translationX}      set={this.setTranslationX}/> 
+                    <InputText styles = "row_with_item_wide" Id={5}  label="Смещение&nbsp;по&nbsp;y&nbsp;"          placeholder="смещение по y"         defValue={this.state.translationY}      set={this.setTranslationY}/> 
+                    <InputText styles = "row_with_item_wide" Id={6}  label="Смещение&nbsp;по&nbsp;z&nbsp;"          placeholder="смещение по z"         defValue={this.state.translationZ}      set={this.setTranslationZ}/> 
                     <div></div>
-                    <button class="bt_send_AdministratorRackCreating1" onClick={this.btn_send_1}>Создать новую полку</button>
-                    <div class="place_holder_AdministratorRackCreating"/><button class="bt_send_AdministratorRackCreating2" onClick={this.btn_send_2}>Сохранить</button>
+                    <button class="bt_send_AdministratorGoodCreating1" onClick={this.btn_send_1}>Создать новый товар</button>
+                    <div class="place_holder_AdministratorGoodCreating"/><button class="bt_send_AdministratorGoodCreating2" onClick={this.btn_send_2}>Сохранить</button>
                 </FlexibleBlock>
                 <FlexibleBlock>
-                    <div class="header_text">Стеллаж</div>
+                    <div class="header_text">Товар</div>
                     <div id="warehouseSceneWrap">
                         <div id="warehouseScene"  style={{border: "1px solid #ccc", width:"min-content"}} onContextMenu={(e)=> e.preventDefault()}/>
                     </div>
                 </FlexibleBlock>
             </FlexibleBlocksPage>
-        </div>
+        </>
         )
     }
 }
 
-export default AdministratorRackCreating
+export default AdministratorGoodCreating

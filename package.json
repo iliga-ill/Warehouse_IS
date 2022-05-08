@@ -32,6 +32,7 @@
     "react-dom": "^16.14.0",
     "react-favicon": "^1.0.0",
     "react-font-loader": "^2.0.0",
+    "react-input-color": "^4.0.0",
     "react-jsx": "^1.0.0",
     "react-phone-input-2": "^2.15.0",
     "react-router-dom": "^6.2.2",

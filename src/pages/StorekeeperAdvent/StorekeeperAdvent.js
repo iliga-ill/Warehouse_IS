@@ -32,8 +32,8 @@ export default function StorekeeperAdvent(props){
 //#region блоки
     //-------------------------------------------------------------------------Блок 1
    
-    var list_with_search_width = "200px"
-    var list_with_search_height = "335px"
+    const list_with_search_width = "200px"
+    const list_with_search_height = "335px"
     
      // {id: 0, text: "Заказ №1143", selected: false},
         // {id: 0, text: "Заказ №1346", selected: false},
@@ -51,19 +51,16 @@ export default function StorekeeperAdvent(props){
         // {id: 0, text: "Заказ №6566", selected: false},
 
     const [orders, setOrders] = React.useState([])
+    const [selOrder, setSelOrder] = React.useState(undefined)
 
     React.useEffect(() => {
         apiGetGoodsByShipmentOrder()
-    }, [orders]);
-
-    function setOrdersForced(value){
-        setOrders(value)
-        apiGetGoodsByShipmentOrder()
-    }
+    }, [selOrder]);
 
     async function apiGetShipmentOrders() {
         var order = await api.getShipmentOrders('sell', 'opened')
-        setOrders(order)
+        order.map(item=>{orders.push(item)})
+        setSelOrder(order[0])
     }
     //-------------------------------------------------------------------------Блок 1 конец
 
@@ -167,16 +164,8 @@ export default function StorekeeperAdvent(props){
     
 
     async function apiGetGoodsByShipmentOrder() {
-        var order = ''
-        orders.forEach(element => {
-          if (element.selected == true) order = element
-        });
-
-        console.log("order.code")
-        console.log(order.code)
-  
-        if (order != ''){
-            var buffer = await api.getGoodsByShipmentOrder(order, goodsType, goodsCategories2, goodsCategories3)
+        if (selOrder != undefined){
+            var buffer = await api.getGoodsByShipmentOrder(selOrder, goodsType, goodsCategories2, goodsCategories3)
             setTableList(buffer)
         }
     }
@@ -330,9 +319,9 @@ async function apiUpdateOrderGoods(value) {
 
     return (
         <>
-            <FlexibleBlocksPage Id={getId()}>
+            <FlexibleBlocksPage>
                 <FlexibleBlock>
-                    <ListWithSearch Id={getId()} item_list={orders} func={setOrdersForced} width={list_with_search_width} height={list_with_search_height}/>
+                    <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={list_with_search_width} height={list_with_search_height}/>
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div class="header_text">Прием товаров</div>

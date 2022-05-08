@@ -34,12 +34,16 @@ export default function StorekeeperExpend(props){
     var list_with_search_height = "335px"
 
     const [orders, setOrders] = React.useState([])
+    const [selOrder, setSelOrder] = React.useState(undefined)
+
     React.useEffect(() => {
         if (orders.length>0) apiGetGoodsByShipmentOrder(goodsType, goodsCategories2, goodsCategories3)
-    }, [orders]);
+    }, [selOrder]);
+
     async function apiGetShipmentOrders() {
         var order = await api.getShipmentOrders()
-        setOrders(order)
+        order.map(item=>{orders.push(item)})
+        setSelOrder(order[0])
     }
     //-------------------------------------------------------------------------Блок 1 конец
 
@@ -98,13 +102,8 @@ export default function StorekeeperExpend(props){
     const [tableList, setTableList] = React.useState([])
     
     async function apiGetGoodsByShipmentOrder() {
-        var order = ''
-        orders.forEach(element => {
-          if (element.selected == true) order = element
-        });
-    
-        if (order != ''){
-            var buffer = await api.getGoodsByShipmentOrder(order, goodsType, goodsCategories2, goodsCategories3)
+        if (selOrder != undefined){
+            var buffer = await api.getGoodsByShipmentOrder(selOrder, goodsType, goodsCategories2, goodsCategories3)
             setTableList(buffer)
         }  
     }
@@ -223,9 +222,9 @@ export default function StorekeeperExpend(props){
 
     return (
         <>
-            <FlexibleBlocksPage Id={getId()}>
+            <FlexibleBlocksPage>
                 <FlexibleBlock>
-                    <ListWithSearch Id={getId()} item_list={orders} func={setOrders} width={list_with_search_width} height={list_with_search_height}/>
+                    <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={list_with_search_width} height={list_with_search_height}/>
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div class="header_text">Списывание товаров</div>

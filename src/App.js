@@ -11,6 +11,8 @@ import ManagerProducts from './pages/ManagerProducts/ManagerProducts';
 import Authorization from './pages/Authorization/Authorization';
 import AdministratorAccounts from './pages/AdministratorAccounts/AdministratorAccounts';
 import AdministratorRackCreating from './pages/AdministratorRackCreating/AdministratorRackCreating';
+import AdministratorGoodCreating from './pages/AdministratorGoodCreating/AdministratorGoodCreating';
+import AdministratorZoneCreating from './pages/AdministratorZoneCreating/AdministratorZoneCreating';
 import ManagerOrderCreation from './pages/ManagerOrderCreation/ManagerOrderCreation';
 import ManagerSellOrders from './pages/ManagerSellOrders/ManagerSellOrders';
 import ManagerShipmentOrders from './pages/ManagerShipmentOrders/ManagerShipmentOrders';
@@ -93,9 +95,9 @@ const supportTabsArray = [
     {title: "Новые счета",          roleHref:"/Accountant",     subHref:"/AccountantAccounts",    supportHref:"/NewAccounts"},
     {title: "Закрытые счета",       roleHref:"/Accountant",     subHref:"/AccountantAccounts",    supportHref:"/ClosedAccounts"},
 
-    {title: "Создание зоны",       roleHref:"/Administrator",     subHref:"/AdministratorCreating",    supportHref:"/RackCreating"},
-    {title: "Создание стеллажа",   roleHref:"/Administrator",     subHref:"/AdministratorCreating",    supportHref:"/GoodCreating"},
-    {title: "Создание товара",     roleHref:"/Administrator",     subHref:"/AdministratorCreating",    supportHref:"/ZoneCreating"},
+    {title: "Создание зоны",       roleHref:"/Administrator",     subHref:"/AdministratorCreating",    supportHref:"/ZoneCreating"},
+    {title: "Создание стеллажа",   roleHref:"/Administrator",     subHref:"/AdministratorCreating",    supportHref:"/RackCreating"},
+    {title: "Создание товара",     roleHref:"/Administrator",     subHref:"/AdministratorCreating",    supportHref:"/GoodCreating"},
 ]
 
 
@@ -171,7 +173,7 @@ export default function App() {
   
   if (cookies.access_token !== undefined){
     return (
-      <>
+      <div id = "allPageWrap">
         <div className="header">
           <div className="homePage" onClick={()=>{navigate("/Home")}}>
             <img src={WarehouseISicon} className="homeIcon"/>
@@ -220,13 +222,13 @@ export default function App() {
 
           <Route path="/Administrator/AdministratorAccounts" element={wrapErrorBoundary(<AdministratorAccounts/>)}/>
           <Route path="/Administrator/AdministratorCreating/RackCreating" element={wrapErrorBoundary(<AdministratorRackCreating/>)}/>
-          {/* <Route path="/Administrator/AdministratorCreating/GoodCreating" element={wrapErrorBoundary(<AdministratorGoodCreating/>)}/>
-          <Route path="/Administrator/AdministratorCreating/ZoneCreating" element={wrapErrorBoundary(<AdministratorZoneCreating/>)}/> */}
+          <Route path="/Administrator/AdministratorCreating/GoodCreating" element={wrapErrorBoundary(<AdministratorGoodCreating/>)}/>
+          <Route path="/Administrator/AdministratorCreating/ZoneCreating" element={wrapErrorBoundary(<AdministratorZoneCreating/>)}/>
           
           <Route path="/Profile" element={wrapErrorBoundary(<Profile cookies={cookies}/>)}/>
           <Route path="/Home" element={wrapErrorBoundary(<Home cookies={cookies}/>)}/>
         </Routes>
-      </>
+      </div>
     );
   } else {
     return <Authorization setCookie={setCookie}/> 

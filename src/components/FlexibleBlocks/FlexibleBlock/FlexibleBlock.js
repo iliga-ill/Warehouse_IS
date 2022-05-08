@@ -3,12 +3,12 @@ import './FlexibleBlock.css';
 
 export default function FlexibleBlock(props){
     return (
-            <div class = "block">
-                <div class = "block_wrap darkgray">
-                    <div class = "pl pr">
-                        <div class="placeholder"/>
+            <div className = "block">
+                <div className = "block_wrap darkgray">
+                    <div className = "pl pr">
+                        <div className="placeholder"/>
                         {props.children}
-                        <div class="placeholder"/>
+                        <div className="placeholder"/>
                     </div>
                 </div>
             </div>

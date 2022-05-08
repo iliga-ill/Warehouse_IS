@@ -639,7 +639,7 @@ function warehouseGeneration(warehouseSettings, racksType){
         //zones
     warehouseSettings.zones.map(zone=>{
         let zoneType = zonesType[`zone_${zone.zoneTypeId}`]
-        let zoneBorderModel = modelCreator.createZoneBorder(zone.name, zoneType.color, zoneType.width, zoneType.length, 1, zoneType.chamferLendth, zone.message, zone.messageAlighment, font, zone.textSize, zone.gapLengthX, zone.gapLengthY, new Vector3(0,0,0))
+        let zoneBorderModel = modelCreator.createZoneBorder(zone.name, zoneType.color, zoneType.width, zoneType.length, zoneType.lineWidth, zoneType.chamferLendth, zoneType.message, zoneType.messageAlighment, font, zoneType.textSize, zoneType.gapLengthX, zoneType.gapLengthY, new Vector3(0,0,0))
         zoneBorderModel.mesh = auxMath.rotateMeshOnAllAxis(zoneBorderModel.mesh, zone.rotation)
         let zoneCenterGlobalCoordinate = zone.centerPoint
         setModelOnCoordinates(zoneBorderModel, zoneCenterGlobalCoordinate, false)
