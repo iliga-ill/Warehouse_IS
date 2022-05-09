@@ -1,0 +1,7 @@
+.SideBlockHov {
+    background-color:rgba(125, 203, 255, 100);
+}
+
+.SideBlockHov:hover{
+    background-color:rgba(3, 154, 255, 100);
+}

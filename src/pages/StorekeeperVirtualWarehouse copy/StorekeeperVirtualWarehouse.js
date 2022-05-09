@@ -4,7 +4,6 @@ import * as THREE from 'three';
 import { MapControls, OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import SideBlock from "../../components/SideBlock/SideBlock";
 import UniversalTabHolder from '../../components/TabHolders/UniversalTabHolder/UniversalTabHolder';
-import { TableComponent } from "../../components/Table/TableComponent";
 
 import DropdownListWithModels from "../../components/DropdownListWithModels/DropdownListWithModels";
 import ModelCreator from "../../classes/ModelCreator.js";
@@ -31,9 +30,6 @@ let zonesType = warehouseSettingsModel.getZonesType()
 let racksType = warehouseSettingsModel.getRacksType()
 let goodsType = warehouseSettingsModel.getGoodsType()
 let warehouseSettings = warehouseSettingsModel.getWarehouseSettings()
-
-let page
-
 
 
 //#region Scene settings -------------------------------------------------
@@ -75,7 +71,6 @@ let hintLockedModels = [""] //models locked for creating hint fore them
 
 let hintModel = undefined; //currently placed hint model
 let model = undefined; //currently placed model
-let selectedModel = undefined; //currently placed model
 
 let viewMod = "observasion" //observasion, first-person /change mode of viewing
 let controls
@@ -427,6 +422,14 @@ function onKeyPressed(){
     }
     if (pressedKeys.includes(65)){// a
         if (viewMod == "first-person" && lookedPoint!=undefined) {
+            // let point = getPointPerpendicularToLine(lookedPoint, camera.position, new Vector3(10,0,0))
+
+            // var vector = point.multiplyScalar( player.speed/1000, 1, player.speed/1000 );
+            // camera.position.x += vector.x;
+            // //camera.position.y += vector.y;
+            // camera.position.z += vector.z;
+            // lookedPoint.x += vector.x
+            // lookedPoint.z += vector.z
             let point = new Vector3(lookedPoint.x, camera.position.y, lookedPoint.z )
             var distinct = auxMath.rotatePointAroundAxis(
                 point, 
@@ -492,6 +495,23 @@ function createHint(){
         scene.remove(hintModel.mesh)
         hintModel = undefined
     }
+    
+    // if (editingMod == "adding") {
+    //     hintModel = {
+    //         name: "Hint", 
+    //         modelName: "Hint",
+    //         material: new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } ), 
+    //         geometry: model.geometry, 
+    //         mesh: new THREE.Mesh( 
+    //             model.geometry, 
+    //             new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } )
+    //         ), 
+    //         translation: model.translation,
+    //     }
+    //     hintModel.mesh.visible = false
+    //     scene.add( hintModel.mesh );
+    // }
+    // if (editingMod == "deleting") {
     pointer.set(getScreenX(lastX), getScreenY(lastY));
     raycaster.setFromCamera( pointer, camera );
     const intersects = raycaster.intersectObjects( objects );
@@ -546,11 +566,20 @@ function animateHint() {
         
         hintModel.mesh.position.copy( intersect.point ).add( intersect.face.normal );
         hintModel.mesh.position.divideScalar(1).floor().multiplyScalar(1).addScalar( 1 );
-        hintModel.mesh.position.set(
-            intersect.object.position.x, 
-            intersect.object.position.y, 
-            intersect.object.position.z
-        )
+        // if (editingMod == "adding"){
+        //     hintModel.mesh.position.set(
+        //         hintModel.mesh.position.x + hintModel.translation.x, 
+        //         hintModel.mesh.position.y + hintModel.translation.y, 
+        //         hintModel.mesh.position.z + hintModel.translation.z
+        //     )
+        // }
+        // if (editingMod == "deleting"){
+            hintModel.mesh.position.set(
+                intersect.object.position.x, 
+                intersect.object.position.y, 
+                intersect.object.position.z
+            )
+        // }
         hintModel.mesh.visible = true
         scene.add( hintModel.mesh );
     } 
@@ -564,42 +593,32 @@ function onPointerDown( event ) {
     raycaster.setFromCamera( pointer, camera );
     const intersects = raycaster.intersectObjects( objects );
     
-    if (intersects.length > 0 && hintModel!=undefined) {
+    if (intersects.length > 0) {
         const intersect = intersects[0];
 
-        scene.remove(selectedModel)
-        //objects.remove(selectedModel)
-        selectedModel = undefined
-              
-        const voxel = new THREE.Mesh( hintModel.geometry, hintModel.material);
-        voxel.position.copy( intersect.point ).add( intersect.face.normal );
-        voxel.position.divideScalar( 1 ).floor().multiplyScalar( 1 ).addScalar( 1 );
-        voxel.position.set(
-            intersect.object.position.x, 
-            intersect.object.position.y, 
-            intersect.object.position.z)
-        voxel.name = model.name;
-        scene.add( voxel );
-        //objects.push( voxel );
-        selectedModel = voxel
-        
-        // {name: 'number',    title:'№',              editingEnabled:false,   width:40    }, 
-        // {name: 'goodsType', title:'Наименование',   editingEnabled:false,   width:350   }, 
-        // {name: 'weight',    title:'Вес',            editingEnabled:false,   width:100   }, 
 
-        let shelfSpace = intersect.object.userData.space.map(
-        function(good,i){
-            let buf = good
-            buf.id = i
-            buf.number = i+1
-            buf.goodsType = good.name
-            buf.weight = good.weight
-            return buf
-        })
 
-        page.setState({tableList: shelfSpace});
-        //page.flickPanel()
+        //event.button === 2
+        // if (editingMod == "deleting" && !selectionLockedModels.includes(intersect.object.name)) {
+        //     if ( intersect.object !== plane ) {
+        //         scene.remove( intersect.object );
+        //         objects.splice( objects.indexOf( intersect.object ), 1 );
+        //     }
+        // }
         
+        // if (editingMod == "adding") {        
+        //     const voxel = new THREE.Mesh(model.geometry, model.material)
+        //     voxel.position.copy( intersect.point ).add( intersect.face.normal );
+        //     voxel.position.divideScalar( 1 ).floor().multiplyScalar( 1 ).addScalar( 1 );
+        //     voxel.position.set(
+        //         voxel.position.x + model.translation.x, 
+        //         voxel.position.y + model.translation.y, 
+        //         voxel.position.z + model.translation.z)
+        //     voxel.name = model.name;
+        //     scene.add( voxel );
+        //     objects.push( voxel );
+        // }
+
         render();
     }
 }
@@ -695,18 +714,17 @@ function warehouseGeneration(warehouseSettings, racksType){
 
 class StorekeeperVirtualWarehouse extends Component {
 
-    isSideBlockOpened = false
+    
 
     // componentWillMount(){
     //     sideBlock = new SideBlock({onRightClosed:"100px", onRightOpened:"0px", styles:{top:"50px",width:"150px", height:"max-content"}})
     // }
     constructor(props){
         super(props)
-        page = this
         this.state={
             tabs:[
                 {id:0, title:"Вид", func:()=>{onChangeViewMode()}, selection:false, style:{fontSize:"15px", height:"20px"}},
-                // {id:1, title:"Тест панельки", func:()=>{this.flickPanel()}, selection:false, style:{fontSize:"15px", height:"20px"}}
+                {id:1, title:"Тест панельки", func:()=>{this.setState({isSideBlockOpened: !this.state.isSideBlockOpened});}, selection:false, style:{fontSize:"15px", height:"20px"}}
             ],
             selTab:{id:0, title:"Модели", func:()=>{}},
             panelTabs:[
@@ -714,29 +732,13 @@ class StorekeeperVirtualWarehouse extends Component {
                 {id:1, title:"Поиск", func:()=>{}, selection:true, style:{fontSize:"15px", height:"20px"}}
             ],
             panelSelTab:{id:0, title:"Информация", func:()=>{}},
-            isSideBlockOpened:false,
-            tableHeaders:[
-                {name: 'number',    title:'№',              editingEnabled:false,   width:40    }, 
-                {name: 'goodsType', title:'Наименование',   editingEnabled:false,   width:350   }, 
-                {name: 'weight',    title:'Вес',            editingEnabled:false,   width:100   }, 
-            ],
-            tableSettings:{add:false, edit:false, delete:false, select:true},
-            selectedItem:undefined,
-            tableList:[]
+            isSideBlockOpened:true,
         }
     }
-
-    setTableHeaders = (value)=>{this.setState({tableHeaders: value});}
-    setTableList = (value)=>{this.setState({tableList: value});}
-    setSelectedItem = (value)=>{this.setState({selectedItem: value});}
 
     setSelTab = (value)=>{this.setState({selTab: value});}
     setPanelSelTab = (value)=>{this.setState({panelSelTab: value});}
     setIsSideBlockOpened = (value)=>{this.setState({isSideBlockOpened: value});}
-
-    // flickPanel=()=>{
-    //     this.setState({isSideBlockOpened: !this.state.isSideBlockOpened}); this.isSideBlockOpened = !this.isSideBlockOpened
-    // }
     
 
     componentDidMount(){
@@ -766,15 +768,6 @@ class StorekeeperVirtualWarehouse extends Component {
         });
     }
 
-    componentDidUpdate(props){
-        if (this.state.isSideBlockOpened==true)
-            this.setState({isSideBlockOpened: !this.state.isSideBlockOpened})
-        
-
-        console.log("+")
-        //this.setState({selTab: value});
-    }
-
     componentWillUnmount() {
         clearInterval(keyListener);
     }
@@ -788,22 +781,19 @@ class StorekeeperVirtualWarehouse extends Component {
                 
                 <div id="warehouseSceneWrap">
                     <div id="warehouseScene" onContextMenu={(e)=> e.preventDefault()}/>
-                    <SideBlock isOpened={this.isSideBlockOpened} onRightClosed="-497px" onRightOpened="-1px" styles={{top:"100px",width:"500px", height:"100%"}}>
+                    <SideBlock isOpened={this.state.isSideBlockOpened} onRightClosed="-501px" onRightOpened="-1px" styles={{top:"100px",width:"500px", height:"100%"}}>
                         <UniversalTabHolder tabs={this.state.panelTabs} setTab={this.setPanelSelTab} selTab={this.state.panelSelTab}/>
                         {this.state.panelSelTab.id==0&&(
                             <>
-                                <div class="header_text" style={{margin:"5px"}}>Товары на полке</div>
-                                <div style={{width:"min-content", display:'inline-table'}} >
-                                    <TableComponent height={300} columns={this.state.tableHeaders} rows={this.state.tableList} setNewTableList={this.setTableList}  tableSettings={this.state.tableSettings} onSelect={this.setSelectedItem}/>
-                                </div>
+
                             </>
                         )}
                         {this.state.panelSelTab.id==1&&(
                             <>
-                                <a>i'm working2!!</a>
+                            
                             </>
                         )}
-                        
+                        <a>i'm working!!</a>
                     </SideBlock>
                 </div>
 

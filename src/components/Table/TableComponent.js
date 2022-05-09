@@ -252,6 +252,7 @@ export function TableComponent(props) {
 //---------------------------изменение таблицы-------------------------------
   const commitChanges = ({ added, changed, deleted }) => {
     let changedRows;
+    
 
     if (added) {
       const startingAddedId = rows.length > 0 ? rows[rows.length - 1].id + 1 : 0;
@@ -286,6 +287,16 @@ export function TableComponent(props) {
           else changedRows[i].sumCost=0
         })
       }
+      
+      // changedRows.map(function(item,i){
+      //   console.log(`${item.id} == ${startingAddedId}`)
+      //   if (item.id == startingAddedId){
+      //     changedRows[i].editingStatus = "added";
+      //     console.log("+")
+      //   }
+      // })
+      // console.log("changedRows")
+      // console.log(changedRows)
     }
     
     if (changed) {
@@ -310,7 +321,7 @@ export function TableComponent(props) {
       rows.map(row =>{
 
       })
-      console.log(changedRows)
+      
       
       let counter=0
       columns.map(item=>{
@@ -323,6 +334,10 @@ export function TableComponent(props) {
           else changedRows[i].sumCost=0
         })
       }
+      // changedRows.map(function(item,i){
+      //   if (changedRows[i].editingStatus == undefined) 
+      //     changedRows[i].editingStatus = "changed"
+      // })
     }
 
     if (deleted) {
@@ -333,6 +348,7 @@ export function TableComponent(props) {
         changedRows[i].id=i
       })
     }
+    
     setRows(changedRows);
     props.setNewTableList(changedRows)
     
