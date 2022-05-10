@@ -62,7 +62,6 @@ class SideBlock extends Component {
 
         var btnPanel = document.getElementById("SideBlock")
         btnPanel.style.right=this.state.isOpened?this.state.onRightOpened:this.state.onRightClosed
-        console.log("DidUpdate")
     }
 
     setStyles = (value)=>{this.setState({styles: value});}

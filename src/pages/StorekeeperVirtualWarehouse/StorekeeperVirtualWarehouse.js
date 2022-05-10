@@ -5,6 +5,8 @@ import { MapControls, OrbitControls } from 'three/examples/jsm/controls/OrbitCon
 import SideBlock from "../../components/SideBlock/SideBlock";
 import UniversalTabHolder from '../../components/TabHolders/UniversalTabHolder/UniversalTabHolder';
 import { TableComponent } from "../../components/Table/TableComponent";
+import InputText from "../../components/InputText/InputText";
+import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
 
 import DropdownListWithModels from "../../components/DropdownListWithModels/DropdownListWithModels";
 import ModelCreator from "../../classes/ModelCreator.js";
@@ -26,11 +28,6 @@ let colors = new Colors()
 let auxMath = new AuxiliaryMath()
 
 let warehouseSettingsModel = new WarehouseSettingsModel()
-
-let zonesType = warehouseSettingsModel.getZonesType()
-let racksType = warehouseSettingsModel.getRacksType()
-let goodsType = warehouseSettingsModel.getGoodsType()
-let warehouseSettings = warehouseSettingsModel.getWarehouseSettings()
 
 let page
 
@@ -103,7 +100,7 @@ let lookedPoint
 
 //#endregion
 
-function init() { 
+function init(warehouseSettings) { 
     sceneMarginTop = document.getElementById('toolbar').offsetTop + document.getElementById('toolbar').offsetHeight -1
     width =  window.innerWidth
     height = window.innerHeight - sceneMarginTop - 4
@@ -186,9 +183,9 @@ function setListeners(){
     warehouseScene.addEventListener('mousedown', onMouseDown)
     warehouseScene.addEventListener('mouseup', onMouseUp)
 
-    //listener for shift and ctrl and creating model hint
-    document.addEventListener( 'keydown', onDocumentKeyDown );
-    document.addEventListener( 'keyup', onDocumentKeyUp );
+    //connecting key listeners when mouse over scene
+    warehouseScene.addEventListener('mouseover', connectKeyListeners)
+    warehouseScene.addEventListener('mouseout', disconnectKeyListeners)
 
     //listener for resizing
     window.addEventListener( 'resize', onWindowResize );
@@ -205,6 +202,18 @@ function setListeners(){
 
     //panel testing
     //btnPanel.addEventListener('pointerup', onPanel)
+}
+
+function connectKeyListeners(){
+//listener for shift and ctrl and creating model hint
+    document.addEventListener( 'keydown', onDocumentKeyDown );
+    document.addEventListener( 'keyup', onDocumentKeyUp );
+}
+
+function disconnectKeyListeners(){
+    //listener for shift and ctrl and creating model hint
+    document.removeEventListener( 'keydown', onDocumentKeyDown );
+    document.removeEventListener( 'keyup', onDocumentKeyUp );
 }
 
 //onPanel
@@ -578,7 +587,7 @@ function onPointerDown( event ) {
             intersect.object.position.x, 
             intersect.object.position.y, 
             intersect.object.position.z)
-        voxel.name = model.name;
+        //voxel.name = model.name;
         scene.add( voxel );
         //objects.push( voxel );
         selectedModel = voxel
@@ -590,6 +599,7 @@ function onPointerDown( event ) {
         let shelfSpace = intersect.object.userData.space.map(
         function(good,i){
             let buf = good
+            buf.goodId = good.id
             buf.id = i
             buf.number = i+1
             buf.goodsType = good.name
@@ -616,7 +626,7 @@ function setModelOnCoordinates(model, coordinates, inObjects){
     if (inObjects) objects.push( voxel );
 }
 
-function warehouseGeneration(warehouseSettings, racksType){
+function warehouseGeneration(warehouseSettings, zonesType, racksType, goodsType){
     let floorModel = modelCreator.createFloor("Floor", 0x808080, warehouseSettings.width, warehouseSettings.length, 4, new Vector3(0,-2,0))
         
     setModelOnCoordinates(floorModel, new Vector3(0,0,0))
@@ -696,66 +706,147 @@ function warehouseGeneration(warehouseSettings, racksType){
 class StorekeeperVirtualWarehouse extends Component {
 
     isSideBlockOpened = false
+    prevSearchTerm
+    allGoods = undefined
+    warehouseSettings = undefined
 
     // componentWillMount(){
-    //     sideBlock = new SideBlock({onRightClosed:"100px", onRightOpened:"0px", styles:{top:"50px",width:"150px", height:"max-content"}})
+    //     this.sideBlock = new SideBlock({isOpened:this.isSideBlockOpened, onRightClosed:"-497px", onRightOpened:"-1px", styles:{top:"100px",width:"500px", height:"100%"}})
     // }
     constructor(props){
         super(props)
         page = this
         this.state={
+            reload:0,
+            //настройки склада
+            zonesType: warehouseSettingsModel.getZonesType(),
+            racksType: warehouseSettingsModel.getRacksType(),
+            goodsType: warehouseSettingsModel.getGoodsType(),
+            warehouseSettings: warehouseSettingsModel.getWarehouseSettings(),
+            //табы toolbar'a
             tabs:[
                 {id:0, title:"Вид", func:()=>{onChangeViewMode()}, selection:false, style:{fontSize:"15px", height:"20px"}},
                 // {id:1, title:"Тест панельки", func:()=>{this.flickPanel()}, selection:false, style:{fontSize:"15px", height:"20px"}}
             ],
-            selTab:{id:0, title:"Модели", func:()=>{}},
+            selTab:{id:0, title:"Вид", func:()=>{onChangeViewMode()}, selection:false, style:{fontSize:"15px", height:"20px"}},
+            //табы выезжающей панельки
             panelTabs:[
                 {id:0, title:"Информация", func:()=>{}, selection:true, style:{fontSize:"15px", height:"20px"}},
                 {id:1, title:"Поиск", func:()=>{}, selection:true, style:{fontSize:"15px", height:"20px"}}
             ],
             panelSelTab:{id:0, title:"Информация", func:()=>{}},
             isSideBlockOpened:false,
+            //таблица с содержимым полки на панельке
             tableHeaders:[
                 {name: 'number',    title:'№',              editingEnabled:false,   width:40    }, 
-                {name: 'goodsType', title:'Наименование',   editingEnabled:false,   width:350   }, 
-                {name: 'weight',    title:'Вес',            editingEnabled:false,   width:100   }, 
+                {name: 'goodId',    title:'id',             editingEnabled:false,   width:40    }, 
+                {name: 'goodsType', title:'Наименование',   editingEnabled:false,   width:310   }, 
+                {name: 'weight',    title:'Вес (кг)',            editingEnabled:false,   width:100, totalCount:{type:['sum'], expantionAlign: 'right'}   }, 
             ],
             tableSettings:{add:false, edit:false, delete:false, select:true},
             selectedItem:undefined,
-            tableList:[]
+            tableList:[],
+            //хар-ки товара на первом табе панельки
+            good:undefined,
+            id:undefined,
+            category:undefined,
+            subCategory:undefined,
+            cost:undefined,
+            weight:undefined,
+            goodCharacteristics:undefined,
+            //поиск товара по хар-кам на втором табе панельки
+            goodSearchTerm:"",
+            idSearchTerm:"",
+            categoryExpandList:[
+                {value: ""                         },
+                {value: "Встраиваемая техника"     },
+                {value: "Стиральные машины"        },
+                {value: "Сушильные машины"         },
+                {value: "Холодильники"             },
+                {value: "Морозильные камеры"       },
+                {value: "Винные шкафы"             },
+                {value: "Вытяжки"                  },
+                {value: "Плиты"                    },
+                {value: "Посудомоечные машины"     },
+                {value: "Мелкая бытовая техника"   },
+                {value: "Микроволновые печи"       },
+                {value: "Электродуховки"           },
+                {value: "Пылесосы"                 },
+                {value: "Водонагреватели"          },
+                {value: "Кулеры и пурифайеры"      },
+                {value: "Швейные машины, оверлоки" }
+            ],
+            categorySearchTerm: "",
+            subCategoryExpandList:[
+                {value: ""                                  },
+                {value: "Варочные поверхности"              },
+                {value: "Духовые шкафы"                     },
+                {value: "Вытяжки"                           },
+                {value: "Встраиваемые посудомоечные машины" },
+                {value: "Встраиваемые холодильники"         },
+                {value: "Встраиваемые морозильные камеры"   },
+                {value: "Встраиваемые микроволновые печи"   },
+                {value: "Кухонные мойки"                    },
+                {value: "Измельчители отходов"              },
+                {value: "Кухня"                             },
+                {value: "Бытовые приборы для дома"          },
+                {value: "Красота и гигиена"                 },
+                {value: "Косметические приборы"             },
+                {value: "Медицина и реабилитация"           },
+            ],
+            subCategorySearchTerm: "",
+            //таблица с найденными по хар-кам товарами
+            tableHeaders1:[
+                {name: 'number',    title:'№',              editingEnabled:false,   width:80, totalCount:{type:['count'], expantionAlign: 'right'} }, 
+                {name: 'goodId',    title:'id',             editingEnabled:false,   width:40    }, 
+                {name: 'goodsType', title:'Наименование',   editingEnabled:false,   width:290   }, 
+                {name: 'weight',    title:'Вес (кг)',       editingEnabled:false,   width:80   }, 
+            ],
+            tableSettings1:{add:false, edit:false, delete:false, select:true, massSelection:true,},
+            selectedItem1:undefined,
+            tableList1:[],
         }
     }
 
-    setTableHeaders = (value)=>{this.setState({tableHeaders: value});}
-    setTableList = (value)=>{this.setState({tableList: value});}
-    setSelectedItem = (value)=>{this.setState({selectedItem: value});}
-
-    setSelTab = (value)=>{this.setState({selTab: value});}
-    setPanelSelTab = (value)=>{this.setState({panelSelTab: value});}
-    setIsSideBlockOpened = (value)=>{this.setState({isSideBlockOpened: value});}
+    setReload = ()=>{this.setState({reload: this.state.reload+1});}
+    setTableHeaders = (value)=>{this.setState({tableHeaders: value});}  //таблица с содержимым полки на панельке
+    setTableList = (value)=>{this.setState({tableList: value});}        //таблица с содержимым полки на панельке
+    setSelectedItem = (value)=>{this.setState({selectedItem: value});}  //таблица с содержимым полки на панельке
+    setSelTab = (value)=>{this.setState({selTab: value});}              //табы toolbar'a
+    setPanelSelTab = (value)=>{this.setState({panelSelTab: value});}                //табы выезжающей панельки
+    setIsSideBlockOpened = (value)=>{this.setState({isSideBlockOpened: value});}    //табы выезжающей панельки
+    setGoodSearchTerm = (value)=>{this.setState({goodSearchTerm: value});}                  //поиск товара по хар-кам на втором табе панельки
+    setIdSearchTerm = (value)=>{this.setState({idSearchTerm: value});}                      //поиск товара по хар-кам на втором табе панельки
+    setCategoryExpandList = (value)=>{this.setState({categoryExpandList: value});}          //поиск товара по хар-кам на втором табе панельки
+    setCategorySearchTerm = (value)=>{this.setState({categorySearchTerm: value});}          //поиск товара по хар-кам на втором табе панельки
+    setSubCategoryExpandList = (value)=>{this.setState({subCategoryExpandList: value});}    //поиск товара по хар-кам на втором табе панельки
+    setSubCategorySearchTerm = (value)=>{this.setState({subCategorySearchTerm: value});}    //поиск товара по хар-кам на втором табе панельки
+    setTableHeaders1 = (value)=>{this.setState({tableHeaders1: value});}  //таблица с найденными по хар-кам товарами
+    setTableList1 = (value)=>{this.setState({tableList1: value});}        //таблица с найденными по хар-кам товарами
+    setSelectedItem1 = (value)=>{this.setState({selectedItem1: value});}  //таблица с найденными по хар-кам товарами
 
     // flickPanel=()=>{
     //     this.setState({isSideBlockOpened: !this.state.isSideBlockOpened}); this.isSideBlockOpened = !this.isSideBlockOpened
     // }
     
-
     componentDidMount(){
         var manager = new THREE.LoadingManager();
-        manager.onLoad = function() { // when all resources are loaded
-            init()
+        manager.onLoad = () => { // when all resources are loaded
+            init(this.state.warehouseSettings)
             render()
+            /*
             let modelCreator = new ModelCreator()
-
-            //model = modelCreator.createCube("Пиксель", 0x885aaa, 2, 2, 2, new THREE.Vector3(-1,-1,-1))
-            //model = modelCreator.createCube("Пиксель", 0x885aaa, 1, 1, 1, new THREE.Vector3(-0.5,-0.5,-0.5))
+            model = modelCreator.createCube("Пиксель", 0x885aaa, 2, 2, 2, new THREE.Vector3(-1,-1,-1))
+            model = modelCreator.createCube("Пиксель", 0x885aaa, 1, 1, 1, new THREE.Vector3(-0.5,-0.5,-0.5))
             model = modelCreator.createCube("Маленький товар", 0x885aaa, 16, 16, 16, new THREE.Vector3(0,8-2,0))
-            //model = modelCreator.createCube("Большой товар", 0x885aaa, 30, 80, 36, new THREE.Vector3(0, (80/2-1), 0))
-            // model = modelCreator.createShelter("Маленькая полка", 0x885aaa, 50, 50, 50, 5, new THREE.Vector3(0, -25, -25))
-            // model = modelCreator.createShelter("Высокая полка", 0x885aaa, 50, 100, 50, 5, new THREE.Vector3(0, -25, -25))
-            // model = modelCreator.createShelter("Большая полка", 0x885aaa, 150, 100, 50, 5, new THREE.Vector3(0, -25, -25))
-            // model = modelCreator.createShelter("Широкая полка", 0x885aaa, 150, 50, 50, 5, new THREE.Vector3(0, -1, -25))
+            model = modelCreator.createCube("Большой товар", 0x885aaa, 30, 80, 36, new THREE.Vector3(0, (80/2-1), 0))
+            model = modelCreator.createShelter("Маленькая полка", 0x885aaa, 50, 50, 50, 5, new THREE.Vector3(0, -25, -25))
+            model = modelCreator.createShelter("Высокая полка", 0x885aaa, 50, 100, 50, 5, new THREE.Vector3(0, -25, -25))
+            model = modelCreator.createShelter("Большая полка", 0x885aaa, 150, 100, 50, 5, new THREE.Vector3(0, -25, -25))
+            model = modelCreator.createShelter("Широкая полка", 0x885aaa, 150, 50, 50, 5, new THREE.Vector3(0, -1, -25))
+            */
             createHint()
-            warehouseGeneration(warehouseSettings, racksType)
+            warehouseGeneration(this.state.warehouseSettings, this.state.zonesType, this.state.racksType, this.state.goodsType)
         }
         let fontWeight = 'regular';
         //fontWeight = 'bold';
@@ -766,18 +857,77 @@ class StorekeeperVirtualWarehouse extends Component {
         });
     }
 
-    componentDidUpdate(props){
-        if (this.state.isSideBlockOpened==true)
+    componentDidUpdate(){
+        console.log("DidUpdate")
+        if (this.warehouseSettings!=this.state.warehouseSettings){
+            this.allGoods = []
+            this.state.warehouseSettings.zones.map(zone=>{
+                zone.racks.map(rack=>{
+                    rack.shelfs.map(shelf=>{
+                        shelf.space.map(good=>{
+                            this.allGoods.push(good)
+                        })
+                    })
+                })
+            })
+            let buf = structuredClone(this.allGoods).map(function(good,i){
+                let goodBuf = good
+                goodBuf.goodId = good.id
+                goodBuf.id = i
+                goodBuf.number = i+1
+                goodBuf.goodsType = good.name
+                goodBuf.weight = good.weight
+                return goodBuf
+            })
+            this.state.tableList1 = buf
+        }
+        if (this.state.isSideBlockOpened==true){
             this.setState({isSideBlockOpened: !this.state.isSideBlockOpened})
-        
-
-        console.log("+")
-        //this.setState({selTab: value});
+        }
+        if (this.state.selectedItem!=undefined && this.state.id!=this.state.selectedItem.goodId){
+            this.state.good = this.state.selectedItem.goodsType
+            this.state.id = this.state.selectedItem.goodId
+            this.state.category = this.state.selectedItem.category
+            this.state.subCategory = this.state.selectedItem.subCategory
+            this.state.cost = this.state.selectedItem.cost
+            this.state.weight = this.state.selectedItem.weight
+            this.state.goodCharacteristics = this.state.selectedItem.goodCharacteristics
+            this.setReload()
+        }
+        if (this.prevSearchTerm != undefined && (
+            this.prevSearchTerm.goodSearchTerm != this.state.goodSearchTerm ||
+            this.prevSearchTerm.idSearchTerm != this.state.idSearchTerm ||
+            this.prevSearchTerm.categorySearchTerm != this.state.categorySearchTerm ||
+            this.prevSearchTerm.subCategorySearchTerm != this.state.subCategorySearchTerm
+        )){
+            let buf = structuredClone(this.allGoods)
+            buf = this.sortListByKey(buf, "name", this.state.goodSearchTerm)
+            buf = this.sortListByKey(buf, "id", this.state.idSearchTerm)
+            buf = this.sortListByKey(buf, "category", this.state.categorySearchTerm)
+            buf = this.sortListByKey(buf, "subCategory", this.state.subCategorySearchTerm)
+            buf = buf.map(function(good,i){
+                let goodBuf = good
+                goodBuf.goodId = good.id
+                goodBuf.id = i
+                goodBuf.number = i+1
+                goodBuf.goodsType = good.name
+                goodBuf.weight = good.weight
+                return goodBuf
+            })
+            this.setState({tableList1: buf})
+        }
+        this.prevSearchTerm = {goodSearchTerm:this.state.goodSearchTerm, idSearchTerm:this.state.idSearchTerm, categorySearchTerm:this.state.categorySearchTerm, subCategorySearchTerm:this.state.subCategorySearchTerm}
     }
 
-    componentWillUnmount() {
-        clearInterval(keyListener);
+    sortListByKey=(list, key, searchTerm)=>{
+        return list.filter(item => {
+            return String(item[key]).toLowerCase().includes(String(searchTerm).toLowerCase())
+        })
     }
+
+    // componentWillUnmount() {
+    //     clearInterval(keyListener);
+    // }
 
     render(){
         return (
@@ -789,18 +939,36 @@ class StorekeeperVirtualWarehouse extends Component {
                 <div id="warehouseSceneWrap">
                     <div id="warehouseScene" onContextMenu={(e)=> e.preventDefault()}/>
                     <SideBlock isOpened={this.isSideBlockOpened} onRightClosed="-497px" onRightOpened="-1px" styles={{top:"100px",width:"500px", height:"100%"}}>
-                        <UniversalTabHolder tabs={this.state.panelTabs} setTab={this.setPanelSelTab} selTab={this.state.panelSelTab}/>
+                        <UniversalTabHolder tabs={this.state.panelTabs} style={{marginLeft:"1px" }} setTab={this.setPanelSelTab} selTab={this.state.panelSelTab}/>
                         {this.state.panelSelTab.id==0&&(
                             <>
                                 <div class="header_text" style={{margin:"5px"}}>Товары на полке</div>
-                                <div style={{width:"min-content", display:'inline-table'}} >
-                                    <TableComponent height={300} columns={this.state.tableHeaders} rows={this.state.tableList} setNewTableList={this.setTableList}  tableSettings={this.state.tableSettings} onSelect={this.setSelectedItem}/>
+                                <div style={{width:"min-content", display:'inline-table', marginLeft:"1px" }} >
+                                    <TableComponent height={320} columns={this.state.tableHeaders} rows={this.state.tableList} setNewTableList={this.setTableList}  tableSettings={this.state.tableSettings} onSelect={this.setSelectedItem}/>
+                                </div>
+                                <div style={{width:500+"px", margin:"5px"}}>
+                                    <div class="low_text bold">Товар:&nbsp;<label class="normal">{this.state.good}</label></div>
+                                    <div class="low_text bold">Id&nbsp;товара:&nbsp;<label class="normal">{this.state.id}</label></div>
+                                    <div class="low_text bold">Категория:&nbsp;<label class="normal">{this.state.category}</label></div>
+                                    <div class="low_text bold">Подкатегория:&nbsp;<label class="normal">{this.state.subCategory}</label></div>
+                                    <div class="low_text bold">Цена&nbsp;ед&nbsp;товара&nbsp;<label class="normal">{this.state.cost} ₽</label></div>
+                                    <div class="low_text bold">Вес&nbsp;ед&nbsp;товара:&nbsp;<label class="normal">{this.state.weight} кг</label></div>
+                                    <div class="low_text bold">Хар-ки&nbsp;товара:&nbsp;</div><div class="low_text normal">{this.state.goodCharacteristics}</div>
                                 </div>
                             </>
                         )}
                         {this.state.panelSelTab.id==1&&(
                             <>
-                                <a>i'm working2!!</a>
+                                <div class="header_text" style={{margin:"5px"}}>Поиск&nbsp;товара</div>
+                                <div style={{width:400+"px", margin:"5px"}}>
+                                    <InputText styles = "row_with_item_equal" Id={0} label="Название&nbsp;товара&nbsp;" placeholder="название товара" defValue={this.state.goodSearchTerm} set={this.setGoodSearchTerm}/> 
+                                    <InputText styles = "row_with_item_equal" Id={1} label="id&nbsp;товара&nbsp;" placeholder="id товара" defValue={this.state.idSearchTerm} set={this.setIdSearchTerm}/> 
+                                    <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><ExpandListInputRegular width={300} list={this.state.categoryExpandList} func={this.setCategorySearchTerm}/></div>
+                                    <div class="low_text row_with_item_equal"><div>Подкатегория&nbsp;</div><ExpandListInputRegular width={300} list={this.state.subCategoryExpandList} func={this.setSubCategorySearchTerm}/></div>
+                                    <div style={{width:"min-content", display:'inline-table', marginLeft:"-4px" }} >
+                                        <TableComponent height={320} columns={this.state.tableHeaders1} rows={this.state.tableList1} setNewTableList={this.setTableList1}  tableSettings={this.state.tableSettings1} onSelect={this.setSelectedItem1}/>
+                                    </div>
+                                </div>
                             </>
                         )}
                         
