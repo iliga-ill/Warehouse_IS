@@ -1,5 +1,5 @@
-// const host = 'http://127.0.0.1:8000/';
-const host = 'http://localhost:5000/';
+const host = 'http://127.0.0.1:8000/';
+// const host = 'http://localhost:5000/';
 
 export class Api {
 
@@ -7,7 +7,7 @@ export class Api {
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+`shipment_order_goods/'+'?'+'type=${type}&status=${status}`, true);
+            xhr.open('GET', host+`shipment_order_goods/?type=${type}&status=${status}`, true);
             console.log("StorekeeperAdvent apiGetShipmentOrders was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -321,6 +321,8 @@ export class Api {
                     var answer = JSON.parse(this.response)
                     console.log("StorekeeperAllocation apiGetShipmentOrdersGoods answer: ")
                     console.log(answer)
+                    console.log(goodsCategories2Answer)
+                    console.log(goodsCategories3Answer)
                     var buf = []
                     var counter = 0
                     answer.map( function(item, i) {
@@ -330,7 +332,8 @@ export class Api {
                                 if (item1.code == item.goods)
                                     good=item1
                             })
-                            buf[counter] = {id: counter++, code:item.code, goodCode:item.goods, amount: item.amount, amount_real: item.amount_real, weight:good.weight, placed_amount:item.placed_amount , code: item.code, good_name: good.name, goodsCategories2:goodsCategories2Answer[good.subcategory_2-1].name, goodsCategories3:goodsCategories3Answer[good.subcategory_3-1].name , order_num: item.order_num}
+                            console.log(good)
+                            buf[counter] = {id: counter++, code:item.code, goodCode:item.goods, amount: item.amount, amount_real: item.amount_real, weight:good.weight, placed_amount:item.placed_amount , code: item.code, good_name: good.name, goodsCategories2: goodsCategories2Answer[good.subcategory_2-1].text, goodsCategories3:goodsCategories3Answer[good.subcategory_3-1].text , order_num: item.order_num}
                         }
                     })
                     console.log("StorekeeperAllocation apiGetShipmentOrdersGoods answer changed: ")
@@ -364,29 +367,29 @@ export class Api {
         })
     }
 
-    getShipmentOrders() {
-        var xhr = new XMLHttpRequest();
+    // getShipmentOrders() {
+    //     var xhr = new XMLHttpRequest();
 
-        return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'shipment_order_goods/'+'?'+'type=purchase&status=opened', true);
-            console.log("StorekeeperAdvent apiGetOrders was launched")
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState == XMLHttpRequest.DONE) {
-                    var answer = JSON.parse(this.response)
-                    console.log("StorekeeperAdvent apiGetOrders answer: ")
-                    console.log(answer)
-                    var counter = 0
-                    var order = [{id:0, text: "Ничего не найдено", selected: true, code: 0}]
-                    answer.map( function(item, i) {
-                        if (i === 0 & item.status != "closed")  order[i] = {id:counter++, text: item.name, selected: true, code: item.code}
-                        else if (item.status != "closed") order[i] = {id:counter++, text: item.name, selected: false, code: item.code}
-                    })
-                    resolve(order)
-                }
-            }
-            xhr.send(null);
-        })
-    }
+    //     return new Promise(function(resolve, reject){
+    //         xhr.open('GET', host+'shipment_order_goods/'+'?'+'type=purchase&status=opened', true);
+    //         console.log("StorekeeperAdvent apiGetOrders was launched")
+    //         xhr.onreadystatechange = function() {
+    //             if (xhr.readyState == XMLHttpRequest.DONE) {
+    //                 var answer = JSON.parse(this.response)
+    //                 console.log("StorekeeperAdvent apiGetOrders answer: ")
+    //                 console.log(answer)
+    //                 var counter = 0
+    //                 var order = [{id:0, text: "Ничего не найдено", selected: true, code: 0}]
+    //                 answer.map( function(item, i) {
+    //                     if (i === 0 & item.status != "closed")  order[i] = {id:counter++, text: item.name, selected: true, code: item.code}
+    //                     else if (item.status != "closed") order[i] = {id:counter++, text: item.name, selected: false, code: item.code}
+    //                 })
+    //                 resolve(order)
+    //             }
+    //         }
+    //         xhr.send(null);
+    //     })
+    // }
 
     updateOrderGoodsExpend(amount, code) {
         var xhr = new XMLHttpRequest();

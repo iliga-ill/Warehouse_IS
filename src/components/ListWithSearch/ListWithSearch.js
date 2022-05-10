@@ -17,12 +17,14 @@ export default function ListWithSearch(props){
 
     function sortList(){
         var list = []
-        itemList.map(function(item,i){
-           list[i] = item.text
-        })
-        var results = list.filter(item =>
-         item.toLowerCase().includes(searchTerm)
-        );
+        if  (itemList != null) {
+            itemList.map(function(item,i){
+                list[i] = item.text
+             })
+             var results = list.filter(item =>
+              item.toLowerCase().includes(searchTerm)
+             );
+        }
         
         setSearchResults(results);
     }

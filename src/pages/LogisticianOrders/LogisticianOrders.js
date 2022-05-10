@@ -50,7 +50,7 @@ export default function LogisticianOrders(props){
         var result = await api.getOrders(isCurrent)
         setOrders(result)
     }
-    if (orders.toString()=="")
+    if (orders.toString()=="") 
         apiGetOrders()
 
     //-------------------------------------------------------------------------Блок 1 конец
@@ -80,6 +80,7 @@ export default function LogisticianOrders(props){
     }
     
     const [tableList, setTableList] = React.useState([])
+    let lastTableList
     const [selectedItemId, setSelectedItemId] = React.useState()
     React.useEffect(() => {
         if (selectedItemId!=undefined){
@@ -91,6 +92,13 @@ export default function LogisticianOrders(props){
             })
         }
     }, [selectedItemId]);
+
+    React.useEffect(() => {
+        console.log("DDDDDDD")
+        console.log(tableList)
+        console.log(lastTableList != tableList)
+        lastTableList = tableList
+    }, [tableList])
         
     //-------------------------------------стол 1 конец
     //-------------------------------------стол 2
