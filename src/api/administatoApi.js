@@ -1,5 +1,6 @@
-const host = 'http://127.0.0.1:8000/';
-// const host = 'http://localhost:5000/';
+import {Host} from './host'
+var hostObj = new Host()
+var host = hostObj.getHost()
 
 export class Api {
 

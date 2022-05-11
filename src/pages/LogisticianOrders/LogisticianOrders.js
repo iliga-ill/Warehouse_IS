@@ -39,6 +39,8 @@ export default function LogisticianOrders(props){
 
     React.useEffect(() => {
         if (orders.length > 0) {
+            console.log("SSSDSDSD")
+            console.log(selOrder)
             setTableList([])
             setTableList1([])
             setTableList2([])
@@ -92,6 +94,10 @@ export default function LogisticianOrders(props){
             })
         }
     }, [selectedItemId]);
+
+    React.useEffect(() => {
+        console.log("Я смешарик")
+    }, [tableList])
         
     //-------------------------------------стол 1 конец
     //-------------------------------------стол 2
