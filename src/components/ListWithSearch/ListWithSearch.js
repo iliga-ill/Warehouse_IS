@@ -45,8 +45,6 @@ class ListWithSearch extends Component {
         //this.sortList()
     }
 
-    
-
     setSearchTerm = (value)=>{
         this.setState({searchTerm: value});
         this.sortList()

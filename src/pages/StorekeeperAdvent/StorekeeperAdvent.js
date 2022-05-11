@@ -11,6 +11,7 @@ import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListI
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
 import { render } from "react-dom";
 import { Api } from "../../api/storekeeperApi"
+import { useLocation } from "react-router-dom"
 
 var api = new Api()
 const styles = {
@@ -18,6 +19,7 @@ const styles = {
 }
 
 export default function StorekeeperAdvent(props){
+    const location = useLocation();
     let newDate = new Date()
 
     var id=0
@@ -58,7 +60,9 @@ export default function StorekeeperAdvent(props){
     }, [selOrder]);
 
     async function apiGetShipmentOrders() {
-        var order = await api.getShipmentOrders('sell', 'opened')
+        var status = location.pathname.split("/")[location.pathname.split("/").length-1] == 'Current'? 'opened' : 'closed'
+        var order = await api.getShipmentOrders('sell', status)
+        setOrders([])
         order.map(item=>{orders.push(item)})
         setSelOrder(order[0])
     }

@@ -62,17 +62,21 @@ export default function StorekeeperAllocation(props){
     if (goodsType.toString()=="")
         apiGetGoodsType()
 
-    const [goodsCategories2, setGoodsCategories2] = React.useState([])
+    const [goodsCategories2, setGoodsCategories2] = React.useState("")
     async function apiGetGoodsSubCat2(goodsTypeAnswer) {
         var buf = await api.getGoodsSubCat2()
         setGoodsCategories2(buf)
         apiGetGoodsSubCat3(goodsTypeAnswer, buf)
     }
 
-    const [goodsCategories3, setGoodsCategories3] = React.useState([])
+    const [goodsCategories3, setGoodsCategories3] = React.useState("")
     async function apiGetGoodsSubCat3(goodsTypeAnswer, goodsCategories2Answer) {
         var buf = await api.getGoodsSubCat3()
         setGoodsCategories3(buf)
+        // TODO ПОМОГИТЕ
+        // console.log("CATEGOE")               ОНО ПУСТОЕ
+        // console.log(goodsCategories2)
+        // console.log(goodsCategories3)
         apiGetShipmentOrdersGoods(goodsTypeAnswer, goodsCategories2Answer, buf)
     }
 

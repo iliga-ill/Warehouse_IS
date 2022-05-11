@@ -9,6 +9,7 @@ import InputText from "../../components/InputText/InputText";
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
 import { TableComponent } from "../../components/Table/TableComponent";
 import { Api } from "../../api/storekeeperApi"
+import { useLocation } from "react-router-dom"
 
 var api = new Api()
 const styles = {
@@ -16,6 +17,7 @@ const styles = {
   }
 
 export default function StorekeeperExpend(props){
+    const location = useLocation();
     let newDate = new Date()
     
     var id=0
@@ -41,9 +43,9 @@ export default function StorekeeperExpend(props){
     }, [selOrder]);
 
     async function apiGetShipmentOrders() {
-        var order = await api.getShipmentOrders()
-        order.map(item=>{orders.push(item)})
-        setSelOrder(order[0])
+        var status = location.pathname.split("/")[location.pathname.split("/").length-1] == 'Current'? 'opened' : 'closed'
+        var order = await api.getShipmentOrders('purchase', status)
+        setOrders(order)
     }
     //-------------------------------------------------------------------------Блок 1 конец
 

@@ -85,6 +85,9 @@ export default function StorekeeperInventory(props){
                     //buf.push({id:counter, number:++counter, shelfSpaceCode:item.shelfCode, zone:item.zone_num, rack:item.rack_num, shelf:item.name, goodsType:" ", amount:0, inventaryzationStatus:"Пусто"}) 
             }
         })
+        console.log('BUF')
+        console.log(buf)
+        console.log(buf)
         setTableList(buf)
         setSelectedItemId(buf[0])
     }
