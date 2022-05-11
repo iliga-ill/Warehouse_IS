@@ -34,7 +34,6 @@ export default function LogisticianOrders(props){
 
     //-------------------------------------------------------------------------Блок 1
 
-    //const [orders, setOrders] = React.useState([{id:0, text: "Ничего не найдено", selected: true, code: 0}])
     const [orders, setOrders] = React.useState([])
     const [selOrder, setSelOrder] = React.useState(undefined)
 
@@ -51,24 +50,9 @@ export default function LogisticianOrders(props){
     async function apiGetOrders() {
         var result = await api.getOrders(isCurrent)
         setOrders([])
-        console.log("SSSS")
-        console.log(result)
-        console.log(orders)
-        if (result.length >= orders.length)
-            result.map(function(item, i){orders[i] = item})
-        else
-            orders.map(function(item, i)
-                {
-                    if (result[i] != undefined)
-                        orders[i] = result[i]
-                    else 
-                        orders.pop()
-                    })
-       
+        result.map(item=>{orders.push(item)})
         setSelOrder(result[0])
     }
-    // if (orders.toString()=="") 
-    //     apiGetOrders()
 
     //-------------------------------------------------------------------------Блок 1 конец
 
@@ -97,7 +81,6 @@ export default function LogisticianOrders(props){
     }
     
     const [tableList, setTableList] = React.useState([])
-    let lastTableList
     const [selectedItemId, setSelectedItemId] = React.useState()
     React.useEffect(() => {
         if (selectedItemId!=undefined){
@@ -109,13 +92,6 @@ export default function LogisticianOrders(props){
             })
         }
     }, [selectedItemId]);
-
-    React.useEffect(() => {
-        console.log("DDDDDDD")
-        console.log(tableList)
-        console.log(lastTableList != tableList)
-        lastTableList = tableList
-    }, [tableList])
         
     //-------------------------------------стол 1 конец
     //-------------------------------------стол 2
@@ -217,17 +193,8 @@ export default function LogisticianOrders(props){
     }
 
     async function apiGetShipmentOrderGoodsByOrderId(goodsTypeAnswer) {
-        var order = ''
-        orders.forEach(element => {  
-          if (element.selected == true) {
-            order = element
-            console.log('element')
-            console.log(element)
-          }
-        });
-
-        if (order != '') {
-            var tableListBuf = await api.getShipmentOrderGoodsByOrderId(order, goodsTypeAnswer)
+        if (selOrder != undefined) {
+            var tableListBuf = await api.getShipmentOrderGoodsByOrderId(selOrder, goodsTypeAnswer)
             setTableList(tableListBuf)
         } else {
             setTableList([])
@@ -235,24 +202,16 @@ export default function LogisticianOrders(props){
     }
 
     async function apiGetOrderGoods(){
-        var order = ''
-        orders.forEach(element => {
-        if (element.selected == true) {
-            console.log('order')
-            console.log(element)
-            order = element
-        }
-        });
-        if (order != '') {
-            var result = await api.getOrderGoods(order)
-            if (order.order_status == "sell")
+        if (selOrder != undefined) {
+            var result = await api.getOrderGoods(selOrder)
+            if (selOrder.order_status == "sell")
                 setOrderType("На продажу")
             else
                 setOrderType("На поставку")
-            setOrder(order.text)
-            setShipmentDeadline(order.deadline.replace("-", ".").replace("-", "."))
-            setOrderCost(order.cost)
-            setAddress(order.address)
+            setOrder(selOrder.text)
+            setShipmentDeadline(selOrder.deadline.replace("-", ".").replace("-", "."))
+            setOrderCost(selOrder.cost)
+            setAddress(selOrder.address)
             setTableList2(result)
         }
     }
@@ -310,11 +269,11 @@ export default function LogisticianOrders(props){
 
     return (
         <>
-            <FlexibleBlocksPage Id={getId()}>
+            <FlexibleBlocksPage>
                 <FlexibleBlock>
-                    <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={'200px'} height={'525px'}/>
+                    <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={"200px"} height={"525px"}/>
                 </FlexibleBlock>
-                <FlexibleBlock> 
+                <FlexibleBlock>
                     <div class="header_text">Доставка товаров</div>
                     <div style={{height:20+"px"}}/>
                     <div style={{width:300+'px', display:'inline-table'}} >

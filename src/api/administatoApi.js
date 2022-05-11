@@ -17,7 +17,7 @@ export class Api {
                     
                     answer.map( function(item, i) {
                         accounts.push({
-                          id: 'string_' + i, 
+                          id: i, 
                           code: item.code, 
                           number:i+1, 
                           name: item.name, 
