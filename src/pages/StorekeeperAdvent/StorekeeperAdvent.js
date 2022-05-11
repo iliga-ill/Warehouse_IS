@@ -62,7 +62,7 @@ export default function StorekeeperAdvent(props){
     async function apiGetShipmentOrders() {
         var status = location.pathname.split("/")[location.pathname.split("/").length-1] == 'Current'? 'opened' : 'closed'
         var order = await api.getShipmentOrders('sell', status)
-        setOrders([])
+        structuredClone(orders).map(()=>{orders.pop()})
         order.map(item=>{orders.push(item)})
         setSelOrder(order[0])
     }
