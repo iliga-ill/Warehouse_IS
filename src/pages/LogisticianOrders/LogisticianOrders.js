@@ -11,14 +11,8 @@ import { TableComponent } from "../../components/Table/TableComponent";
 import { Api } from "../../api/logisticianApi"
 
 var api = new Api()
-const styles = {
-
-}
 
 export default function LogisticianOrders(props){
-    
-    var id=0
-    function getId(){return id++}
 
 //#region блоки
 
@@ -54,20 +48,11 @@ export default function LogisticianOrders(props){
         result.map(item=>{orders.push(item)})
         setSelOrder(result[0])
     }
-    // if (orders.toString()=="") 
-    //     apiGetOrders()
 
     //-------------------------------------------------------------------------Блок 1 конец
 
     //-------------------------------------------------------------------------Блок 2
     //-------------------------------------стол 1
-
-    const [isStart, setIsStart] = React.useState(true)
-
-    if (isStart) {
-        
-         setIsStart(false)
-    }
 
     const [tableHeaders, setTableHeaders] = React.useState([
         {name: 'number',            title:'№',                    editingEnabled:false,   width:40    }, 
@@ -280,7 +265,7 @@ export default function LogisticianOrders(props){
 
     return (
         <>
-            <FlexibleBlocksPage Id={getId()}>
+            <FlexibleBlocksPage>
                 <FlexibleBlock>
                     <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={'200px'} height={'525px'}/>
                 </FlexibleBlock>
