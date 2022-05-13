@@ -328,7 +328,6 @@ function onMouseMove(){
     if (hint != null){
         hint.remove()
     }
-    createHint();
 }
 
 function onMouseStop(){
@@ -526,7 +525,7 @@ function createHint(){
         scene.add( hintModel.mesh );
     }
     // }
-    animateHint()
+    
 }
 //#endregion
 
@@ -546,7 +545,10 @@ function onWindowResize() {
 function onPointerMove(event) {
     lastX = event.clientX;
     lastY = event.clientY;
-    animateHint();
+    createHint();
+    if (hintModel != undefined)
+        animateHint();
+    render();
 }
 
 function animateHint() {
@@ -554,9 +556,8 @@ function animateHint() {
     raycaster.setFromCamera( pointer, camera );
     const intersects = raycaster.intersectObjects( objects );
     const intersect = intersects[0];
-    if (intersect!=undefined && hintModel != undefined/* && editingMod != "viewing"*/) {
+    if (intersect!=undefined && hintModel != undefined && intersect.object.type !="Line") {
         //hintMesh.visible = true;
-        
         hintModel.mesh.position.copy( intersect.point ).add( intersect.face.normal );
         hintModel.mesh.position.divideScalar(1).floor().multiplyScalar(1).addScalar( 1 );
         hintModel.mesh.position.set(
@@ -567,7 +568,6 @@ function animateHint() {
         hintModel.mesh.visible = true
         scene.add( hintModel.mesh );
     } 
-    render();
 }
 //#endregion
 
@@ -580,11 +580,14 @@ function onPointerDown( event ) {
     if (intersects.length > 0 && hintModel!=undefined) {
         const intersect = intersects[0];
 
-        if (intersect.object.name.split(" ")[0] == "Зона")
+        if (intersect.object.type == "zone"){
             scene.remove(page.state.selectedZone)
-
-        if (intersect.object.name.split(" ")[0] == "Стеллаж")
             scene.remove(page.state.selectedRack)
+        }
+            
+        if (intersect.object.type == "rack"){
+            scene.remove(page.state.selectedRack)
+        }
         
         const voxel = new THREE.Mesh( hintModel.geometry, hintModel.material);
         voxel.position.copy( intersect.point ).add( intersect.face.normal );
@@ -598,19 +601,29 @@ function onPointerDown( event ) {
         voxel.rotation.set(intersect.object.rotation.x, intersect.object.rotation.y, intersect.object.rotation.z)
         scene.add( voxel );
 
-        if (intersect.object.name.split(" ")[0] == "Зона"){
-            page.setSelectedZone(voxel)
+        if (intersect.object.type == "zone"){
+            page.setSelectedZone(undefined)
             page.state.selectedZoneName = voxel.userData.name
             page.state.selectedZoneCenterX = voxel.userData.centerPoint.x
             page.state.selectedZoneCenterZ = voxel.userData.centerPoint.z
             page.state.selectedZoneRotation = voxel.userData.rotation.y
             page.state.selectedZoneTypeId = {value:voxel.userData.zoneTypeId}
+
+            page.state.selectedRackName = undefined
+            page.state.selectedRackCenterX = undefined
+            page.state.selectedRackCenterZ = undefined
+            page.state.selectedRackRotation = undefined
             page.setSelectedZone(voxel)
+            page.setSelectedRack(undefined)
         }
 
-        if (intersect.object.name.split(" ")[0] == "Стеллаж"){
-            console.log(voxel.userData)
-            //page.setSelectedZone(voxel)
+        if (intersect.object.type == "rack"){
+            page.setSelectedRack(undefined)
+            page.state.selectedRackName = voxel.userData.name
+            page.state.selectedRackCenterX = voxel.userData.centerPoint.x
+            page.state.selectedRackCenterZ = voxel.userData.centerPoint.z
+            page.state.selectedRackRotation = voxel.userData.rotation.y
+            page.state.selectedRackTypeId = {value:voxel.userData.racksTypeId}
             page.setSelectedRack(voxel)
         }
         //objects.push( voxel );
@@ -625,11 +638,12 @@ function onPointerDown( event ) {
 
 //#region work with models and scene
 
-function setModelOnCoordinates(model, coordinates, inObjects){
+function setModelOnCoordinates(model, coordinates, inObjects, type){
     const voxel = model.mesh;
     voxel.position.divideScalar( 1 ).floor().multiplyScalar( 1 ).addScalar( 1 );
     voxel.position.set(coordinates.x + model.translation.x, coordinates.y + model.translation.y, coordinates.z + model.translation.z)
     voxel.name = model.name;
+    if (type!=undefined) voxel.type = type
     scene.add( voxel );
     if (inObjects) objects.push( voxel );
 }
@@ -637,7 +651,7 @@ function setModelOnCoordinates(model, coordinates, inObjects){
 function warehouseGeneration(warehouseSettings, zonesType, racksType, goodsType){
     let floorModel = modelCreator.createFloor("Floor", 0x808080, warehouseSettings.width, warehouseSettings.length, 4, new Vector3(0,-2,0))
         
-    setModelOnCoordinates(floorModel, new Vector3(0,0,0))
+    setModelOnCoordinates(floorModel, new Vector3(0,0,0), true, "floor")
     selectionLockedModels.push(floorModel.name)
     hintLockedModels.push(floorModel.name)
 
@@ -650,8 +664,8 @@ function warehouseGeneration(warehouseSettings, zonesType, racksType, goodsType)
         zoneFillModel.mesh = auxMath.rotateMeshOnAllAxis(zoneFillModel.mesh, zone.rotation)
         let zoneCenterGlobalCoordinate = zone.centerPoint
         zoneFillModel.mesh.userData = zone
-        setModelOnCoordinates(zoneBorderModel, zoneCenterGlobalCoordinate, false)
-        setModelOnCoordinates(zoneFillModel, zoneCenterGlobalCoordinate, true)
+        setModelOnCoordinates(zoneBorderModel, zoneCenterGlobalCoordinate, true, zone.type)
+        setModelOnCoordinates(zoneFillModel, zoneCenterGlobalCoordinate, true, zone.type)
         selectionLockedModels.push(zone.name)
         hintLockedModels.push(zone.name)
         hintLockedModels.push(`${zone.name}_fillament`)
@@ -674,7 +688,8 @@ function warehouseGeneration(warehouseSettings, zonesType, racksType, goodsType)
             setModelOnCoordinates(
                 rackModel, 
                 rotatedRackCenterGlobalCoordinate,
-                true
+                true, 
+                rack.type
             )
             selectionLockedModels.push(rack.name+" "+rack.id)
             //shelfs
@@ -705,7 +720,8 @@ function warehouseGeneration(warehouseSettings, zonesType, racksType, goodsType)
                         setModelOnCoordinates(
                             goodModel, 
                             rotatedRackShiftedFirstShelfCenterGlobalCoordinate,
-                            true
+                            true, 
+                            good.type
                         )
                         selectionLockedModels.push(good.name)
                         hintLockedModels.push(good.name)
@@ -713,6 +729,7 @@ function warehouseGeneration(warehouseSettings, zonesType, racksType, goodsType)
             })
         })
     })
+    render()
 }
 //#endregion
 
@@ -741,13 +758,13 @@ class AdministratorWarehouseCreating extends Component {
                 {id:0, title:"Вид", func:()=>{onChangeViewMode()}, selection:false, style:{fontSize:"15px", height:"20px"}},
                 // {id:1, title:"Тест панельки", func:()=>{this.flickPanel()}, selection:false, style:{fontSize:"15px", height:"20px"}}
             ],
-            selTab:{id:0, title:"Вид", func:()=>{onChangeViewMode()}, selection:false, style:{fontSize:"15px", height:"20px"}},
+            selTab: {id:0},
             //табы выезжающей панельки
             panelTabs:[
                 {id:0, title:"Характеристики", func:()=>{}, selection:true, style:{fontSize:"15px", height:"20px"}},
-                {id:1, title:"Поиск", func:()=>{}, selection:true, style:{fontSize:"15px", height:"20px"}}
+                {id:1, title:"Добавление моделей", func:()=>{}, selection:true, style:{fontSize:"15px", height:"20px"}}
             ],
-            panelSelTab:{id:0, title:"Общие хар-ки", func:()=>{}},
+            panelSelTab: {id:0},
             isSideBlockOpened:false,
             warehouseWidth:undefined, //хар-ки склада
             warehouseLength:undefined, //хар-ки склада
@@ -759,6 +776,12 @@ class AdministratorWarehouseCreating extends Component {
             zoneTypeIdExpandList: Object.keys(warehouseSettingsModel.getZonesType()).map(zoneType=>{return {value: zoneType.split("_")[1]}}), //хар-ки выделенной зоны склада
             selectedZoneTypeId: {value: "0001"},//хар-ки выделенной зоны склада
             selectedRack:undefined, //выделенный стеллаж
+            selectedRackName:undefined, //хар-ки выделенного стеллажа
+            selectedRackCenterX:undefined, //хар-ки выделенного стеллажа
+            selectedRackCenterZ:undefined, //хар-ки выделенного стеллажа
+            selectedRackRotation:undefined, //хар-ки выделенного стеллажа
+            rackTypeIdExpandList: Object.keys(warehouseSettingsModel.getRacksType()).map(rackType=>{return {value: rackType.split("_")[1]}}), //хар-ки выделенного стеллажа
+            selectedRackTypeId: {value: "0001"},//хар-ки выделенного стеллажа
         }
     }
 
@@ -770,24 +793,61 @@ class AdministratorWarehouseCreating extends Component {
     setPanelSelTab = (value)=>{this.setState({panelSelTab: value});}                //табы выезжающей панельки
     setIsSideBlockOpened = (value)=>{this.setState({isSideBlockOpened: value});}    //табы выезжающей панельки
 
-    setWarehouseWidth = (value)=>{this.setState({warehouseWidth: value});} //хар-ки склада
-    setWarehouseLength = (value)=>{this.setState({warehouseLength: value});} //хар-ки склада
-    setSelectedZone = (value)=>{this.setState({selectedZone: value});}       //выделенная зона
-    setSelectedZoneName = (value)=>{this.setState({selectedZoneName: value});}       //хар-ки выделенной зоны
-    setSelectedZoneCenterX = (value)=>{this.setState({selectedZoneCenterX: value});}     //хар-ки выделенной зоны
-    setSelectedZoneCenterZ = (value)=>{this.setState({selectedZoneCenterZ: value});}     //хар-ки выделенной зоны
-    setSelectedZoneRotation = (value)=>{this.setState({selectedZoneRotation: value});}   //хар-ки выделенной зоны
-    setZoneTypeIdExpandList = (value)=>{this.setState({zoneTypeIdExpandList: value});}       //хар-ки выделенной зоны
-    setSelectedZoneTypeId = (value)=>{this.setState({selectedZoneTypeId: value});}       //хар-ки выделенной зоны
+    setWarehouseWidth = (value)=>{this.state.warehouseSettings.width = Number(value); this.setState({warehouseWidth: Number(value)});} //хар-ки склада
+    setWarehouseLength = (value)=>{this.state.warehouseSettings.length = Number(value); this.setState({warehouseLength: Number(value)});} //хар-ки склада
 
+    setSelectedZone = (value)=>{this.setState({selectedZone: value});}       //выделенная зона
+    setSelectedZoneName = (value)=>{this.state.selectedZone.userData.name = value; this.setState({selectedZoneName: value});}       //хар-ки выделенной зоны
+    setSelectedZoneCenterX = (value)=>{this.state.selectedZone.userData.centerPoint.x = Number(value); this.setState({selectedZoneCenterX: Number(value)});}     //хар-ки выделенной зоны
+    setSelectedZoneCenterZ = (value)=>{this.state.selectedZone.userData.centerPoint.z = Number(value); this.setState({selectedZoneCenterZ: Number(value)});}     //хар-ки выделенной зоны
+    setSelectedZoneRotation = (value)=>{this.state.selectedZone.userData.rotation.y = Number(value); this.setState({selectedZoneRotation: Number(value)});}   //хар-ки выделенной зоны
+    setZoneTypeIdExpandList = (value)=>{this.setState({zoneTypeIdExpandList: value});}       //хар-ки выделенной зоны
+    setSelectedZoneTypeId = (value)=>{this.state.selectedZone.userData.zoneTypeId = value; this.setState({selectedZoneTypeId: value});}       //хар-ки выделенной зоны
 
     setSelectedRack = (value)=>{this.setState({selectedRack: value});}       //выделенный стеллаж
+    setSelectedRackName = (value)=>{this.state.selectedRack.userData.name = value; this.setState({selectedRackName: value});}       //хар-ки выделенного стеллажа
+    setSelectedRackCenterX = (value)=>{this.state.selectedRack.userData.centerPoint.x = Number(value); this.setState({selectedRackCenterX: Number(value)});}     //хар-ки выделенного стеллажа
+    setSelectedRackCenterZ = (value)=>{this.state.selectedRack.userData.centerPoint.z = Number(value); this.setState({selectedRackCenterZ: Number(value)});}     //хар-ки выделенного стеллажа
+    setSelectedRackRotation = (value)=>{this.state.selectedRack.userData.rotation.y = Number(value); this.setState({selectedRackRotation: Number(value)});}   //хар-ки выделенного стеллажа
+    setRackTypeIdExpandList = (value)=>{this.setState({rackTypeIdExpandList: value});}   //хар-ки выделенного стеллажа
+    setSelectedRackTypeId = (value)=>{this.state.selectedRack.userData.racksTypeId = value; this.setState({selectedRackTypeId: value});}       //хар-ки выделенного стеллажа
     
+    setWarehouseSettings=()=>{
+        if (this.state.selectedZone != undefined){
+            this.state.warehouseSettings.zones.map(zone=>{
+                if (zone.id === this.state.selectedZone.userData.id && zone.type === "zone"){
+                    let newZone = this.getSceneElmByIdAndType(zone.id, "zone").userData
+                    newZone.racks = newZone.racks.map(rack=>{
+                        return this.getSceneElmByIdAndType(rack.id, "rack").userData
+                    })
+                    return newZone
+                }
+                return zone
+            })
+            let buf = []
+            scene.children.map(obj=>{buf.push(obj)})
+            buf.map(obj=>{
+                if (obj.type == "zone" || obj.type == "rack" || obj.type == "good" || obj.type == "floor")
+                    scene.remove(obj)
+            })
+            hintLockedModels = ["","Mesh"]
 
+            warehouseGeneration(this.state.warehouseSettings, this.state.zonesType, this.state.racksType, this.state.goodsType)
+            // console.log(scene)
+            // // this.generateWarehouse()
+            // // render()
+            // console.log(this.state.warehouseSettings)
+            render()
+        }
+    }
 
-    // flickPanel=()=>{
-    //     this.setState({isSideBlockOpened: !this.state.isSideBlockOpened}); this.isSideBlockOpened = !this.isSideBlockOpened
-    // }
+    getSceneElmByIdAndType=(id, type)=>{
+        let buf = undefined
+        scene.children.map(obj=>{
+            if (obj.userData.id == id && obj.type == type) buf = obj;
+        })
+        return buf
+    }
     
     componentDidMount(){
         var manager = new THREE.LoadingManager();
@@ -818,7 +878,6 @@ class AdministratorWarehouseCreating extends Component {
             this.state.warehouseWidth = this.state.warehouseSettings.width
             //this.state.warehouseLength = this.state.warehouseSettings.length
             this.setWarehouseLength(this.state.warehouseSettings.length)
-            render()
         }
         let fontWeight = 'regular';
         //fontWeight = 'bold';
@@ -844,29 +903,6 @@ class AdministratorWarehouseCreating extends Component {
             this.state.goodCharacteristics = this.state.selectedItem.goodCharacteristics
             this.setReload()
         }
-        if (this.prevSearchTerm != undefined && (
-            this.prevSearchTerm.goodSearchTerm != this.state.goodSearchTerm ||
-            this.prevSearchTerm.idSearchTerm != this.state.idSearchTerm ||
-            this.prevSearchTerm.categorySearchTerm != this.state.categorySearchTerm ||
-            this.prevSearchTerm.subCategorySearchTerm != this.state.subCategorySearchTerm
-        )){
-            let buf = structuredClone(this.allGoods)
-            buf = this.sortListByKey(buf, "name", this.state.goodSearchTerm)
-            buf = this.sortListByKey(buf, "id", this.state.idSearchTerm)
-            buf = this.sortListByKey(buf, "category", this.state.categorySearchTerm)
-            buf = this.sortListByKey(buf, "subCategory", this.state.subCategorySearchTerm)
-            buf = buf.map(function(good,i){
-                let goodBuf = good
-                goodBuf.goodId = good.id
-                goodBuf.id = i
-                goodBuf.number = i+1
-                goodBuf.goodsType = good.name
-                goodBuf.weight = good.weight
-                return goodBuf
-            })
-            this.setState({tableList1: buf})
-        }
-        this.prevSearchTerm = {goodSearchTerm:this.state.goodSearchTerm, idSearchTerm:this.state.idSearchTerm, categorySearchTerm:this.state.categorySearchTerm, subCategorySearchTerm:this.state.subCategorySearchTerm}
         if (this.state.selectedZone!=undefined && this.state.selectedZone.userData != undefined){
             this.state.warehouseSettings.zones.map(zone=>{
                 zone.racks.map(rack=>{
@@ -884,6 +920,10 @@ class AdministratorWarehouseCreating extends Component {
         return list.filter(item => {
             return String(item[key]).toLowerCase().includes(String(searchTerm).toLowerCase())
         })
+    }
+
+    btn_send_1=()=>{
+        this.setWarehouseSettings()
     }
 
     // componentWillUnmount() {
@@ -908,27 +948,28 @@ class AdministratorWarehouseCreating extends Component {
                                 <InputText styles = "row_with_item_wide" Id={2}  label="Ширина&nbsp;склада&nbsp;(см)&nbsp;"       placeholder="ширина склада"           defValue={this.state.warehouseWidth}             set={this.setWarehouseWidth}/>
 
                                 {this.state.selectedZone==undefined
-                                ?<>
-                                    <div>Выберите зону склада</div>
-                                </>
+                                ?<div>Выберите зону склада</div>
                                 :<>
                                     <div className="header_text">Хар-ки выделенной зоны</div>
                                     <InputText styles = "row_with_item_wide" Id={3}  label="Название&nbsp;зоны&nbsp;"               placeholder="название зоны"         defValue={this.state.selectedZoneName}      set={this.setSelectedZoneName}/> 
                                     <InputText styles = "row_with_item_wide" Id={4}  label="Центр&nbsp;зоны&nbsp;по&nbsp;x&nbsp;"   placeholder="центр зоны по x"       defValue={this.state.selectedZoneCenterX}   set={this.setSelectedZoneCenterX}/> 
                                     <InputText styles = "row_with_item_wide" Id={5}  label="Центр&nbsp;зоны&nbsp;по&nbsp;y&nbsp;"   placeholder="центр зоны по y"       defValue={this.state.selectedZoneCenterZ}   set={this.setSelectedZoneCenterZ}/> 
                                     <InputText styles = "row_with_item_wide" Id={6}  label="Угол&nbsp;поворота&nbsp;зоны&nbsp;"     placeholder="угол поворота зоны"    defValue={this.state.selectedZoneRotation}  set={this.setSelectedZoneRotation}/> 
-                                    {/* <InputText styles = "row_with_item_wide" Id={7}  label="Тип&nbsp;зоны&nbsp;"                    placeholder="тип зоны"              defValue={this.state.selectedZoneTypeId}    set={this.setSelectedZoneTypeId}/>  */}
                                     <div className="low_text row_with_item_equal" style={{width:"140px"}}><div>Тип&nbsp;зоны&nbsp;</div><ExpandListInputRegular width={100} list={this.state.zoneTypeIdExpandList} defValue={this.state.selectedZoneTypeId} func={this.setSelectedZoneTypeId}/></div>
                                     {this.state.selectedRack==undefined
-                                    ?<>
-                                        <div>Выберите стеллаж</div>
-                                    </>
+                                    ?<div>Выберите стеллаж</div>
                                     :<>
                                         <div className="header_text">Хар-ки выделенного стеллажа</div>
+                                        <InputText styles = "row_with_item_wide" Id={3}  label="Название&nbsp;стеллажа&nbsp;"               placeholder="название стеллажа"         defValue={this.state.selectedRackName}      set={this.setSelectedRackName}/> 
+                                        <InputText styles = "row_with_item_wide" Id={4}  label="Центр&nbsp;стеллажа&nbsp;по&nbsp;x&nbsp;относительно&nbsp;центра&nbsp;зоны&nbsp;"   placeholder="центр стеллажа по x"       defValue={this.state.selectedRackCenterX}   set={this.setSelectedRackCenterX}/> 
+                                        <InputText styles = "row_with_item_wide" Id={5}  label="Центр&nbsp;стеллажа&nbsp;по&nbsp;y&nbsp;относительно&nbsp;центра&nbsp;зоны&nbsp;"   placeholder="центр стеллажа по y"       defValue={this.state.selectedRackCenterZ}   set={this.setSelectedRackCenterZ}/> 
+                                        <InputText styles = "row_with_item_wide" Id={6}  label="Угол&nbsp;поворота&nbsp;стеллажа&nbsp;"     placeholder="угол поворота стеллажа"    defValue={this.state.selectedRackRotation}  set={this.setSelectedRackRotation}/> 
+                                        <div className="low_text row_with_item_equal" style={{width:"140px"}}><div>Тип&nbsp;стеллажа&nbsp;</div><ExpandListInputRegular width={100} list={this.state.rackTypeIdExpandList} defValue={this.state.selectedRackTypeId} func={this.setSelectedRackTypeId}/></div>
                                     </>
                                     }
                                 </>
                                 }
+                                <div style={{width:"350px", display: "inline-block"}}/><button className="bt_send" style={{width:"120px"}} onClick={this.btn_send_1}>Смоделировать склад</button>
                             </>
                         )}
                         {this.state.panelSelTab.id==1&&(
