@@ -11,6 +11,8 @@ import { TableComponent } from "../../components/Table/TableComponent";
 import { Api } from "../../api/logisticianApi"
 
 var api = new Api()
+var TableListIsAnswer = true
+var TableList1IsAnswer = true
 
 export default function LogisticianOrders(props){
 
@@ -28,17 +30,17 @@ export default function LogisticianOrders(props){
 
     //-------------------------------------------------------------------------Блок 1
 
-    //const [orders, setOrders] = React.useState([{id:0, text: "Ничего не найдено", selected: true, code: 0}])
     const [orders, setOrders] = React.useState([])
     const [selOrder, setSelOrder] = React.useState(undefined)
 
     React.useEffect(() => {
-        if (orders.length > 0) {
-            setTableList([])
+        if (orders.length > 0) {   
+            // setTableList([])
             setTableList1([])
             setTableList2([])
             apiGetOrderGoods()
             apiGetGoodsType()
+            apiGetShipments(selOrder) 
         }
     }, [selOrder]);
     
@@ -69,26 +71,45 @@ export default function LogisticianOrders(props){
     }
     
     const [tableList, setTableList] = React.useState([])
-    let lastTableList
     const [selectedItemId, setSelectedItemId] = React.useState()
+ 
     React.useEffect(() => {
-        if (selectedItemId!=undefined){
-            tableList.map(item=>{
-                if (item.id == selectedItemId.id) {
-                    setTableList1(item.goodsInOrder)
-                    setBufferedTableList2(item.goodsInOrder)
-                }
-            })
+        if (selectedItemId!=undefined){ 
+            apiGetShipmentGoods(selectedItemId)
+            // tableList.map(item=>{
+            //     if (item.id == selectedItemId.id) {
+            //         setTableList1(item.goodsInOrder)
+            //         setBufferedTableList2(item.goodsInOrder)
+            //     }
+            // })
         }
     }, [selectedItemId]);
 
+    async function apiGetShipmentGoods(selected) {
+        console.log("Я смешарик")
+        console.log(selected)
+        TableList1IsAnswer = true
+        var result = await api.getShipmentsGoods(selected)
+        setTableList1(result)
+    }
+
     React.useEffect(() => {
-        console.log("DDDDDDD")
-        console.log(tableList)
-        console.log(lastTableList != tableList)
-        lastTableList = tableList
+        if (selOrder != undefined) {
+            if (TableListIsAnswer != true) postShipments(selOrder, tableList)
+            TableListIsAnswer = false
+        }
     }, [tableList])
+
+    async function postShipments(selected, tableList) {
+        await api.postShipments(selected, tableList)
+    }
         
+    async function apiGetShipments(selected) {
+        TableListIsAnswer = true
+        var result = await api.getShipments(selected.code)
+        setTableList(result)
+    }
+
     //-------------------------------------стол 1 конец
     //-------------------------------------стол 2
     const [tableHeaders1, setTableHeaders1] = React.useState([
@@ -109,16 +130,27 @@ export default function LogisticianOrders(props){
 
     const [tableList1, setTableList1] = React.useState([])
     React.useEffect(() => {
-        var buf = tableList
-        tableList.map(function(item,i){
-            if (item.id==selectedItemId){
-                buf[i].goodsInOrder=tableList1
-            }
-        })
-        setTableList(buf)
+        // var buf = tableList
+        // tableList.map(function(item,i){
+        //     if (item.id==selectedItemId){
+        //         buf[i].goodsInOrder=tableList1
+        //     }
+        // })
+        // setTableList(buf)
+        if (selectedItemId != undefined) {
+            if (TableList1IsAnswer == false) apiPostShipmentGoods(selectedItemId, tableList1)
+            TableList1IsAnswer = false
+        }
     }, [tableList1]);
 
-        
+    async function apiPostShipmentGoods(selected, body) {
+        var result = []
+        result = await api.postShipmentGoods(selected, body)
+        result.map((id, i)=>{
+            tableList1[tableList1.length-1].code = id
+        })
+    }
+
     //-------------------------------------стол 2 конец
     //-------------------------------------------------------------------------Блок 2 конец
     
@@ -164,9 +196,9 @@ export default function LogisticianOrders(props){
             tableList2.map(function(element, i){
                 if (element.id == selectedItemId2.id) {
                     if (tableList1 == "")
-                        selectedRow = {id: 0, number:1, goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode, shipmentOrderGoodsCode:0, orderCode:order.code}
+                        selectedRow = {id: 0, code: 0, number:1, goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode, shipmentOrderGoodsCode:0, orderCode:order.code}
                     else
-                        selectedRow = {id: tableList1[tableList1.length-1].id+1, number:tableList1[tableList1.length-1].number+1, goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode, shipmentOrderGoodsCode:0, orderCode:order.code}
+                        selectedRow = {id: tableList1[tableList1.length-1].id+1, code: 0, number:tableList1[tableList1.length-1].number+1, goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode, shipmentOrderGoodsCode:0, orderCode:order.code}
                     }     
             })
             var check = true
@@ -185,7 +217,7 @@ export default function LogisticianOrders(props){
     async function apiGetGoodsType() {
         var goods = await api.getGoodsType()
         setGoodsType(goods)
-        apiGetShipmentOrderGoodsByOrderId(goods)
+        // apiGetShipmentOrderGoodsByOrderId(goods)
     }
 
     async function apiGetShipmentOrderGoodsByOrderId(goodsTypeAnswer) {
@@ -198,7 +230,7 @@ export default function LogisticianOrders(props){
     }
 
     async function apiGetOrderGoods(){
-        if (selOrder != '') {
+        if (selOrder != undefined) {
             var result = await api.getOrderGoods(selOrder)
             if (selOrder.order_status == "sell")
                 setOrderType("На продажу")
@@ -267,9 +299,9 @@ export default function LogisticianOrders(props){
         <>
             <FlexibleBlocksPage>
                 <FlexibleBlock>
-                    <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={'200px'} height={'525px'}/>
+                    <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={"200px"} height={"525px"}/>
                 </FlexibleBlock>
-                <FlexibleBlock> 
+                <FlexibleBlock>
                     <div class="header_text">Доставка товаров</div>
                     <div style={{height:20+"px"}}/>
                     <div style={{width:300+'px', display:'inline-table'}} >

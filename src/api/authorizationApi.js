@@ -1,5 +1,6 @@
-// const host = 'http://127.0.0.1:8000/';
-const host = 'http://localhost:5000/';
+import {Host} from './host'
+var hostObj = new Host()
+var host = hostObj.getHost()
 
 export class Api {
 
@@ -18,7 +19,7 @@ export class Api {
                     
                     answer.map( function(item, i) {
                         accounts.push({
-                          id: 'string_' + i, 
+                          id: i, 
                           code: item.code, 
                           number:i+1, 
                           name: item.name, 

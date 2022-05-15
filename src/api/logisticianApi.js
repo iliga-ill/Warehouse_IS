@@ -1,6 +1,7 @@
+import {Host} from './host'
+var hostObj = new Host()
+var host = hostObj.getHost()
 var id=0
-// const host = 'http://127.0.0.1:8000/';
-const host = 'http://localhost:5000/';
 
 export class Api {
     static getId() {return id++}
@@ -52,6 +53,138 @@ export class Api {
                 }
             }
             xhr.send(null);
+        })
+    }
+
+    getShipments(code) {
+        var xhr = new XMLHttpRequest();
+        var tableListBuf = []
+
+        return new Promise(function(resolve, reject){
+            xhr.open('GET', host+'shipment_order_goods_id_all/'+'?'+`order_id=${code}`, true);
+            console.log("LogisticianApi getShipments was launched")
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    if (this.response == "") {
+                        console.log("Привет из Шарарама")
+                    } else {
+                        console.log(this.response)
+                        var answer = JSON.parse(this.response)
+                        console.log("LogisticianApi getShipments answer: ")
+                        console.log(answer)
+                        let counter1 = 0;
+                        answer.map(shipment => {
+                            tableListBuf.push({id:counter1, number: counter1+++1, 
+                                shipmentNumber: shipment.name, 
+                                orderCode: shipment.order_id, 
+                                shipmentDate: shipment.shipment_date.split("T")[0], 
+                                shipmentCost: parseFloat(shipment.shipment_price) , 
+                                shipmentStatus: shipment.shipment_payment, 
+                                code: shipment.code})
+                        })
+                    }
+                    resolve(tableListBuf)
+                } 
+            }
+            xhr.send(null);
+        })
+    }
+
+    postShipments(selected, body) {
+        var array = body
+        console.log("Крош")
+        console.log(array)
+        array.forEach(element => {
+            element.orderCode = selected.code
+        });
+
+        if (array.length == 0)
+            array[0] = {orderCode: selected.code, shipmentCost: 0, id: -1}
+            console.log(JSON.stringify(array))
+            
+        var xhr = new XMLHttpRequest();
+
+        return new Promise(function(resolve, reject){
+            xhr.open('POST', host+'insert_shipment_orders_by_order/', true);
+            //Send the proper header information along with the request
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                        console.log(this.responseText);
+                        // alert("Изменения успешно приняты")
+                        resolve("Responded")
+                    }
+                }
+            xhr.send(JSON.stringify(array));
+        })
+    }
+
+    getShipmentsGoods(shipment_num) {
+        var xhr = new XMLHttpRequest();
+        var tableListBuf = []
+        console.log('shipment_num')
+        console.log(shipment_num)
+        return new Promise(function(resolve, reject){
+            xhr.open('GET', host+'shipment_goods_id/'+'?'+`shipment_num=${shipment_num.shipmentNumber}`, true);
+            console.log("LogisticianApi getShipmentsGoods was launched")
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    if (this.response == "") {
+                        console.log("Привет из Шарарама")
+                    } else {
+                        console.log(this.response)
+                        var answer = JSON.parse(this.response)
+                        console.log("LogisticianApi getShipmentsGoods answer: ")
+                        console.log(answer)
+                        let counter1 = 0;
+                        answer.map(good => {
+                            tableListBuf.push({
+                                id: good.code,
+                                code:good.code, 
+                                number: counter1+1, 
+                                goodsType: good.goods, 
+                                weight: good.weight, 
+                                expectingAmount: good.amount, 
+                                realAmount: good.amount_real,
+                                orderCode: good.order_code})
+                            counter1++
+                        })
+                    }
+                    resolve(tableListBuf)
+                } 
+            }
+            xhr.send(null);
+        })
+    }
+
+    postShipmentGoods(selected, body) {
+        var array = body
+        console.log("Ежик")
+        console.log(array)
+        console.log(selected)
+        array.forEach(element => {
+            element.shipmentNumber = selected.shipmentNumber
+        });
+
+        if (array.length == 0)
+            array[0] = {orderCode: selected.code, id: -1}
+            console.log(JSON.stringify(array))
+            
+        var xhr = new XMLHttpRequest();
+
+        return new Promise(function(resolve, reject){
+            xhr.open('POST', host+'insert_shipment_goods/', true);
+            //Send the proper header information along with the request
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                        console.log("LogisticianApi postShipmentGoods answer: ")
+                        console.log(this.responseText);
+                        // alert("Изменения успешно приняты")
+                        resolve(JSON.parse(this.responseText))
+                    }
+                }
+            xhr.send(JSON.stringify(array));
         })
     }
 
