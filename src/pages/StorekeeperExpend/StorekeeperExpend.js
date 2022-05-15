@@ -45,7 +45,9 @@ export default function StorekeeperExpend(props){
     async function apiGetShipmentOrders() {
         var status = location.pathname.split("/")[location.pathname.split("/").length-1] == 'Current'? 'opened' : 'closed'
         var order = await api.getShipmentOrders('purchase', status)
-        setOrders(order)
+        structuredClone(orders).map(()=>{orders.pop()})
+        order.map(item=>{orders.push(item)})
+        setSelOrder(order[0])
     }
     //-------------------------------------------------------------------------Блок 1 конец
 
