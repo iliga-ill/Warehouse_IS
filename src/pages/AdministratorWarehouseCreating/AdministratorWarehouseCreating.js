@@ -48,12 +48,6 @@ let mouseRightButton = false
 let lastX;
 let lastY;
 
-function setModel(value){
-    model = value
-    if (scene!=undefined) createHint();
-}
-
-
 
 //scene variables
 let width, height;
@@ -63,16 +57,15 @@ let camera, scene, renderer;
 let plane;
 let pointer, raycaster; 
 
-const objects = [];
-
 //let editingMod = "viewing" //viewing, adding, deleting /change mode of interacting with models
 
 let selectionLockedModels = [""] //models locked for selecting them
 let hintLockedModels = [""] //models locked for creating hint fore them
 
 let hintModel = undefined; //currently placed hint model
-let model = undefined; //currently placed model
-let selectedModel = undefined; //currently placed model
+let zoneHintMesh = undefined; //currently placed hint model
+let rackHintMesh = undefined; //currently placed hint model
+
 
 let viewMod = "observasion" //observasion, first-person /change mode of viewing
 let controls
@@ -112,10 +105,6 @@ function init(warehouseSettings) {
     scene = new THREE.Scene();
     scene.background = new THREE.Color( 0xffffff );
 
-    //grid
-    const gridHelper = new THREE.GridHelper( Math.max(warehouseSettings.width, warehouseSettings.length), Math.max(warehouseSettings.width, warehouseSettings.length) );
-    scene.add( gridHelper );
-
     const geometry = new THREE.PlaneGeometry( 10000, 10000 );
     geometry.rotateX( - Math.PI / 2 );
 
@@ -123,9 +112,7 @@ function init(warehouseSettings) {
     plane.name = "Mesh"
     selectionLockedModels.push("Mesh")
     hintLockedModels.push("Mesh")
-
     scene.add( plane );
-    objects.push( plane );
 
     // lights
     const ambientLight = new THREE.AmbientLight( 0x606060 );
@@ -334,7 +321,7 @@ function onMouseStop(){
     if (pointer != undefined){
         pointer.set(getScreenX(lastX), getScreenY(lastY));
         raycaster.setFromCamera( pointer, camera );
-        const intersects = raycaster.intersectObjects( objects );
+        const intersects = raycaster.intersectObjects( scene.children );
         const intersect = intersects[0];
         if (intersects.length > 0 && !hintLockedModels.includes(intersect.object.name)) {
             generateHint(intersect, lastX, lastY)
@@ -495,32 +482,32 @@ function onKeyPressed(){
     keyListener = setTimeout(onKeyPressed, 10);
 }
 
-function createHint(){
+function createHint(mesh){
     if (hintModel != undefined) {
         scene.remove(hintModel.mesh)
         hintModel = undefined
     }
-    pointer.set(getScreenX(lastX), getScreenY(lastY));
-    raycaster.setFromCamera( pointer, camera );
-    const intersects = raycaster.intersectObjects( objects );
-    const intersect = intersects[0];
+    // pointer.set(getScreenX(lastX), getScreenY(lastY));
+    // raycaster.setFromCamera( pointer, camera );
+    // const intersects = raycaster.intersectObjects( scene.children );
+    // const intersect = intersects[0];
 
-    if (intersect != undefined && !selectionLockedModels.includes(intersect.object.name) && 
-    (page.state.selectedZone==undefined || page.state.selectedZone.name!=intersect.object.name) &&
-    (page.state.selectedRack==undefined || page.state.selectedRack.name!=intersect.object.name)
+    if (mesh != undefined && !selectionLockedModels.includes(mesh.name) && !mouseRightButton && !mouseLeftButton &&
+    (page.state.selectedZone==undefined || page.state.selectedZone.name!=mesh.name) &&
+    (page.state.selectedRack==undefined || page.state.selectedRack.name!=mesh.name)
     ) {
         hintModel = {
             name: "Hint", 
             modelName: "Hint",
             material: new THREE.MeshBasicMaterial( { color: 0x90EE90, opacity: 0.1, transparent: true } ), 
-            geometry: intersect.object.geometry, 
+            geometry: mesh.geometry, 
             mesh: new THREE.Mesh( 
-                intersect.object.geometry, 
+                mesh.geometry, 
                 new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } )
             ), 
             translation: new Vector3(0,0,0),
         }
-        hintModel.mesh.rotation.set(intersect.object.rotation.x, intersect.object.rotation.y, intersect.object.rotation.z)
+        hintModel.mesh.rotation.set(mesh.rotation.x, mesh.rotation.y, mesh.rotation.z)
         hintModel.mesh.visible = false
         scene.add( hintModel.mesh );
     }
@@ -545,28 +532,36 @@ function onWindowResize() {
 function onPointerMove(event) {
     lastX = event.clientX;
     lastY = event.clientY;
-    createHint();
-    if (hintModel != undefined)
-        animateHint();
+
+    if (!mouseRightButton || !mouseLeftButton){
+        pointer.set(getScreenX(lastX), getScreenY(lastY));
+        raycaster.setFromCamera( pointer, camera );
+        const intersects = raycaster.intersectObjects( scene.children );
+        const intersect = intersects[0];
+
+        createHint(intersect.object);
+        if (hintModel != undefined)
+            animateHint(intersect.object);
+    }
     render();
 }
 
-function animateHint() {
-    pointer.set(getScreenX(lastX), getScreenY(lastY));
-    raycaster.setFromCamera( pointer, camera );
-    const intersects = raycaster.intersectObjects( objects );
-    const intersect = intersects[0];
-    if (intersect!=undefined && hintModel != undefined && intersect.object.type !="Line") {
+function animateHint(mesh) {
+    // pointer.set(getScreenX(lastX), getScreenY(lastY));
+    // raycaster.setFromCamera( pointer, camera );
+    // const intersects = raycaster.intersectObjects( scene.children );
+    // const intersect = intersects[0];
+    if (mesh!=undefined && hintModel != undefined && mesh.type !="Line") {
         //hintMesh.visible = true;
-        hintModel.mesh.position.copy( intersect.point ).add( intersect.face.normal );
-        hintModel.mesh.position.divideScalar(1).floor().multiplyScalar(1).addScalar( 1 );
+        // hintModel.mesh.position.copy( intersect.point ).add( intersect.face.normal );
+        // hintModel.mesh.position.divideScalar(1).floor().multiplyScalar(1).addScalar( 1 );
         hintModel.mesh.position.set(
-            intersect.object.position.x, 
-            intersect.object.position.y, 
-            intersect.object.position.z
+            mesh.position.x, 
+            mesh.position.y, 
+            mesh.position.z
         )
         hintModel.mesh.visible = true
-        scene.add( hintModel.mesh );
+        //scene.add( hintModel.mesh );
     } 
 }
 //#endregion
@@ -575,58 +570,45 @@ function animateHint() {
 function onPointerDown( event ) {
     pointer.set(getScreenX(event.clientX), getScreenY(event.clientY));
     raycaster.setFromCamera( pointer, camera );
-    const intersects = raycaster.intersectObjects( objects );
+    const intersects = raycaster.intersectObjects( scene.children );
     
     if (intersects.length > 0 && hintModel!=undefined) {
         const intersect = intersects[0];
 
         if (intersect.object.type == "zone"){
-            scene.remove(page.state.selectedZone)
-            scene.remove(page.state.selectedRack)
-        }
-            
-        if (intersect.object.type == "rack"){
-            scene.remove(page.state.selectedRack)
-        }
-        
-        const voxel = new THREE.Mesh( hintModel.geometry, hintModel.material);
-        voxel.position.copy( intersect.point ).add( intersect.face.normal );
-        voxel.position.divideScalar( 1 ).floor().multiplyScalar( 1 ).addScalar( 1 );
-        voxel.position.set(
-            intersect.object.position.x, 
-            intersect.object.position.y, 
-            intersect.object.position.z)
-        voxel.name = intersect.object.name;
-        voxel.userData = intersect.object.userData
-        voxel.rotation.set(intersect.object.rotation.x, intersect.object.rotation.y, intersect.object.rotation.z)
-        scene.add( voxel );
+            scene.remove(zoneHintMesh)
+            scene.remove(rackHintMesh)
 
-        if (intersect.object.type == "zone"){
+            zoneHintMesh = addHintOnScene(intersect.object)
+
             page.setSelectedZone(undefined)
-            page.state.selectedZoneName = voxel.userData.name
-            page.state.selectedZoneCenterX = voxel.userData.centerPoint.x
-            page.state.selectedZoneCenterZ = voxel.userData.centerPoint.z
-            page.state.selectedZoneRotation = voxel.userData.rotation.y
-            page.state.selectedZoneTypeId = {value:voxel.userData.zoneTypeId}
+            page.state.selectedZoneName = intersect.object.userData.name
+            page.state.selectedZoneCenterX = intersect.object.userData.centerPoint.x
+            page.state.selectedZoneCenterZ = intersect.object.userData.centerPoint.z
+            page.state.selectedZoneRotation = intersect.object.userData.rotation.y
+            page.state.selectedZoneTypeId = {value:intersect.object.userData.zoneTypeId}
 
             page.state.selectedRackName = undefined
             page.state.selectedRackCenterX = undefined
             page.state.selectedRackCenterZ = undefined
             page.state.selectedRackRotation = undefined
-            page.setSelectedZone(voxel)
+            page.setSelectedZone(intersect.object)
             page.setSelectedRack(undefined)
         }
-
+        
         if (intersect.object.type == "rack"){
+            scene.remove(rackHintMesh)
+
+            rackHintMesh = addHintOnScene(intersect.object)
+
             page.setSelectedRack(undefined)
-            page.state.selectedRackName = voxel.userData.name
-            page.state.selectedRackCenterX = voxel.userData.centerPoint.x
-            page.state.selectedRackCenterZ = voxel.userData.centerPoint.z
-            page.state.selectedRackRotation = voxel.userData.rotation.y
-            page.state.selectedRackTypeId = {value:voxel.userData.racksTypeId}
-            page.setSelectedRack(voxel)
+            page.state.selectedRackName = intersect.object.userData.name
+            page.state.selectedRackCenterX = intersect.object.userData.centerPoint.x
+            page.state.selectedRackCenterZ = intersect.object.userData.centerPoint.z
+            page.state.selectedRackRotation = intersect.object.userData.rotation.y
+            page.state.selectedRackTypeId = {value:intersect.object.userData.racksTypeId}
+            page.setSelectedRack(intersect.object)
         }
-        //objects.push( voxel );
 
         //page.setState({tableList: shelfSpace});
         //page.flickPanel()
@@ -634,102 +616,144 @@ function onPointerDown( event ) {
         render();
     }
 }
+
+function addHintOnScene(mesh){
+    const voxel = new THREE.Mesh( mesh.geometry, new THREE.MeshBasicMaterial( { color: 0x90EE90, opacity: 0.1, transparent: true } ));
+    // voxel.position.copy( intersect.point ).add( intersect.face.normal );
+    // voxel.position.divideScalar( 1 ).floor().multiplyScalar( 1 ).addScalar( 1 );
+    voxel.position.set(
+        mesh.position.x, 
+        mesh.position.y, 
+        mesh.position.z)
+    voxel.name = mesh.name;
+    voxel.userData = mesh.userData
+    voxel.rotation.set(mesh.rotation.x, mesh.rotation.y, mesh.rotation.z)
+    scene.add( voxel );
+    return voxel
+}
 //#endregion
 
 //#region work with models and scene
 
-function setModelOnCoordinates(model, coordinates, inObjects, type){
+function setModelOnCoordinates(model, coordinates, type){
     const voxel = model.mesh;
     voxel.position.divideScalar( 1 ).floor().multiplyScalar( 1 ).addScalar( 1 );
     voxel.position.set(coordinates.x + model.translation.x, coordinates.y + model.translation.y, coordinates.z + model.translation.z)
     voxel.name = model.name;
     if (type!=undefined) voxel.type = type
     scene.add( voxel );
-    if (inObjects) objects.push( voxel );
 }
 
 function warehouseGeneration(warehouseSettings, zonesType, racksType, goodsType){
-    let floorModel = modelCreator.createFloor("Floor", 0x808080, warehouseSettings.width, warehouseSettings.length, 4, new Vector3(0,-2,0))
-        
-    setModelOnCoordinates(floorModel, new Vector3(0,0,0), true, "floor")
-    selectionLockedModels.push(floorModel.name)
-    hintLockedModels.push(floorModel.name)
-
+    addFloorOnScene(warehouseSettings)
     //zones
     warehouseSettings.zones.map(zone=>{
-        let zoneType = zonesType[`zone_${zone.zoneTypeId}`]
-        let zoneBorderModel = modelCreator.createZoneBorder(zone.name, zoneType.color, zoneType.width, zoneType.length, zoneType.lineWidth, zoneType.chamferLendth, zoneType.message, zoneType.messageAlighment, font, zoneType.textSize, zoneType.gapLengthX, zoneType.gapLengthY, new Vector3(0,0,0))
-        let zoneFillModel = modelCreator.zoneFillModel(`${zone.name}_fillament`, zoneType.color, zoneType.width, zoneType.length, zoneType.lineWidth, zoneType.chamferLendth, new Vector3(0,0,0))
-        zoneBorderModel.mesh = auxMath.rotateMeshOnAllAxis(zoneBorderModel.mesh, zone.rotation)
-        zoneFillModel.mesh = auxMath.rotateMeshOnAllAxis(zoneFillModel.mesh, zone.rotation)
-        let zoneCenterGlobalCoordinate = zone.centerPoint
-        zoneFillModel.mesh.userData = zone
-        setModelOnCoordinates(zoneBorderModel, zoneCenterGlobalCoordinate, true, zone.type)
-        setModelOnCoordinates(zoneFillModel, zoneCenterGlobalCoordinate, true, zone.type)
-        selectionLockedModels.push(zone.name)
-        hintLockedModels.push(zone.name)
-        hintLockedModels.push(`${zone.name}_fillament`)
+        addZoneOnScene(zone, zonesType)
         //racks
         zone.racks.map(rack=>{
             let rackType = racksType[`rack_${rack.racksTypeId}`]
-            let rackModel = modelCreator.createRack(rack.name+" "+rack.id, rackType.color, rackType.shelfWidth, rackType.shelfHeight, rackType.depth, rackType.columsAmount, rackType.rowsAmount, rackType.borderWidth, rackType.translation)
-            let rackCenterGlobalCoordinate = new Vector3(
-                zoneCenterGlobalCoordinate.x + rack.centerPoint.x, 
-                zoneCenterGlobalCoordinate.y + rack.centerPoint.y, 
-                zoneCenterGlobalCoordinate.z + rack.centerPoint.z
-            )
-            rackModel.mesh = auxMath.rotateMeshOnAllAxis(rackModel.mesh, auxMath.sumRotations([zone.rotation, rack.rotation]))
-            let rotatedRackCenterGlobalCoordinate = auxMath.rotatePointAroundAxisMass(
-                rackCenterGlobalCoordinate.clone(), 
-                auxMath.translatePoint(zoneCenterGlobalCoordinate.clone(), {x:-rackType.translation.x,y:-rackType.translation.y,z:-rackType.translation.z}), 
-                zone.rotation
-            )
-            rackModel.mesh.userData = rack
-            setModelOnCoordinates(
-                rackModel, 
-                rotatedRackCenterGlobalCoordinate,
-                true, 
-                rack.type
-            )
-            selectionLockedModels.push(rack.name+" "+rack.id)
-            //shelfs
-            rack.shelfs.map(shelf=>{
-                if (shelf.space != ""){
-                        let good = shelf.space[0]
-                        let goodType = goodsType[`good_${good.goodTypeId}`]
-                        let goodModel = modelCreator.createCube(good.name, goodType.color, goodType.width, goodType.height, goodType.depth, goodType.translation)
-                        goodModel.mesh.userData.space = shelf.space
-                        
-                        let firstShelfCenterGlobalCoordinate = new Vector3(
-                            rackCenterGlobalCoordinate.x-((rackType.shelfWidth*rackType.columsAmount + rackType.borderWidth*(rackType.columsAmount+1))/2 - (rackType.shelfWidth/2 + rackType.borderWidth) ),
-                            rackCenterGlobalCoordinate.y + rackType.borderWidth*2,
-                            rackCenterGlobalCoordinate.z
-                        )
-                        let shiftedFirstShelfCenterGlobalCoordinate = new Vector3(
-                            firstShelfCenterGlobalCoordinate.x + (rackType.shelfWidth  + rackType.borderWidth)*rackType.shelfs[`shelf_${shelf.number}`].column,
-                            firstShelfCenterGlobalCoordinate.y + (rackType.shelfHeight + rackType.borderWidth)*rackType.shelfs[`shelf_${shelf.number}`].row,
-                            firstShelfCenterGlobalCoordinate.z
-                        )
-                        goodModel.mesh = auxMath.rotateMeshOnAllAxis(goodModel.mesh, auxMath.sumRotations([zone.rotation, rack.rotation]))
-                        let rotatedZoneShiftedFirstShelfCenterGlobalCoordinate = auxMath.rotatePointAroundAxisMass(shiftedFirstShelfCenterGlobalCoordinate.clone(), zoneCenterGlobalCoordinate.clone(), zone.rotation)
-                        let rotatedRackShiftedFirstShelfCenterGlobalCoordinate = auxMath.rotatePointAroundAxisMass(
-                            rotatedZoneShiftedFirstShelfCenterGlobalCoordinate.clone(), 
-                            auxMath.translatePoint(rotatedRackCenterGlobalCoordinate.clone(), {x:rackType.translation.x,y:rackType.translation.y,z:rackType.translation.z}),
-                            rack.rotation
-                        )
-                        setModelOnCoordinates(
-                            goodModel, 
-                            rotatedRackShiftedFirstShelfCenterGlobalCoordinate,
-                            true, 
-                            good.type
-                        )
-                        selectionLockedModels.push(good.name)
-                        hintLockedModels.push(good.name)
-                }
-            })
+            addRackWithGoodsOnScene(zone, rack, racksType, goodsType)
         })
     })
     render()
+}
+
+function addFloorOnScene(warehouseSettings){
+    //grid
+    const gridHelper = new THREE.GridHelper( Math.max(warehouseSettings.width, warehouseSettings.length), Math.max(warehouseSettings.width, warehouseSettings.length) );
+    scene.add( gridHelper );
+
+    let floorModel = modelCreator.createFloor("Floor", 0x808080, warehouseSettings.width, warehouseSettings.length, 4, new Vector3(0,-2,0))
+    setModelOnCoordinates(floorModel, new Vector3(0,0,0), "floor")
+    selectionLockedModels.push(floorModel.name)
+    hintLockedModels.push(floorModel.name)
+}
+
+function addZoneOnScene(zone, zonesType){
+    let zoneType = zonesType[`zone_${zone.zoneTypeId}`]
+    let zoneBorderModel = modelCreator.createZoneBorder(zone.name, zoneType.color, zoneType.width, zoneType.length, zoneType.lineWidth, zoneType.chamferLendth, zoneType.message, zoneType.messageAlighment, font, zoneType.textSize, zoneType.gapLengthX, zoneType.gapLengthY, new Vector3(0,0,0))
+    let zoneFillModel = modelCreator.zoneFillModel(`${zone.name}_fillament`, zoneType.color, zoneType.width, zoneType.length, zoneType.lineWidth, zoneType.chamferLendth, new Vector3(0,0,0))
+    zoneBorderModel.mesh = auxMath.rotateMeshOnAllAxis(zoneBorderModel.mesh, zone.rotation)
+    zoneFillModel.mesh = auxMath.rotateMeshOnAllAxis(zoneFillModel.mesh, zone.rotation)
+    zoneFillModel.mesh.userData = zone
+    zoneFillModel.mesh.userData.borderModel = zoneBorderModel.mesh
+    setModelOnCoordinates(zoneBorderModel, zone.centerPoint, zone.type)
+    setModelOnCoordinates(zoneFillModel, zone.centerPoint, zone.type)
+    selectionLockedModels.push(zone.name)
+    hintLockedModels.push(zone.name)
+    hintLockedModels.push(`${zone.name}_fillament`)
+    return zoneFillModel.mesh
+}
+
+function addRackWithGoodsOnScene(zone, rack, racksType, goodsType){
+    let rackType = racksType[`rack_${rack.racksTypeId}`]
+    let rackModel = modelCreator.createRack(rack.name+" "+rack.id, rackType.color, rackType.shelfWidth, rackType.shelfHeight, rackType.depth, rackType.columsAmount, rackType.rowsAmount, rackType.borderWidth, rackType.translation)
+    let rackCenterGlobalCoordinate = new Vector3(
+        zone.centerPoint.x + rack.centerPoint.x, 
+        zone.centerPoint.y + rack.centerPoint.y, 
+        zone.centerPoint.z + rack.centerPoint.z
+    )
+    rackModel.mesh = auxMath.rotateMeshOnAllAxis(rackModel.mesh, auxMath.sumRotations([zone.rotation, rack.rotation]))
+    let rotatedRackCenterGlobalCoordinate = auxMath.rotatePointAroundAxisMass(
+        rackCenterGlobalCoordinate.clone(), 
+        auxMath.translatePoint(zone.centerPoint.clone(), {x:-rackType.translation.x,y:-rackType.translation.y,z:-rackType.translation.z}), 
+        zone.rotation
+    )
+    rackModel.mesh.userData = rack
+    rackModel.mesh.userData.goodsModels = []
+    //shelfs
+    rack.shelfs.map(shelf=>{
+        if (shelf.space != ""){
+            let rackCenterGlobalCoordinate = new Vector3(
+                zone.centerPoint.x + rack.centerPoint.x, 
+                zone.centerPoint.y + rack.centerPoint.y, 
+                zone.centerPoint.z + rack.centerPoint.z
+            )
+            let rotatedRackCenterGlobalCoordinate = auxMath.rotatePointAroundAxisMass(
+                rackCenterGlobalCoordinate.clone(), 
+                auxMath.translatePoint(zone.centerPoint.clone(), {x:-rackType.translation.x,y:-rackType.translation.y,z:-rackType.translation.z}), 
+                zone.rotation
+            )
+
+            let good = shelf.space[0]
+            let goodType = goodsType[`good_${good.goodTypeId}`]
+            let goodModel = modelCreator.createCube(good.name, goodType.color, goodType.width, goodType.height, goodType.depth, goodType.translation)
+            goodModel.mesh.userData.space = shelf.space
+            
+            let firstShelfCenterGlobalCoordinate = new Vector3(
+                rackCenterGlobalCoordinate.x-((rackType.shelfWidth*rackType.columsAmount + rackType.borderWidth*(rackType.columsAmount+1))/2 - (rackType.shelfWidth/2 + rackType.borderWidth) ),
+                rackCenterGlobalCoordinate.y + rackType.borderWidth*2,
+                rackCenterGlobalCoordinate.z
+            )
+            let shiftedFirstShelfCenterGlobalCoordinate = new Vector3(
+                firstShelfCenterGlobalCoordinate.x + (rackType.shelfWidth  + rackType.borderWidth)*rackType.shelfs[`shelf_${shelf.number}`].column,
+                firstShelfCenterGlobalCoordinate.y + (rackType.shelfHeight + rackType.borderWidth)*rackType.shelfs[`shelf_${shelf.number}`].row,
+                firstShelfCenterGlobalCoordinate.z
+            )
+            goodModel.mesh = auxMath.rotateMeshOnAllAxis(goodModel.mesh, auxMath.sumRotations([zone.rotation, rack.rotation]))
+            let rotatedZoneShiftedFirstShelfCenterGlobalCoordinate = auxMath.rotatePointAroundAxisMass(shiftedFirstShelfCenterGlobalCoordinate.clone(), zone.centerPoint.clone(), zone.rotation)
+            let rotatedRackShiftedFirstShelfCenterGlobalCoordinate = auxMath.rotatePointAroundAxisMass(
+                rotatedZoneShiftedFirstShelfCenterGlobalCoordinate.clone(), 
+                auxMath.translatePoint(rotatedRackCenterGlobalCoordinate.clone(), {x:rackType.translation.x,y:rackType.translation.y,z:rackType.translation.z}),
+                rack.rotation
+            )
+            rackModel.mesh.userData.goodsModels.push(goodModel.mesh)
+            setModelOnCoordinates(
+                goodModel, 
+                rotatedRackShiftedFirstShelfCenterGlobalCoordinate,
+                good.type
+            )
+            selectionLockedModels.push(good.name)
+            hintLockedModels.push(good.name)
+        }
+    })
+    setModelOnCoordinates(
+        rackModel, 
+        rotatedRackCenterGlobalCoordinate,
+        rack.type
+    )
+    selectionLockedModels.push(rack.name+" "+rack.id)
+    return rackModel.mesh
 }
 //#endregion
 
@@ -793,52 +817,135 @@ class AdministratorWarehouseCreating extends Component {
     setPanelSelTab = (value)=>{this.setState({panelSelTab: value});}                //табы выезжающей панельки
     setIsSideBlockOpened = (value)=>{this.setState({isSideBlockOpened: value});}    //табы выезжающей панельки
 
-    setWarehouseWidth = (value)=>{this.state.warehouseSettings.width = Number(value); this.setState({warehouseWidth: Number(value)});} //хар-ки склада
-    setWarehouseLength = (value)=>{this.state.warehouseSettings.length = Number(value); this.setState({warehouseLength: Number(value)});} //хар-ки склада
+    setWarehouseWidth = (value)=>{this.state.warehouseSettings.width = Number(value); this.setState({warehouseWidth: Number(value)});this.recreateFloor()} //хар-ки склада
+    setWarehouseLength = (value)=>{this.state.warehouseSettings.length = Number(value); this.setState({warehouseLength: Number(value)});this.recreateFloor()} //хар-ки склада
 
     setSelectedZone = (value)=>{this.setState({selectedZone: value});}       //выделенная зона
-    setSelectedZoneName = (value)=>{this.state.selectedZone.userData.name = value; this.setState({selectedZoneName: value});}       //хар-ки выделенной зоны
-    setSelectedZoneCenterX = (value)=>{this.state.selectedZone.userData.centerPoint.x = Number(value); this.setState({selectedZoneCenterX: Number(value)});}     //хар-ки выделенной зоны
-    setSelectedZoneCenterZ = (value)=>{this.state.selectedZone.userData.centerPoint.z = Number(value); this.setState({selectedZoneCenterZ: Number(value)});}     //хар-ки выделенной зоны
-    setSelectedZoneRotation = (value)=>{this.state.selectedZone.userData.rotation.y = Number(value); this.setState({selectedZoneRotation: Number(value)});}   //хар-ки выделенной зоны
+    setSelectedZoneName = (value)=>{this.state.selectedZone.userData.name = value; this.setState({selectedZoneName: value});this.recreateZone()}       //хар-ки выделенной зоны
+    setSelectedZoneCenterX = (value)=>{this.state.selectedZone.userData.centerPoint.x = Number(value); this.setState({selectedZoneCenterX: Number(value)});this.recreateZone()}     //хар-ки выделенной зоны
+    setSelectedZoneCenterZ = (value)=>{this.state.selectedZone.userData.centerPoint.z = Number(value); this.setState({selectedZoneCenterZ: Number(value)});this.recreateZone()}     //хар-ки выделенной зоны
+    setSelectedZoneRotation = (value)=>{this.state.selectedZone.userData.rotation.y = Number(value); this.setState({selectedZoneRotation: Number(value)});this.recreateZone()}   //хар-ки выделенной зоны
     setZoneTypeIdExpandList = (value)=>{this.setState({zoneTypeIdExpandList: value});}       //хар-ки выделенной зоны
-    setSelectedZoneTypeId = (value)=>{this.state.selectedZone.userData.zoneTypeId = value; this.setState({selectedZoneTypeId: value});}       //хар-ки выделенной зоны
+    setSelectedZoneTypeId = (value)=>{this.state.selectedZone.userData.zoneTypeId = value; this.setState({selectedZoneTypeId: value});this.recreateZone()}       //хар-ки выделенной зоны
 
     setSelectedRack = (value)=>{this.setState({selectedRack: value});}       //выделенный стеллаж
-    setSelectedRackName = (value)=>{this.state.selectedRack.userData.name = value; this.setState({selectedRackName: value});}       //хар-ки выделенного стеллажа
-    setSelectedRackCenterX = (value)=>{this.state.selectedRack.userData.centerPoint.x = Number(value); this.setState({selectedRackCenterX: Number(value)});}     //хар-ки выделенного стеллажа
-    setSelectedRackCenterZ = (value)=>{this.state.selectedRack.userData.centerPoint.z = Number(value); this.setState({selectedRackCenterZ: Number(value)});}     //хар-ки выделенного стеллажа
-    setSelectedRackRotation = (value)=>{this.state.selectedRack.userData.rotation.y = Number(value); this.setState({selectedRackRotation: Number(value)});}   //хар-ки выделенного стеллажа
+    setSelectedRackName = (value)=>{this.state.selectedRack.userData.name = value; this.setState({selectedRackName: value});this.recreateRack(false)}       //хар-ки выделенного стеллажа
+    setSelectedRackCenterX = (value)=>{this.state.selectedRack.userData.centerPoint.x = Number(value); this.setState({selectedRackCenterX: Number(value)});this.recreateRack(false)}     //хар-ки выделенного стеллажа
+    setSelectedRackCenterZ = (value)=>{this.state.selectedRack.userData.centerPoint.z = Number(value); this.setState({selectedRackCenterZ: Number(value)});this.recreateRack(false)}     //хар-ки выделенного стеллажа
+    setSelectedRackRotation = (value)=>{this.state.selectedRack.userData.rotation.y = Number(value); this.setState({selectedRackRotation: Number(value)});this.recreateRack(false)}   //хар-ки выделенного стеллажа
     setRackTypeIdExpandList = (value)=>{this.setState({rackTypeIdExpandList: value});}   //хар-ки выделенного стеллажа
-    setSelectedRackTypeId = (value)=>{this.state.selectedRack.userData.racksTypeId = value; this.setState({selectedRackTypeId: value});}       //хар-ки выделенного стеллажа
-    
-    setWarehouseSettings=()=>{
-        if (this.state.selectedZone != undefined){
-            this.state.warehouseSettings.zones.map(zone=>{
-                if (zone.id === this.state.selectedZone.userData.id && zone.type === "zone"){
-                    let newZone = this.getSceneElmByIdAndType(zone.id, "zone").userData
-                    newZone.racks = newZone.racks.map(rack=>{
-                        return this.getSceneElmByIdAndType(rack.id, "rack").userData
-                    })
-                    return newZone
-                }
-                return zone
-            })
-            let buf = []
-            scene.children.map(obj=>{buf.push(obj)})
-            buf.map(obj=>{
-                if (obj.type == "zone" || obj.type == "rack" || obj.type == "good" || obj.type == "floor")
-                    scene.remove(obj)
-            })
-            hintLockedModels = ["","Mesh"]
+    setSelectedRackTypeId = (value)=>{this.state.selectedRack.userData.racksTypeId = value; this.setState({selectedRackTypeId: value});this.recreateRack(true)}       //хар-ки выделенного стеллажа
 
-            warehouseGeneration(this.state.warehouseSettings, this.state.zonesType, this.state.racksType, this.state.goodsType)
-            // console.log(scene)
-            // // this.generateWarehouse()
-            // // render()
-            // console.log(this.state.warehouseSettings)
-            render()
+    recreateFloor=()=>{
+        let floorModel = undefined
+        let gridHelper = undefined
+        scene.children.map(mesh=>{
+            if (mesh.type == "floor") floorModel = mesh
+            if (mesh.type == "GridHelper") gridHelper = mesh
+        })
+        scene.remove(floorModel)
+        scene.remove(gridHelper)
+        addFloorOnScene(this.state.warehouseSettings)
+        render()
+    }
+
+    recreateZone=()=>{
+        let newZoneMesh = undefined
+        let newRackMesh = undefined
+        this.state.warehouseSettings.zones.map(zone=>{
+            if (zone.id === this.state.selectedZone.userData.id && zone.type === "zone"){
+                let newZoneObj = this.getSceneElmByIdAndType(zone.id, "zone")
+                let newZone = newZoneObj.userData
+                scene.remove(newZoneObj)
+                scene.remove(newZone.borderModel)
+                newZone.racks.map(rack=>{
+                        let rackObj = this.getSceneElmByIdAndType(rack.id, "rack")
+                        rackObj.userData.goodsModels.map(goodObj=>{
+                            scene.remove(goodObj)
+                        })
+                        scene.remove(rackObj)
+                        addRackWithGoodsOnScene(zone, rack, this.state.racksType, this.state.goodsType)
+                })
+                
+                newZoneMesh = addZoneOnScene(newZone, this.state.zonesType)
+                return newZone
+            }
+            return zone
+        })
+
+        scene.remove(zoneHintMesh)
+        zoneHintMesh = addHintOnScene(newZoneMesh)
+        
+        if (rackHintMesh!=undefined && this.state.selectedRack!=undefined){
+            newRackMesh=this.getSceneElmByIdAndType(this.state.selectedRack.userData.id, "rack")
+            scene.remove(rackHintMesh)
+            rackHintMesh = addHintOnScene(newRackMesh)
         }
+        render()
+    }
+
+    recreateRack=(isTypeChanged)=>{
+        this.state.warehouseSettings.zones.map(zone=>{
+            if (zone.id === this.state.selectedZone.userData.id && zone.type === "zone"){
+                let newZoneObj = this.getSceneElmByIdAndType(zone.id, "zone")
+                let newZone = newZoneObj.userData
+                newZone.racks = newZone.racks.map(rack=>{
+                    if (rack.id === this.state.selectedRack.userData.id && rack.type === "rack"){
+                        let newRackObj = this.getSceneElmByIdAndType(rack.id, "rack")
+                        let newRack = newRackObj.userData
+                        newRackObj.userData.goodsModels.map(goodObj=>{
+                            scene.remove(goodObj)
+                        })
+                        scene.remove(newRackObj)
+                        if (!isTypeChanged)
+                            addRackWithGoodsOnScene(zone, newRack, this.state.racksType, this.state.goodsType)
+                        else {
+                            newRack.shelfs = this.generateShelfsByRackType(newRack.racksTypeId, this.state.racksType, this.getLastShelfIdByType(scene)+1)
+                            console.log(newRack)
+                            addRackWithGoodsOnScene(zone, newRack, this.state.racksType, this.state.goodsType)
+                        }
+                        return newRack
+                    }
+                    return rack
+                })
+                return newZone
+            }
+            return zone
+        })
+        let newRackMesh=this.getSceneElmByIdAndType(this.state.selectedRack.userData.id, "rack")
+        scene.remove(rackHintMesh)
+        rackHintMesh = addHintOnScene(newRackMesh)
+        render()
+    }
+
+    generateShelfsByRackType=(racksTypeId, racksType, startShelfId)=>{
+        let rackType = racksType[`rack_${racksTypeId}`]
+        let newShelf = []
+        Object.keys(rackType.shelfs).map(function(shelfKey,i){
+            newShelf.push({name:`Полка ${i+1}`, number:i+1, id: startShelfId+i, space:[]})
+        })
+        return newShelf
+    }
+
+    getLastIdByType=(scene, type)=>{
+        let maxId = -1
+        scene.children.map(mesh=>{
+            if (mesh.type == type && mesh.userData.id>maxId)
+                maxId = mesh.userData.id
+        })
+        return maxId
+    }
+
+    getLastShelfIdByType=(scene)=>{
+        let maxId = -1
+        scene.children.map(mesh=>{
+            if (mesh.type == "rack")
+                mesh.userData.shelfs.map(shelf=>{
+                    if (shelf.id > maxId)
+                        maxId = shelf.id
+                })
+        })
+        return maxId
     }
 
     getSceneElmByIdAndType=(id, type)=>{
@@ -922,10 +1029,6 @@ class AdministratorWarehouseCreating extends Component {
         })
     }
 
-    btn_send_1=()=>{
-        this.setWarehouseSettings()
-    }
-
     // componentWillUnmount() {
     //     clearInterval(keyListener);
     // }
@@ -969,7 +1072,7 @@ class AdministratorWarehouseCreating extends Component {
                                     }
                                 </>
                                 }
-                                <div style={{width:"350px", display: "inline-block"}}/><button className="bt_send" style={{width:"120px"}} onClick={this.btn_send_1}>Смоделировать склад</button>
+                                {/* <div style={{width:"350px", display: "inline-block"}}/><button className="bt_send" style={{width:"120px"}} onClick={this.btn_send_1}>Смоделировать склад</button> */}
                             </>
                         )}
                         {this.state.panelSelTab.id==1&&(
