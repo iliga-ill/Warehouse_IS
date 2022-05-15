@@ -1,5 +1,5 @@
 import { React, Component, Fragment } from "react";
-import './StorekeeperVirtualWarehouse.css';
+import './AdministratorWarehouseCreating.css';
 import * as THREE from 'three';
 import { MapControls, OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import SideBlock from "../../components/SideBlock/SideBlock";
@@ -328,7 +328,6 @@ function onMouseMove(){
     if (hint != null){
         hint.remove()
     }
-    createHint();
 }
 
 function onMouseStop(){
@@ -506,11 +505,14 @@ function createHint(){
     const intersects = raycaster.intersectObjects( objects );
     const intersect = intersects[0];
 
-    if (intersect != undefined && !selectionLockedModels.includes(intersect.object.name)) {
+    if (intersect != undefined && !selectionLockedModels.includes(intersect.object.name) && 
+    (page.state.selectedZone==undefined || page.state.selectedZone.name!=intersect.object.name) &&
+    (page.state.selectedRack==undefined || page.state.selectedRack.name!=intersect.object.name)
+    ) {
         hintModel = {
             name: "Hint", 
             modelName: "Hint",
-            material: new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } ), 
+            material: new THREE.MeshBasicMaterial( { color: 0x90EE90, opacity: 0.1, transparent: true } ), 
             geometry: intersect.object.geometry, 
             mesh: new THREE.Mesh( 
                 intersect.object.geometry, 
@@ -518,11 +520,12 @@ function createHint(){
             ), 
             translation: new Vector3(0,0,0),
         }
+        hintModel.mesh.rotation.set(intersect.object.rotation.x, intersect.object.rotation.y, intersect.object.rotation.z)
         hintModel.mesh.visible = false
         scene.add( hintModel.mesh );
     }
     // }
-    animateHint()
+    
 }
 //#endregion
 
@@ -542,7 +545,10 @@ function onWindowResize() {
 function onPointerMove(event) {
     lastX = event.clientX;
     lastY = event.clientY;
-    animateHint();
+    createHint();
+    if (hintModel != undefined)
+        animateHint();
+    render();
 }
 
 function animateHint() {
@@ -550,9 +556,8 @@ function animateHint() {
     raycaster.setFromCamera( pointer, camera );
     const intersects = raycaster.intersectObjects( objects );
     const intersect = intersects[0];
-    if (intersect!=undefined && hintModel != undefined && page.state.panelSelTab.id == 0) {
+    if (intersect!=undefined && hintModel != undefined && intersect.object.type !="Line") {
         //hintMesh.visible = true;
-
         hintModel.mesh.position.copy( intersect.point ).add( intersect.face.normal );
         hintModel.mesh.position.divideScalar(1).floor().multiplyScalar(1).addScalar( 1 );
         hintModel.mesh.position.set(
@@ -563,55 +568,6 @@ function animateHint() {
         hintModel.mesh.visible = true
         scene.add( hintModel.mesh );
     } 
-    render();
-}
-
-function highlightModel(model){
-    let highlightModel = {
-        name: "highlightHint", 
-        modelName: "highlightHint",
-        material: new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } ), 
-        geometry: model.geometry, 
-        mesh: new THREE.Mesh( 
-            model.geometry, 
-            new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } )
-        ), 
-        translation: new Vector3(0,0,0),
-    }
-    if (highlightModel!=undefined) {
-        highlightModel.mesh.position.copy( model.position.clone() );
-        highlightModel.mesh.position.divideScalar(1).floor().multiplyScalar(1).addScalar( 1 );
-        highlightModel.mesh.position.set(
-            model.position.x, 
-            model.position.y, 
-            model.position.z
-        )
-        highlightModel.mesh.name = highlightModel.name;
-        highlightModel.mesh.visible = true
-        scene.add( highlightModel.mesh );
-    } 
-}
-
-function highlightGoods(goodsId){
-    let buf = []
-    scene.children.map(obj=>{
-        if (obj.name == "highlightHint"){
-            buf.push(obj)
-        }
-    })
-    buf.map(obj=>{scene.remove(obj)})
-    buf = []
-    scene.children.map(obj=>{
-        if(obj.userData !=undefined && obj.userData.space!=undefined){
-            obj.userData.space.map(good=>{
-                if (goodsId.includes(good.id)){
-                    buf.push(obj)
-                }
-            })
-        }
-    })
-    buf.map(obj=>{highlightModel(obj)})
-    render();
 }
 //#endregion
 
@@ -621,13 +577,18 @@ function onPointerDown( event ) {
     raycaster.setFromCamera( pointer, camera );
     const intersects = raycaster.intersectObjects( objects );
     
-    if (intersects.length > 0 && hintModel!=undefined && page.state.panelSelTab.id == 0) {
+    if (intersects.length > 0 && hintModel!=undefined) {
         const intersect = intersects[0];
 
-        scene.remove(selectedModel)
-        //objects.remove(selectedModel)
-        selectedModel = undefined
-              
+        if (intersect.object.type == "zone"){
+            scene.remove(page.state.selectedZone)
+            scene.remove(page.state.selectedRack)
+        }
+            
+        if (intersect.object.type == "rack"){
+            scene.remove(page.state.selectedRack)
+        }
+        
         const voxel = new THREE.Mesh( hintModel.geometry, hintModel.material);
         voxel.position.copy( intersect.point ).add( intersect.face.normal );
         voxel.position.divideScalar( 1 ).floor().multiplyScalar( 1 ).addScalar( 1 );
@@ -635,22 +596,39 @@ function onPointerDown( event ) {
             intersect.object.position.x, 
             intersect.object.position.y, 
             intersect.object.position.z)
-        //voxel.name = model.name;
+        voxel.name = intersect.object.name;
+        voxel.userData = intersect.object.userData
+        voxel.rotation.set(intersect.object.rotation.x, intersect.object.rotation.y, intersect.object.rotation.z)
         scene.add( voxel );
-        //objects.push( voxel );
-        selectedModel = voxel
 
-        let shelfSpace = structuredClone(intersect.object.userData.space).map(
-        function(good,i){
-            let buf = good
-            buf.goodId = good.id
-            buf.id = i
-            buf.number = i+1
-            buf.goodsType = good.name
-            buf.weight = good.weight
-            return buf
-        })
-        page.setState({tableList: shelfSpace});
+        if (intersect.object.type == "zone"){
+            page.setSelectedZone(undefined)
+            page.state.selectedZoneName = voxel.userData.name
+            page.state.selectedZoneCenterX = voxel.userData.centerPoint.x
+            page.state.selectedZoneCenterZ = voxel.userData.centerPoint.z
+            page.state.selectedZoneRotation = voxel.userData.rotation.y
+            page.state.selectedZoneTypeId = {value:voxel.userData.zoneTypeId}
+
+            page.state.selectedRackName = undefined
+            page.state.selectedRackCenterX = undefined
+            page.state.selectedRackCenterZ = undefined
+            page.state.selectedRackRotation = undefined
+            page.setSelectedZone(voxel)
+            page.setSelectedRack(undefined)
+        }
+
+        if (intersect.object.type == "rack"){
+            page.setSelectedRack(undefined)
+            page.state.selectedRackName = voxel.userData.name
+            page.state.selectedRackCenterX = voxel.userData.centerPoint.x
+            page.state.selectedRackCenterZ = voxel.userData.centerPoint.z
+            page.state.selectedRackRotation = voxel.userData.rotation.y
+            page.state.selectedRackTypeId = {value:voxel.userData.racksTypeId}
+            page.setSelectedRack(voxel)
+        }
+        //objects.push( voxel );
+
+        //page.setState({tableList: shelfSpace});
         //page.flickPanel()
         
         render();
@@ -660,11 +638,12 @@ function onPointerDown( event ) {
 
 //#region work with models and scene
 
-function setModelOnCoordinates(model, coordinates, inObjects){
+function setModelOnCoordinates(model, coordinates, inObjects, type){
     const voxel = model.mesh;
     voxel.position.divideScalar( 1 ).floor().multiplyScalar( 1 ).addScalar( 1 );
     voxel.position.set(coordinates.x + model.translation.x, coordinates.y + model.translation.y, coordinates.z + model.translation.z)
     voxel.name = model.name;
+    if (type!=undefined) voxel.type = type
     scene.add( voxel );
     if (inObjects) objects.push( voxel );
 }
@@ -672,7 +651,7 @@ function setModelOnCoordinates(model, coordinates, inObjects){
 function warehouseGeneration(warehouseSettings, zonesType, racksType, goodsType){
     let floorModel = modelCreator.createFloor("Floor", 0x808080, warehouseSettings.width, warehouseSettings.length, 4, new Vector3(0,-2,0))
         
-    setModelOnCoordinates(floorModel, new Vector3(0,0,0))
+    setModelOnCoordinates(floorModel, new Vector3(0,0,0), true, "floor")
     selectionLockedModels.push(floorModel.name)
     hintLockedModels.push(floorModel.name)
 
@@ -680,15 +659,20 @@ function warehouseGeneration(warehouseSettings, zonesType, racksType, goodsType)
     warehouseSettings.zones.map(zone=>{
         let zoneType = zonesType[`zone_${zone.zoneTypeId}`]
         let zoneBorderModel = modelCreator.createZoneBorder(zone.name, zoneType.color, zoneType.width, zoneType.length, zoneType.lineWidth, zoneType.chamferLendth, zoneType.message, zoneType.messageAlighment, font, zoneType.textSize, zoneType.gapLengthX, zoneType.gapLengthY, new Vector3(0,0,0))
+        let zoneFillModel = modelCreator.zoneFillModel(`${zone.name}_fillament`, zoneType.color, zoneType.width, zoneType.length, zoneType.lineWidth, zoneType.chamferLendth, new Vector3(0,0,0))
         zoneBorderModel.mesh = auxMath.rotateMeshOnAllAxis(zoneBorderModel.mesh, zone.rotation)
+        zoneFillModel.mesh = auxMath.rotateMeshOnAllAxis(zoneFillModel.mesh, zone.rotation)
         let zoneCenterGlobalCoordinate = zone.centerPoint
-        setModelOnCoordinates(zoneBorderModel, zoneCenterGlobalCoordinate, false)
+        zoneFillModel.mesh.userData = zone
+        setModelOnCoordinates(zoneBorderModel, zoneCenterGlobalCoordinate, true, zone.type)
+        setModelOnCoordinates(zoneFillModel, zoneCenterGlobalCoordinate, true, zone.type)
         selectionLockedModels.push(zone.name)
         hintLockedModels.push(zone.name)
+        hintLockedModels.push(`${zone.name}_fillament`)
         //racks
         zone.racks.map(rack=>{
             let rackType = racksType[`rack_${rack.racksTypeId}`]
-            let rackModel = modelCreator.createRack(rack.name, rackType.color, rackType.shelfWidth, rackType.shelfHeight, rackType.depth, rackType.columsAmount, rackType.rowsAmount, rackType.borderWidth, rackType.translation)
+            let rackModel = modelCreator.createRack(rack.name+" "+rack.id, rackType.color, rackType.shelfWidth, rackType.shelfHeight, rackType.depth, rackType.columsAmount, rackType.rowsAmount, rackType.borderWidth, rackType.translation)
             let rackCenterGlobalCoordinate = new Vector3(
                 zoneCenterGlobalCoordinate.x + rack.centerPoint.x, 
                 zoneCenterGlobalCoordinate.y + rack.centerPoint.y, 
@@ -700,16 +684,17 @@ function warehouseGeneration(warehouseSettings, zonesType, racksType, goodsType)
                 auxMath.translatePoint(zoneCenterGlobalCoordinate.clone(), {x:-rackType.translation.x,y:-rackType.translation.y,z:-rackType.translation.z}), 
                 zone.rotation
             )
+            rackModel.mesh.userData = rack
             setModelOnCoordinates(
                 rackModel, 
                 rotatedRackCenterGlobalCoordinate,
-                true
+                true, 
+                rack.type
             )
-            selectionLockedModels.push(rack.name)
+            selectionLockedModels.push(rack.name+" "+rack.id)
             //shelfs
             rack.shelfs.map(shelf=>{
                 if (shelf.space != ""){
-                    //shelf.space.map(good=>{
                         let good = shelf.space[0]
                         let goodType = goodsType[`good_${good.goodTypeId}`]
                         let goodModel = modelCreator.createCube(good.name, goodType.color, goodType.width, goodType.height, goodType.depth, goodType.translation)
@@ -732,27 +717,28 @@ function warehouseGeneration(warehouseSettings, zonesType, racksType, goodsType)
                             auxMath.translatePoint(rotatedRackCenterGlobalCoordinate.clone(), {x:rackType.translation.x,y:rackType.translation.y,z:rackType.translation.z}),
                             rack.rotation
                         )
-                            
                         setModelOnCoordinates(
                             goodModel, 
                             rotatedRackShiftedFirstShelfCenterGlobalCoordinate,
-                            true
+                            true, 
+                            good.type
                         )
-                    //})
+                        selectionLockedModels.push(good.name)
+                        hintLockedModels.push(good.name)
                 }
             })
         })
     })
+    render()
 }
 //#endregion
 
-class StorekeeperVirtualWarehouse extends Component {
+class AdministratorWarehouseCreating extends Component {
 
     isSideBlockOpened = false
-    prevSearchTerm = undefined
+    prevSearchTerm
     allGoods = undefined
     warehouseSettings = undefined
-    selectedItem1 = undefined
 
     // componentWillMount(){
     //     this.sideBlock = new SideBlock({isOpened:this.isSideBlockOpened, onRightClosed:"-497px", onRightOpened:"-1px", styles:{top:"100px",width:"500px", height:"100%"}})
@@ -772,83 +758,30 @@ class StorekeeperVirtualWarehouse extends Component {
                 {id:0, title:"Вид", func:()=>{onChangeViewMode()}, selection:false, style:{fontSize:"15px", height:"20px"}},
                 // {id:1, title:"Тест панельки", func:()=>{this.flickPanel()}, selection:false, style:{fontSize:"15px", height:"20px"}}
             ],
-            selTab:{id:0, title:"Вид", func:()=>{onChangeViewMode()}, selection:false, style:{fontSize:"15px", height:"20px"}},
+            selTab: {id:0},
             //табы выезжающей панельки
             panelTabs:[
-                {id:0, title:"Информация", func:()=>{}, selection:true, style:{fontSize:"15px", height:"20px"}},
-                {id:1, title:"Поиск", func:()=>{}, selection:true, style:{fontSize:"15px", height:"20px"}}
+                {id:0, title:"Характеристики", func:()=>{}, selection:true, style:{fontSize:"15px", height:"20px"}},
+                {id:1, title:"Добавление моделей", func:()=>{}, selection:true, style:{fontSize:"15px", height:"20px"}}
             ],
-            panelSelTab:{id:0, title:"Информация", func:()=>{}},
+            panelSelTab: {id:0},
             isSideBlockOpened:false,
-            //таблица с содержимым полки на панельке
-            tableHeaders:[
-                {name: 'number',    title:'№',              editingEnabled:false,   width:40    }, 
-                {name: 'goodId',    title:'id',             editingEnabled:false,   width:40    }, 
-                {name: 'goodsType', title:'Наименование',   editingEnabled:false,   width:310   }, 
-                {name: 'weight',    title:'Вес (кг)',            editingEnabled:false,   width:100, totalCount:{type:['sum'], expantionAlign: 'right'}   }, 
-            ],
-            tableSettings:{add:false, edit:false, delete:false, select:true},
-            selectedItem:undefined,
-            tableList:[],
-            //хар-ки товара на первом табе панельки
-            good:undefined,
-            id:undefined,
-            category:undefined,
-            subCategory:undefined,
-            cost:undefined,
-            weight:undefined,
-            goodCharacteristics:undefined,
-            //поиск товара по хар-кам на втором табе панельки
-            goodSearchTerm:"",
-            idSearchTerm:"",
-            categoryExpandList:[
-                {value: ""                         },
-                {value: "Встраиваемая техника"     },
-                {value: "Стиральные машины"        },
-                {value: "Сушильные машины"         },
-                {value: "Холодильники"             },
-                {value: "Морозильные камеры"       },
-                {value: "Винные шкафы"             },
-                {value: "Вытяжки"                  },
-                {value: "Плиты"                    },
-                {value: "Посудомоечные машины"     },
-                {value: "Мелкая бытовая техника"   },
-                {value: "Микроволновые печи"       },
-                {value: "Электродуховки"           },
-                {value: "Пылесосы"                 },
-                {value: "Водонагреватели"          },
-                {value: "Кулеры и пурифайеры"      },
-                {value: "Швейные машины, оверлоки" }
-            ],
-            categorySearchTerm: "",
-            subCategoryExpandList:[
-                {value: ""                                  },
-                {value: "Варочные поверхности"              },
-                {value: "Духовые шкафы"                     },
-                {value: "Вытяжки"                           },
-                {value: "Встраиваемые посудомоечные машины" },
-                {value: "Встраиваемые холодильники"         },
-                {value: "Встраиваемые морозильные камеры"   },
-                {value: "Встраиваемые микроволновые печи"   },
-                {value: "Кухонные мойки"                    },
-                {value: "Измельчители отходов"              },
-                {value: "Кухня"                             },
-                {value: "Бытовые приборы для дома"          },
-                {value: "Красота и гигиена"                 },
-                {value: "Косметические приборы"             },
-                {value: "Медицина и реабилитация"           },
-            ],
-            subCategorySearchTerm: "",
-            //таблица с найденными по хар-кам товарами
-            tableHeaders1:[
-                {name: 'number',    title:'№',              editingEnabled:false,   width:80, totalCount:{type:['count'], expantionAlign: 'right'} }, 
-                {name: 'goodId',    title:'id',             editingEnabled:false,   width:40    }, 
-                {name: 'goodsType', title:'Наименование',   editingEnabled:false,   width:290   }, 
-                {name: 'weight',    title:'Вес (кг)',       editingEnabled:false,   width:80   }, 
-            ],
-            tableSettings1:{add:false, edit:false, delete:false, select:true, massSelection:true,},
-            selectedItem1:undefined,
-            tableList1:[],
+            warehouseWidth:undefined, //хар-ки склада
+            warehouseLength:undefined, //хар-ки склада
+            selectedZone:undefined, //выделенная зона склада
+            selectedZoneName:undefined, //хар-ки выделенной зоны склада
+            selectedZoneCenterX:undefined, //хар-ки выделенной зоны склада
+            selectedZoneCenterZ:undefined, //хар-ки выделенной зоны склада
+            selectedZoneRotation:undefined, //хар-ки выделенной зоны склада
+            zoneTypeIdExpandList: Object.keys(warehouseSettingsModel.getZonesType()).map(zoneType=>{return {value: zoneType.split("_")[1]}}), //хар-ки выделенной зоны склада
+            selectedZoneTypeId: {value: "0001"},//хар-ки выделенной зоны склада
+            selectedRack:undefined, //выделенный стеллаж
+            selectedRackName:undefined, //хар-ки выделенного стеллажа
+            selectedRackCenterX:undefined, //хар-ки выделенного стеллажа
+            selectedRackCenterZ:undefined, //хар-ки выделенного стеллажа
+            selectedRackRotation:undefined, //хар-ки выделенного стеллажа
+            rackTypeIdExpandList: Object.keys(warehouseSettingsModel.getRacksType()).map(rackType=>{return {value: rackType.split("_")[1]}}), //хар-ки выделенного стеллажа
+            selectedRackTypeId: {value: "0001"},//хар-ки выделенного стеллажа
         }
     }
 
@@ -857,64 +790,69 @@ class StorekeeperVirtualWarehouse extends Component {
     setTableList = (value)=>{this.setState({tableList: value});}        //таблица с содержимым полки на панельке
     setSelectedItem = (value)=>{this.setState({selectedItem: value});}  //таблица с содержимым полки на панельке
     setSelTab = (value)=>{this.setState({selTab: value});}              //табы toolbar'a
+    setPanelSelTab = (value)=>{this.setState({panelSelTab: value});}                //табы выезжающей панельки
     setIsSideBlockOpened = (value)=>{this.setState({isSideBlockOpened: value});}    //табы выезжающей панельки
-    setGoodSearchTerm = (value)=>{
-        this.state.selectedItem1 = undefined; 
-        highlightGoods([])
-        this.setState({goodSearchTerm: value});
-    }                  //поиск товара по хар-кам на втором табе панельки
-    setIdSearchTerm = (value)=>{
-        this.state.selectedItem1 = undefined; 
-        highlightGoods([])
-        this.setState({idSearchTerm: value});
-    }                      //поиск товара по хар-кам на втором табе панельки
-    setCategoryExpandList = (value)=>{this.setState({categoryExpandList: value});}          //поиск товара по хар-кам на втором табе панельки
-    setCategorySearchTerm = (value)=>{
-        this.state.selectedItem1 = undefined;
-        highlightGoods([])
-        this.setState({categorySearchTerm: value});
-    }          //поиск товара по хар-кам на втором табе панельки
-    setSubCategoryExpandList = (value)=>{this.setState({subCategoryExpandList: value});}    //поиск товара по хар-кам на втором табе панельки
-    setSubCategorySearchTerm = (value)=>{
-        this.state.selectedItem1 = undefined;
-        highlightGoods([])
-        this.setState({subCategorySearchTerm: value});
-    }    //поиск товара по хар-кам на втором табе панельки
 
-    setTableHeaders1 = (value)=>{this.setState({tableHeaders1: value});}  //таблица с найденными по хар-кам товарами
-    setTableList1 = (value)=>{this.setState({tableList1: value});}        //таблица с найденными по хар-кам товарами
-    setSelectedItem1 = (value)=>{this.setState({selectedItem1: value});}  //таблица с найденными по хар-кам товарами
+    setWarehouseWidth = (value)=>{this.state.warehouseSettings.width = Number(value); this.setState({warehouseWidth: Number(value)});} //хар-ки склада
+    setWarehouseLength = (value)=>{this.state.warehouseSettings.length = Number(value); this.setState({warehouseLength: Number(value)});} //хар-ки склада
 
+    setSelectedZone = (value)=>{this.setState({selectedZone: value});}       //выделенная зона
+    setSelectedZoneName = (value)=>{this.state.selectedZone.userData.name = value; this.setState({selectedZoneName: value});}       //хар-ки выделенной зоны
+    setSelectedZoneCenterX = (value)=>{this.state.selectedZone.userData.centerPoint.x = Number(value); this.setState({selectedZoneCenterX: Number(value)});}     //хар-ки выделенной зоны
+    setSelectedZoneCenterZ = (value)=>{this.state.selectedZone.userData.centerPoint.z = Number(value); this.setState({selectedZoneCenterZ: Number(value)});}     //хар-ки выделенной зоны
+    setSelectedZoneRotation = (value)=>{this.state.selectedZone.userData.rotation.y = Number(value); this.setState({selectedZoneRotation: Number(value)});}   //хар-ки выделенной зоны
+    setZoneTypeIdExpandList = (value)=>{this.setState({zoneTypeIdExpandList: value});}       //хар-ки выделенной зоны
+    setSelectedZoneTypeId = (value)=>{this.state.selectedZone.userData.zoneTypeId = value; this.setState({selectedZoneTypeId: value});}       //хар-ки выделенной зоны
 
-    setPanelSelTab = (value)=>{
-        this.state.selectedItem1 = undefined;
-        highlightGoods([])
-        scene.remove(selectedModel)
-        selectedModel = undefined
-        createHint()
-        render()
-        this.setState({panelSelTab: value});
-    }                //табы выезжающей панельки
-    // flickPanel=()=>{
-    //     this.setState({isSideBlockOpened: !this.state.isSideBlockOpened}); this.isSideBlockOpened = !this.isSideBlockOpened
-    // }
+    setSelectedRack = (value)=>{this.setState({selectedRack: value});}       //выделенный стеллаж
+    setSelectedRackName = (value)=>{this.state.selectedRack.userData.name = value; this.setState({selectedRackName: value});}       //хар-ки выделенного стеллажа
+    setSelectedRackCenterX = (value)=>{this.state.selectedRack.userData.centerPoint.x = Number(value); this.setState({selectedRackCenterX: Number(value)});}     //хар-ки выделенного стеллажа
+    setSelectedRackCenterZ = (value)=>{this.state.selectedRack.userData.centerPoint.z = Number(value); this.setState({selectedRackCenterZ: Number(value)});}     //хар-ки выделенного стеллажа
+    setSelectedRackRotation = (value)=>{this.state.selectedRack.userData.rotation.y = Number(value); this.setState({selectedRackRotation: Number(value)});}   //хар-ки выделенного стеллажа
+    setRackTypeIdExpandList = (value)=>{this.setState({rackTypeIdExpandList: value});}   //хар-ки выделенного стеллажа
+    setSelectedRackTypeId = (value)=>{this.state.selectedRack.userData.racksTypeId = value; this.setState({selectedRackTypeId: value});}       //хар-ки выделенного стеллажа
+    
+    setWarehouseSettings=()=>{
+        if (this.state.selectedZone != undefined){
+            this.state.warehouseSettings.zones.map(zone=>{
+                if (zone.id === this.state.selectedZone.userData.id && zone.type === "zone"){
+                    let newZone = this.getSceneElmByIdAndType(zone.id, "zone").userData
+                    newZone.racks = newZone.racks.map(rack=>{
+                        return this.getSceneElmByIdAndType(rack.id, "rack").userData
+                    })
+                    return newZone
+                }
+                return zone
+            })
+            let buf = []
+            scene.children.map(obj=>{buf.push(obj)})
+            buf.map(obj=>{
+                if (obj.type == "zone" || obj.type == "rack" || obj.type == "good" || obj.type == "floor")
+                    scene.remove(obj)
+            })
+            hintLockedModels = ["","Mesh"]
+
+            warehouseGeneration(this.state.warehouseSettings, this.state.zonesType, this.state.racksType, this.state.goodsType)
+            // console.log(scene)
+            // // this.generateWarehouse()
+            // // render()
+            // console.log(this.state.warehouseSettings)
+            render()
+        }
+    }
+
+    getSceneElmByIdAndType=(id, type)=>{
+        let buf = undefined
+        scene.children.map(obj=>{
+            if (obj.userData.id == id && obj.type == type) buf = obj;
+        })
+        return buf
+    }
     
     componentDidMount(){
         var manager = new THREE.LoadingManager();
         manager.onLoad = () => { // when all resources are loaded
             init(this.state.warehouseSettings)
-            render()
-            /*
-            let modelCreator = new ModelCreator()
-            model = modelCreator.createCube("Пиксель", 0x885aaa, 2, 2, 2, new THREE.Vector3(-1,-1,-1))
-            model = modelCreator.createCube("Пиксель", 0x885aaa, 1, 1, 1, new THREE.Vector3(-0.5,-0.5,-0.5))
-            model = modelCreator.createCube("Маленький товар", 0x885aaa, 16, 16, 16, new THREE.Vector3(0,8-2,0))
-            model = modelCreator.createCube("Большой товар", 0x885aaa, 30, 80, 36, new THREE.Vector3(0, (80/2-1), 0))
-            model = modelCreator.createShelter("Маленькая полка", 0x885aaa, 50, 50, 50, 5, new THREE.Vector3(0, -25, -25))
-            model = modelCreator.createShelter("Высокая полка", 0x885aaa, 50, 100, 50, 5, new THREE.Vector3(0, -25, -25))
-            model = modelCreator.createShelter("Большая полка", 0x885aaa, 150, 100, 50, 5, new THREE.Vector3(0, -25, -25))
-            model = modelCreator.createShelter("Широкая полка", 0x885aaa, 150, 50, 50, 5, new THREE.Vector3(0, -1, -25))
-            */
             createHint()
             warehouseGeneration(this.state.warehouseSettings, this.state.zonesType, this.state.racksType, this.state.goodsType)
             this.allGoods = []
@@ -937,7 +875,9 @@ class StorekeeperVirtualWarehouse extends Component {
                 return goodBuf
             })
             this.state.tableList1 = buf
-            render()
+            this.state.warehouseWidth = this.state.warehouseSettings.width
+            //this.state.warehouseLength = this.state.warehouseSettings.length
+            this.setWarehouseLength(this.state.warehouseSettings.length)
         }
         let fontWeight = 'regular';
         //fontWeight = 'bold';
@@ -963,33 +903,16 @@ class StorekeeperVirtualWarehouse extends Component {
             this.state.goodCharacteristics = this.state.selectedItem.goodCharacteristics
             this.setReload()
         }
-        if (this.prevSearchTerm != undefined && (
-            this.prevSearchTerm.goodSearchTerm != this.state.goodSearchTerm ||
-            this.prevSearchTerm.idSearchTerm != this.state.idSearchTerm ||
-            this.prevSearchTerm.categorySearchTerm != this.state.categorySearchTerm ||
-            this.prevSearchTerm.subCategorySearchTerm != this.state.subCategorySearchTerm
-        )){
-            let buf = structuredClone(this.allGoods)
-            buf = this.sortListByKey(buf, "name", this.state.goodSearchTerm)
-            buf = this.sortListByKey(buf, "id", this.state.idSearchTerm)
-            buf = this.sortListByKey(buf, "category", this.state.categorySearchTerm)
-            buf = this.sortListByKey(buf, "subCategory", this.state.subCategorySearchTerm)
-            buf = buf.map(function(good,i){
-                let goodBuf = good
-                goodBuf.goodId = good.id
-                goodBuf.id = i
-                goodBuf.number = i+1
-                goodBuf.goodsType = good.name
-                goodBuf.weight = good.weight
-                return goodBuf
+        if (this.state.selectedZone!=undefined && this.state.selectedZone.userData != undefined){
+            this.state.warehouseSettings.zones.map(zone=>{
+                zone.racks.map(rack=>{
+                    if (!selectionLockedModels.includes(rack.name+" "+rack.id))
+                        selectionLockedModels.push(rack.name+" "+rack.id)
+                })
             })
-            this.setState({tableList1: buf})
-        }
-        this.prevSearchTerm = {goodSearchTerm:this.state.goodSearchTerm, idSearchTerm:this.state.idSearchTerm, categorySearchTerm:this.state.categorySearchTerm, subCategorySearchTerm:this.state.subCategorySearchTerm}
-        if (this.selectedItem1 != this.state.selectedItem1){
-            let buf = []
-            this.state.selectedItem1.map(index=>{buf.push(this.state.tableList1[index].goodId)})
-            highlightGoods(buf)
+            this.state.selectedZone.userData.racks.map(rack=>{
+                selectionLockedModels.splice(selectionLockedModels.indexOf(rack.name+" "+rack.id),1)
+            })
         }
     }
 
@@ -997,6 +920,10 @@ class StorekeeperVirtualWarehouse extends Component {
         return list.filter(item => {
             return String(item[key]).toLowerCase().includes(String(searchTerm).toLowerCase())
         })
+    }
+
+    btn_send_1=()=>{
+        this.setWarehouseSettings()
     }
 
     // componentWillUnmount() {
@@ -1016,33 +943,38 @@ class StorekeeperVirtualWarehouse extends Component {
                         <UniversalTabHolder tabs={this.state.panelTabs} style={{marginLeft:"1px" }} setTab={this.setPanelSelTab} selTab={this.state.panelSelTab}/>
                         {this.state.panelSelTab.id==0&&(
                             <>
-                                <div class="header_text" style={{margin:"5px"}}>Товары на полке</div>
-                                <div style={{width:"min-content", display:'inline-table', marginLeft:"1px" }} >
-                                    <TableComponent height={320} columns={this.state.tableHeaders} rows={this.state.tableList} setNewTableList={this.setTableList}  tableSettings={this.state.tableSettings} onSelect={this.setSelectedItem}/>
-                                </div>
-                                <div style={{width:500+"px", margin:"5px"}}>
-                                    <div class="low_text bold">Товар:&nbsp;<label class="normal">{this.state.good}</label></div>
-                                    <div class="low_text bold">Id&nbsp;товара:&nbsp;<label class="normal">{this.state.id}</label></div>
-                                    <div class="low_text bold">Категория:&nbsp;<label class="normal">{this.state.category}</label></div>
-                                    <div class="low_text bold">Подкатегория:&nbsp;<label class="normal">{this.state.subCategory}</label></div>
-                                    <div class="low_text bold">Цена&nbsp;ед&nbsp;товара&nbsp;<label class="normal">{this.state.cost} ₽</label></div>
-                                    <div class="low_text bold">Вес&nbsp;ед&nbsp;товара:&nbsp;<label class="normal">{this.state.weight} кг</label></div>
-                                    <div class="low_text bold">Хар-ки&nbsp;товара:&nbsp;</div><div class="low_text normal">{this.state.goodCharacteristics}</div>
-                                </div>
+                                <div className="header_text">Хар-ки склада</div>
+                                <InputText styles = "row_with_item_wide" Id={1}  label="Длинна&nbsp;склада&nbsp;(см)&nbsp;"       placeholder="длинна склада"           defValue={this.state.warehouseLength}            set={this.setWarehouseLength}/> 
+                                <InputText styles = "row_with_item_wide" Id={2}  label="Ширина&nbsp;склада&nbsp;(см)&nbsp;"       placeholder="ширина склада"           defValue={this.state.warehouseWidth}             set={this.setWarehouseWidth}/>
+
+                                {this.state.selectedZone==undefined
+                                ?<div>Выберите зону склада</div>
+                                :<>
+                                    <div className="header_text">Хар-ки выделенной зоны</div>
+                                    <InputText styles = "row_with_item_wide" Id={3}  label="Название&nbsp;зоны&nbsp;"               placeholder="название зоны"         defValue={this.state.selectedZoneName}      set={this.setSelectedZoneName}/> 
+                                    <InputText styles = "row_with_item_wide" Id={4}  label="Центр&nbsp;зоны&nbsp;по&nbsp;x&nbsp;"   placeholder="центр зоны по x"       defValue={this.state.selectedZoneCenterX}   set={this.setSelectedZoneCenterX}/> 
+                                    <InputText styles = "row_with_item_wide" Id={5}  label="Центр&nbsp;зоны&nbsp;по&nbsp;y&nbsp;"   placeholder="центр зоны по y"       defValue={this.state.selectedZoneCenterZ}   set={this.setSelectedZoneCenterZ}/> 
+                                    <InputText styles = "row_with_item_wide" Id={6}  label="Угол&nbsp;поворота&nbsp;зоны&nbsp;"     placeholder="угол поворота зоны"    defValue={this.state.selectedZoneRotation}  set={this.setSelectedZoneRotation}/> 
+                                    <div className="low_text row_with_item_equal" style={{width:"140px"}}><div>Тип&nbsp;зоны&nbsp;</div><ExpandListInputRegular width={100} list={this.state.zoneTypeIdExpandList} defValue={this.state.selectedZoneTypeId} func={this.setSelectedZoneTypeId}/></div>
+                                    {this.state.selectedRack==undefined
+                                    ?<div>Выберите стеллаж</div>
+                                    :<>
+                                        <div className="header_text">Хар-ки выделенного стеллажа</div>
+                                        <InputText styles = "row_with_item_wide" Id={3}  label="Название&nbsp;стеллажа&nbsp;"               placeholder="название стеллажа"         defValue={this.state.selectedRackName}      set={this.setSelectedRackName}/> 
+                                        <InputText styles = "row_with_item_wide" Id={4}  label="Центр&nbsp;стеллажа&nbsp;по&nbsp;x&nbsp;относительно&nbsp;центра&nbsp;зоны&nbsp;"   placeholder="центр стеллажа по x"       defValue={this.state.selectedRackCenterX}   set={this.setSelectedRackCenterX}/> 
+                                        <InputText styles = "row_with_item_wide" Id={5}  label="Центр&nbsp;стеллажа&nbsp;по&nbsp;y&nbsp;относительно&nbsp;центра&nbsp;зоны&nbsp;"   placeholder="центр стеллажа по y"       defValue={this.state.selectedRackCenterZ}   set={this.setSelectedRackCenterZ}/> 
+                                        <InputText styles = "row_with_item_wide" Id={6}  label="Угол&nbsp;поворота&nbsp;стеллажа&nbsp;"     placeholder="угол поворота стеллажа"    defValue={this.state.selectedRackRotation}  set={this.setSelectedRackRotation}/> 
+                                        <div className="low_text row_with_item_equal" style={{width:"140px"}}><div>Тип&nbsp;стеллажа&nbsp;</div><ExpandListInputRegular width={100} list={this.state.rackTypeIdExpandList} defValue={this.state.selectedRackTypeId} func={this.setSelectedRackTypeId}/></div>
+                                    </>
+                                    }
+                                </>
+                                }
+                                <div style={{width:"350px", display: "inline-block"}}/><button className="bt_send" style={{width:"120px"}} onClick={this.btn_send_1}>Смоделировать склад</button>
                             </>
                         )}
                         {this.state.panelSelTab.id==1&&(
                             <>
-                                <div class="header_text" style={{margin:"5px"}}>Поиск&nbsp;товара</div>
-                                <div style={{width:400+"px", margin:"5px"}}>
-                                    <InputText styles = "row_with_item_equal" Id={0} label="Название&nbsp;товара&nbsp;" placeholder="название товара" defValue={this.state.goodSearchTerm} set={this.setGoodSearchTerm}/> 
-                                    <InputText styles = "row_with_item_equal" Id={1} label="id&nbsp;товара&nbsp;" placeholder="id товара" defValue={this.state.idSearchTerm} set={this.setIdSearchTerm}/> 
-                                    <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><ExpandListInputRegular width={300} list={this.state.categoryExpandList} func={this.setCategorySearchTerm}/></div>
-                                    <div class="low_text row_with_item_equal"><div>Подкатегория&nbsp;</div><ExpandListInputRegular width={300} list={this.state.subCategoryExpandList} func={this.setSubCategorySearchTerm}/></div>
-                                    <div style={{width:"min-content", display:'inline-table', marginLeft:"-4px" }} >
-                                        <TableComponent height={588} columns={this.state.tableHeaders1} rows={this.state.tableList1} setNewTableList={this.setTableList1}  tableSettings={this.state.tableSettings1} onSelect={this.setSelectedItem1}/>
-                                    </div>
-                                </div>
+                                
                             </>
                         )}
                         
@@ -1056,4 +988,4 @@ class StorekeeperVirtualWarehouse extends Component {
     }
 }
 
-export default StorekeeperVirtualWarehouse
+export default AdministratorWarehouseCreating

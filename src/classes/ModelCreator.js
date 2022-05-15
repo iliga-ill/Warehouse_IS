@@ -310,6 +310,53 @@ export default class ModelCreator {
             translation: translation,
         }
     }
+
+    zoneFillModel(name, color, width, length, borderWidth, chamferLendth, translation){
+        
+         // line material
+         var edgeLength = 1
+
+         let frame = new THREE.Shape();
+
+        frame.moveTo(width/2-chamferLendth, length/2, 1 )
+        frame.lineTo(width/2  , length/2-chamferLendth, 1 )
+ 
+        frame.lineTo(width/2  , -length/2+chamferLendth, 1)
+        frame.lineTo(width/2-chamferLendth, -length/2, 1  )
+ 
+        frame.lineTo(-width/2+chamferLendth, -length/2, 1)
+        frame.lineTo(-width/2  , -length/2+chamferLendth, 1)
+ 
+        frame.lineTo(-width/2  , length/2-chamferLendth, 1)
+        frame.lineTo(-width/2+chamferLendth, length/2, 1)
+ 
+        frame.lineTo(width/2-chamferLendth, length/2, 1 )
+        frame.lineTo(width/2  , length/2-chamferLendth, 1)
+
+        frame.lineTo(width/2-chamferLendth, length/2, 1)
+        
+        //  Extrude the shape into a geometry, and create a mesh from it:
+        let extrudeSettings = {
+            steps: 1,
+            depth: 1,
+            bevelEnabled: false,
+        };
+
+        let material = new THREE.MeshBasicMaterial( { opacity: 0, transparent: true } )
+        let geometry = new THREE.ExtrudeGeometry(frame, extrudeSettings)
+        geometry = this.rotateGeometry(geometry, {x:90,y:0,z:0})
+        
+        let mesh = new THREE.Mesh(geometry, material)
+
+        return {
+            name: name, 
+            modelName: "ZoneFill",
+            material: material, 
+            geometry: geometry,
+            mesh: mesh, 
+            translation: new Vector3(translation.x,translation.y+1,translation.z),
+        }
+    }
     
     createFloor(name, color, width, length, height, translation){
 

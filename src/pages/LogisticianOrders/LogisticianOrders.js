@@ -15,9 +15,6 @@ var TableListIsAnswer = true
 var TableList1IsAnswer = true
 
 export default function LogisticianOrders(props){
-    
-    var id=0
-    function getId(){return id++}
 
 //#region блоки
 
@@ -58,13 +55,6 @@ export default function LogisticianOrders(props){
 
     //-------------------------------------------------------------------------Блок 2
     //-------------------------------------стол 1
-
-    const [isStart, setIsStart] = React.useState(true)
-
-    if (isStart) {
-        
-         setIsStart(false)
-    }
 
     const [tableHeaders, setTableHeaders] = React.useState([
         {name: 'number',            title:'№',                    editingEnabled:false,   width:40    }, 

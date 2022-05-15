@@ -13,6 +13,7 @@ import AdministratorAccounts from './pages/AdministratorAccounts/AdministratorAc
 import AdministratorRackCreating from './pages/AdministratorRackCreating/AdministratorRackCreating';
 import AdministratorGoodCreating from './pages/AdministratorGoodCreating/AdministratorGoodCreating';
 import AdministratorZoneCreating from './pages/AdministratorZoneCreating/AdministratorZoneCreating';
+import AdministratorWarehouseCreating from './pages/AdministratorWarehouseCreating/AdministratorWarehouseCreating';
 import ManagerOrderCreation from './pages/ManagerOrderCreation/ManagerOrderCreation';
 import ManagerSellOrders from './pages/ManagerSellOrders/ManagerSellOrders';
 import ManagerShipmentOrders from './pages/ManagerShipmentOrders/ManagerShipmentOrders';
@@ -95,9 +96,10 @@ const supportTabsArray = [
     {title: "Новые счета",          roleHref:"/Accountant",     subHref:"/AccountantAccounts",    supportHref:"/NewAccounts"},
     {title: "Закрытые счета",       roleHref:"/Accountant",     subHref:"/AccountantAccounts",    supportHref:"/ClosedAccounts"},
 
-    {title: "Создание зоны",       roleHref:"/Administrator",     subHref:"/AdministratorCreating",    supportHref:"/ZoneCreating"},
-    {title: "Создание стеллажа",   roleHref:"/Administrator",     subHref:"/AdministratorCreating",    supportHref:"/RackCreating"},
-    {title: "Создание товара",     roleHref:"/Administrator",     subHref:"/AdministratorCreating",    supportHref:"/GoodCreating"},
+    {title: "Создание зоны",        roleHref:"/Administrator",  subHref:"/AdministratorCreating", supportHref:"/ZoneCreating"},
+    {title: "Создание стеллажа",    roleHref:"/Administrator",  subHref:"/AdministratorCreating", supportHref:"/RackCreating"},
+    {title: "Создание товара",      roleHref:"/Administrator",  subHref:"/AdministratorCreating", supportHref:"/GoodCreating"},
+    {title: "Изменение конфигурации склада",roleHref:"/Administrator",  subHref:"/AdministratorCreating", supportHref:"/WarehouseCreating"},
 ]
 
 
@@ -224,6 +226,7 @@ export default function App() {
           <Route path="/Administrator/AdministratorCreating/RackCreating" element={wrapErrorBoundary(<AdministratorRackCreating/>)}/>
           <Route path="/Administrator/AdministratorCreating/GoodCreating" element={wrapErrorBoundary(<AdministratorGoodCreating/>)}/>
           <Route path="/Administrator/AdministratorCreating/ZoneCreating" element={wrapErrorBoundary(<AdministratorZoneCreating/>)}/>
+          <Route path="/Administrator/AdministratorCreating/WarehouseCreating" element={wrapErrorBoundary(<AdministratorWarehouseCreating/>)}/>
           
           <Route path="/Profile" element={wrapErrorBoundary(<Profile cookies={cookies}/>)}/>
           <Route path="/Home" element={wrapErrorBoundary(<Home cookies={cookies}/>)}/>
