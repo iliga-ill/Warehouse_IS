@@ -7,6 +7,8 @@ import UniversalTabHolder from '../../components/TabHolders/UniversalTabHolder/U
 import { TableComponent } from "../../components/Table/TableComponent";
 import InputText from "../../components/InputText/InputText";
 import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
+import AlertMessagebox from "../../components/Messagebox/AlertMessagebox.js";
+import ModelList from "../../components/List/ModelList";
 
 import DropdownListWithModels from "../../components/DropdownListWithModels/DropdownListWithModels";
 import ModelCreator from "../../classes/ModelCreator.js";
@@ -18,6 +20,7 @@ import AuxiliaryMath from "../../classes/AuxiliaryMath.js";
 import WarehouseSettingsModel from "../../classes/WarehouseSettingsModel.js";
 import FirstPersonControls from "../../classes/FirstPersonControls.js";
 import zIndex from "@material-ui/core/styles/zIndex";
+
 
 const styles = {
 
@@ -161,10 +164,6 @@ function getScreenY(Y){
 
 function setListeners(){
     var warehouseScene = document.getElementById("warehouseScene")
-    var btnPanel = document.getElementById("btn_panel")
-
-    //listener for hint
-    warehouseScene.addEventListener('mousemove', onMouseMove)
 
     //listenets for saving mouse button
     warehouseScene.addEventListener('mousedown', onMouseDown)
@@ -201,11 +200,6 @@ function disconnectKeyListeners(){
     //listener for shift and ctrl and creating model hint
     document.removeEventListener( 'keydown', onDocumentKeyDown );
     document.removeEventListener( 'keyup', onDocumentKeyUp );
-}
-
-//onPanel
-function onPanel(){
-   
 }
 
 //#region flicking view mod
@@ -304,58 +298,6 @@ function updatelookedPoint(){
     lookedPoint = new Vector3(x,y,z)
 }
 
-//#endregion
-
-//#region textHint
-let hintTimer = setTimeout(onMouseStop, 1000);
-function onMouseMove(){
-    clearTimeout(hintTimer);
-    hintTimer = setTimeout(onMouseStop, 1000)
-    var hint = document.getElementById("hint")
-    if (hint != null){
-        hint.remove()
-    }
-}
-
-function onMouseStop(){
-    if (pointer != undefined){
-        pointer.set(getScreenX(lastX), getScreenY(lastY));
-        raycaster.setFromCamera( pointer, camera );
-        const intersects = raycaster.intersectObjects( scene.children );
-        const intersect = intersects[0];
-        if (intersects.length > 0 && !hintLockedModels.includes(intersect.object.name)) {
-            generateHint(intersect, lastX, lastY)
-        }
-    }
-}
-
-function generateHint(intersect, lastX, lastY){
-    var warehouseScene = document.getElementById("warehouseSceneWrap")
-    var hint = document.createElement("div");
-    hint.id = "hint";
-    hint.style.position = "absolute";
-    hint.style.left = `${lastX}px`;
-    //hint.style.width = `${100}px`;
-    hint.style.background = "white";
-    hint.style.height = 0;
-    hint.style.zIndex = 100;
-    hint.style.border = "1px solid #000000";
-    hint.style.borderRadius = "10px";
-    if (intersect.object.userData.space != undefined){
-        intersect.object.userData.space.map(function(good,i){
-            hint.style.top = `${lastY - 25*(i+1)}px`;
-            hint.style.height = `${25*(i+1)}px`;
-            hint.innerHTML += `${good.name}<br>`;
-        })
-    } else {
-        hint.style.top = `${lastY - 25}px`;
-        hint.style.height = `${25}px`;
-        hint.innerHTML = `${intersect.object.name}`;
-    }
-    
-    
-    warehouseScene.appendChild(hint);
-}
 //#endregion
 
 //#region controls and creating model hint
@@ -539,9 +481,11 @@ function onPointerMove(event) {
         const intersects = raycaster.intersectObjects( scene.children );
         const intersect = intersects[0];
 
-        createHint(intersect.object);
-        if (hintModel != undefined)
-            animateHint(intersect.object);
+        if (intersect!=undefined) {
+            createHint(intersect.object);
+            if (hintModel != undefined)
+                animateHint(intersect.object);
+        }
     }
     render();
 }
@@ -763,6 +707,8 @@ class AdministratorWarehouseCreating extends Component {
     prevSearchTerm
     allGoods = undefined
     warehouseSettings = undefined
+    selectedRackTypeIdBuf = undefined
+    selectedRackTypeIdLast = undefined
 
     // componentWillMount(){
     //     this.sideBlock = new SideBlock({isOpened:this.isSideBlockOpened, onRightClosed:"-497px", onRightOpened:"-1px", styles:{top:"100px",width:"500px", height:"100%"}})
@@ -786,7 +732,8 @@ class AdministratorWarehouseCreating extends Component {
             //табы выезжающей панельки
             panelTabs:[
                 {id:0, title:"Характеристики", func:()=>{}, selection:true, style:{fontSize:"15px", height:"20px"}},
-                {id:1, title:"Добавление моделей", func:()=>{}, selection:true, style:{fontSize:"15px", height:"20px"}}
+                {id:1, title:"Добавление зоны", func:()=>{}, selection:true, style:{fontSize:"15px", height:"20px"}},
+                {id:2, title:"Добавление стеллажа", func:()=>{}, selection:true, style:{fontSize:"15px", height:"20px"}}
             ],
             panelSelTab: {id:0},
             isSideBlockOpened:false,
@@ -806,6 +753,7 @@ class AdministratorWarehouseCreating extends Component {
             selectedRackRotation:undefined, //хар-ки выделенного стеллажа
             rackTypeIdExpandList: Object.keys(warehouseSettingsModel.getRacksType()).map(rackType=>{return {value: rackType.split("_")[1]}}), //хар-ки выделенного стеллажа
             selectedRackTypeId: {value: "0001"},//хар-ки выделенного стеллажа
+            isAlertMessageboxOpened: false
         }
     }
 
@@ -834,7 +782,17 @@ class AdministratorWarehouseCreating extends Component {
     setSelectedRackCenterZ = (value)=>{this.state.selectedRack.userData.centerPoint.z = Number(value); this.setState({selectedRackCenterZ: Number(value)});this.recreateRack(false)}     //хар-ки выделенного стеллажа
     setSelectedRackRotation = (value)=>{this.state.selectedRack.userData.rotation.y = Number(value); this.setState({selectedRackRotation: Number(value)});this.recreateRack(false)}   //хар-ки выделенного стеллажа
     setRackTypeIdExpandList = (value)=>{this.setState({rackTypeIdExpandList: value});}   //хар-ки выделенного стеллажа
-    setSelectedRackTypeId = (value)=>{this.state.selectedRack.userData.racksTypeId = value; this.setState({selectedRackTypeId: value});this.recreateRack(true)}       //хар-ки выделенного стеллажа
+    
+    setSelectedRackTypeId = (value)=>{
+        this.selectedRackTypeIdBuf = value; 
+        this.selectedRackTypeIdLast = this.state.selectedRackTypeId; 
+        this.setState({selectedRackTypeId: value}); 
+        this.setState({isAlertMessageboxOpened: true});
+    }       //хар-ки выделенного стеллажа
+    setSelectedRackTypeIdFromBuf = ()=>{ 
+        this.state.selectedRack.userData.racksTypeId = this.selectedRackTypeIdBuf; 
+        this.recreateRack(true)
+    }       //хар-ки выделенного стеллажа
 
     recreateFloor=()=>{
         let floorModel = undefined
@@ -1077,15 +1035,25 @@ class AdministratorWarehouseCreating extends Component {
                         )}
                         {this.state.panelSelTab.id==1&&(
                             <>
+                                <div className="header_text">Доступные зоны</div>
+                                <ModelList models={[]} width={490} minWidth={100} spaceBetweenItems={10} setModel={()=>{}}/>
+                            </>
+                        )}
+                        {this.state.panelSelTab.id==2&&(
+                            <>
                                 
                             </>
                         )}
-                        
                     </SideBlock>
                 </div>
-
+                <AlertMessagebox
+                    title={"Внимание!"}
+                    message={"Вы действительно хотите изменить тип полки? В таком случае товары на ней станут считаться нераспределенными."}
+                    isOpened={this.state.isAlertMessageboxOpened} 
+                    onAccept={()=>{this.setState({isAlertMessageboxOpened: false});this.setSelectedRackTypeIdFromBuf()}} 
+                    onCancel={()=>{this.setState({isAlertMessageboxOpened: false});this.setState({selectedRackTypeId: this.selectedRackTypeIdLast}); }}
+                />
                 {/* <DropdownListWithModels setModel={setModel}/> */}
-                
         </>
         )
     }

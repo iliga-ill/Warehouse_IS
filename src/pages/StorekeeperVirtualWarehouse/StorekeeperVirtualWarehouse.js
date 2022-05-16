@@ -366,8 +366,6 @@ function generateHint(intersect, lastX, lastY){
         hint.style.height = `${25}px`;
         hint.innerHTML = `${intersect.object.name}`;
     }
-    
-    
     warehouseScene.appendChild(hint);
 }
 //#endregion

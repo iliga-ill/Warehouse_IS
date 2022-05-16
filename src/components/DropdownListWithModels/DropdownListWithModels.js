@@ -23,7 +23,6 @@ import ModelCreator from "../../classes/ModelCreator.js";
     class DropdownListWithModels extends Component {
 
         dropdownListInit(){
-    
             dropdownListWidth = window.innerWidth/100 * (30)
             dropdownListHeight = window.innerHeight 
         
