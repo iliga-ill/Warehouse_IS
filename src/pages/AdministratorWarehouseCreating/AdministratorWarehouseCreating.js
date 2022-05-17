@@ -1,7 +1,7 @@
 import { React, Component, Fragment } from "react";
 import './AdministratorWarehouseCreating.css';
 import * as THREE from 'three';
-import { MapControls, OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import SideBlock from "../../components/SideBlock/SideBlock";
 import UniversalTabHolder from '../../components/TabHolders/UniversalTabHolder/UniversalTabHolder';
 import { TableComponent } from "../../components/Table/TableComponent";
@@ -434,24 +434,60 @@ function createHint(mesh){
     // const intersects = raycaster.intersectObjects( scene.children );
     // const intersect = intersects[0];
 
-    if (mesh != undefined && !selectionLockedModels.includes(mesh.name) && !mouseRightButton && !mouseLeftButton &&
+    if (page.state.panelSelTab.id==0 && mesh != undefined && !selectionLockedModels.includes(mesh.name) && !mouseRightButton && !mouseLeftButton &&
     (page.state.selectedZone==undefined || page.state.selectedZone.name!=mesh.name) &&
     (page.state.selectedRack==undefined || page.state.selectedRack.name!=mesh.name)
     ) {
-        hintModel = {
-            name: "Hint", 
-            modelName: "Hint",
-            material: new THREE.MeshBasicMaterial( { color: 0x90EE90, opacity: 0.1, transparent: true } ), 
-            geometry: mesh.geometry, 
-            mesh: new THREE.Mesh( 
-                mesh.geometry, 
-                new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } )
-            ), 
-            translation: new Vector3(0,0,0),
+            hintModel = {
+                name: "Hint", 
+                modelName: "Hint",
+                material: new THREE.MeshBasicMaterial( { color: 0x90EE90, opacity: 0.1, transparent: true } ), 
+                geometry: mesh.geometry, 
+                mesh: new THREE.Mesh( 
+                    mesh.geometry, 
+                    new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } )
+                ), 
+                translation: new Vector3(0,0,0),
+            }
+            hintModel.mesh.rotation.set(mesh.rotation.x, mesh.rotation.y, mesh.rotation.z)
+            hintModel.mesh.visible = false
+            scene.add( hintModel.mesh );
+    }
+    if (page.state.panelSelTab.id==1 && !mouseRightButton && !mouseLeftButton) 
+    {
+        if (mesh.type == "zone"  && !selectionLockedModels.includes(mesh.name) && mesh != undefined && mesh.userData!=undefined && (page.state.selectedZone==undefined || mesh.userData.id != page.state.selectedZone.userData.id)) {
+            hintModel = {
+                name: "Hint", 
+                modelName: "Hint",
+                material: new THREE.MeshBasicMaterial( { color: 0x90EE90, opacity: 0.1, transparent: true } ), 
+                geometry: mesh.geometry, 
+                mesh: new THREE.Mesh( 
+                    mesh.geometry, 
+                    new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } )
+                ), 
+                translation: new Vector3(0,0,0),
+            }
+            hintModel.mesh.rotation.set(mesh.rotation.x, mesh.rotation.y, mesh.rotation.z)
+            hintModel.mesh.visible = false
+            scene.add( hintModel.mesh );
         }
-        hintModel.mesh.rotation.set(mesh.rotation.x, mesh.rotation.y, mesh.rotation.z)
-        hintModel.mesh.visible = false
-        scene.add( hintModel.mesh );
+        //console.log(page.state.selectedZone!=undefined && page.state.installedModel!=undefined && (mesh.type != "zone" || mesh.userData.id == page.state.selectedZone.userData.id))
+        if (page.state.selectedZone!=undefined && page.state.installedModel!=undefined && (mesh.type != "zone" || mesh.userData.id == page.state.selectedZone.userData.id)){
+            hintModel = {
+                name: "Hint", 
+                modelName: "Hint",
+                material: page.state.installedModel.material, 
+                geometry: page.state.installedModel.geometry, 
+                mesh: new THREE.Mesh( 
+                    page.state.installedModel.geometry, 
+                    page.state.installedModel.material
+                ), 
+                translation: page.state.installedModel.translation,
+            }
+            //hintModel.mesh.rotation.set(mesh.rotation.x, mesh.rotation.y, mesh.rotation.z)
+            hintModel.mesh.visible = false
+            scene.add( hintModel.mesh );
+        }
     }
     // }
     
@@ -479,33 +515,62 @@ function onPointerMove(event) {
         pointer.set(getScreenX(lastX), getScreenY(lastY));
         raycaster.setFromCamera( pointer, camera );
         const intersects = raycaster.intersectObjects( scene.children );
-        const intersect = intersects[0];
+        let intersect = intersects[0];
+        if (page.state.panelSelTab.id==1 && intersect.object.type != "Line" && page.state.selectedZone!=undefined){
+            for (let i=0;i<intersects.length;i++){
+                if (intersects[i].object.name != ""){
+                    if (intersects[i].object.type == "zone"){
+                        intersect = intersects[i]
+                        break;
+                    }
+                    if (intersects[i].object.type == "floor"){
+                        intersect = intersects[i]
+                        break;
+                    }
+                }
+            }
+            if (intersect.object.name == "") intersect = undefined
+        }
+
 
         if (intersect!=undefined) {
             createHint(intersect.object);
             if (hintModel != undefined)
-                animateHint(intersect.object);
+                animateHint(intersect);
         }
     }
     render();
 }
 
-function animateHint(mesh) {
-    // pointer.set(getScreenX(lastX), getScreenY(lastY));
-    // raycaster.setFromCamera( pointer, camera );
-    // const intersects = raycaster.intersectObjects( scene.children );
-    // const intersect = intersects[0];
-    if (mesh!=undefined && hintModel != undefined && mesh.type !="Line") {
-        //hintMesh.visible = true;
-        // hintModel.mesh.position.copy( intersect.point ).add( intersect.face.normal );
-        // hintModel.mesh.position.divideScalar(1).floor().multiplyScalar(1).addScalar( 1 );
-        hintModel.mesh.position.set(
-            mesh.position.x, 
-            mesh.position.y, 
-            mesh.position.z
-        )
-        hintModel.mesh.visible = true
-        //scene.add( hintModel.mesh );
+function animateHint(intersect) {
+    if (page.state.panelSelTab.id==0 && intersect!=undefined && hintModel != undefined && intersect.object.type !="Line") {
+            hintModel.mesh.position.set(
+                intersect.object.position.x, 
+                intersect.object.position.y, 
+                intersect.object.position.z
+            )
+            hintModel.mesh.visible = true
+    } 
+
+    if (page.state.panelSelTab.id==1 && intersect!=undefined && hintModel != undefined && intersect.object.type !="Line") {
+        if (intersect.object.type == "zone" && (page.state.selectedZone==undefined || intersect.object.userData.id != page.state.selectedZone.userData.id)){
+            hintModel.mesh.position.set(
+                intersect.object.position.x, 
+                intersect.object.position.y, 
+                intersect.object.position.z
+            )
+            hintModel.mesh.visible = true
+        }
+        if (page.state.selectedZone!=undefined && page.state.installedModel!=undefined && (intersect.object.type != "zone" || intersect.object.userData.id == page.state.selectedZone.userData.id)){
+            hintModel.mesh.position.copy( intersect.point ).add( intersect.face.normal );
+            hintModel.mesh.position.divideScalar(1).floor().multiplyScalar(1).addScalar( 1 );
+            hintModel.mesh.position.set(
+                        hintModel.mesh.position.x + hintModel.translation.x, 
+                        hintModel.mesh.position.y + hintModel.translation.y, 
+                        hintModel.mesh.position.z + hintModel.translation.z
+                    )
+            hintModel.mesh.visible = true
+        }
     } 
 }
 //#endregion
@@ -540,7 +605,7 @@ function onPointerDown( event ) {
             page.setSelectedRack(undefined)
         }
         
-        if (intersect.object.type == "rack"){
+        if (intersect.object.type == "rack" && page.state.panelSelTab.id==0){
             scene.remove(rackHintMesh)
 
             rackHintMesh = addHintOnScene(intersect.object)
@@ -603,9 +668,9 @@ function warehouseGeneration(warehouseSettings, zonesType, racksType, goodsType)
 }
 
 function addFloorOnScene(warehouseSettings){
-    //grid
-    const gridHelper = new THREE.GridHelper( Math.max(warehouseSettings.width, warehouseSettings.length), Math.max(warehouseSettings.width, warehouseSettings.length) );
-    scene.add( gridHelper );
+    // //grid
+    // const gridHelper = new THREE.GridHelper( Math.max(warehouseSettings.width, warehouseSettings.length), Math.max(warehouseSettings.width, warehouseSettings.length) );
+    // scene.add( gridHelper );
 
     let floorModel = modelCreator.createFloor("Floor", 0x808080, warehouseSettings.width, warehouseSettings.length, 4, new Vector3(0,-2,0))
     setModelOnCoordinates(floorModel, new Vector3(0,0,0), "floor")
@@ -753,7 +818,8 @@ class AdministratorWarehouseCreating extends Component {
             selectedRackRotation:undefined, //хар-ки выделенного стеллажа
             rackTypeIdExpandList: Object.keys(warehouseSettingsModel.getRacksType()).map(rackType=>{return {value: rackType.split("_")[1]}}), //хар-ки выделенного стеллажа
             selectedRackTypeId: {value: "0001"},//хар-ки выделенного стеллажа
-            isAlertMessageboxOpened: false
+            isAlertMessageboxOpened: false,
+            installedModel:undefined
         }
     }
 
@@ -762,7 +828,12 @@ class AdministratorWarehouseCreating extends Component {
     setTableList = (value)=>{this.setState({tableList: value});}        //таблица с содержимым полки на панельке
     setSelectedItem = (value)=>{this.setState({selectedItem: value});}  //таблица с содержимым полки на панельке
     setSelTab = (value)=>{this.setState({selTab: value});}              //табы toolbar'a
-    setPanelSelTab = (value)=>{this.setState({panelSelTab: value});}                //табы выезжающей панельки
+    setPanelSelTab = (value)=>{
+        scene.remove(rackHintMesh)
+        page.setSelectedRack(undefined)
+        render()
+        this.setState({panelSelTab: value});
+    }                //табы выезжающей панельки
     setIsSideBlockOpened = (value)=>{this.setState({isSideBlockOpened: value});}    //табы выезжающей панельки
 
     setWarehouseWidth = (value)=>{this.state.warehouseSettings.width = Number(value); this.setState({warehouseWidth: Number(value)});this.recreateFloor()} //хар-ки склада
@@ -991,6 +1062,15 @@ class AdministratorWarehouseCreating extends Component {
     //     clearInterval(keyListener);
     // }
 
+    createRackListByType=()=>{
+        let list = []
+        Object.keys(this.state.racksType).map(key=>{
+            let rackType = this.state.racksType[key]
+            list.push(modelCreator.createRack(key.split("_")[1], rackType.color, rackType.shelfWidth, rackType.shelfHeight, rackType.depth, rackType.columsAmount, rackType.rowsAmount, rackType.borderWidth, rackType.translation))
+        })
+        return list
+    }
+
     render(){
         return (
             <>
@@ -1004,7 +1084,7 @@ class AdministratorWarehouseCreating extends Component {
                         <UniversalTabHolder tabs={this.state.panelTabs} style={{marginLeft:"1px" }} setTab={this.setPanelSelTab} selTab={this.state.panelSelTab}/>
                         {this.state.panelSelTab.id==0&&(
                             <>
-                                <div className="header_text">Хар-ки склада</div>
+                                <div className="header_text" >Хар-ки склада</div>
                                 <InputText styles = "row_with_item_wide" Id={1}  label="Длинна&nbsp;склада&nbsp;(см)&nbsp;"       placeholder="длинна склада"           defValue={this.state.warehouseLength}            set={this.setWarehouseLength}/> 
                                 <InputText styles = "row_with_item_wide" Id={2}  label="Ширина&nbsp;склада&nbsp;(см)&nbsp;"       placeholder="ширина склада"           defValue={this.state.warehouseWidth}             set={this.setWarehouseWidth}/>
 
@@ -1035,8 +1115,8 @@ class AdministratorWarehouseCreating extends Component {
                         )}
                         {this.state.panelSelTab.id==1&&(
                             <>
-                                <div className="header_text">Доступные зоны</div>
-                                <ModelList models={[]} width={490} minWidth={100} spaceBetweenItems={10} setModel={()=>{}}/>
+                                <div className="header_text" style={{margin:"5px"}}>Доступные зоны</div>
+                                <ModelList models={this.createRackListByType()} width={490} minWidth={150} spaceBetweenItems={10} setModel={(model)=>{this.state.installedModel = model}}/>
                             </>
                         )}
                         {this.state.panelSelTab.id==2&&(

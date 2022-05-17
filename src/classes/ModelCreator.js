@@ -112,6 +112,9 @@ export default class ModelCreator {
             modelName: "Rack",
             material: material, 
             geometry: geometry,
+            height: fullRackHight,
+            width: fullRackWidth,
+            depth: shelfDepth,
             mesh: mesh, 
             translation: translation,
         }

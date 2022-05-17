@@ -7,7 +7,7 @@ import InputColor from 'react-input-color';
 import { React, Component, Fragment } from "react";
 import './AdministratorRackCreating.css';
 import * as THREE from 'three';
-import { MapControls, OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import ModelCreator from "../../classes/ModelCreator.js";
 import Colors from "../../classes/Colors.js";
 import { Color, MOUSE, Vector2, Vector3 } from "three";

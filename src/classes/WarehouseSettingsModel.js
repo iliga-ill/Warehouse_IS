@@ -98,6 +98,50 @@ export default class WarehouseSettingsModel {
 						shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:2, column:1},
 					}
 				},
+				rack_0003:{
+					depth:50,
+					shelfWidth:50,
+					shelfHeight:50,
+					columsAmount:2,
+					rowsAmount:4,
+					borderWidth:2,
+					color:0x885aaa,
+					translation:new Vector3(0,0,-50/2),
+					shelfs:{
+						shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+						shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+						shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:1, column:0},
+						shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:1},
+						shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:2, column:0},
+						shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:2, column:1},
+						shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:3, column:0},
+						shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:3, column:1},
+					}
+				},
+				rack_0004:{
+					depth:50,
+					shelfWidth:50,
+					shelfHeight:50,
+					columsAmount:3,
+					rowsAmount:4,
+					borderWidth:2,
+					color:0x885aaa,
+					translation:new Vector3(0,0,-50/2),
+					shelfs:{
+						shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+						shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+						shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:0, column:2},
+						shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:0},
+						shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:1, column:1},
+						shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:1, column:2},
+						shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:2, column:0},
+						shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:2, column:1},
+						shelf_9:{name:"Полка 9", 	liftingCapacity:50, row:2, column:2},
+						shelf_10:{name:"Полка 10", 	liftingCapacity:50, row:3, column:0},
+						shelf_11:{name:"Полка 11", 	liftingCapacity:50, row:3, column:1},
+						shelf_12:{name:"Полка 12", 	liftingCapacity:50, row:3, column:2},
+					}
+				},
 			}
 		)
 	}
