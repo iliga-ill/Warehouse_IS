@@ -60,12 +60,16 @@ let camera, scene, renderer;
 let plane;
 let pointer, raycaster; 
 
+const objects = [];
+const floor = [];
+
 //let editingMod = "viewing" //viewing, adding, deleting /change mode of interacting with models
 
 let selectionLockedModels = [""] //models locked for selecting them
 let hintLockedModels = [""] //models locked for creating hint fore them
 
 let hintModel = undefined; //currently placed hint model
+let specificHintModel = undefined; //currently placed hint model
 let zoneHintMesh = undefined; //currently placed hint model
 let rackHintMesh = undefined; //currently placed hint model
 
@@ -310,10 +314,43 @@ function onDocumentKeyDown( event ) {
     if (!pressedKeys.includes(event.keyCode))
         pressedKeys.push(event.keyCode)
 
-    // switch ( event.keyCode ) {
-    //     case 16: isShiftDown = true; changeEditingMod(); createHint(); break;
-    //     case 17: isCtrlDown = true; changeEditingMod(); createHint(); break;
-    // }
+    switch ( event.keyCode ) {
+        case 16:{
+            if (isShiftDown==false){
+                isShiftDown = true;
+                if (page.state.panelSelTab.id==1 && page.state.selectedZone!=undefined) {
+                    pointer.set(getScreenX(lastX), getScreenY(lastY));
+                    raycaster.setFromCamera( pointer, camera );
+                    const intersects = raycaster.intersectObjects( floor );
+                    let intersect = intersects[0];
+                    // for (let i=0;i<intersects.length;i++){
+                    //     if (intersects[i].object.name != ""){
+                    //         if (intersects[i].object.type == "zone"){
+                    //             intersect = intersects[i]
+                    //             break;
+                    //         }
+                    //         if (intersects[i].object.type == "floor"){
+                    //             intersect = intersects[i]
+                    //             break;
+                    //         }
+                    //     }
+                    // }
+                    if (intersect.object.name == "") intersect = undefined
+                    if ((specificHintModel==undefined && page.state.installedModel!=undefined) || (page.state.installedModel!=undefined && page.state.installedModel.name != specificHintModel.mesh.name)) {
+                        if (specificHintModel != undefined) {
+                            scene.remove(specificHintModel.mesh)
+                            specificHintModel = undefined
+                        }
+                        createSpecificHint(intersect.object)
+                        animateSpecificHint(intersect)
+                    }
+                    render()
+                }
+            }
+            break;
+        } 
+        case 17: isCtrlDown = true; break;
+    }
 }
 
 function onDocumentKeyUp( event ) {
@@ -321,10 +358,19 @@ function onDocumentKeyUp( event ) {
     if (pressedKeys.includes(event.keyCode))
         pressedKeys.splice(pressedKeys.indexOf(event.keyCode), 1);
 
-    // switch ( event.keyCode ) {
-    //     case 16: isShiftDown = false; changeEditingMod(); createHint(); break;
-    //     case 17: isCtrlDown = false; changeEditingMod(); createHint(); break;
-    // }
+    switch ( event.keyCode ) {
+        case 16:{ 
+            isShiftDown = false;
+            if (specificHintModel!=undefined){
+                scene.remove(specificHintModel.mesh)
+                specificHintModel = undefined
+            }
+            
+            render()
+            break;
+        }
+        case 17: isCtrlDown = false; break;
+    }
 }
 
 // function changeEditingMod(){
@@ -423,75 +469,6 @@ function onKeyPressed(){
     }
     keyListener = setTimeout(onKeyPressed, 10);
 }
-
-function createHint(mesh){
-    if (hintModel != undefined) {
-        scene.remove(hintModel.mesh)
-        hintModel = undefined
-    }
-    // pointer.set(getScreenX(lastX), getScreenY(lastY));
-    // raycaster.setFromCamera( pointer, camera );
-    // const intersects = raycaster.intersectObjects( scene.children );
-    // const intersect = intersects[0];
-
-    if (page.state.panelSelTab.id==0 && mesh != undefined && !selectionLockedModels.includes(mesh.name) && !mouseRightButton && !mouseLeftButton &&
-    (page.state.selectedZone==undefined || page.state.selectedZone.name!=mesh.name) &&
-    (page.state.selectedRack==undefined || page.state.selectedRack.name!=mesh.name)
-    ) {
-            hintModel = {
-                name: "Hint", 
-                modelName: "Hint",
-                material: new THREE.MeshBasicMaterial( { color: 0x90EE90, opacity: 0.1, transparent: true } ), 
-                geometry: mesh.geometry, 
-                mesh: new THREE.Mesh( 
-                    mesh.geometry, 
-                    new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } )
-                ), 
-                translation: new Vector3(0,0,0),
-            }
-            hintModel.mesh.rotation.set(mesh.rotation.x, mesh.rotation.y, mesh.rotation.z)
-            hintModel.mesh.visible = false
-            scene.add( hintModel.mesh );
-    }
-    if (page.state.panelSelTab.id==1 && !mouseRightButton && !mouseLeftButton) 
-    {
-        if (mesh.type == "zone"  && !selectionLockedModels.includes(mesh.name) && mesh != undefined && mesh.userData!=undefined && (page.state.selectedZone==undefined || mesh.userData.id != page.state.selectedZone.userData.id)) {
-            hintModel = {
-                name: "Hint", 
-                modelName: "Hint",
-                material: new THREE.MeshBasicMaterial( { color: 0x90EE90, opacity: 0.1, transparent: true } ), 
-                geometry: mesh.geometry, 
-                mesh: new THREE.Mesh( 
-                    mesh.geometry, 
-                    new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } )
-                ), 
-                translation: new Vector3(0,0,0),
-            }
-            hintModel.mesh.rotation.set(mesh.rotation.x, mesh.rotation.y, mesh.rotation.z)
-            hintModel.mesh.visible = false
-            scene.add( hintModel.mesh );
-        }
-        //console.log(page.state.selectedZone!=undefined && page.state.installedModel!=undefined && (mesh.type != "zone" || mesh.userData.id == page.state.selectedZone.userData.id))
-        if (page.state.selectedZone!=undefined && page.state.installedModel!=undefined && (mesh.type != "zone" || mesh.userData.id == page.state.selectedZone.userData.id)){
-            hintModel = {
-                name: "Hint", 
-                modelName: "Hint",
-                material: page.state.installedModel.material, 
-                geometry: page.state.installedModel.geometry, 
-                mesh: new THREE.Mesh( 
-                    page.state.installedModel.geometry, 
-                    page.state.installedModel.material
-                ), 
-                translation: page.state.installedModel.translation,
-            }
-            //hintModel.mesh.rotation.set(mesh.rotation.x, mesh.rotation.y, mesh.rotation.z)
-            hintModel.mesh.visible = false
-            scene.add( hintModel.mesh );
-        }
-    }
-    // }
-    
-}
 //#endregion
 
 //#region window resize
@@ -516,62 +493,141 @@ function onPointerMove(event) {
         raycaster.setFromCamera( pointer, camera );
         const intersects = raycaster.intersectObjects( scene.children );
         let intersect = intersects[0];
-        if (page.state.panelSelTab.id==1 && intersect.object.type != "Line" && page.state.selectedZone!=undefined){
-            for (let i=0;i<intersects.length;i++){
-                if (intersects[i].object.name != ""){
-                    if (intersects[i].object.type == "zone"){
-                        intersect = intersects[i]
-                        break;
-                    }
-                    if (intersects[i].object.type == "floor"){
-                        intersect = intersects[i]
-                        break;
+
+        //----------------------------------------------------------------------------------------------------------page 0
+        if (intersect!=undefined && page.state.panelSelTab.id==0 && intersect.object.type != "Line") {
+            if (intersect.object != undefined && !selectionLockedModels.includes(intersect.object.name) && !mouseRightButton && !mouseLeftButton && 
+            (hintModel == undefined || (intersect.object.userData.id != hintModel.userData.id && intersect.object.type == hintModel.userData.type)) &&
+            (page.state.selectedZone==undefined || page.state.selectedZone.name!=intersect.object.name) &&
+            ((page.state.selectedRack==undefined || page.state.selectedRack.name!=intersect.object.name))
+            ) {
+                if (hintModel != undefined) {
+                    scene.remove(hintModel.mesh)
+                    hintModel = undefined
+                }
+                createHintOnModel(intersect.object);
+                animateHintOnModel(intersect.object);
+            }
+            if (hintModel != undefined && (intersect.object.userData.id != hintModel.userData.id || intersect.object.type != hintModel.userData.type)) {
+                scene.remove(hintModel.mesh)
+                hintModel = undefined
+            }
+            render();
+        }
+
+        if (intersect!=undefined && page.state.panelSelTab.id==1 && intersect.object.type != "Line"){
+            if (intersect.object.type == "zone" && (page.state.selectedZone==undefined || intersect.object.userData.id != page.state.selectedZone.userData.id) && (hintModel == undefined || (intersect.object.userData.id != hintModel.userData.id && intersect.object.type == hintModel.userData.type)) && !isShiftDown) {
+                if (hintModel != undefined) {
+                    scene.remove(hintModel.mesh)
+                    hintModel = undefined
+                }
+                createHintOnModel(intersect.object);
+                animateHintOnModel(intersect.object);
+            }
+            if (hintModel != undefined && (intersect.object.userData.id != hintModel.userData.id || intersect.object.type != hintModel.userData.type)) {
+                scene.remove(hintModel.mesh)
+                hintModel = undefined
+            }
+
+            if (page.state.selectedZone!=undefined && (intersect.object.userData.id == page.state.selectedZone.userData.id || intersect.object.type != "zone") && isShiftDown && !isCtrlDown) {
+                for (let i=0;i<intersects.length;i++){
+                    if (intersects[i].object.name != ""){
+                        if (intersects[i].object.type == "zone"){
+                            intersect = intersects[i]
+                            break;
+                        }
+                        if (intersects[i].object.type == "floor"){
+                            intersect = intersects[i]
+                            break;
+                        }
                     }
                 }
+                if (intersect.object.name == "") intersect = undefined
+
+                //-------------- 
+                    
+                // if ((specificHintModel==undefined && page.state.installedModel!=undefined) || (page.state.installedModel!=undefined && page.state.installedModel.name != specificHintModel.mesh.name)) {
+                //     if (specificHintModel != undefined) {
+                //         scene.remove(specificHintModel.mesh)
+                //         specificHintModel = undefined
+                //     }
+                //     createSpecificHint(intersect.object)
+                //     animateSpecificHint(intersect)
+                //     console.log("created")
+                // }
+                if (specificHintModel!=undefined){
+                    // pointer.set(getScreenX(lastX), getScreenY(lastY));
+                    // raycaster.setFromCamera( pointer, camera );
+                    // const floorIntersects = raycaster.intersectObjects( floor );
+                    // let floorIntersect = floorIntersects[0];
+                    animateSpecificHint(intersect)
+                }
+                //------------------
             }
-            if (intersect.object.name == "") intersect = undefined
-        }
-
-
-        if (intersect!=undefined) {
-            createHint(intersect.object);
-            if (hintModel != undefined)
-                animateHint(intersect);
+            // if (specificHintModel!=undefined && !isShiftDown) {
+            //     scene.remove(specificHintModel.mesh)
+            //     specificHintModel = undefined
+            // }
+        render();
         }
     }
-    render();
 }
 
-function animateHint(intersect) {
-    if (page.state.panelSelTab.id==0 && intersect!=undefined && hintModel != undefined && intersect.object.type !="Line") {
-            hintModel.mesh.position.set(
-                intersect.object.position.x, 
-                intersect.object.position.y, 
-                intersect.object.position.z
-            )
-            hintModel.mesh.visible = true
-    } 
+function createHintOnModel(mesh){
+    hintModel = {
+        name: "Hint", 
+        modelName: "Hint",
+        material: new THREE.MeshBasicMaterial( { color: 0x90EE90, opacity: 0.1, transparent: true } ), 
+        geometry: mesh.geometry, 
+        mesh: new THREE.Mesh( 
+            mesh.geometry, 
+            new THREE.MeshBasicMaterial( { color: 0xff0000, opacity: 0.5, transparent: true } )
+        ), 
+        translation: new Vector3(0,0,0),
+        userData:{}
+    }
+    hintModel.mesh.rotation.set(mesh.rotation.x, mesh.rotation.y, mesh.rotation.z)
+    hintModel.mesh.visible = false
+    hintModel.userData = mesh.userData
+    scene.add( hintModel.mesh );
+}
 
-    if (page.state.panelSelTab.id==1 && intersect!=undefined && hintModel != undefined && intersect.object.type !="Line") {
-        if (intersect.object.type == "zone" && (page.state.selectedZone==undefined || intersect.object.userData.id != page.state.selectedZone.userData.id)){
-            hintModel.mesh.position.set(
-                intersect.object.position.x, 
-                intersect.object.position.y, 
-                intersect.object.position.z
-            )
-            hintModel.mesh.visible = true
-        }
-        if (page.state.selectedZone!=undefined && page.state.installedModel!=undefined && (intersect.object.type != "zone" || intersect.object.userData.id == page.state.selectedZone.userData.id)){
-            hintModel.mesh.position.copy( intersect.point ).add( intersect.face.normal );
-            hintModel.mesh.position.divideScalar(1).floor().multiplyScalar(1).addScalar( 1 );
-            hintModel.mesh.position.set(
-                        hintModel.mesh.position.x + hintModel.translation.x, 
-                        hintModel.mesh.position.y + hintModel.translation.y, 
-                        hintModel.mesh.position.z + hintModel.translation.z
-                    )
-            hintModel.mesh.visible = true
-        }
-    } 
+function createSpecificHint(mesh){
+    specificHintModel = {
+        name: page.state.installedModel.name, 
+        modelName: "specificHint",
+        material: page.state.installedModel.material, 
+        geometry: page.state.installedModel.geometry, 
+        mesh: new THREE.Mesh( 
+            page.state.installedModel.geometry, 
+            page.state.installedModel.material
+        ), 
+        translation: page.state.installedModel.translation,
+    }
+    //hintModel.mesh.rotation.set(mesh.rotation.x, mesh.rotation.y, mesh.rotation.z)
+    specificHintModel.mesh.visible = false
+    specificHintModel.mesh.name = page.state.installedModel.name
+    scene.add( specificHintModel.mesh );
+}
+
+function animateHintOnModel(mesh) {
+    hintModel.mesh.position.set(
+        mesh.position.x, 
+        mesh.position.y, 
+        mesh.position.z
+    )
+    if (!hintModel.mesh.visible) hintModel.mesh.visible = true
+}
+
+function animateSpecificHint(intersect){
+    specificHintModel.mesh.position.copy( intersect.point ).add( intersect.face.normal );
+    specificHintModel.mesh.position.divideScalar(1).floor().multiplyScalar(1).addScalar( 1 );
+    specificHintModel.mesh.position.set(
+        specificHintModel.mesh.position.x + specificHintModel.translation.x, 
+        specificHintModel.mesh.position.y + specificHintModel.translation.y, 
+        specificHintModel.mesh.position.z + specificHintModel.translation.z
+    )
+    if (!specificHintModel.mesh.visible) specificHintModel.mesh.visible = true
 }
 //#endregion
 
@@ -581,7 +637,7 @@ function onPointerDown( event ) {
     raycaster.setFromCamera( pointer, camera );
     const intersects = raycaster.intersectObjects( scene.children );
     
-    if (intersects.length > 0 && hintModel!=undefined) {
+    if (intersects.length > 0 && hintModel!=undefined && page.state.panelSelTab.id==0 ) {
         const intersect = intersects[0];
 
         if (intersect.object.type == "zone"){
@@ -604,7 +660,7 @@ function onPointerDown( event ) {
             page.setSelectedZone(intersect.object)
             page.setSelectedRack(undefined)
         }
-        
+
         if (intersect.object.type == "rack" && page.state.panelSelTab.id==0){
             scene.remove(rackHintMesh)
 
@@ -624,6 +680,46 @@ function onPointerDown( event ) {
         
         render();
     }
+    if (intersects.length > 0 && page.state.panelSelTab.id==1) {
+        const intersect = intersects[0];
+        if (page.state.selectedZone!=undefined && (intersect.object.userData.id == page.state.selectedZone.userData.id || intersect.object.type != "zone") && isShiftDown && !isCtrlDown) {
+            setModelOnCoordinates(
+                {mesh:
+                    new THREE.Mesh( 
+                        page.state.installedModel.geometry, 
+                        page.state.installedModel.material
+                    ),
+                translation:new Vector3(0,0,0),
+                name:page.state.installedModel.name,
+                }, 
+                new Vector3(
+                    hintModel.mesh.position.x, 
+                    hintModel.mesh.position.y, 
+                    hintModel.mesh.position.z
+                ),
+                "rack"
+            )
+            render();
+        }
+        if (intersect.object.type == "zone" && (page.state.selectedZone==undefined || intersect.object.userData.id != page.state.selectedZone.userData.id)) {
+                scene.remove(zoneHintMesh)
+
+                zoneHintMesh = addHintOnScene(intersect.object)
+
+                page.setSelectedZone(undefined)
+                page.state.selectedZoneName = intersect.object.userData.name
+                page.state.selectedZoneCenterX = intersect.object.userData.centerPoint.x
+                page.state.selectedZoneCenterZ = intersect.object.userData.centerPoint.z
+                page.state.selectedZoneRotation = intersect.object.userData.rotation.y
+                page.state.selectedZoneTypeId = {value:intersect.object.userData.zoneTypeId}
+
+                page.state.selectedRackName = undefined
+                page.state.selectedRackCenterX = undefined
+                page.state.selectedRackCenterZ = undefined
+                page.state.selectedRackRotation = undefined
+                page.setSelectedZone(intersect.object)
+        }
+    }
 }
 
 function addHintOnScene(mesh){
@@ -633,7 +729,8 @@ function addHintOnScene(mesh){
     voxel.position.set(
         mesh.position.x, 
         mesh.position.y, 
-        mesh.position.z)
+        mesh.position.z
+    )
     voxel.name = mesh.name;
     voxel.userData = mesh.userData
     voxel.rotation.set(mesh.rotation.x, mesh.rotation.y, mesh.rotation.z)
@@ -651,6 +748,11 @@ function setModelOnCoordinates(model, coordinates, type){
     voxel.name = model.name;
     if (type!=undefined) voxel.type = type
     scene.add( voxel );
+    objects.push(voxel)
+    if (type == "floor") {
+        floor.pop()
+        floor.push(voxel)
+    }
 }
 
 function warehouseGeneration(warehouseSettings, zonesType, racksType, goodsType){
@@ -989,7 +1091,7 @@ class AdministratorWarehouseCreating extends Component {
         var manager = new THREE.LoadingManager();
         manager.onLoad = () => { // when all resources are loaded
             init(this.state.warehouseSettings)
-            createHint()
+            // createHint()
             warehouseGeneration(this.state.warehouseSettings, this.state.zonesType, this.state.racksType, this.state.goodsType)
             this.allGoods = []
             this.state.warehouseSettings.zones.map(zone=>{
