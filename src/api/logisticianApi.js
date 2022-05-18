@@ -74,7 +74,9 @@ export class Api {
                         console.log(answer)
                         let counter1 = 0;
                         answer.map(shipment => {
-                            tableListBuf.push({id:counter1, number: counter1+++1, 
+                            tableListBuf.push({
+                                id: shipment.code,
+                                number: counter1+++1, 
                                 shipmentNumber: shipment.name, 
                                 orderCode: shipment.order_id, 
                                 shipmentDate: shipment.shipment_date.split("T")[0], 
@@ -112,7 +114,7 @@ export class Api {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                         console.log(this.responseText);
                         // alert("Изменения успешно приняты")
-                        resolve("Responded")
+                        resolve(this.responseText)
                     }
                 }
             xhr.send(JSON.stringify(array));

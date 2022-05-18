@@ -18,8 +18,8 @@ export class Api {
                     var counter = 0
                     var order = [{id:0, text: "Ничего не найдено", selected: true, code: 0}]
                     answer.map( function(item, i) {
-                        if (i === 0 & item.status != "closed")  order[i] = {id:counter++, text: item.name, selected: true, code: item.code}
-                        else if (item.status != "closed") order[i] = {id:counter++, text: item.name, selected: false, code: item.code}
+                        if (i === 0)  order[i] = {id:counter++, text: item.name, selected: true, code: item.code}
+                        else order[i] = {id:counter++, text: item.name, selected: false, code: item.code}
                     })
                     resolve(order)
                 }
@@ -169,18 +169,26 @@ export class Api {
         }) 
     }
 
-    updateOrderGoods(element) {
-        var xhr = new XMLHttpRequest();
+    updateOrderGoods(selected, array) {
+        console.log("В Шарараме хорошо")
+        console.log(selected)
+        var body = array
+        body.forEach(element => {
+            element.orderCode = selected.code
+        });
 
+        var xhr = new XMLHttpRequest();
         return new Promise(function(resolve, reject){
-            xhr.open('PUT', host+'update_order_goods/'+'?'+`amount=${element.amount}&code=${element.code}`, true);
+            xhr.open('POST', host+'update_order_goods/', true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
-                    resolve(this.responseText);
+                        console.log(this.responseText);
+                        // alert("Изменения успешно приняты")
+                        resolve("Responded")
+                    }
                 }
-            }
-            xhr.send(null);
+            xhr.send(JSON.stringify(body));
         }) 
     }
 
@@ -409,13 +417,21 @@ export class Api {
         })
     }
 
-    updateOrderStatus(connectionType, shelfsSpace, space) {
-        var connection = connectionType
-        var route = route
+    updateOrderStatus(selected, space) {
+        var goods = []
+        goods = space
+        goods.map(good => {
+            good.zone = selected.zone
+            good.shelf = selected.shelf
+            good.rack = selected.rack
+        })
+        console.log("Шарарам")
+        console.log(goods)
+
         var xhr = new XMLHttpRequest();
 
         return new Promise(function(resolve, reject){
-            xhr.open(connection, host+'update_shelf_space_status/', true);
+            xhr.open("POST", host+'update_shelf_space_status/', true);
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -450,10 +466,10 @@ export class Api {
                 //     console.log('buf')
                 //     console.log(buf)
                 //     resolve(buf)
-                    resolve("Responsed")
+                    resolve(this.responseText)
                 }
             }
-            xhr.send(JSON.stringify(space));
+            xhr.send(JSON.stringify(goods));
         })
     }
 
