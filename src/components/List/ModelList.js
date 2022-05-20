@@ -57,7 +57,7 @@ function init(width, minWidth, spaceBetweenItems, models){
         scene.add( camera );
 
         //grid
-        const gridHelper = new THREE.GridHelper( Math.max(model.width, model.depth), Math.max(model.width, model.depth) );
+        const gridHelper = new THREE.GridHelper( Math.max(model.width, model.depth) + model.gridBorder, Math.max(model.width, model.depth) + model.gridBorder );
         scene.add( gridHelper );
 
         const geometry = new THREE.PlaneGeometry( Math.max(model.width, model.depth), Math.max(model.width, model.depth) );

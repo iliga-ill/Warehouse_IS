@@ -117,6 +117,7 @@ export default class ModelCreator {
             depth: shelfDepth,
             mesh: mesh, 
             translation: translation,
+            gridBorder:100,
         }
     }
 
@@ -279,7 +280,7 @@ export default class ModelCreator {
     }
 
     createZoneBorder(name, color, width, length, borderWidth, chamferLendth, message, messageAlighment, font, textSize, gapLengthX, gapLengthY, translation){
-        let mesh = new THREE.Mesh
+        let mesh = new THREE.Mesh()
         let gaps = {
             top:0,
             bottom:0,
@@ -311,6 +312,10 @@ export default class ModelCreator {
             geometry: null,
             mesh: mesh, 
             translation: translation,
+            width: width,
+            depth: length,
+            height: Math.max(width,length)/2,
+            gridBorder:100,
         }
     }
 
