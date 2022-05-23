@@ -36,9 +36,15 @@
     height: fit-content;
     align-self: flex-end;
 }
+.bt_send_AdministratorGoodCreating3{
+    width: 100px;
+    height: fit-content;
+    align-self: flex-end;
+    margin-left: 10px;
+}
 
 .place_holder_AdministratorGoodCreating{
-    width: calc(100% - 250px);
+    width: calc(100% - 360px);
     align-self: flex-end;
     display: inline-block;
 }

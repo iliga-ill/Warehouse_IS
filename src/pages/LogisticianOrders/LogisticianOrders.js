@@ -63,11 +63,22 @@ export default function LogisticianOrders(props){
         {name: 'shipmentCost',      title:'Стоимость доставки',   editingEnabled:true,    width:200, mask:/^[0-9]{0,10}$/i, maskExample:"быть числом больше нуля", isCurrency:true   }, 
         {name: 'shipmentStatus',    title:'Статус',               editingEnabled:false,   width:110   }, 
     ]) 
-    var tableSettings = {
-        add:true, 
-        edit:true, 
-        delete:true, 
-        select:true
+    var tableSettings
+    if (isCurrent){
+        tableSettings = {
+            add:true, 
+            edit:true, 
+            delete:true, 
+            select:true
+        }
+    }
+    else {
+        tableSettings = {
+            add:false, 
+            edit:false, 
+            delete:false, 
+            select:true
+        }
     }
     
     const [tableList, setTableList] = React.useState([])
@@ -304,15 +315,13 @@ export default function LogisticianOrders(props){
                 <FlexibleBlock>
                     <div class="header_text">Доставка товаров</div>
                     <div style={{height:20+"px"}}/>
-                    <div style={{width:300+'px', display:'inline-table'}} >
-                        <TableComponent height={200} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings} onSelect={setSelectedItemId}/>
+                    <div style={{width:isCurrent?300:400+'px', display:'inline-table'}} >
+                        <TableComponent height={245} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings} onSelect={setSelectedItemId}/>
                     </div>
                     <div style={{height:20+"px"}}/>
                     <div style={{width:300+'px', display:'inline-table'}} >
                         <TableComponent height={250} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} tableSettings={tableSettings1}/>
                     </div>
-                    <div style={{height:20+"px"}}/>    
-                    <div class="place_holder_LogisticianOrders"/><button class="bt_send_LogisticianOrders" onClick={btn_send_1}>Завершить редактирование</button>
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div style={{width:500+"px"}}>
@@ -324,10 +333,8 @@ export default function LogisticianOrders(props){
                         <div class="low_text bold">Товары&nbsp;в&nbsp;заказе:&nbsp;</div>
                     </div>
                     <div style={{width:300+'px', display:'inline-table'}} >
-                        <TableComponent height={380} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} tableSettings={tableSettings2} onSelect={setSelectedItemId2}/>
+                        <TableComponent height={425} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} tableSettings={tableSettings2} onSelect={setSelectedItemId2}/>
                     </div>
-                    <div style={{height:20+"px"}}/>   
-                    <div class="place_holder_LogisticianOrders"/><button class="bt_send_LogisticianOrders" onClick={btn_send_2}>Завершить заказ</button>
                 </FlexibleBlock>
             </FlexibleBlocksPage>
         </>

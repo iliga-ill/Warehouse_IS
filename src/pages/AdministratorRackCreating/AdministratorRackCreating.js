@@ -288,6 +288,10 @@ class AdministratorRackCreating extends Component {
 
     }
 
+    btn_send_3=()=> {
+
+    }
+
     render(){
         return (
             <div id = "pageWrap">
@@ -314,6 +318,7 @@ class AdministratorRackCreating extends Component {
                     <div></div>
                     <button class="bt_send_AdministratorRackCreating1" onClick={this.btn_send_1}>Создать новую полку</button>
                     <div class="place_holder_AdministratorRackCreating"/><button class="bt_send_AdministratorRackCreating2" onClick={this.btn_send_2}>Сохранить</button>
+                    <button class="bt_send_AdministratorRackCreating3" onClick={this.btn_send_3}>Удалить</button>
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div class="header_text">Стеллаж</div>

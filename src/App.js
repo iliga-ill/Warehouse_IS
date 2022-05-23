@@ -175,7 +175,7 @@ export default function App() {
   
   if (cookies.access_token !== undefined){
     return (
-      <div id = "allPageWrap">
+      <>
         <div className="header">
           <div className="homePage" onClick={()=>{navigate("/Home")}}>
             <img src={WarehouseISicon} className="homeIcon"/>
@@ -231,7 +231,7 @@ export default function App() {
           <Route path="/Profile" element={wrapErrorBoundary(<Profile cookies={cookies}/>)}/>
           <Route path="/Home" element={wrapErrorBoundary(<Home cookies={cookies}/>)}/>
         </Routes>
-      </div>
+      </>
     );
   } else {
     return <Authorization setCookie={setCookie}/> 
