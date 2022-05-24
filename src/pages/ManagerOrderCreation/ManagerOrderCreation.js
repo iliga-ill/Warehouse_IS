@@ -207,7 +207,7 @@ export default function ManagerOrderCreation(props){
         <FlexibleBlocksPage>
             <FlexibleBlock>
                 <div class="header_text">Создание заказа</div>
-                <div class="low_text row_with_item_wide"><div>Тип&nbsp;заказа&nbsp;</div><ExpandListInputRegular list={orderTypeList} func={setOrderTypeListValue}/></div> 
+                <div class="low_text row_with_item_wide"><div>Тип&nbsp;заказа&nbsp;</div><ExpandListInputRegular defValue={orderTypeList[0]} list={orderTypeList} func={setOrderTypeListValue}/></div> 
                 <InputText styles = "row_with_item_wide" Id={getId()} label="Заказ&nbsp;№&nbsp;" placeholder="номер заказа" set={setOrderNumber}/> 
                 <div class="low_text row_with_item_wide"><div>Дата&nbsp;доставки&nbsp;</div><InputDate Id={getId()} defValue={shipmentDate} func={setShipmentDate}/></div>
                 <InputTextArea styles = "" Id={getId()} label="Адрес доставки:" placeholder="адрес" set={setShipmentAddress} defValue={shipmentAddress}/>

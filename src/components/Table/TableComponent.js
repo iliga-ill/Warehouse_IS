@@ -306,6 +306,8 @@ export function TableComponent(props) {
           columns.map(item=>{
             var keys = Object.keys(changed[row.id])
             keys.map(key=>{
+              console.log(changedRows)
+              console.log(changedRows[row.id])
               if (item.name == key && item.isCurrency!=undefined && item.isCurrency){
                 changedRows[row.id][key] = parseFloat(changedRows[row.id][key])
               }

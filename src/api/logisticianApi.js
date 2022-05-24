@@ -75,7 +75,7 @@ export class Api {
                         let counter1 = 0;
                         answer.map(shipment => {
                             tableListBuf.push({
-                                id: shipment.code,
+                                id: counter1,
                                 number: counter1+++1, 
                                 shipmentNumber: shipment.name, 
                                 orderCode: shipment.order_id, 
@@ -98,6 +98,8 @@ export class Api {
         console.log(array)
         array.forEach(element => {
             element.orderCode = selected.code
+            if (element.code == undefined)
+                element.code = 0
         });
 
         if (array.length == 0)
@@ -114,7 +116,7 @@ export class Api {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                         console.log(this.responseText);
                         // alert("Изменения успешно приняты")
-                        resolve(this.responseText)
+                        resolve(JSON.parse(this.responseText))
                     }
                 }
             xhr.send(JSON.stringify(array));
@@ -127,7 +129,7 @@ export class Api {
         console.log('shipment_num')
         console.log(shipment_num)
         return new Promise(function(resolve, reject){
-            xhr.open('GET', host+'shipment_goods_id/'+'?'+`shipment_num=${shipment_num.shipmentNumber}`, true);
+            xhr.open('GET', host+'shipment_goods_id/'+'?'+`shipment_num=${shipment_num.code}`, true);
             console.log("LogisticianApi getShipmentsGoods was launched")
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -165,7 +167,7 @@ export class Api {
         console.log(array)
         console.log(selected)
         array.forEach(element => {
-            element.shipmentNumber = selected.shipmentNumber
+            element.shipmentNumber = selected.code
         });
 
         if (array.length == 0)
