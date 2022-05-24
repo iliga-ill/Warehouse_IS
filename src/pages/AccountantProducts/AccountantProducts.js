@@ -7,45 +7,21 @@ import InputText from "../../components/InputText/InputText";
 import InputTextArea from "../../components/InputTextArea/InputTextArea";
 import { TableComponent } from "../../components/Table/TableComponent";
 import { recomposeColor } from "@material-ui/core";
-const host = 'http://localhost:5000';
+import { Api } from "../../api/accountantApi"
 
-const styles = {
-
-  }
-
-  
+var api = new Api()
 
 export default function AccountantProducts(props){
 
     var id=0
     function getId(){return id++}
 
-    function apiGetGoodsTypeCats() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', host+'/goods_type_cats', true);
-        console.log("ManagerProducts apiGetGoodsTypeCats was launched")
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == XMLHttpRequest.DONE) {
-            //console.log(this.response);
-            var answer = JSON.parse(this.response)
-            console.log("ManagerProducts apiGetGoodsTypeCats answer: ")
-            console.log(answer)
-            var buffer = []
-            answer.map(function( element, i) {
-                buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: parseFloat(element.price)})
-                buffer[i].id = getId()
-                buffer[i].code = element.code;
-                buffer[i].description = element.description
-            });
-            setTableList(buffer)
-            setSelectedItemId(buffer[0])
-          }
-        }
-        
-        xhr.send(null);
+    async function apiGetGoodsTypeCats() {
+        var result = await api.getGoodsType()
+        setTableList(result)
+        setSelectedItemId(result[0])
     }
 
-    
     //-------------------------------------------------------------------------Блок 1
     //-------------------------------------стол 1
     const [tableHeaders, setTableHeaders] = React.useState([

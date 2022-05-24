@@ -1035,8 +1035,8 @@ class StorekeeperVirtualWarehouse extends Component {
                                 <div style={{width:400+"px", margin:"5px"}}>
                                     <InputText styles = "row_with_item_equal" Id={0} label="Название&nbsp;товара&nbsp;" placeholder="название товара" defValue={this.state.goodSearchTerm} set={this.setGoodSearchTerm}/> 
                                     <InputText styles = "row_with_item_equal" Id={1} label="id&nbsp;товара&nbsp;" placeholder="id товара" defValue={this.state.idSearchTerm} set={this.setIdSearchTerm}/> 
-                                    <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><ExpandListInputRegular width={300} list={this.state.categoryExpandList} func={this.setCategorySearchTerm}/></div>
-                                    <div class="low_text row_with_item_equal"><div>Подкатегория&nbsp;</div><ExpandListInputRegular width={300} list={this.state.subCategoryExpandList} func={this.setSubCategorySearchTerm}/></div>
+                                    <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><ExpandListInputRegular width={300} defValue={this.state.categoryExpandList[0]} list={this.state.categoryExpandList} func={this.setCategorySearchTerm}/></div>
+                                    <div class="low_text row_with_item_equal"><div>Подкатегория&nbsp;</div><ExpandListInputRegular width={300} defValue={this.state.subCategoryExpandList[0]} list={this.state.subCategoryExpandList} func={this.setSubCategorySearchTerm}/></div>
                                     <div style={{width:"min-content", display:'inline-table', marginLeft:"-4px" }} >
                                         <TableComponent height={588} columns={this.state.tableHeaders1} rows={this.state.tableList1} setNewTableList={this.setTableList1}  tableSettings={this.state.tableSettings1} onSelect={this.setSelectedItem1}/>
                                     </div>

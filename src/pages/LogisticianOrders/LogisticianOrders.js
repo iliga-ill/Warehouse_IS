@@ -97,7 +97,6 @@ export default function LogisticianOrders(props){
     }, [selectedItemId]);
 
     async function apiGetShipmentGoods(selected) {
-        console.log("Я смешарик")
         console.log(selected)
         TableList1IsAnswer = true
         var result = await api.getShipmentsGoods(selected)
@@ -113,9 +112,15 @@ export default function LogisticianOrders(props){
 
     async function postShipments(selected, tableList) {
         var result = []
-        result = await api.postShipments(selected, tableList)
-        tableList[tableList.length-1].code = result[0].id
-
+        var elm = await api.postShipments(selected, tableList)
+        if (elm != undefined && elm != [] && elm != "[]") {
+            result.push(elm)
+            console.log("ЖЕКИ был здесь")
+            result.map(id => {
+                console.log(id[0])
+                tableList[tableList.length-1].code = id[0]
+            })
+        }
     }
         
     async function apiGetShipments(selected) {
@@ -159,11 +164,14 @@ export default function LogisticianOrders(props){
 
     async function apiPostShipmentGoods(selected, body) {
         var result = []
-        result = await api.postShipmentGoods(selected, body)
-        result.map((id, i)=>{
-            tableList1[tableList1.length-1].code = id
-            tableList1[tableList1.length-1].id = id
-        })
+        var elm = await api.postShipmentGoods(selected, body)
+        if (elm != undefined && elm != [] && elm != "[]" && elm.length != 0) {
+            result.push(elm)
+            result.map((id, i)=>{
+                tableList1[tableList1.length-1].code = id[0]
+                tableList1[tableList1.length-1].id = id[0]
+            })
+        }
     }
 
     //-------------------------------------стол 2 конец

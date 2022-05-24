@@ -189,10 +189,10 @@ export default function App() {
           <SubTabHolder tabs={subTabs} supTabs={supportTabsArray}/>
         }
         <Routes>
-          <Route path="/Storekeeper/StorekeeperAdvent/Current" element={wrapErrorBoundary(<StorekeeperAdvent isCurrent={true}/>)}/>
-          <Route path="/Storekeeper/StorekeeperAdvent/Completed" element={wrapErrorBoundary(<StorekeeperAdvent isCurrent={false}/>)}/>
-          <Route path="/Storekeeper/StorekeeperExpend/Current" element={wrapErrorBoundary(<StorekeeperExpend isCurrent={true}/>)}/>
-          <Route path="/Storekeeper/StorekeeperExpend/Completed" element={wrapErrorBoundary(<StorekeeperExpend isCurrent={false}/>)}/>
+          <Route path="/Storekeeper/StorekeeperAdvent/Current" element={wrapErrorBoundary(<StorekeeperAdvent isCurrent={true} cookies={cookies}/>)}/>
+          <Route path="/Storekeeper/StorekeeperAdvent/Completed" element={wrapErrorBoundary(<StorekeeperAdvent isCurrent={false} cookies={cookies}/>)}/>
+          <Route path="/Storekeeper/StorekeeperExpend/Current" element={wrapErrorBoundary(<StorekeeperExpend isCurrent={true} cookies={cookies}/>)}/>
+          <Route path="/Storekeeper/StorekeeperExpend/Completed" element={wrapErrorBoundary(<StorekeeperExpend isCurrent={false} cookies={cookies}/>)}/>
           <Route path="/Storekeeper/StorekeeperAllocation" element={wrapErrorBoundary(<StorekeeperAllocation/>)}/>
           <Route path="/Storekeeper/StorekeeperInventory" element={wrapErrorBoundary(<StorekeeperInventory/>)}/>
           <Route path="/Storekeeper/StorekeeperVirtualWarehouse" element={wrapErrorBoundary(<StorekeeperVirtualWarehouse/>)}/>

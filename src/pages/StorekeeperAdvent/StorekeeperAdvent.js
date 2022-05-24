@@ -304,7 +304,7 @@ async function apiGetGoodsSubCat4() {
 }
 
 async function apiUpdateOrderGoods(selected, value) {
-    var response = await api.updateOrderGoods(selected, value)
+    var response = await api.updateOrderGoods(selected, value, props.cookies, documents, date, 'advent')
     setOrders([])
     setTableList([])
     apiGetGoodsType()
