@@ -89,6 +89,10 @@ export default function ManagerShipmentOrders(props){
         setOrderCost(value.orderCost)
     }
 
+    function btn_send_2(){
+
+    }
+
     //-------------------------------------------------------------------------Блок 2 конец
 
     return (
@@ -97,7 +101,7 @@ export default function ManagerShipmentOrders(props){
                 <FlexibleBlock>
                     <div class="header_text">Заказы на продажу</div>
                     <div style={{width:470+'px', display:'inline-table'}} >
-                        <TableComponent height={500} columns={tableHeaders} rows={tableList}  onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
+                        <TableComponent height={525} columns={tableHeaders} rows={tableList}  onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
                     </div>
                 </FlexibleBlock>
                 <FlexibleBlock>
@@ -111,6 +115,12 @@ export default function ManagerShipmentOrders(props){
                     <div style={{width:350+'px', display:'inline-table'}} >
                         <TableComponent height={390} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} tableSettings={tableSettings1}/>
                     </div>
+                    {isCurrent
+                    &&<>
+                    <div style={{height:20+"px"}}/>   
+                    <div class="place_holder_LogisticianOrders"/><button class="bt_send_LogisticianOrders" onClick={btn_send_2}>Завершить заказ</button>
+                    </>
+                    }
                 </FlexibleBlock>
             </FlexibleBlocksPage>
         </>

@@ -338,9 +338,9 @@ export default function ProductTurnover(props){
                         <div class="low_text row_with_item_equal"><div>Дата&nbsp;до&nbsp;</div><InputDate defValue={dateTo}     func={setDateTo}/></div>
                     </div>
                     <div style={{width:'400px'}}>
-                        <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><ExpandListInputRegular width={300} list={expandList1} func={setExpandListValue1}/></div>
-                        <div class="low_text row_with_item_equal"><div>Подкатегория&nbsp;</div><ExpandListInputRegular width={300} list={expandList2} func={setExpandListValue2}/></div>
-                        <div class="low_text row_with_item_equal"><div>Товар&nbsp;</div><ExpandListInputRegular width={300} list={expandList3} func={setExpandListValue3}/></div>
+                        <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><ExpandListInputRegular width={300} defValue={expandList1[0]} list={expandList1} func={setExpandListValue1}/></div>
+                        <div class="low_text row_with_item_equal"><div>Подкатегория&nbsp;</div><ExpandListInputRegular width={300} defValue={expandList2[0]} list={expandList2} func={setExpandListValue2}/></div>
+                        <div class="low_text row_with_item_equal"><div>Товар&nbsp;</div><ExpandListInputRegular width={300} defValue={expandList3[0]} list={expandList3} func={setExpandListValue3}/></div>
                     </div>
                     <div style={{width:'260px'}}>
                         <div class="low_text">Ожидаемый&nbsp;остаток&nbsp;на&nbsp;складе:&nbsp;<label class="normal">{sumProfit}₽</label></div>

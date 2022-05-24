@@ -178,8 +178,8 @@ export default class WarehouseSettingsModel {
 	getWarehouseSettings(){
 		return (
 			{
-				width:1000,
-				length:1000,
+				width:1500,
+				length:1500,
 				zones:[
 					{
 						name:"Зона 1",

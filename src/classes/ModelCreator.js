@@ -117,6 +117,7 @@ export default class ModelCreator {
             depth: shelfDepth,
             mesh: mesh, 
             translation: translation,
+            gridBorder:100,
         }
     }
 
@@ -225,7 +226,7 @@ export default class ModelCreator {
         );
         material = new THREE.LineBasicMaterial({ color: color });
         mesh = new THREE.Line(geometry, material);
-        return mesh
+        return {mesh:mesh, material:material, geometry:geometry}
     }
 
     createBorderMessage(name, width, length, font, size, alignment){
@@ -234,6 +235,7 @@ export default class ModelCreator {
         let geometry
         let material
         let mesh
+        let position
 
         //Create normal vector material
         material = new THREE.MeshNormalMaterial({
@@ -257,29 +259,35 @@ export default class ModelCreator {
         if (alignment == "bottom") {
             geometry = this.rotateGeometry(geometry, {x:-90,y:90 * 0,z:0})
             mesh = new THREE.Mesh(geometry, material);
+            position = new Vector3(-size*2, 0, length/2+size/2)
             mesh.position.set(-size*2, 0, length/2+size/2);
         }
         if (alignment == "left")  {
             geometry = this.rotateGeometry(geometry, {x:-90,y:90 * -1,z:0})
             mesh = new THREE.Mesh(geometry, material);
+            position = new Vector3(-width/2-size/2, 0, -size*2)
             mesh.position.set(-width/2-size/2, 0, -size*2);
         }
         if (alignment == "top")  {
             geometry = this.rotateGeometry(geometry, {x:-90,y:90 * -2,z:0})
             mesh = new THREE.Mesh(geometry, material);
+            position = new Vector3(size*2, 0, -length/2-size/2)
             mesh.position.set(size*2, 0, -length/2-size/2);
         }
         if (alignment == "right")  {
             geometry = this.rotateGeometry(geometry, {x:-90,y:90 * -3,z:0})
             mesh = new THREE.Mesh(geometry, material);
+            position = new Vector3(width/2+size/2, 0, size*2)
             mesh.position.set(width/2+size/2, 0, size*2);
         }
 
-        return mesh
+        return {mesh:mesh, geometry:geometry, material:material, position:position}
     }
 
     createZoneBorder(name, color, width, length, borderWidth, chamferLendth, message, messageAlighment, font, textSize, gapLengthX, gapLengthY, translation){
-        let mesh = new THREE.Mesh
+        let lines = []
+        let text = []
+        let mesh = new THREE.Mesh()
         let gaps = {
             top:0,
             bottom:0,
@@ -295,22 +303,31 @@ export default class ModelCreator {
         })
 
         //addLines
-        mesh.add(this.createBorderPart(width, length, borderWidth, chamferLendth, gaps["bottom"], gaps["right"], color, 1, 1))
-        mesh.add(this.createBorderPart(width, length, borderWidth, chamferLendth, gaps["top"], gaps["right"], color, 1, -1))
-        mesh.add(this.createBorderPart(width, length, borderWidth, chamferLendth, gaps["top"], gaps["left"], color, -1, -1))
-        mesh.add(this.createBorderPart(width, length, borderWidth, chamferLendth, gaps["bottom"], gaps["left"], color, -1, 1))
+        lines.push(this.createBorderPart(width, length, borderWidth, chamferLendth, gaps["bottom"], gaps["right"], color, 1, 1))
+        mesh.add(lines[lines.length-1].mesh)
+        lines.push(this.createBorderPart(width, length, borderWidth, chamferLendth, gaps["top"], gaps["right"], color, 1, -1))
+        mesh.add(lines[lines.length-1].mesh)
+        lines.push(this.createBorderPart(width, length, borderWidth, chamferLendth, gaps["top"], gaps["left"], color, -1, -1))
+        mesh.add(lines[lines.length-1].mesh)
+        lines.push(this.createBorderPart(width, length, borderWidth, chamferLendth, gaps["bottom"], gaps["left"], color, -1, 1))
+        mesh.add(lines[lines.length-1].mesh)
 
         messageAlighment.map(alignment=>{
-            mesh.add(this.createBorderMessage(message, width, length, font, textSize, alignment))
+            text.push(this.createBorderMessage(message, width, length, font, textSize, alignment))
+            mesh.add(text[text.length-1].mesh)
         })
 
         return {
             name: name, 
             modelName: "ZoneBorder",
-            material: null, 
-            geometry: null,
+            lines: lines,
+            text: text,
             mesh: mesh, 
             translation: translation,
+            width: width,
+            depth: length,
+            height: Math.max(width,length)/2,
+            gridBorder:100,
         }
     }
 

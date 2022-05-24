@@ -36,10 +36,18 @@
     height: fit-content;
     align-self: flex-end;
     display: inline-block;
+    margin-left: 10px;
+}
+.bt_send_AdministratorZoneCreating3{
+    width: 100px;
+    height: fit-content;
+    align-self: flex-end;
+    display: inline-block;
+    margin-left: 10px;
 }
 
 .place_holder_AdministratorZoneCreating{
-    width: calc(100% - 355px);
+    width: calc(100% - 485px);
     align-self: flex-end;
     display: inline-block;
 }

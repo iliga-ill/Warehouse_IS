@@ -273,6 +273,9 @@ class AdministratorGoodCreating extends Component {
     btn_send_2=()=> {
 
     }
+    btn_send_3=()=> {
+
+    }
 
     render(){
         return (
@@ -291,9 +294,11 @@ class AdministratorGoodCreating extends Component {
                     <InputText styles = "row_with_item_wide" Id={4}  label="Смещение&nbsp;по&nbsp;x&nbsp;"          placeholder="смещение по x"         defValue={this.state.translationX}      set={this.setTranslationX}/> 
                     <InputText styles = "row_with_item_wide" Id={5}  label="Смещение&nbsp;по&nbsp;y&nbsp;"          placeholder="смещение по y"         defValue={this.state.translationY}      set={this.setTranslationY}/> 
                     <InputText styles = "row_with_item_wide" Id={6}  label="Смещение&nbsp;по&nbsp;z&nbsp;"          placeholder="смещение по z"         defValue={this.state.translationZ}      set={this.setTranslationZ}/> 
-                    <div></div>
+                    <div style={{width:'370px'}}></div>
                     <button class="bt_send_AdministratorGoodCreating1" onClick={this.btn_send_1}>Создать новый товар</button>
-                    <div class="place_holder_AdministratorGoodCreating"/><button class="bt_send_AdministratorGoodCreating2" onClick={this.btn_send_2}>Сохранить</button>
+                    <div class="place_holder_AdministratorGoodCreating"/>
+                    <button class="bt_send_AdministratorGoodCreating2" onClick={this.btn_send_2}>Сохранить</button>
+                    <button class="bt_send_AdministratorGoodCreating3" onClick={this.btn_send_3}>Удалить</button>
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div class="header_text">Товар</div>

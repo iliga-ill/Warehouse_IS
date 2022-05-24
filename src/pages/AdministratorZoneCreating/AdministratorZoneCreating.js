@@ -326,6 +326,10 @@ onMessageAlighment=()=>{
 
     }
 
+    btn_send_4=()=> {
+
+    }
+
     render(){
         return (
             <>
@@ -352,13 +356,13 @@ onMessageAlighment=()=>{
                             <label><input type="checkbox" defaultChecked={this.state.isAighmentRight}  onChange={()=>{this.onCheckbox(3)}}/>Справа</label>
                         </div>
 
-                        <div></div>
+                        <div style={{width:'485px'}}></div>
                         <button class="bt_send_AdministratorZoneCreating1" onClick={this.btn_send_1}>Создать новый товар</button>
                         <div class="place_holder_AdministratorZoneCreating"/>
                         <button class="bt_send_AdministratorZoneCreating2" style={{marginRight:"5px"}} onClick={this.btn_send_2}>Построить</button>
-                        
                         <button class="bt_send_AdministratorZoneCreating2" onClick={this.btn_send_3}>Сохранить</button>
-                        
+                        <button class="bt_send_AdministratorZoneCreating3" onClick={this.btn_send_3}>Удалить</button>
+
                     </FlexibleBlock>
                     <FlexibleBlock>
                         <div class="header_text">Товар</div>

@@ -61,12 +61,11 @@ let plane;
 let pointer, raycaster; 
 
 const objects = [];
-const floor = [];
+let zones = []
 
 //let editingMod = "viewing" //viewing, adding, deleting /change mode of interacting with models
 
 let selectionLockedModels = [""] //models locked for selecting them
-let hintLockedModels = [""] //models locked for creating hint fore them
 
 let hintModel = undefined; //currently placed hint model
 let specificHintModel = undefined; //currently placed hint model
@@ -101,7 +100,8 @@ let lookedPoint
 //#endregion
 
 function init(warehouseSettings) { 
-    sceneMarginTop = document.getElementById('toolbar').offsetTop + document.getElementById('toolbar').offsetHeight -1
+    // sceneMarginTop = document.getElementById('toolbar').offsetTop + document.getElementById('toolbar').offsetHeight -1
+    sceneMarginTop = document.getElementById('warehouseSceneWrap').offsetTop -1
     width =  window.innerWidth
     height = window.innerHeight - sceneMarginTop - 4
 
@@ -118,7 +118,6 @@ function init(warehouseSettings) {
     plane = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { visible: false } ) );
     plane.name = "Mesh"
     selectionLockedModels.push("Mesh")
-    hintLockedModels.push("Mesh")
     scene.add( plane );
 
     // lights
@@ -308,6 +307,8 @@ function updatelookedPoint(){
 let isShiftDown = false
 let isCtrlDown = false
 let pressedKeys = []
+let lastIntersect = undefined
+let lastCheckOnIntersection = undefined
 
 function onDocumentKeyDown( event ) {
     event.preventDefault()
@@ -318,31 +319,74 @@ function onDocumentKeyDown( event ) {
         case 16:{
             if (isShiftDown==false){
                 isShiftDown = true;
-                if (page.state.panelSelTab.id==1 && page.state.selectedZone!=undefined) {
+                if (page.state.panelSelTab.id==2 && page.state.selectedZone!=undefined) {
                     pointer.set(getScreenX(lastX), getScreenY(lastY));
                     raycaster.setFromCamera( pointer, camera );
-                    const intersects = raycaster.intersectObjects( floor );
-                    let intersect = intersects[0];
-                    // for (let i=0;i<intersects.length;i++){
-                    //     if (intersects[i].object.name != ""){
-                    //         if (intersects[i].object.type == "zone"){
-                    //             intersect = intersects[i]
-                    //             break;
-                    //         }
-                    //         if (intersects[i].object.type == "floor"){
-                    //             intersect = intersects[i]
-                    //             break;
-                    //         }
-                    //     }
-                    // }
-                    if (intersect.object.name == "") intersect = undefined
-                    if ((specificHintModel==undefined && page.state.installedModel!=undefined) || (page.state.installedModel!=undefined && page.state.installedModel.name != specificHintModel.mesh.name)) {
+                    const intersects = raycaster.intersectObjects( scene.children );
+                    let intersect = findIntersectedFloorOrZone(intersects);
+                    if (intersect!=undefined && (
+                        (specificHintModel==undefined && page.state.installedModel!=undefined) || 
+                        (page.state.installedModel!=undefined && page.state.installedModel.name != specificHintModel.mesh.name) ||
+                        (lastIntersect.object.type!=intersect.object.type && (intersect.object.userData.id == page.state.selectedZone.userData.id || lastIntersect.object.type=="zone")))
+                    ) {
                         if (specificHintModel != undefined) {
                             scene.remove(specificHintModel.mesh)
                             specificHintModel = undefined
                         }
-                        createSpecificHint(intersect.object)
-                        animateSpecificHint(intersect)
+                        if (intersect.object.type=="zone" && intersect.object.userData.id == page.state.selectedZone.userData.id){
+                            createSpecificHint(new THREE.Mesh( 
+                                page.state.installedModel.geometry, 
+                                page.state.installedModel.material
+                            ))
+                        }
+                        if (intersect.object.type!="zone"){
+                            createSpecificHint(new THREE.Mesh( 
+                                page.state.installedModel.geometry, 
+                                new THREE.MeshBasicMaterial({ color: 0xff0000, opacity: 0.3, transparent: true })
+                            ))
+                        }
+
+                        if (intersect!=undefined){
+                            animateSpecificHint(intersect)
+                            lastIntersect = intersect
+                        }
+                    }
+                    render()
+                }
+                if (page.state.panelSelTab.id==1  && page.state.installedModel!=undefined) {
+                    pointer.set(getScreenX(lastX), getScreenY(lastY));
+                    raycaster.setFromCamera( pointer, camera );
+                    const intersects = raycaster.intersectObjects( scene.children );
+                    let intersect = findIntersectedFloorOrZone(intersects)
+                    if (intersect!=undefined){
+                        let intersect = findIntersectedFloorOrZone(intersects);
+                        if (intersect.object.name == "") intersect = undefined
+                        let checkOnIntersectionBuf = checkOnIntersection(zones, page.state.installedModel.mesh.position.copy( intersect.point ), page.state.installedModel.width, page.state.installedModel.depth)
+                        if (intersect!=undefined && (
+                            (specificHintModel==undefined && page.state.installedModel!=undefined) || 
+                            (page.state.installedModel!=undefined && page.state.installedModel.name != specificHintModel.mesh.name) ||
+                            lastIntersect.object.type!=intersect.object.type ||
+                            checkOnIntersectionBuf != lastCheckOnIntersection
+                        )) {
+                            if (specificHintModel != undefined) {
+                                scene.remove(specificHintModel.mesh)
+                                specificHintModel = undefined
+                            }
+                            if (!checkOnIntersectionBuf)
+                                createSpecificHint(createZone(page.state.installedModel))
+                            else
+                                createSpecificHint(createZone(page.state.installedModel, new THREE.LineBasicMaterial({ color: 0xff0000, opacity: 0.3, transparent: true })))
+                    }
+                    if (intersect!=undefined){
+                        lastIntersect = intersect
+                        if (specificHintModel!=undefined){
+                            animateSpecificHint(intersect)
+                        }
+                    } else if (specificHintModel != undefined) {
+                        scene.remove(specificHintModel.mesh)
+                        specificHintModel = undefined
+                    }
+                    lastCheckOnIntersection = checkOnIntersectionBuf
                     }
                     render()
                 }
@@ -351,6 +395,20 @@ function onDocumentKeyDown( event ) {
         } 
         case 17: isCtrlDown = true; break;
     }
+}
+
+function createZone(zone, lineMaterial){
+    let zoneModel = new THREE.Mesh()
+    zone.lines.map(line=>{
+        if (lineMaterial!=undefined) zoneModel.add(new THREE.Line(line.geometry, lineMaterial));
+        else zoneModel.add(new THREE.Line(line.geometry, line.material))
+    })
+    zone.text.map( text=>{
+        let textMesh = new THREE.Mesh(text.geometry, text.material)
+        textMesh.position.set(text.position.x, text.position.y, text.position.z);
+        zoneModel.add(textMesh)
+    })
+    return zoneModel
 }
 
 function onDocumentKeyUp( event ) {
@@ -512,10 +570,46 @@ function onPointerMove(event) {
                 scene.remove(hintModel.mesh)
                 hintModel = undefined
             }
-            render();
         }
-
-        if (intersect!=undefined && page.state.panelSelTab.id==1 && intersect.object.type != "Line"){
+        //----------------------------------------------------------------------------------------------------------page 1
+        if (page.state.panelSelTab.id==1 && intersect.object.type != "Line" && page.state.installedModel!=undefined && isShiftDown && !isCtrlDown){
+                intersect = findIntersectedFloorOrZone(intersects)
+                //-------------- 
+                if (intersect!=undefined){
+                    let checkOnIntersectionBuf = checkOnIntersection(zones, page.state.installedModel.mesh.position.copy( intersect.point ), page.state.installedModel.width, page.state.installedModel.depth)
+                    if (intersect!=undefined && (
+                        (specificHintModel==undefined && page.state.installedModel!=undefined) || 
+                        (page.state.installedModel!=undefined && page.state.installedModel.name != specificHintModel.mesh.name) ||
+                        (lastIntersect.object.type!=intersect.object.type) ||
+                        checkOnIntersectionBuf != lastCheckOnIntersection
+                        )) {
+                        if (specificHintModel != undefined) {
+                            scene.remove(specificHintModel.mesh)
+                            specificHintModel = undefined
+                        }
+                        //console.log()
+                        if (!checkOnIntersectionBuf)
+                            createSpecificHint(createZone(page.state.installedModel))
+                        else
+                            createSpecificHint(createZone(page.state.installedModel, new THREE.LineBasicMaterial({ color: 0xff0000, opacity: 0.3, transparent: true })))
+                        //animateSpecificHint(intersect)
+                        lastIntersect = intersect
+                        lastCheckOnIntersection = checkOnIntersectionBuf
+                    }
+                }
+                if (intersect!=undefined){
+                    lastIntersect = intersect
+                    if (specificHintModel!=undefined){
+                        animateSpecificHint(intersect)
+                    }
+                } else if (specificHintModel != undefined) {
+                    scene.remove(specificHintModel.mesh)
+                    specificHintModel = undefined
+                }
+                //------------------
+        }
+        //----------------------------------------------------------------------------------------------------------page 2
+        if (intersect!=undefined && page.state.panelSelTab.id==2 && intersect.object.type != "Line"){
             if (intersect.object.type == "zone" && (page.state.selectedZone==undefined || intersect.object.userData.id != page.state.selectedZone.userData.id) && (hintModel == undefined || (intersect.object.userData.id != hintModel.userData.id && intersect.object.type == hintModel.userData.type)) && !isShiftDown) {
                 if (hintModel != undefined) {
                     scene.remove(hintModel.mesh)
@@ -529,48 +623,75 @@ function onPointerMove(event) {
                 hintModel = undefined
             }
 
-            if (page.state.selectedZone!=undefined && (intersect.object.userData.id == page.state.selectedZone.userData.id || intersect.object.type != "zone") && isShiftDown && !isCtrlDown) {
-                for (let i=0;i<intersects.length;i++){
-                    if (intersects[i].object.name != ""){
-                        if (intersects[i].object.type == "zone"){
-                            intersect = intersects[i]
-                            break;
-                        }
-                        if (intersects[i].object.type == "floor"){
-                            intersect = intersects[i]
-                            break;
-                        }
+            if (page.state.selectedZone!=undefined && isShiftDown && !isCtrlDown) {
+                intersect = findIntersectedFloorOrZone(intersects)
+                //-------------- 
+                
+                if (intersect!=undefined && (
+                    (specificHintModel==undefined && page.state.installedModel!=undefined) || 
+                    (page.state.installedModel!=undefined && page.state.installedModel.name != specificHintModel.mesh.name) ||
+                    (lastIntersect.object.type!=intersect.object.type))
+                ) {
+                    if (specificHintModel != undefined) {
+                        scene.remove(specificHintModel.mesh)
+                        specificHintModel = undefined
+                    }
+                    if (intersect.object.type=="zone" && intersect.object.userData.id == page.state.selectedZone.userData.id){
+                        createSpecificHint(new THREE.Mesh( 
+                            page.state.installedModel.geometry, 
+                            page.state.installedModel.material
+                        ))
+                    }
+                    if (intersect.object.userData.id != page.state.selectedZone.userData.id || intersect.object.type != "zone"){
+                        createSpecificHint(new THREE.Mesh( 
+                            page.state.installedModel.geometry, 
+                            new THREE.MeshBasicMaterial({ color: 0xff0000, opacity: 0.3, transparent: true })
+                        ))
                     }
                 }
-                if (intersect.object.name == "") intersect = undefined
-
-                //-------------- 
-                    
-                // if ((specificHintModel==undefined && page.state.installedModel!=undefined) || (page.state.installedModel!=undefined && page.state.installedModel.name != specificHintModel.mesh.name)) {
-                //     if (specificHintModel != undefined) {
-                //         scene.remove(specificHintModel.mesh)
-                //         specificHintModel = undefined
-                //     }
-                //     createSpecificHint(intersect.object)
-                //     animateSpecificHint(intersect)
-                //     console.log("created")
-                // }
-                if (specificHintModel!=undefined){
-                    // pointer.set(getScreenX(lastX), getScreenY(lastY));
-                    // raycaster.setFromCamera( pointer, camera );
-                    // const floorIntersects = raycaster.intersectObjects( floor );
-                    // let floorIntersect = floorIntersects[0];
-                    animateSpecificHint(intersect)
+                if (intersect!=undefined){
+                    lastIntersect = intersect
+                    if (specificHintModel!=undefined){
+                        animateSpecificHint(intersect)
+                    }
+                } else if (specificHintModel != undefined) {
+                    scene.remove(specificHintModel.mesh)
+                    specificHintModel = undefined
                 }
+                    
                 //------------------
             }
-            // if (specificHintModel!=undefined && !isShiftDown) {
-            //     scene.remove(specificHintModel.mesh)
-            //     specificHintModel = undefined
-            // }
+        }
         render();
+    }
+}
+
+function checkOnIntersection(zones, centerPoint, width, length){
+    let check = false
+    zones.map(zone=>{
+        if (Math.abs(zone.centerPoint.x - centerPoint.x)<zone.width/2+width/2 && Math.abs(zone.centerPoint.z - centerPoint.z)<zone.length/2+length/2) check=true
+    })
+    
+    return check
+}
+//{centerPoint:zone.centerPoint, width:zoneType.width, length:zoneType.length}
+
+function findIntersectedFloorOrZone(intersects){
+    let intersect = undefined
+    for (let i=0;i<intersects.length;i++){
+        if (intersects[i].object.name != ""){
+            if (intersects[i].object.type == "zone"){
+                intersect = intersects[i]
+                break;
+            }
+            if (intersects[i].object.type == "floor"){
+                intersect = intersects[i]
+                break;
+            }
         }
     }
+    if (intersect!=undefined && intersect.object.name == "") intersect = undefined
+    return intersect
 }
 
 function createHintOnModel(mesh){
@@ -592,16 +713,13 @@ function createHintOnModel(mesh){
     scene.add( hintModel.mesh );
 }
 
-function createSpecificHint(mesh){
+function createSpecificHint(mesh, material){
     specificHintModel = {
         name: page.state.installedModel.name, 
         modelName: "specificHint",
-        material: page.state.installedModel.material, 
+        material: material, 
         geometry: page.state.installedModel.geometry, 
-        mesh: new THREE.Mesh( 
-            page.state.installedModel.geometry, 
-            page.state.installedModel.material
-        ), 
+        mesh: mesh, 
         translation: page.state.installedModel.translation,
     }
     //hintModel.mesh.rotation.set(mesh.rotation.x, mesh.rotation.y, mesh.rotation.z)
@@ -635,91 +753,140 @@ function animateSpecificHint(intersect){
 function onPointerDown( event ) {
     pointer.set(getScreenX(event.clientX), getScreenY(event.clientY));
     raycaster.setFromCamera( pointer, camera );
-    const intersects = raycaster.intersectObjects( scene.children );
-    
+    let intersects = raycaster.intersectObjects( scene.children );
+    //----------------------------------------------------------------------------------------------------------page 0
     if (intersects.length > 0 && hintModel!=undefined && page.state.panelSelTab.id==0 ) {
-        const intersect = intersects[0];
+        let intersect = intersects[0];
 
-        if (intersect.object.type == "zone"){
-            scene.remove(zoneHintMesh)
-            scene.remove(rackHintMesh)
-
-            zoneHintMesh = addHintOnScene(intersect.object)
-
-            page.setSelectedZone(undefined)
-            page.state.selectedZoneName = intersect.object.userData.name
-            page.state.selectedZoneCenterX = intersect.object.userData.centerPoint.x
-            page.state.selectedZoneCenterZ = intersect.object.userData.centerPoint.z
-            page.state.selectedZoneRotation = intersect.object.userData.rotation.y
-            page.state.selectedZoneTypeId = {value:intersect.object.userData.zoneTypeId}
-
-            page.state.selectedRackName = undefined
-            page.state.selectedRackCenterX = undefined
-            page.state.selectedRackCenterZ = undefined
-            page.state.selectedRackRotation = undefined
-            page.setSelectedZone(intersect.object)
-            page.setSelectedRack(undefined)
-        }
-
-        if (intersect.object.type == "rack" && page.state.panelSelTab.id==0){
-            scene.remove(rackHintMesh)
-
-            rackHintMesh = addHintOnScene(intersect.object)
-
-            page.setSelectedRack(undefined)
-            page.state.selectedRackName = intersect.object.userData.name
-            page.state.selectedRackCenterX = intersect.object.userData.centerPoint.x
-            page.state.selectedRackCenterZ = intersect.object.userData.centerPoint.z
-            page.state.selectedRackRotation = intersect.object.userData.rotation.y
-            page.state.selectedRackTypeId = {value:intersect.object.userData.racksTypeId}
-            page.setSelectedRack(intersect.object)
-        }
-
-        //page.setState({tableList: shelfSpace});
-        //page.flickPanel()
+        if (intersect.object.type == "zone") selectZone(intersect)
+        if (intersect.object.type == "rack" && page.state.panelSelTab.id==0) selectRack(intersect)
         
         render();
     }
-    if (intersects.length > 0 && page.state.panelSelTab.id==1) {
-        const intersect = intersects[0];
-        if (page.state.selectedZone!=undefined && (intersect.object.userData.id == page.state.selectedZone.userData.id || intersect.object.type != "zone") && isShiftDown && !isCtrlDown) {
+    //----------------------------------------------------------------------------------------------------------page 1
+    if (intersects.length > 0  && page.state.panelSelTab.id==1 && page.state.installedModel!=undefined && specificHintModel!=undefined) {
+        let intersect = intersects[0];
+        let checkOnIntersectionBuf = checkOnIntersection(zones, page.state.installedModel.mesh.position.copy( intersect.point ), page.state.installedModel.width, page.state.installedModel.depth)
+        if (!checkOnIntersectionBuf){
+            //let intersect = findIntersectedFloorOrZone(intersects)
+            let zoneBorderModel = createZone(page.state.installedModel)
+            let userData = {
+                name:"Зона -",
+                id: page.getLastIdByType(scene, "zone")+1,
+                centerPoint:new Vector3(
+                    specificHintModel.mesh.position.x - specificHintModel.translation.x, 
+                    0, 
+                    specificHintModel.mesh.position.z - specificHintModel.translation.z
+                ),
+                rotation:{x:0,y:0,z:0},
+                zoneTypeId: page.state.installedModel.name,
+                type:"zone",
+                racks:[],
+            }
+            zoneBorderModel.userData = userData
+            let zoneType = page.state.zonesType[`zone_${page.state.installedModel.name}`]
+            let zoneFillModel = modelCreator.zoneFillModel(`${userData.name}_fillament`, zoneType.color, zoneType.width, zoneType.length, zoneType.lineWidth, zoneType.chamferLendth, new Vector3(0,0,0))
+            zoneFillModel.userData = userData
             setModelOnCoordinates(
-                {mesh:
-                    new THREE.Mesh( 
-                        page.state.installedModel.geometry, 
-                        page.state.installedModel.material
-                    ),
+                {mesh:zoneBorderModel,
                 translation:new Vector3(0,0,0),
-                name:page.state.installedModel.name,
+                name: specificHintModel.mesh.userData.name + " " + specificHintModel.mesh.userData.id,
+                }, 
+                userData.centerPoint,
+                // new Vector3(
+                //     specificHintModel.mesh.position.x, 
+                //     specificHintModel.mesh.position.y, 
+                //     specificHintModel.mesh.position.z
+                // ),
+                "zone"
+            )
+            zoneFillModel.mesh.userData = userData
+            zoneFillModel.mesh.userData.borderModel = zoneBorderModel
+            setModelOnCoordinates(zoneFillModel, userData.centerPoint, userData.type)
+
+            page.state.warehouseSettings.zones.push(userData)
+            zones.push({id:userData.id, centerPoint:userData.centerPoint, width:zoneType.width, length:zoneType.length})
+            render();
+        }
+    }
+    //----------------------------------------------------------------------------------------------------------page 2
+    if (intersects.length > 0 && page.state.panelSelTab.id==2) {
+        let intersect = findIntersectedFloorOrZone(intersects)
+        if (page.state.selectedZone!=undefined && ((intersect.object.type == page.state.selectedZone.userData.type && intersect.object.userData.id == page.state.selectedZone.userData.id)) && isShiftDown && !isCtrlDown) {
+            let newObject = new THREE.Mesh( 
+                page.state.installedModel.geometry, 
+                page.state.installedModel.material
+            )
+            newObject.userData = {
+                name:"Стеллаж -",
+                id: page.getLastIdByType(scene, "rack")+1,
+                centerPoint:new Vector3(
+                    specificHintModel.mesh.position.x - page.state.selectedZone.userData.centerPoint.x - specificHintModel.translation.x, 
+                    2, 
+                    specificHintModel.mesh.position.z - page.state.selectedZone.userData.centerPoint.z - specificHintModel.translation.z
+                ),
+                rotation:{
+                    x:0,
+                    y:0,
+                    z:0
+                },
+                racksTypeId: page.state.installedModel.name,
+                type:"rack",
+                shelfs:page.generateShelfsByRackType(page.state.installedModel.name, page.state.racksType, page.getLastShelfIdByType(scene)+1)
+            }
+            newObject.type = "rack"
+            page.state.selectedZone.userData.racks.push(newObject.userData)
+            setModelOnCoordinates(
+                {mesh:newObject,
+                translation:new Vector3(0,0,0),
+                name:newObject.userData.name + " " + newObject.userData.id,
                 }, 
                 new Vector3(
-                    hintModel.mesh.position.x, 
-                    hintModel.mesh.position.y, 
-                    hintModel.mesh.position.z
+                    specificHintModel.mesh.position.x, 
+                    specificHintModel.mesh.position.y, 
+                    specificHintModel.mesh.position.z
                 ),
                 "rack"
             )
-            render();
         }
-        if (intersect.object.type == "zone" && (page.state.selectedZone==undefined || intersect.object.userData.id != page.state.selectedZone.userData.id)) {
-                scene.remove(zoneHintMesh)
-
-                zoneHintMesh = addHintOnScene(intersect.object)
-
-                page.setSelectedZone(undefined)
-                page.state.selectedZoneName = intersect.object.userData.name
-                page.state.selectedZoneCenterX = intersect.object.userData.centerPoint.x
-                page.state.selectedZoneCenterZ = intersect.object.userData.centerPoint.z
-                page.state.selectedZoneRotation = intersect.object.userData.rotation.y
-                page.state.selectedZoneTypeId = {value:intersect.object.userData.zoneTypeId}
-
-                page.state.selectedRackName = undefined
-                page.state.selectedRackCenterX = undefined
-                page.state.selectedRackCenterZ = undefined
-                page.state.selectedRackRotation = undefined
-                page.setSelectedZone(intersect.object)
-        }
+        if (intersect.object.type == "zone" && (page.state.selectedZone==undefined || intersect.object.userData.id != page.state.selectedZone.userData.id) && !isShiftDown && !isCtrlDown) selectZone(intersect)
+        render();
     }
+}
+
+function selectZone(intersect){
+    scene.remove(zoneHintMesh)
+    scene.remove(rackHintMesh)
+
+    zoneHintMesh = addHintOnScene(intersect.object)
+
+    page.setSelectedZone(undefined)
+    page.state.selectedZoneName = intersect.object.userData.name
+    page.state.selectedZoneCenterX = intersect.object.userData.centerPoint.x
+    page.state.selectedZoneCenterZ = intersect.object.userData.centerPoint.z
+    page.state.selectedZoneRotation = intersect.object.userData.rotation.y
+    page.state.selectedZoneTypeId = {value:intersect.object.userData.zoneTypeId}
+
+    page.state.selectedRackName = undefined
+    page.state.selectedRackCenterX = undefined
+    page.state.selectedRackCenterZ = undefined
+    page.state.selectedRackRotation = undefined
+    page.setSelectedZone(intersect.object)
+    page.setSelectedRack(undefined)
+}
+
+function selectRack(intersect){
+    scene.remove(rackHintMesh)
+
+    rackHintMesh = addHintOnScene(intersect.object)
+
+    page.setSelectedRack(undefined)
+    page.state.selectedRackName = intersect.object.userData.name
+    page.state.selectedRackCenterX = intersect.object.userData.centerPoint.x
+    page.state.selectedRackCenterZ = intersect.object.userData.centerPoint.z
+    page.state.selectedRackRotation = intersect.object.userData.rotation.y
+    page.state.selectedRackTypeId = {value:intersect.object.userData.racksTypeId}
+    page.setSelectedRack(intersect.object)
 }
 
 function addHintOnScene(mesh){
@@ -749,10 +916,6 @@ function setModelOnCoordinates(model, coordinates, type){
     if (type!=undefined) voxel.type = type
     scene.add( voxel );
     objects.push(voxel)
-    if (type == "floor") {
-        floor.pop()
-        floor.push(voxel)
-    }
 }
 
 function warehouseGeneration(warehouseSettings, zonesType, racksType, goodsType){
@@ -777,7 +940,6 @@ function addFloorOnScene(warehouseSettings){
     let floorModel = modelCreator.createFloor("Floor", 0x808080, warehouseSettings.width, warehouseSettings.length, 4, new Vector3(0,-2,0))
     setModelOnCoordinates(floorModel, new Vector3(0,0,0), "floor")
     selectionLockedModels.push(floorModel.name)
-    hintLockedModels.push(floorModel.name)
 }
 
 function addZoneOnScene(zone, zonesType){
@@ -791,8 +953,7 @@ function addZoneOnScene(zone, zonesType){
     setModelOnCoordinates(zoneBorderModel, zone.centerPoint, zone.type)
     setModelOnCoordinates(zoneFillModel, zone.centerPoint, zone.type)
     selectionLockedModels.push(zone.name)
-    hintLockedModels.push(zone.name)
-    hintLockedModels.push(`${zone.name}_fillament`)
+    zones.push({id:zone.id, centerPoint:zone.centerPoint, width:zoneType.width, length:zoneType.length})
     return zoneFillModel.mesh
 }
 
@@ -855,7 +1016,6 @@ function addRackWithGoodsOnScene(zone, rack, racksType, goodsType){
                 good.type
             )
             selectionLockedModels.push(good.name)
-            hintLockedModels.push(good.name)
         }
     })
     setModelOnCoordinates(
@@ -891,11 +1051,11 @@ class AdministratorWarehouseCreating extends Component {
             goodsType: warehouseSettingsModel.getGoodsType(),
             warehouseSettings: warehouseSettingsModel.getWarehouseSettings(),
             //табы toolbar'a
-            tabs:[
-                {id:0, title:"Вид", func:()=>{onChangeViewMode()}, selection:false, style:{fontSize:"15px", height:"20px"}},
-                // {id:1, title:"Тест панельки", func:()=>{this.flickPanel()}, selection:false, style:{fontSize:"15px", height:"20px"}}
-            ],
-            selTab: {id:0},
+            // tabs:[
+            //     {id:0, title:"Вид", func:()=>{onChangeViewMode()}, selection:false, style:{fontSize:"15px", height:"20px"}},
+            //     // {id:1, title:"Тест панельки", func:()=>{this.flickPanel()}, selection:false, style:{fontSize:"15px", height:"20px"}}
+            // ],
+            // selTab: {id:0},
             //табы выезжающей панельки
             panelTabs:[
                 {id:0, title:"Характеристики", func:()=>{}, selection:true, style:{fontSize:"15px", height:"20px"}},
@@ -921,7 +1081,9 @@ class AdministratorWarehouseCreating extends Component {
             rackTypeIdExpandList: Object.keys(warehouseSettingsModel.getRacksType()).map(rackType=>{return {value: rackType.split("_")[1]}}), //хар-ки выделенного стеллажа
             selectedRackTypeId: {value: "0001"},//хар-ки выделенного стеллажа
             isAlertMessageboxOpened: false,
-            installedModel:undefined
+            installedModel:undefined,
+            isAlertMessageboxOpened1: false,
+            isAlertMessageboxOpened2: false,
         }
     }
 
@@ -929,10 +1091,12 @@ class AdministratorWarehouseCreating extends Component {
     setTableHeaders = (value)=>{this.setState({tableHeaders: value});}  //таблица с содержимым полки на панельке
     setTableList = (value)=>{this.setState({tableList: value});}        //таблица с содержимым полки на панельке
     setSelectedItem = (value)=>{this.setState({selectedItem: value});}  //таблица с содержимым полки на панельке
-    setSelTab = (value)=>{this.setState({selTab: value});}              //табы toolbar'a
+    // setSelTab = (value)=>{this.setState({selTab: value});}              //табы toolbar'a
     setPanelSelTab = (value)=>{
         scene.remove(rackHintMesh)
-        page.setSelectedRack(undefined)
+        this.setSelectedRack(undefined)
+        this.state.installedModel = undefined
+        hintModel=undefined
         render()
         this.setState({panelSelTab: value});
     }                //табы выезжающей панельки
@@ -957,10 +1121,17 @@ class AdministratorWarehouseCreating extends Component {
     setRackTypeIdExpandList = (value)=>{this.setState({rackTypeIdExpandList: value});}   //хар-ки выделенного стеллажа
     
     setSelectedRackTypeId = (value)=>{
-        this.selectedRackTypeIdBuf = value; 
-        this.selectedRackTypeIdLast = this.state.selectedRackTypeId; 
-        this.setState({selectedRackTypeId: value}); 
-        this.setState({isAlertMessageboxOpened: true});
+        let check = this.checkSelectedRackOnGoods()
+        if (!check){
+            this.state.selectedRack.userData.racksTypeId = value; 
+            this.recreateRack(true)
+        }
+        if (check){
+            this.selectedRackTypeIdBuf = value; 
+            this.selectedRackTypeIdLast = this.state.selectedRackTypeId; 
+            this.setState({selectedRackTypeId: value}); 
+            this.setState({isAlertMessageboxOpened: true});
+        }
     }       //хар-ки выделенного стеллажа
     setSelectedRackTypeIdFromBuf = ()=>{ 
         this.state.selectedRack.userData.racksTypeId = this.selectedRackTypeIdBuf; 
@@ -991,6 +1162,7 @@ class AdministratorWarehouseCreating extends Component {
                 scene.remove(newZone.borderModel)
                 newZone.racks.map(rack=>{
                         let rackObj = this.getSceneElmByIdAndType(rack.id, "rack")
+                        if (rackObj.userData.goodsModels!=undefined)
                         rackObj.userData.goodsModels.map(goodObj=>{
                             scene.remove(goodObj)
                         })
@@ -999,11 +1171,19 @@ class AdministratorWarehouseCreating extends Component {
                 })
                 
                 newZoneMesh = addZoneOnScene(newZone, this.state.zonesType)
+                for(let i=0;i<zones.length;i++){
+                    if (zones[i].id == newZoneMesh.userData.id) {
+                        let zoneType = this.state.zonesType[`zone_${newZone.zoneTypeId}`]
+                        zones[i].centerPoint = newZoneMesh.userData.centerPoint
+                        zones[i].width = zoneType.width
+                        zones[i].length = zoneType.length
+                        break;
+                    }
+                }
                 return newZone
             }
             return zone
         })
-
         scene.remove(zoneHintMesh)
         zoneHintMesh = addHintOnScene(newZoneMesh)
         
@@ -1024,15 +1204,17 @@ class AdministratorWarehouseCreating extends Component {
                     if (rack.id === this.state.selectedRack.userData.id && rack.type === "rack"){
                         let newRackObj = this.getSceneElmByIdAndType(rack.id, "rack")
                         let newRack = newRackObj.userData
-                        newRackObj.userData.goodsModels.map(goodObj=>{
-                            scene.remove(goodObj)
-                        })
+                        if (newRackObj.userData.goodsModels!=undefined) {
+                            newRackObj.userData.goodsModels.map(goodObj=>{
+                                scene.remove(goodObj)
+                            })
+                        }
+                        
                         scene.remove(newRackObj)
                         if (!isTypeChanged)
                             addRackWithGoodsOnScene(zone, newRack, this.state.racksType, this.state.goodsType)
                         else {
                             newRack.shelfs = this.generateShelfsByRackType(newRack.racksTypeId, this.state.racksType, this.getLastShelfIdByType(scene)+1)
-                            console.log(newRack)
                             addRackWithGoodsOnScene(zone, newRack, this.state.racksType, this.state.goodsType)
                         }
                         return newRack
@@ -1127,7 +1309,6 @@ class AdministratorWarehouseCreating extends Component {
     }
 
     componentDidUpdate(){
-        console.log("DidUpdate")
         if (this.state.isSideBlockOpened==true){
             this.setState({isSideBlockOpened: !this.state.isSideBlockOpened})
         }
@@ -1173,19 +1354,121 @@ class AdministratorWarehouseCreating extends Component {
         return list
     }
 
+    createZoneListByType=()=>{
+        let list = []
+        Object.keys(this.state.zonesType).map(key=>{
+            let zoneType = this.state.zonesType[key]
+            list.push(modelCreator.createZoneBorder(key.split("_")[1], zoneType.color, zoneType.width, zoneType.length, zoneType.lineWidth, zoneType.chamferLendth, zoneType.message, zoneType.messageAlighment, font, zoneType.textSize, zoneType.gapLengthX, zoneType.gapLengthY, new Vector3(0,0,0)))
+        })
+        return list
+    }
+
+    checkSelectedZoneOnGoods=()=>{
+        let check = false
+        this.state.selectedZone.userData.racks.map(rack=>{
+            for (let i=0;i<rack.shelfs.length;i++){
+                if (rack.shelfs[i].space.length>0) check=true
+            }
+        })
+        return check
+    }
+
+    deleteZone=()=>{
+        for (let i=0;i<this.state.warehouseSettings.zones.length; i++){
+            let zone = this.state.warehouseSettings.zones[i]
+            if (zone.id === this.state.selectedZone.userData.id && zone.type === "zone"){
+                let zoneObj = this.getSceneElmByIdAndType(zone.id, "zone")
+                scene.remove(zoneObj)
+                scene.remove(zoneObj.userData.borderModel)
+                zoneObj.userData.racks.map(rack=>{
+                        let rackObj = this.getSceneElmByIdAndType(rack.id, "rack")
+                        if (rackObj.userData.goodsModels!=undefined)
+                        rackObj.userData.goodsModels.map(goodObj=>{
+                            scene.remove(goodObj)
+                        })
+                        scene.remove(rackObj)
+                })
+                
+                let newZones = []
+                for(let j=0;j<zones.length;j++){
+                    let check = true
+                    if (zones[j].id == this.state.selectedZone.userData.id) check = false
+                    if (check) newZones.push(zones[j])
+                }
+                zones = newZones
+                this.state.warehouseSettings.zones.splice(i,1)
+                break;
+            }
+        }
+        
+        scene.remove(zoneHintMesh)
+        this.state.selectedZone = undefined
+        zoneHintMesh = undefined
+        
+        if (rackHintMesh!=undefined && this.state.selectedRack!=undefined){
+            this.state.selectedRack = undefined
+            scene.remove(rackHintMesh)
+            
+        }
+            
+        this.setReload()
+        render()
+    }
+
+    checkSelectedRackOnGoods=()=>{
+        let check = false
+        for (let i=0;i<this.state.selectedRack.userData.shelfs.length;i++){
+            if (this.state.selectedRack.userData.shelfs[i].space.length > 0) {
+                check=true
+                break;
+            }
+        }
+        return check
+    }
+
+    deleteRack=()=>{
+        for (let i=0;i<this.state.warehouseSettings.zones.length; i++){
+            let zone = this.state.warehouseSettings.zones[i]
+            if (zone.id === this.state.selectedZone.userData.id && zone.type === "zone"){
+                let zoneObj = this.getSceneElmByIdAndType(zone.id, "zone")
+                for (let j=0;j<zoneObj.userData.racks.length; j++){
+                    let rack = zoneObj.userData.racks[j]
+                    if (rack.id === this.state.selectedRack.userData.id && rack.type === "rack"){
+                        let rackObj = this.getSceneElmByIdAndType(rack.id, "rack")
+                        if (rackObj.userData.goodsModels!=undefined) {
+                            rackObj.userData.goodsModels.map(goodObj=>{
+                                scene.remove(goodObj)
+                            })
+                        }
+                        scene.remove(rackObj)
+                        this.state.warehouseSettings.zones[i].racks.splice(j,1)
+                        break;
+                    }
+                }
+                console.log(this.state.warehouseSettings.zones[i])
+                break;
+            }
+        }
+        scene.remove(rackHintMesh)
+        this.state.selectedRack = undefined
+        rackHintMesh = undefined
+        this.setReload()
+        render()
+    }
+
     render(){
         return (
             <>
-                <div id="toolbar" style={{display: "table", width:"100%"}}>
+                {/* <div id="toolbar" style={{display: "table", width:"100%"}}>
                     <UniversalTabHolder tabs={this.state.tabs} setTab={this.setSelTab} selTab={this.state.selTab}/>
-                </div>
+                </div> */}
                 
                 <div id="warehouseSceneWrap">
                     <div id="warehouseScene" onContextMenu={(e)=> e.preventDefault()}/>
-                    <SideBlock isOpened={this.isSideBlockOpened} onRightClosed="-497px" onRightOpened="-1px" styles={{top:"100px",width:"500px", height:"100%"}}>
+                    <SideBlock isOpened={this.isSideBlockOpened} onRightClosed="-502px" onRightOpened="-1px" styles={{top:"150px",width:"505px", height:"100%"}}>
                         <UniversalTabHolder tabs={this.state.panelTabs} style={{marginLeft:"1px" }} setTab={this.setPanelSelTab} selTab={this.state.panelSelTab}/>
                         {this.state.panelSelTab.id==0&&(
-                            <>
+                            <div style={{marginLeft:"5px", marginTop:"5px"}}>
                                 <div className="header_text" >Хар-ки склада</div>
                                 <InputText styles = "row_with_item_wide" Id={1}  label="Длинна&nbsp;склада&nbsp;(см)&nbsp;"       placeholder="длинна склада"           defValue={this.state.warehouseLength}            set={this.setWarehouseLength}/> 
                                 <InputText styles = "row_with_item_wide" Id={2}  label="Ширина&nbsp;склада&nbsp;(см)&nbsp;"       placeholder="ширина склада"           defValue={this.state.warehouseWidth}             set={this.setWarehouseWidth}/>
@@ -1198,7 +1481,9 @@ class AdministratorWarehouseCreating extends Component {
                                     <InputText styles = "row_with_item_wide" Id={4}  label="Центр&nbsp;зоны&nbsp;по&nbsp;x&nbsp;"   placeholder="центр зоны по x"       defValue={this.state.selectedZoneCenterX}   set={this.setSelectedZoneCenterX}/> 
                                     <InputText styles = "row_with_item_wide" Id={5}  label="Центр&nbsp;зоны&nbsp;по&nbsp;y&nbsp;"   placeholder="центр зоны по y"       defValue={this.state.selectedZoneCenterZ}   set={this.setSelectedZoneCenterZ}/> 
                                     <InputText styles = "row_with_item_wide" Id={6}  label="Угол&nbsp;поворота&nbsp;зоны&nbsp;"     placeholder="угол поворота зоны"    defValue={this.state.selectedZoneRotation}  set={this.setSelectedZoneRotation}/> 
-                                    <div className="low_text row_with_item_equal" style={{width:"140px"}}><div>Тип&nbsp;зоны&nbsp;</div><ExpandListInputRegular width={100} list={this.state.zoneTypeIdExpandList} defValue={this.state.selectedZoneTypeId} func={this.setSelectedZoneTypeId}/></div>
+                                    <div className="low_text row_with_item_equal" style={{width:"200px", display: "inline-block"}}>Тип&nbsp;зоны&nbsp;<ExpandListInputRegular width={100} list={this.state.zoneTypeIdExpandList} defValue={this.state.selectedZoneTypeId} func={this.setSelectedZoneTypeId}/></div>
+                                    <div style={{width:"calc(100% - 290px)", display: "inline-block"}}/>
+                                    <button style={{verticalAlign:"flex-end", width:"70px"}} onClick={()=>{this.checkSelectedZoneOnGoods()?this.setState({isAlertMessageboxOpened1: true}):this.deleteZone()}}>Удалить</button>
                                     {this.state.selectedRack==undefined
                                     ?<div>Выберите стеллаж</div>
                                     :<>
@@ -1207,23 +1492,27 @@ class AdministratorWarehouseCreating extends Component {
                                         <InputText styles = "row_with_item_wide" Id={4}  label="Центр&nbsp;стеллажа&nbsp;по&nbsp;x&nbsp;относительно&nbsp;центра&nbsp;зоны&nbsp;"   placeholder="центр стеллажа по x"       defValue={this.state.selectedRackCenterX}   set={this.setSelectedRackCenterX}/> 
                                         <InputText styles = "row_with_item_wide" Id={5}  label="Центр&nbsp;стеллажа&nbsp;по&nbsp;y&nbsp;относительно&nbsp;центра&nbsp;зоны&nbsp;"   placeholder="центр стеллажа по y"       defValue={this.state.selectedRackCenterZ}   set={this.setSelectedRackCenterZ}/> 
                                         <InputText styles = "row_with_item_wide" Id={6}  label="Угол&nbsp;поворота&nbsp;стеллажа&nbsp;"     placeholder="угол поворота стеллажа"    defValue={this.state.selectedRackRotation}  set={this.setSelectedRackRotation}/> 
-                                        <div className="low_text row_with_item_equal" style={{width:"140px"}}><div>Тип&nbsp;стеллажа&nbsp;</div><ExpandListInputRegular width={100} list={this.state.rackTypeIdExpandList} defValue={this.state.selectedRackTypeId} func={this.setSelectedRackTypeId}/></div>
+                                        <div className="low_text row_with_item_equal" style={{width:"200px", display: "inline-block"}}>Тип&nbsp;стеллажа&nbsp;<ExpandListInputRegular width={100} list={this.state.rackTypeIdExpandList} defValue={this.state.selectedRackTypeId} func={this.setSelectedRackTypeId}/></div>
+                                        <div style={{width:"calc(100% - 290px)", display: "inline-block"}}/>
+                                        <button style={{verticalAlign:"flex-end", width:"70px"}} onClick={()=>{this.checkSelectedRackOnGoods()?this.setState({isAlertMessageboxOpened2: true}):this.deleteRack()}}>Удалить</button>
+                                    
                                     </>
                                     }
                                 </>
                                 }
                                 {/* <div style={{width:"350px", display: "inline-block"}}/><button className="bt_send" style={{width:"120px"}} onClick={this.btn_send_1}>Смоделировать склад</button> */}
-                            </>
+                            </div>
                         )}
                         {this.state.panelSelTab.id==1&&(
                             <>
                                 <div className="header_text" style={{margin:"5px"}}>Доступные зоны</div>
-                                <ModelList models={this.createRackListByType()} width={490} minWidth={150} spaceBetweenItems={10} setModel={(model)=>{this.state.installedModel = model}}/>
+                                <ModelList models={this.createZoneListByType()} width={490} minWidth={230} spaceBetweenItems={10} setModel={(model)=>{this.state.installedModel = model}}/>
                             </>
                         )}
                         {this.state.panelSelTab.id==2&&(
                             <>
-                                
+                                <div className="header_text" style={{margin:"5px"}}>Доступные полки</div>
+                                <ModelList models={this.createRackListByType()} width={490} minWidth={150} spaceBetweenItems={10} setModel={(model)=>{this.state.installedModel = model}}/>
                             </>
                         )}
                     </SideBlock>
@@ -1234,6 +1523,20 @@ class AdministratorWarehouseCreating extends Component {
                     isOpened={this.state.isAlertMessageboxOpened} 
                     onAccept={()=>{this.setState({isAlertMessageboxOpened: false});this.setSelectedRackTypeIdFromBuf()}} 
                     onCancel={()=>{this.setState({isAlertMessageboxOpened: false});this.setState({selectedRackTypeId: this.selectedRackTypeIdLast}); }}
+                />
+                <AlertMessagebox
+                    title={"Внимание!"}
+                    message={"Вы действительно хотите удалить выбранную зону? В таком случае товары на стеллажах станут считаться нераспределенными."}
+                    isOpened={this.state.isAlertMessageboxOpened1} 
+                    onAccept={()=>{this.setState({isAlertMessageboxOpened1: false});this.deleteZone()}} 
+                    onCancel={()=>{this.setState({isAlertMessageboxOpened1: false});}}
+                />
+                <AlertMessagebox
+                    title={"Внимание!"}
+                    message={"Вы действительно хотите удалить выбранный стеллаж? В таком случае все товары на нем станут считаться нераспределенными."}
+                    isOpened={this.state.isAlertMessageboxOpened2} 
+                    onAccept={()=>{this.setState({isAlertMessageboxOpened2: false});this.deleteRack()}} 
+                    onCancel={()=>{this.setState({isAlertMessageboxOpened2: false});}}
                 />
                 {/* <DropdownListWithModels setModel={setModel}/> */}
         </>
