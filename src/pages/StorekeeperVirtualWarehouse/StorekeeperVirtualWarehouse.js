@@ -6,11 +6,8 @@ import SideBlock from "../../components/SideBlock/SideBlock";
 import UniversalTabHolder from '../../components/TabHolders/UniversalTabHolder/UniversalTabHolder';
 import { TableComponent } from "../../components/Table/TableComponent";
 import InputText from "../../components/InputText/InputText";
-import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
-
-import DropdownListWithModels from "../../components/DropdownListWithModels/DropdownListWithModels";
+import ExpandListInput from "../../components/ExpandListInput/ExpandListInput";
 import ModelCreator from "../../classes/ModelCreator.js";
-import Colors from "../../classes/Colors.js";
 import { MOUSE, Vector2, Vector3 } from "three";
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
@@ -24,7 +21,6 @@ const styles = {
   }
 
 let modelCreator = new ModelCreator()
-let colors = new Colors()
 let auxMath = new AuxiliaryMath()
 
 let warehouseSettingsModel = new WarehouseSettingsModel()
@@ -1035,8 +1031,8 @@ class StorekeeperVirtualWarehouse extends Component {
                                 <div style={{width:400+"px", margin:"5px"}}>
                                     <InputText styles = "row_with_item_equal" Id={0} label="Название&nbsp;товара&nbsp;" placeholder="название товара" defValue={this.state.goodSearchTerm} set={this.setGoodSearchTerm}/> 
                                     <InputText styles = "row_with_item_equal" Id={1} label="id&nbsp;товара&nbsp;" placeholder="id товара" defValue={this.state.idSearchTerm} set={this.setIdSearchTerm}/> 
-                                    <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><ExpandListInputRegular width={300} list={this.state.categoryExpandList} func={this.setCategorySearchTerm}/></div>
-                                    <div class="low_text row_with_item_equal"><div>Подкатегория&nbsp;</div><ExpandListInputRegular width={300} list={this.state.subCategoryExpandList} func={this.setSubCategorySearchTerm}/></div>
+                                    <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><ExpandListInput width={300} list={this.state.categoryExpandList} func={this.setCategorySearchTerm}/></div>
+                                    <div class="low_text row_with_item_equal"><div>Подкатегория&nbsp;</div><ExpandListInput width={300} list={this.state.subCategoryExpandList} func={this.setSubCategorySearchTerm}/></div>
                                     <div style={{width:"min-content", display:'inline-table', marginLeft:"-4px" }} >
                                         <TableComponent height={588} columns={this.state.tableHeaders1} rows={this.state.tableList1} setNewTableList={this.setTableList1}  tableSettings={this.state.tableSettings1} onSelect={this.setSelectedItem1}/>
                                     </div>

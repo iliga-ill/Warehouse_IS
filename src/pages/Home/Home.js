@@ -11,7 +11,7 @@ export default function Home(props){
     var accountData = props.cookies.accountData
 
     return (
-        <FlexibleBlocksPage>
+        <FlexibleBlocksPage marginTop={51}>
             <FlexibleBlock>
                 <div class="header_text">О компании:</div>
                 <div style={{width:900}}>

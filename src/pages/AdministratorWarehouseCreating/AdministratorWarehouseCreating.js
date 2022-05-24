@@ -6,13 +6,10 @@ import SideBlock from "../../components/SideBlock/SideBlock";
 import UniversalTabHolder from '../../components/TabHolders/UniversalTabHolder/UniversalTabHolder';
 import { TableComponent } from "../../components/Table/TableComponent";
 import InputText from "../../components/InputText/InputText";
-import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
+import ExpandListInput from "../../components/ExpandListInput/ExpandListInput";
 import AlertMessagebox from "../../components/Messagebox/AlertMessagebox.js";
 import ModelList from "../../components/List/ModelList";
-
-import DropdownListWithModels from "../../components/DropdownListWithModels/DropdownListWithModels";
 import ModelCreator from "../../classes/ModelCreator.js";
-import Colors from "../../classes/Colors.js";
 import { MOUSE, Vector2, Vector3 } from "three";
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
@@ -27,7 +24,6 @@ const styles = {
   }
 
 let modelCreator = new ModelCreator()
-let colors = new Colors()
 let auxMath = new AuxiliaryMath()
 
 let warehouseSettingsModel = new WarehouseSettingsModel()
@@ -1481,7 +1477,7 @@ class AdministratorWarehouseCreating extends Component {
                                     <InputText styles = "row_with_item_wide" Id={4}  label="Центр&nbsp;зоны&nbsp;по&nbsp;x&nbsp;"   placeholder="центр зоны по x"       defValue={this.state.selectedZoneCenterX}   set={this.setSelectedZoneCenterX}/> 
                                     <InputText styles = "row_with_item_wide" Id={5}  label="Центр&nbsp;зоны&nbsp;по&nbsp;y&nbsp;"   placeholder="центр зоны по y"       defValue={this.state.selectedZoneCenterZ}   set={this.setSelectedZoneCenterZ}/> 
                                     <InputText styles = "row_with_item_wide" Id={6}  label="Угол&nbsp;поворота&nbsp;зоны&nbsp;"     placeholder="угол поворота зоны"    defValue={this.state.selectedZoneRotation}  set={this.setSelectedZoneRotation}/> 
-                                    <div className="low_text row_with_item_equal" style={{width:"200px", display: "inline-block"}}>Тип&nbsp;зоны&nbsp;<ExpandListInputRegular width={100} list={this.state.zoneTypeIdExpandList} defValue={this.state.selectedZoneTypeId} func={this.setSelectedZoneTypeId}/></div>
+                                    <div className="low_text row_with_item_equal" style={{width:"200px", display: "inline-block"}}>Тип&nbsp;зоны&nbsp;<ExpandListInput width={100} list={this.state.zoneTypeIdExpandList} defValue={this.state.selectedZoneTypeId} func={this.setSelectedZoneTypeId}/></div>
                                     <div style={{width:"calc(100% - 290px)", display: "inline-block"}}/>
                                     <button style={{verticalAlign:"flex-end", width:"70px"}} onClick={()=>{this.checkSelectedZoneOnGoods()?this.setState({isAlertMessageboxOpened1: true}):this.deleteZone()}}>Удалить</button>
                                     {this.state.selectedRack==undefined
@@ -1492,7 +1488,7 @@ class AdministratorWarehouseCreating extends Component {
                                         <InputText styles = "row_with_item_wide" Id={4}  label="Центр&nbsp;стеллажа&nbsp;по&nbsp;x&nbsp;относительно&nbsp;центра&nbsp;зоны&nbsp;"   placeholder="центр стеллажа по x"       defValue={this.state.selectedRackCenterX}   set={this.setSelectedRackCenterX}/> 
                                         <InputText styles = "row_with_item_wide" Id={5}  label="Центр&nbsp;стеллажа&nbsp;по&nbsp;y&nbsp;относительно&nbsp;центра&nbsp;зоны&nbsp;"   placeholder="центр стеллажа по y"       defValue={this.state.selectedRackCenterZ}   set={this.setSelectedRackCenterZ}/> 
                                         <InputText styles = "row_with_item_wide" Id={6}  label="Угол&nbsp;поворота&nbsp;стеллажа&nbsp;"     placeholder="угол поворота стеллажа"    defValue={this.state.selectedRackRotation}  set={this.setSelectedRackRotation}/> 
-                                        <div className="low_text row_with_item_equal" style={{width:"200px", display: "inline-block"}}>Тип&nbsp;стеллажа&nbsp;<ExpandListInputRegular width={100} list={this.state.rackTypeIdExpandList} defValue={this.state.selectedRackTypeId} func={this.setSelectedRackTypeId}/></div>
+                                        <div className="low_text row_with_item_equal" style={{width:"200px", display: "inline-block"}}>Тип&nbsp;стеллажа&nbsp;<ExpandListInput width={100} list={this.state.rackTypeIdExpandList} defValue={this.state.selectedRackTypeId} func={this.setSelectedRackTypeId}/></div>
                                         <div style={{width:"calc(100% - 290px)", display: "inline-block"}}/>
                                         <button style={{verticalAlign:"flex-end", width:"70px"}} onClick={()=>{this.checkSelectedRackOnGoods()?this.setState({isAlertMessageboxOpened2: true}):this.deleteRack()}}>Удалить</button>
                                     

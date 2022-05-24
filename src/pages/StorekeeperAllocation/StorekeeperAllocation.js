@@ -2,8 +2,7 @@ import React from "react";
 import './StorekeeperAllocation.css';
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
-import Table from "../../components/Table/Table";
-import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
+import ExpandListInput from "../../components/ExpandListInput/ExpandListInput";
 import InputDate from "../../components/InputDate/InputDate";
 import { TableComponent } from "../../components/Table/TableComponent";
 import { Api } from "../../api/storekeeperApi"
@@ -239,7 +238,7 @@ export default function StorekeeperAllocation(props){
 
 
     return (
-        <FlexibleBlocksPage>
+        <FlexibleBlocksPage  marginTop={102}>
             <FlexibleBlock>
                 {/* <div class="low_text row_with_item_wide">
                     <div class="low_text row_with_item_wide"><div>Приходная&nbsp;накладная&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expandImputList1[0].value} list={expandImputList1} func={setExpandImputList1}/></div>

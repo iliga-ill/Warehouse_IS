@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
 import './StorekeeperInventory.css';
-import Table from "../../components/Table/Table";
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import { TableComponent } from "../../components/Table/TableComponent";
@@ -156,7 +155,7 @@ export default function StorekeeperInventory(props){
     //-------------------------------------------------------------------------Блок 2 конец
 
     return (
-        <FlexibleBlocksPage>
+        <FlexibleBlocksPage  marginTop={102}>
             <FlexibleBlock>
                 <div class="header_text">Инвентаризация</div>
                 <div style={{width:400+'px', display:'inline-table'}} >

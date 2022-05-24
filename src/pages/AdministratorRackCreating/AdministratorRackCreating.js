@@ -9,7 +9,6 @@ import './AdministratorRackCreating.css';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import ModelCreator from "../../classes/ModelCreator.js";
-import Colors from "../../classes/Colors.js";
 import { Color, MOUSE, Vector2, Vector3 } from "three";
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
@@ -21,7 +20,6 @@ const styles = {
   }
 
 let modelCreator = new ModelCreator()
-let colors = new Colors()
 let auxMath = new AuxiliaryMath()
 
 
@@ -295,7 +293,7 @@ class AdministratorRackCreating extends Component {
     render(){
         return (
             <div id = "pageWrap">
-            <FlexibleBlocksPage>
+            <FlexibleBlocksPage marginTop={152}>
                 <FlexibleBlock>
                     <ListWithSearch item_list={this.state.racks} selItem={this.state.selRack} func={this.setRack} width={"200px"} height={"390px"}/>
                 </FlexibleBlock>

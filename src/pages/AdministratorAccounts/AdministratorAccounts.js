@@ -103,7 +103,7 @@ export default function AdministratorAccounts(props){
     //-------------------------------------------------------------------------Блок 2 конец
 
     return (
-        <FlexibleBlocksPage>
+        <FlexibleBlocksPage marginTop={102}>
             <FlexibleBlock>
                 <div class="header_text">Аккаунты</div>
                 <div style={{width:800+'px', display:'inline-table'}} >

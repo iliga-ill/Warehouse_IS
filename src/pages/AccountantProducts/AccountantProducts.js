@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
 import './AccountantProducts.css';
-import Table from "../../components/Table/Table";
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import InputText from "../../components/InputText/InputText";
@@ -104,7 +103,7 @@ export default function AccountantProducts(props){
     //-------------------------------------------------------------------------Блок 3 конец
 
     return (
-        <FlexibleBlocksPage>
+        <FlexibleBlocksPage marginTop={102}>
             <FlexibleBlock>
                 <div class="header_text">Список товаров</div>
                 <div style={{width:800+'px', display:'inline-table'}}>

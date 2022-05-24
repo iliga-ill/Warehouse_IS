@@ -52,7 +52,7 @@ export default function Profile(props){
     }
 
     return (
-        <FlexibleBlocksPage Id={getId()}>
+        <FlexibleBlocksPage marginTop={51}>
             <FlexibleBlock>
                     {!onChange
                         ?<>

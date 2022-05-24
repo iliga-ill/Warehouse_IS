@@ -1,12 +1,11 @@
 import React, { Component, Fragment } from "react";
 import './AccountantInvoice.css';
-import Table from "../../components/Table/Table";
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import FlexibleBlockDouble from "../../components/FlexibleBlocks/FlexibleBlockDouble/FlexibleBlockDouble";
 import InputText from "../../components/InputText/InputText";
 import InputTextArea from "../../components/InputTextArea/InputTextArea";
-import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
+import ExpandListInput from "../../components/ExpandListInput/ExpandListInput";
 import InputDate from "../../components/InputDate/InputDate";
 import { TableComponent } from "../../components/Table/TableComponent";
 const host = 'http://localhost:5000';
@@ -95,7 +94,7 @@ export default function AccountantInvoice(props){
 
     return (
         <>
-            <FlexibleBlocksPage>
+            <FlexibleBlocksPage marginTop={152}>
                 <FlexibleBlock>
                     <div class="header_text">Список накладных</div>
                     <div style={{width:470+'px', display:'inline-table'}} >
