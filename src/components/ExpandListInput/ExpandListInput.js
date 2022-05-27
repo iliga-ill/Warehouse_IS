@@ -31,8 +31,6 @@ export default function ExpandListInputRegular(props){
            <select style={{width:props.width, listStyle: "none"}} onChange={evt=>props.func(evt.target.value)}>
             {
                props.list.map(function(item, i){
-                   console.log('item')
-                   console.log(item)
                   return <option value={item.value} selected={props.defValue.value == item.value}>{item.value}</option>
                })
             }
