@@ -1,11 +1,10 @@
 import React, { Component, Fragment } from "react";
 import './ManagerShipmentOrders.css';
-import Table from "../../components/Table/Table";
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import InputText from "../../components/InputText/InputText";
 import InputTextArea from "../../components/InputTextArea/InputTextArea";
-import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
+import ExpandListInput from "../../components/ExpandListInput/ExpandListInput";
 import InputDate from "../../components/InputDate/InputDate";
 import { TableComponent } from "../../components/Table/TableComponent";
 import { Api } from "../../api/managerApi"
@@ -97,7 +96,7 @@ export default function ManagerShipmentOrders(props){
 
     return (
         <>
-            <FlexibleBlocksPage>
+            <FlexibleBlocksPage marginTop={152}>
                 <FlexibleBlock>
                     <div class="header_text">Заказы на продажу</div>
                     <div style={{width:470+'px', display:'inline-table'}} >

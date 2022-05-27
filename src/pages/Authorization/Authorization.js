@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
 import './Authorization.css';
-import Table from "../../components/Table/Table";
 import cookie from "react-cookie";
 import ManIcon from '../../images/ManIcon.svg'
 import { Api } from "../../api/authorizationApi"

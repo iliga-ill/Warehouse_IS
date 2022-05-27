@@ -15,7 +15,7 @@ export default function FlexibleBlocksPage(props){
         {
             listStyle: "none",
             width: "100%",
-            height: (document.documentElement.clientHeight-152).toString() + "px",
+            height: (document.documentElement.clientHeight-props.marginTop).toString() + "px",
             fontSize: "1.25rem",
             overflowX: "scroll",
             overflowY: "scroll",

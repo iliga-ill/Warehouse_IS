@@ -1,5 +1,5 @@
 import React from "react";
-import './ExpandListInputRegular.css';
+import './ExpandListInput.css';
 
 export default function ExpandListInputRegular(props){
 

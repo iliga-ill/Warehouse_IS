@@ -1,11 +1,10 @@
 import React, { Component, Fragment } from "react";
 import './ProductTurnover.css';
-import Table from "../../../components/Table/Table";
 import FlexibleBlocksPage from "../../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import InputText from "../../../components/InputText/InputText";
 import InputTextArea from "../../../components/InputTextArea/InputTextArea";
-import ExpandListInputRegular from "../../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
+import ExpandListInput from "../../../components/ExpandListInput/ExpandListInput";
 import InputDate from "../../../components/InputDate/InputDate";
 import { TableComponent } from "../../../components/Table/TableComponent";
 const host = 'http://localhost:5000';
@@ -330,7 +329,7 @@ export default function ProductTurnover(props){
 
     return (
         <>
-            <FlexibleBlocksPage>
+            <FlexibleBlocksPage marginTop={152}>
                 <FlexibleBlock>
                     <div class="header_text">{title}</div>
                     <div style={{width:'170px'}}>
@@ -338,9 +337,9 @@ export default function ProductTurnover(props){
                         <div class="low_text row_with_item_equal"><div>Дата&nbsp;до&nbsp;</div><InputDate defValue={dateTo}     func={setDateTo}/></div>
                     </div>
                     <div style={{width:'400px'}}>
-                        <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><ExpandListInputRegular width={300} defValue={expandList1[0]} list={expandList1} func={setExpandListValue1}/></div>
-                        <div class="low_text row_with_item_equal"><div>Подкатегория&nbsp;</div><ExpandListInputRegular width={300} defValue={expandList2[0]} list={expandList2} func={setExpandListValue2}/></div>
-                        <div class="low_text row_with_item_equal"><div>Товар&nbsp;</div><ExpandListInputRegular width={300} defValue={expandList3[0]} list={expandList3} func={setExpandListValue3}/></div>
+                        <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><ExpandListInput width={300} defValue={expandList1[0]} list={expandList1} func={setExpandListValue1}/></div>
+                        <div class="low_text row_with_item_equal"><div>Подкатегория&nbsp;</div><ExpandListInput width={300} defValue={expandList2[0]} list={expandList2} func={setExpandListValue2}/></div>
+                        <div class="low_text row_with_item_equal"><div>Товар&nbsp;</div><ExpandListInput width={300} defValue={expandList3[0]} list={expandList3} func={setExpandListValue3}/></div>
                     </div>
                     <div style={{width:'260px'}}>
                         <div class="low_text">Ожидаемый&nbsp;остаток&nbsp;на&nbsp;складе:&nbsp;<label class="normal">{sumProfit}₽</label></div>

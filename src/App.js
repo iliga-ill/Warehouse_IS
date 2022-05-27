@@ -56,16 +56,16 @@ const subTabsArray = [
     {title: "Создание заказа",            roleHref:"/Manager",        href:"/ManagerOrderCreation", basicHref:""},
     {title: "Заказы на продажу",          roleHref:"/Manager",        href:"/ManagerSellOrders", basicHref:"/Current"},
     {title: "Заказы на поставку",         roleHref:"/Manager",        href:"/ManagerShipmentOrders", basicHref:"/Current"},
-    {title: "Счета на оплату",            roleHref:"/Manager",        href:"/ManagerBills", basicHref:"/NewAccounts"},
+    {title: "Счета",                      roleHref:"/Manager",        href:"/ManagerBills", basicHref:"/NewAccounts"},
   ],[
     {title: "Заказы",                     roleHref:"/Logistician",    href:"/LogisticianOrders", basicHref:"/Current"},
     {title: "Товары",                     roleHref:"/Logistician",    href:"/LogisticianProducts", basicHref:""},
-    {title: "Счета на оплату",            roleHref:"/Logistician",    href:"/LogisticianBills", basicHref:"/NewAccounts"},
+    {title: "Счета",                      roleHref:"/Logistician",    href:"/LogisticianBills", basicHref:"/NewAccounts"},
   ],[
     {title: "Товары",                     roleHref:"/Accountant",     href:"/AccountantProducts", basicHref:""},
     {title: "Накладные",                  roleHref:"/Accountant",     href:"/AccountantInvoice", basicHref:"/Current"},
     {title: "Отчеты",                     roleHref:"/Accountant",     href:"/AccountantReports", basicHref:"/SelledProducts"},
-    {title: "Счета на оплату",            roleHref:"/Accountant",     href:"/AccountantAccounts", basicHref:"/NewAccounts"},
+    {title: "Счета",                      roleHref:"/Accountant",     href:"/AccountantAccounts", basicHref:"/NewAccounts"},
   ],[
     {title: "Аккаунты",                   roleHref:"/Administrator",  href:"/AdministratorAccounts", basicHref:""},
     {title: "Создание элементов склада",  roleHref:"/Administrator",  href:"/AdministratorCreating", basicHref:"/RackCreating"},
@@ -95,11 +95,10 @@ const supportTabsArray = [
     {title: "Окупаемость товаров",  roleHref:"/Accountant",     subHref:"/AccountantReports",     supportHref:"/PaybackOfGoods"},
     {title: "Новые счета",          roleHref:"/Accountant",     subHref:"/AccountantAccounts",    supportHref:"/NewAccounts"},
     {title: "Закрытые счета",       roleHref:"/Accountant",     subHref:"/AccountantAccounts",    supportHref:"/ClosedAccounts"},
-
     {title: "Создание зоны",        roleHref:"/Administrator",  subHref:"/AdministratorCreating", supportHref:"/ZoneCreating"},
     {title: "Создание стеллажа",    roleHref:"/Administrator",  subHref:"/AdministratorCreating", supportHref:"/RackCreating"},
     {title: "Создание товара",      roleHref:"/Administrator",  subHref:"/AdministratorCreating", supportHref:"/GoodCreating"},
-    {title: "Изменение конфигурации склада",roleHref:"/Administrator",  subHref:"/AdministratorCreating", supportHref:"/WarehouseCreating"},
+    {title: "Изменение конфигурации склада", roleHref:"/Administrator",  subHref:"/AdministratorCreating", supportHref:"/WarehouseCreating"},
 ]
 
 
@@ -107,8 +106,6 @@ export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const [cookies, setCookie] = useCookies(['access_token', 'refresh_token', 'accountData'])
-  // let expires = new Date()
-  // expires.setTime(expires.getTime() + (20 * 1000))
 
   var [mainTabs, setMainTab] = React.useState([])
   var [subTabs, setSubTabs] = React.useState(subTabsArray)

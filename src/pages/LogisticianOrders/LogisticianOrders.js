@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from "react";
 import './LogisticianOrders.css';
-import Table from "../../components/Table/Table";
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import InputDate from "../../components/InputDate/InputDate";
@@ -322,7 +321,7 @@ export default function LogisticianOrders(props){
 
     return (
         <>
-            <FlexibleBlocksPage>
+            <FlexibleBlocksPage marginTop={152}>
                 <FlexibleBlock>
                     <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={"200px"} height={"525px"}/>
                 </FlexibleBlock>

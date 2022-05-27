@@ -1,13 +1,12 @@
 import React, { Component, Fragment } from "react";
 import './StorekeeperAdvent.css';
-import Table from "../../components/Table/Table";
 import { TableComponent } from "../../components/Table/TableComponent";
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import InputDate from "../../components/InputDate/InputDate";
 import InputFile from "../../components/InputFile/InputFile";
 import InputText from "../../components/InputText/InputText";
-import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
+import ExpandListInput from "../../components/ExpandListInput/ExpandListInput";
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
 import { render } from "react-dom";
 import { Api } from "../../api/storekeeperApi"
@@ -321,7 +320,7 @@ async function apiUpdateOrderGoods(selected, value) {
 
     return (
         <>
-            <FlexibleBlocksPage>
+            <FlexibleBlocksPage marginTop={152}>
                 <FlexibleBlock>
                     <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={list_with_search_width} height={list_with_search_height}/>
                 </FlexibleBlock>
