@@ -339,7 +339,7 @@ function onDocumentKeyDown( event ) {
                                     page.state.installedModel.material
                                 ))
                             }
-                            if (checkOnIntersectionBuf || intersect.object.type!="zone"){
+                            if (checkOnIntersectionBuf || (intersect.object.userData.id != page.state.selectedZone.userData.id && intersect.object.type=="zone") || intersect.object.type!="zone"){
                                 createSpecificHint(new THREE.Mesh( 
                                     page.state.installedModel.geometry, 
                                     new THREE.MeshBasicMaterial({ color: 0xff0000, opacity: 0.3, transparent: true })
@@ -641,7 +641,7 @@ function onPointerMove(event) {
                                 page.state.installedModel.material
                             ))
                         }
-                        if (checkOnIntersectionBuf || intersect.object.type!="zone"){
+                        if (checkOnIntersectionBuf || (intersect.object.userData.id != page.state.selectedZone.userData.id && intersect.object.type=="zone") || intersect.object.type!="zone"){
                             createSpecificHint(new THREE.Mesh( 
                                 page.state.installedModel.geometry, 
                                 new THREE.MeshBasicMaterial({ color: 0xff0000, opacity: 0.3, transparent: true })
