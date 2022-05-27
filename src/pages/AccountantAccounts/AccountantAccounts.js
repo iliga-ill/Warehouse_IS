@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import './AccountantAccounts.css';
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
-import ExpandListInputRegular from "../../components/ExpandListInput/ExpandListInputRegular/ExpandListInputRegular";
+import ExpandListInput from "../../components/ExpandListInput/ExpandListInput";
 import InputFile from "../../components/InputFile/InputFile";
 import { TableComponent } from "../../components/Table/TableComponent";
 const host = 'http://localhost:5000';
@@ -66,7 +66,7 @@ export default function AccountantAccounts(props){
 
     return (
         <>
-            <FlexibleBlocksPage>
+            <FlexibleBlocksPage marginTop={152}>
                 <FlexibleBlock>
                     <div class="header_text">Счета на оплату</div>
                     <div style={{width:470+'px', display:'inline-table'}} >
@@ -81,7 +81,7 @@ export default function AccountantAccounts(props){
                         <div class="low_text bold">Реквизиты:</div><label class="normal low_text text_shift">{requisites}</label>
                         <div class="low_text bold">Документы:</div><label class="normal low_text text_shift">{documents}</label>
                         <div class="low_text bold">Примечание:</div><label class="normal low_text text_shift">{note}</label>
-                        <div class="low_text row_with_item_wide"><div class="bold">Статус&nbsp;оплаты:&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={accountStatus[0].value} list={accountStatus} func={setAccountStatus}/></div> 
+                        <div class="low_text row_with_item_wide"><div class="bold">Статус&nbsp;оплаты:&nbsp;</div><ExpandListInput Id={getId()} defValue={accountStatus[0].value} list={accountStatus} func={setAccountStatus}/></div> 
                         <div class="low_text"><InputFile Id={getId()} func={setDocuments}/></div>
                         <div></div>
                         <div class="place_holder"/><button class="bt_send" onClick={btn_save}>Сохранить</button>

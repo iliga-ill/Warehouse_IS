@@ -10,7 +10,6 @@ import './AdministratorZoneCreating.css';
 import * as THREE from 'three';
 import { MapControls, OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import ModelCreator from "../../classes/ModelCreator.js";
-import Colors from "../../classes/Colors.js";
 import { Color, MOUSE, Vector2, Vector3 } from "three";
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
@@ -22,7 +21,6 @@ const styles = {
   }
 
 let modelCreator = new ModelCreator()
-let colors = new Colors()
 let auxMath = new AuxiliaryMath()
 
 
@@ -333,7 +331,7 @@ onMessageAlighment=()=>{
     render(){
         return (
             <>
-                <FlexibleBlocksPage>
+                <FlexibleBlocksPage marginTop={152}>
                     <FlexibleBlock>
                         <ListWithSearch item_list={this.state.zones} selItem={this.state.selZone} func={this.setSelZone} width={"200px"} height={"390px"}/>
                     </FlexibleBlock>

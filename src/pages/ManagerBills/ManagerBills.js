@@ -63,7 +63,7 @@ export default function ManagerBills(props){
 
     return (
         <>
-            <FlexibleBlocksPage>
+            <FlexibleBlocksPage marginTop={152}>
                 <FlexibleBlock>
                     <div class="header_text">Счета на оплату</div>
                     <div style={{width:470+'px', display:'inline-table'}} >
