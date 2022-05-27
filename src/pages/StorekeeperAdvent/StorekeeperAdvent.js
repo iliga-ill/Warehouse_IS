@@ -231,7 +231,7 @@ export default function StorekeeperAdvent(props){
             //     apiUpdateOrderGoods(item.amount, item.code)
             // }) 
            
-            apiUpdateOrderGoods(tableList)
+            apiUpdateOrderGoods(selOrder, tableList)
             
         else apiGetGoodsByShipmentOrder()
         //if (check) props.func2(temp_table_list)
@@ -302,13 +302,11 @@ async function apiGetGoodsSubCat4() {
     alert(response)
 }
 
-async function apiUpdateOrderGoods(value) {
-    value.map(async function(element, i){
-        var response = await api.updateOrderGoods(element)
-        setOrders([])
-        setTableList([])
-        apiGetGoodsType()
-    })
+async function apiUpdateOrderGoods(selected, value) {
+    var response = await api.updateOrderGoods(selected, value, props.cookies, documents, date, 'advent')
+    setOrders([])
+    setTableList([])
+    apiGetGoodsType()
     alert("Изменения успешно приняты")
 }
 

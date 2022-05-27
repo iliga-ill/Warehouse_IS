@@ -144,14 +144,15 @@ export default function StorekeeperInventory(props){
 
     function btn_send_1() {
         if (selectedItemId!=undefined){
-            async function updateOrders(shelfsSpace, tableList1) {
-                var res = await api.updateOrderStatus("POST", shelfsSpace, tableList1)
-                setTableList(res)
-            }
-            updateOrders(shelfsSpace, tableList1)
+            updateOrders(selectedItemId, tableList1)
         }
     }
 
+    async function updateOrders(selected, tableList) {
+        var res = await api.updateOrderStatus(selected, tableList)
+        console.log("ОТВЕТ НА ИЗМЕНЕНИЕ СТАТУСОВ")
+        console.log(res)
+    }
     //-------------------------------------------------------------------------Блок 2 конец
 
     return (

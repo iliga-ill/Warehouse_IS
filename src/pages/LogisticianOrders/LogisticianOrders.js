@@ -81,7 +81,7 @@ export default function LogisticianOrders(props){
     }
     
     const [tableList, setTableList] = React.useState([])
-    const [selectedItemId, setSelectedItemId] = React.useState()
+    const [selectedItemId, setSelectedItemId] = React.useState(undefined)
  
     React.useEffect(() => {
         if (selectedItemId!=undefined){ 
@@ -96,7 +96,6 @@ export default function LogisticianOrders(props){
     }, [selectedItemId]);
 
     async function apiGetShipmentGoods(selected) {
-        console.log("Я смешарик")
         console.log(selected)
         TableList1IsAnswer = true
         var result = await api.getShipmentsGoods(selected)
@@ -111,7 +110,16 @@ export default function LogisticianOrders(props){
     }, [tableList])
 
     async function postShipments(selected, tableList) {
-        await api.postShipments(selected, tableList)
+        var result = []
+        var elm = await api.postShipments(selected, tableList)
+        if (elm != undefined && elm != [] && elm != "[]") {
+            result.push(elm)
+            console.log("ЖЕКИ был здесь")
+            result.map(id => {
+                console.log(id[0])
+                tableList[tableList.length-1].code = id[0]
+            })
+        }
     }
         
     async function apiGetShipments(selected) {
@@ -155,10 +163,14 @@ export default function LogisticianOrders(props){
 
     async function apiPostShipmentGoods(selected, body) {
         var result = []
-        result = await api.postShipmentGoods(selected, body)
-        result.map((id, i)=>{
-            tableList1[tableList1.length-1].code = id
-        })
+        var elm = await api.postShipmentGoods(selected, body)
+        if (elm != undefined && elm != [] && elm != "[]" && elm.length != 0) {
+            result.push(elm)
+            result.map((id, i)=>{
+                tableList1[tableList1.length-1].code = id[0]
+                tableList1[tableList1.length-1].id = id[0]
+            })
+        }
     }
 
     //-------------------------------------стол 2 конец
@@ -188,29 +200,31 @@ export default function LogisticianOrders(props){
     const [bufferedTableList2, setBufferedTableList2] = React.useState([])
 
     React.useEffect(() => {
-        if (tableList2.toString()!="" && selectedItemId2 != undefined && selectedItemId != undefined) {
-            var order = ''
-            orders.forEach(element => {  
-                if (element.selected == true) {
-                    order = element
-                }
-            });
 
+    }, [tableList2])
+
+    React.useEffect(() => {
+        if (tableList2.toString()!="" && selectedItemId2 != undefined && selectedItemId != undefined) {
             var buf = []
             var selectedRow;
 
             bufferedTableList2.map(function(element, i) {
                 buf.push(element)
             })
-
+ 
             tableList2.map(function(element, i){
                 if (element.id == selectedItemId2.id) {
+                    console.log("selectedItemId2")
+                    console.log(selectedItemId2)
+                    console.log(element)
                     if (tableList1 == "")
-                        selectedRow = {id: 0, code: 0, number:1, goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode, shipmentOrderGoodsCode:0, orderCode:order.code}
+                        selectedRow = {id: 0, code: 0, number:1, goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode, shipmentOrderGoodsCode:0, orderCode:selOrder.code}
                     else
-                        selectedRow = {id: tableList1[tableList1.length-1].id+1, code: 0, number:tableList1[tableList1.length-1].number+1, goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode, shipmentOrderGoodsCode:0, orderCode:order.code}
+                        selectedRow = {id: tableList1[tableList1.length-1].id+1, code: 0, number:tableList1[tableList1.length-1].number+1, goodsType: tableList2[i].goodsType, weight:tableList2[i].weight, expectingAmount:0, realAmount:0, goodCode: tableList2[i].goodCode, shipmentOrderGoodsCode:0, orderCode:selOrder.code}
                     }     
             })
+
+            // Проверка на повторный выбор элемента
             var check = true
             buf.map(function(element,i){
                 if (element.goodCode == selectedRow.goodCode) check = false
