@@ -1032,12 +1032,17 @@ class StorekeeperVirtualWarehouse extends Component {
                                     <InputText styles = "row_with_item_equal" Id={0} label="Название&nbsp;товара&nbsp;" placeholder="название товара" defValue={this.state.goodSearchTerm} set={this.setGoodSearchTerm}/> 
                                     <InputText styles = "row_with_item_equal" Id={1} label="id&nbsp;товара&nbsp;" placeholder="id товара" defValue={this.state.idSearchTerm} set={this.setIdSearchTerm}/> 
 <<<<<<< HEAD
+<<<<<<< HEAD
                                     <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><ExpandListInputRegular width={300} defValue={this.state.categoryExpandList[0]} list={this.state.categoryExpandList} func={this.setCategorySearchTerm}/></div>
                                     <div class="low_text row_with_item_equal"><div>Подкатегория&nbsp;</div><ExpandListInputRegular width={300} defValue={this.state.subCategoryExpandList[0]} list={this.state.subCategoryExpandList} func={this.setSubCategorySearchTerm}/></div>
 =======
                                     <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><ExpandListInput width={300} list={this.state.categoryExpandList} func={this.setCategorySearchTerm}/></div>
                                     <div class="low_text row_with_item_equal"><div>Подкатегория&nbsp;</div><ExpandListInput width={300} list={this.state.subCategoryExpandList} func={this.setSubCategorySearchTerm}/></div>
 >>>>>>> ef7b0d038daa9f0ed7dd4985d5c72d4c2ed238ed
+=======
+                                    <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><ExpandListInput width={300} list={this.state.categoryExpandList} func={this.setCategorySearchTerm}/></div>
+                                    <div class="low_text row_with_item_equal"><div>Подкатегория&nbsp;</div><ExpandListInput width={300} list={this.state.subCategoryExpandList} func={this.setSubCategorySearchTerm}/></div>
+>>>>>>> borisenko
                                     <div style={{width:"min-content", display:'inline-table', marginLeft:"-4px" }} >
                                         <TableComponent height={588} columns={this.state.tableHeaders1} rows={this.state.tableList1} setNewTableList={this.setTableList1}  tableSettings={this.state.tableSettings1} onSelect={this.setSelectedItem1}/>
                                     </div>
