@@ -45,7 +45,7 @@ function init(width, minWidth, spaceBetweenItems, models){
         let canvasWrap = frame.firstChild
         let modelName = frame.lastChild
         
-        modelName.innerHTML = `Полка id ${model.name}`;
+        modelName.innerHTML = `${page.props.modelType} id ${model.name}`;
         //scene
         const scene = new THREE.Scene();
         scene.background = new THREE.Color( 0xffffff );

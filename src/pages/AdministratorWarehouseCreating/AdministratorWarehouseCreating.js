@@ -1527,13 +1527,13 @@ class AdministratorWarehouseCreating extends Component {
                         {this.state.panelSelTab.id==1&&(
                             <>
                                 <div className="header_text" style={{margin:"5px"}}>Доступные зоны</div>
-                                <ModelList models={this.createZoneListByType()} width={490} minWidth={230} spaceBetweenItems={10} setModel={(model)=>{this.state.installedModel = model}}/>
+                                <ModelList models={this.createZoneListByType()} modelType={"Зона"} width={490} minWidth={230} spaceBetweenItems={10} setModel={(model)=>{this.state.installedModel = model}}/>
                             </>
                         )}
                         {this.state.panelSelTab.id==2&&(
                             <>
-                                <div className="header_text" style={{margin:"5px"}}>Доступные полки</div>
-                                <ModelList models={this.createRackListByType()} width={490} minWidth={150} spaceBetweenItems={10} setModel={(model)=>{this.state.installedModel = model}}/>
+                                <div className="header_text" style={{margin:"5px"}}>Доступные стеллажи</div>
+                                <ModelList models={this.createRackListByType()} modelType={"Стеллаж"} width={490} minWidth={150} spaceBetweenItems={10} setModel={(model)=>{this.state.installedModel = model}}/>
                             </>
                         )}
                     </SideBlock>

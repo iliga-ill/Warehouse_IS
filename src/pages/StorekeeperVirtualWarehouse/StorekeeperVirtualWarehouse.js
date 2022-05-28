@@ -1014,15 +1014,21 @@ class StorekeeperVirtualWarehouse extends Component {
                                 <div style={{width:"min-content", display:'inline-table', marginLeft:"1px" }} >
                                     <TableComponent height={320} columns={this.state.tableHeaders} rows={this.state.tableList} setNewTableList={this.setTableList}  tableSettings={this.state.tableSettings} onSelect={this.setSelectedItem}/>
                                 </div>
-                                <div style={{width:500+"px", margin:"5px"}}>
-                                    <div class="low_text bold">Товар:&nbsp;<label class="normal">{this.state.good}</label></div>
-                                    <div class="low_text bold">Id&nbsp;товара:&nbsp;<label class="normal">{this.state.id}</label></div>
-                                    <div class="low_text bold">Категория:&nbsp;<label class="normal">{this.state.category}</label></div>
-                                    <div class="low_text bold">Подкатегория:&nbsp;<label class="normal">{this.state.subCategory}</label></div>
-                                    <div class="low_text bold">Цена&nbsp;ед&nbsp;товара&nbsp;<label class="normal">{this.state.cost} ₽</label></div>
-                                    <div class="low_text bold">Вес&nbsp;ед&nbsp;товара:&nbsp;<label class="normal">{this.state.weight} кг</label></div>
-                                    <div class="low_text bold">Хар-ки&nbsp;товара:&nbsp;</div><div class="low_text normal">{this.state.goodCharacteristics}</div>
-                                </div>
+                                {this.state.good==undefined
+                                ?<div>Выберите товар на полке</div>
+                                :<>
+                                    <div style={{width:500+"px", margin:"5px"}}>
+                                        <div class="low_text bold">Товар:&nbsp;<label class="normal">{this.state.good}</label></div>
+                                        <div class="low_text bold">Id&nbsp;товара:&nbsp;<label class="normal">{this.state.id}</label></div>
+                                        <div class="low_text bold">Категория:&nbsp;<label class="normal">{this.state.category}</label></div>
+                                        <div class="low_text bold">Подкатегория:&nbsp;<label class="normal">{this.state.subCategory}</label></div>
+                                        <div class="low_text bold">Цена&nbsp;ед&nbsp;товара&nbsp;<label class="normal">{this.state.cost} ₽</label></div>
+                                        <div class="low_text bold">Вес&nbsp;ед&nbsp;товара:&nbsp;<label class="normal">{this.state.weight} кг</label></div>
+                                        <div class="low_text bold">Хар-ки&nbsp;товара:&nbsp;</div><div class="low_text normal">{this.state.goodCharacteristics}</div>
+                                    </div>
+                                </>
+                                }
+                                
                             </>
                         )}
                         {this.state.panelSelTab.id==1&&(
