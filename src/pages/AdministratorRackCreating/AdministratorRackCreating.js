@@ -177,7 +177,9 @@ class AdministratorRackCreating extends Component {
             translationX:0,
             translationY:0,
             translationZ:-50/2,
-            liftingCapacity:50
+            liftingCapacity:50,
+            freeSpaceX:0,
+			freeSpaceY:50,
         }
     }
 
@@ -195,6 +197,8 @@ class AdministratorRackCreating extends Component {
     setTranslationY = (value)=>{this.setState({translationY: Number(value)});}
     setTranslationZ = (value)=>{this.setState({translationZ: Number(value)});}
     setLiftingCapacity = (value)=>{this.setState({liftingCapacity: Number(value)});}
+    setFreeSpaceX = (value)=>{this.setState({freeSpaceX: Number(value)});}
+    setFreeSpaceY = (value)=>{this.setState({freeSpaceY: Number(value)});}
 
 
     componentDidMount(){
@@ -222,6 +226,19 @@ class AdministratorRackCreating extends Component {
                 new Vector3(this.state.translationX,this.state.translationY,this.state.translationZ), 
                 true
             )
+            let limiterLineModel = modelCreator.createSpacelimiterBorder(
+                this.state.shelfWidth*this.state.columsAmount + this.state.borderWidth*(this.state.columsAmount+1), 
+                this.state.depth, 
+                this.state.freeSpaceX, 
+                this.state.freeSpaceY,
+                new Vector3(0,0,0),
+                { color: 0xffffff, opacity: 1, transparent: false },
+            )
+            setModelOnCoordinates(
+                limiterLineModel, 
+                new Vector3(0,0,0),
+                true
+            )
             render()
             this.timerID = setInterval(() => this.updateModel(), 200);
         }
@@ -243,9 +260,27 @@ class AdministratorRackCreating extends Component {
             if (obj.type == "GridHelper"){
                 scene.remove( obj );
                 objects.splice( objects.indexOf( obj ), 1 );
-                const gridHelper = new THREE.GridHelper( Math.max(shelfWidth, shelfDepth), Math.max(shelfWidth, shelfDepth) );
+                const gridHelper = new THREE.GridHelper( Math.max(shelfWidth + this.state.freeSpaceX*2 + 10, shelfDepth + this.state.freeSpaceY*2 + 10), Math.max(shelfWidth + this.state.freeSpaceX*2 + 10, shelfDepth  + this.state.freeSpaceY*2 + 10) );
                 gridHelper.name = "GridHelper"
                 scene.add( gridHelper );
+            }
+            if (obj.name == "limiterLine"){
+                scene.remove( obj );
+                objects.splice( objects.indexOf( obj ), 1 );
+                let limiterLineModel = modelCreator.createSpacelimiterBorder(
+                    this.state.shelfWidth*this.state.columsAmount + this.state.borderWidth*(this.state.columsAmount+1), 
+                    this.state.depth, 
+                    this.state.freeSpaceX, 
+                    this.state.freeSpaceY,
+                    new Vector3(0,0,0),
+                    { color: 0xffffff, opacity: 1, transparent: false },
+                )
+                setModelOnCoordinates(
+                    limiterLineModel, 
+                    new Vector3(0,0,0),
+                    true
+                )
+                render()
             }
             if (obj.name == "Модель"){
                 scene.remove( obj );
@@ -313,6 +348,8 @@ class AdministratorRackCreating extends Component {
                     <InputText styles = "row_with_item_wide" Id={8}  label="Смещение&nbsp;по&nbsp;y&nbsp;"                 placeholder="смещение по y"          defValue={this.state.translationY}     set={this.setTranslationY}/> 
                     <InputText styles = "row_with_item_wide" Id={9}  label="Смещение&nbsp;по&nbsp;z&nbsp;"                 placeholder="смещение по z"          defValue={this.state.translationZ}     set={this.setTranslationZ}/> 
                     <InputText styles = "row_with_item_wide" Id={10} label="Грузоподьемность&nbsp;полки&nbsp;(кг)&nbsp;"   placeholder="грузоподьемность полки" defValue={this.state.liftingCapacity}  set={this.setLiftingCapacity}/> 
+                    <InputText styles = "row_with_item_wide" Id={11} label="Свободная&nbsp;зона&nbsp;вокруг&nbsp;полки&nbsp;по&nbsp;Х&nbsp;(см)"   placeholder="cвободная зона вокруг полки по Х" defValue={this.state.freeSpaceX}  set={this.setFreeSpaceX}/> 
+                    <InputText styles = "row_with_item_wide" Id={12} label="Свободная&nbsp;зона&nbsp;вокруг&nbsp;полки&nbsp;по&nbsp;Y&nbsp;(см)"   placeholder="cвободная зона вокруг полки по Y" defValue={this.state.freeSpaceY}  set={this.setFreeSpaceY}/> 
                     <div></div>
                     <button class="bt_send_AdministratorRackCreating1" onClick={this.btn_send_1}>Создать новую полку</button>
                     <div class="place_holder_AdministratorRackCreating"/><button class="bt_send_AdministratorRackCreating2" onClick={this.btn_send_2}>Сохранить</button>

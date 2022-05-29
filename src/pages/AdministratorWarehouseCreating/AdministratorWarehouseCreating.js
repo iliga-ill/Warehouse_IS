@@ -69,6 +69,7 @@ let specificHintModel = undefined; //currently placed hint model
 let zoneHintMesh = undefined; //currently placed hint model
 let rackHintMesh = undefined; //currently placed hint model
 
+let racksLimiterLines = []; //currently placed hint model
 
 let viewMod = "observasion" //observasion, first-person /change mode of viewing
 let controls
@@ -322,28 +323,60 @@ function onDocumentKeyDown( event ) {
                     const intersects = raycaster.intersectObjects( scene.children );
                     let intersect = findIntersectedFloorOrZone(intersects);
                     if (intersect!=undefined){
-                        let checkOnIntersectionBuf = checkOnIntersection(racks, page.state.installedModel.mesh.position.copy( intersect.point ), page.state.installedModel.width, page.state.installedModel.depth)
+                        let checkOnIntersectionBuf = checkOnIntersection(racks, page.state.installedModel.mesh.position.copy( intersect.point ), page.state.installedModel.width, page.state.installedModel.depth, page.state.installedModel.freeSpaceX, page.state.installedModel.freeSpaceY)
                         if (
                             specificHintModel==undefined && page.state.installedModel!=undefined || 
                             page.state.installedModel!=undefined && page.state.installedModel.name != specificHintModel.mesh.name ||
                             lastIntersect.object.type!=intersect.object.type ||
-                            checkOnIntersectionBuf != lastCheckOnIntersection
+                            checkOnIntersectionBuf.check != lastCheckOnIntersection
                         ) {
                             if (specificHintModel != undefined) {
                                 scene.remove(specificHintModel.mesh)
                                 specificHintModel = undefined
+                                if (racksLimiterLines!=undefined) {
+                                    racksLimiterLines.map(line=>{
+                                        line.intersectedElm.remove(line.limiterLineModel)
+                                    })
+                                    racksLimiterLines = []
+                                }
                             }
-                            if (!checkOnIntersectionBuf && intersect.object.type=="zone" && intersect.object.userData.id == page.state.selectedZone.userData.id){
+                            if (!checkOnIntersectionBuf.check && intersect.object.type=="zone" && intersect.object.userData.id == page.state.selectedZone.userData.id){
                                 createSpecificHint(new THREE.Mesh( 
                                     page.state.installedModel.geometry, 
                                     page.state.installedModel.material
                                 ))
                             }
-                            if (checkOnIntersectionBuf || (intersect.object.userData.id != page.state.selectedZone.userData.id && intersect.object.type=="zone") || intersect.object.type!="zone"){
+                            if (checkOnIntersectionBuf.check || (intersect.object.userData.id != page.state.selectedZone.userData.id && intersect.object.type=="zone") || intersect.object.type!="zone"){
                                 createSpecificHint(new THREE.Mesh( 
                                     page.state.installedModel.geometry, 
                                     new THREE.MeshBasicMaterial({ color: 0xff0000, opacity: 0.3, transparent: true })
                                 ))
+                                if (checkOnIntersectionBuf.intersectedIdArr != ""){
+                                    let limiterLineModel = modelCreator.createSpacelimiterBorder(
+                                        page.state.installedModel.width, 
+                                        page.state.installedModel.depth, 
+                                        page.state.installedModel.freeSpaceX, 
+                                        page.state.installedModel.freeSpaceY,
+                                        new Vector3(0,0,page.state.installedModel.depth/2),
+                                        { color: 0xff0000, opacity: 1, transparent: false },
+                                    )
+                                    specificHintModel.mesh.add(limiterLineModel.mesh)
+                                    checkOnIntersectionBuf.intersectedIdArr.map(rackId=>{
+                                        let intersectedElm = page.getSceneElmByIdAndType(rackId, "rack")
+                                        let rackType = page.state.racksType[`rack_${intersectedElm.userData.racksTypeId}`]
+                                        let limiterLineModel = modelCreator.createSpacelimiterBorder(
+                                            rackType.shelfWidth*rackType.columsAmount + rackType.borderWidth*(rackType.columsAmount+1), 
+                                            rackType.depth, 
+                                            rackType.freeSpaceX, 
+                                            rackType.freeSpaceY,
+                                            new Vector3(0,1,rackType.depth/2),
+                                            { color: 0xff0000, opacity: 0.3, transparent: true },
+                                        )
+                                        intersectedElm.add(limiterLineModel.mesh)
+                                        console.log(intersectedElm.userData)
+                                        racksLimiterLines.push({intersectedElm: intersectedElm, limiterLineModel: limiterLineModel.mesh})
+                                    })
+                                }
                             }
 
                             if (intersect!=undefined && specificHintModel!=undefined){
@@ -351,7 +384,7 @@ function onDocumentKeyDown( event ) {
                                 lastIntersect = intersect
                             }
                         }
-                        lastCheckOnIntersection = checkOnIntersectionBuf
+                        lastCheckOnIntersection = checkOnIntersectionBuf.check
                     }
                     render()
                 }
@@ -361,7 +394,7 @@ function onDocumentKeyDown( event ) {
                     const intersects = raycaster.intersectObjects( scene.children );
                     let intersect = findIntersectedFloorOrZone(intersects)
                     if (intersect!=undefined){
-                        let checkOnIntersectionBuf = checkOnIntersection(zones, page.state.installedModel.mesh.position.copy( intersect.point ), page.state.installedModel.width, page.state.installedModel.depth)
+                        let checkOnIntersectionBuf = checkOnIntersection(zones, page.state.installedModel.mesh.position.copy( intersect.point ), page.state.installedModel.width, page.state.installedModel.depth).check
                         if (specificHintModel==undefined && page.state.installedModel!=undefined || 
                             page.state.installedModel!=undefined && page.state.installedModel.name != specificHintModel.mesh.name ||
                             lastIntersect.object.type!=intersect.object.type ||
@@ -422,7 +455,12 @@ function onDocumentKeyUp( event ) {
                 scene.remove(specificHintModel.mesh)
                 specificHintModel = undefined
             }
-            
+            if (racksLimiterLines!=undefined) {
+                racksLimiterLines.map(line=>{
+                    line.intersectedElm.remove(line.limiterLineModel)
+                })
+                racksLimiterLines = []
+            }
             render()
             break;
         }
@@ -575,7 +613,7 @@ function onPointerMove(event) {
                 intersect = findIntersectedFloorOrZone(intersects)
                 //-------------- 
                 if (intersect!=undefined){
-                    let checkOnIntersectionBuf = checkOnIntersection(zones, page.state.installedModel.mesh.position.copy( intersect.point ), page.state.installedModel.width, page.state.installedModel.depth)
+                    let checkOnIntersectionBuf = checkOnIntersection(zones, page.state.installedModel.mesh.position.copy( intersect.point ), page.state.installedModel.width, page.state.installedModel.depth).check
                     if (intersect!=undefined && (
                         (specificHintModel==undefined && page.state.installedModel!=undefined) || 
                         (page.state.installedModel!=undefined && page.state.installedModel.name != specificHintModel.mesh.name) ||
@@ -625,27 +663,59 @@ function onPointerMove(event) {
             if (page.state.selectedZone!=undefined && isShiftDown && !isCtrlDown) {
                 intersect = findIntersectedFloorOrZone(intersects)
                 if (intersect!=undefined && page.state.installedModel!=undefined){
-                    let checkOnIntersectionBuf = checkOnIntersection(racks, page.state.installedModel.mesh.position.copy( intersect.point ), page.state.installedModel.width, page.state.installedModel.depth)
+                    let checkOnIntersectionBuf = checkOnIntersection(racks, page.state.installedModel.mesh.position.copy( intersect.point ), page.state.installedModel.width, page.state.installedModel.depth, page.state.installedModel.freeSpaceX, page.state.installedModel.freeSpaceY)
                     if (specificHintModel==undefined && page.state.installedModel!=undefined || 
                         page.state.installedModel!=undefined && page.state.installedModel.name != specificHintModel.mesh.name ||
                         lastIntersect.object.type!=intersect.object.type ||
-                        checkOnIntersectionBuf != lastCheckOnIntersection
+                        checkOnIntersectionBuf.check != lastCheckOnIntersection
                     ) {
                         if (specificHintModel != undefined) {
                             scene.remove(specificHintModel.mesh)
                             specificHintModel = undefined
+                            if (racksLimiterLines!=undefined) {
+                                racksLimiterLines.map(line=>{
+                                    line.intersectedElm.remove(line.limiterLineModel)
+                                })
+                                racksLimiterLines = []
+                            }
                         }
-                        if (!checkOnIntersectionBuf && intersect.object.type=="zone" && intersect.object.userData.id == page.state.selectedZone.userData.id){
+                        if (!checkOnIntersectionBuf.check && intersect.object.type=="zone" && intersect.object.userData.id == page.state.selectedZone.userData.id){
                             createSpecificHint(new THREE.Mesh( 
                                 page.state.installedModel.geometry, 
                                 page.state.installedModel.material
                             ))
                         }
-                        if (checkOnIntersectionBuf || (intersect.object.userData.id != page.state.selectedZone.userData.id && intersect.object.type=="zone") || intersect.object.type!="zone"){
-                            createSpecificHint(new THREE.Mesh( 
-                                page.state.installedModel.geometry, 
+                        if (checkOnIntersectionBuf.check || (intersect.object.userData.id != page.state.selectedZone.userData.id && intersect.object.type=="zone") || intersect.object.type!="zone"){
+                            createSpecificHint(new THREE.Mesh(
+                                page.state.installedModel.geometry,
                                 new THREE.MeshBasicMaterial({ color: 0xff0000, opacity: 0.3, transparent: true })
                             ))
+                            if (checkOnIntersectionBuf.intersectedIdArr != ""){
+                                let limiterLineModel = modelCreator.createSpacelimiterBorder(
+                                    page.state.installedModel.width, 
+                                    page.state.installedModel.depth, 
+                                    page.state.installedModel.freeSpaceX, 
+                                    page.state.installedModel.freeSpaceY,
+                                    new Vector3(0,0,page.state.installedModel.depth/2),
+                                    { color: 0xff0000, opacity: 1, transparent: false },
+                                )
+                                specificHintModel.mesh.add(limiterLineModel.mesh)
+                                checkOnIntersectionBuf.intersectedIdArr.map(rackId=>{
+                                    let intersectedElm = page.getSceneElmByIdAndType(rackId, "rack")
+                                    let rackType = page.state.racksType[`rack_${intersectedElm.userData.racksTypeId}`]
+                                    let limiterLineModel = modelCreator.createSpacelimiterBorder(
+                                        rackType.shelfWidth*rackType.columsAmount + rackType.borderWidth*(rackType.columsAmount+1), 
+                                        rackType.depth, 
+                                        rackType.freeSpaceX, 
+                                        rackType.freeSpaceY,
+                                        new Vector3(0,1,rackType.depth/2),
+                                        { color: 0xff0000, opacity: 0.3, transparent: true },
+                                    )
+                                    intersectedElm.add(limiterLineModel.mesh)
+                                    console.log(intersectedElm.userData)
+                                    racksLimiterLines.push({intersectedElm: intersectedElm, limiterLineModel: limiterLineModel.mesh})
+                                })
+                            }
                         }
                     }
                     if (intersect!=undefined){
@@ -657,7 +727,7 @@ function onPointerMove(event) {
                         scene.remove(specificHintModel.mesh)
                         specificHintModel = undefined
                     }
-                    lastCheckOnIntersection = checkOnIntersectionBuf
+                    lastCheckOnIntersection = checkOnIntersectionBuf.check
                 }
             }
         }
@@ -665,12 +735,27 @@ function onPointerMove(event) {
     render();
 }
 
-function checkOnIntersection(objects, centerPoint, width, length){
+function checkOnIntersection(objects, centerPoint, width, length, freeSpaceX, freeSpaceY){
     let check = false
+    let intersectedIdArr=[]
     objects.map(obj=>{
-        if (Math.abs(obj.centerPoint.x - centerPoint.x)<obj.width/2+width/2 && Math.abs(obj.centerPoint.z - centerPoint.z)<obj.length/2+length/2) check=true
+        if (freeSpaceX!=undefined){
+            if (
+                (
+                    Math.abs(obj.centerPoint.x - centerPoint.x)<Math.max(obj.width/2+obj.freeSpaceX+width/2,obj.width/2+width/2+freeSpaceX) && 
+                    Math.abs(obj.centerPoint.z - centerPoint.z)<Math.max(obj.length/2+obj.freeSpaceY+length/2,obj.length/2+length/2+freeSpaceY)
+                )
+            ) {
+                check=true
+                intersectedIdArr.push(obj.id)
+            }
+        }
+        else {
+            if (Math.abs(obj.centerPoint.x - centerPoint.x)<obj.width/2+width/2 && Math.abs(obj.centerPoint.z - centerPoint.z)<obj.length/2+length/2) check=true
+        }
+        
     })
-    return check
+    return {check: check, intersectedIdArr: intersectedIdArr}
 }
 
 function findIntersectedFloorOrZone(intersects){
@@ -763,7 +848,7 @@ function onPointerDown( event ) {
     //----------------------------------------------------------------------------------------------------------page 1
     if (intersects.length > 0 && page.state.panelSelTab.id==1 && page.state.installedModel!=undefined && specificHintModel!=undefined) {
         let intersect = intersects[0];
-        let checkOnIntersectionBuf = checkOnIntersection(zones, page.state.installedModel.mesh.position.copy( intersect.point ), page.state.installedModel.width, page.state.installedModel.depth)
+        let checkOnIntersectionBuf = checkOnIntersection(zones, page.state.installedModel.mesh.position.copy( intersect.point ), page.state.installedModel.width, page.state.installedModel.depth).check
         if (!checkOnIntersectionBuf){
             //let intersect = findIntersectedFloorOrZone(intersects)
             let zoneBorderModel = createZone(page.state.installedModel)
@@ -810,7 +895,7 @@ function onPointerDown( event ) {
     if (intersects.length > 0 && page.state.panelSelTab.id==2) {
         let intersect = findIntersectedFloorOrZone(intersects)
         if (intersect!=undefined && page.state.installedModel!=undefined){
-            let checkOnIntersectionBuf = checkOnIntersection(racks, page.state.installedModel.mesh.position.copy( intersect.point ), page.state.installedModel.width, page.state.installedModel.depth)
+            let checkOnIntersectionBuf = checkOnIntersection(racks, page.state.installedModel.mesh.position.copy( intersect.point ), page.state.installedModel.width, page.state.installedModel.depth).check
             if (!checkOnIntersectionBuf && page.state.selectedZone!=undefined && ((intersect.object.type == page.state.selectedZone.userData.type && intersect.object.userData.id == page.state.selectedZone.userData.id)) && isShiftDown && !isCtrlDown) {
                 let newObject = new THREE.Mesh( 
                     page.state.installedModel.geometry, 
@@ -844,7 +929,9 @@ function onPointerDown( event ) {
                         specificHintModel.mesh.position.z - specificHintModel.translation.z
                     ), 
                     width:rackType.shelfWidth*rackType.columsAmount + rackType.borderWidth*(rackType.columsAmount+1), 
-                    length:rackType.depth
+                    length:rackType.depth,
+                    freeSpaceX: rackType.freeSpaceX,
+                    freeSpaceY: rackType.freeSpaceY,
                 })
                 setModelOnCoordinates(
                     {mesh:newObject,
@@ -976,12 +1063,13 @@ function addRackWithGoodsOnScene(zone, rack, racksType, goodsType){
         zone.centerPoint.y + rack.centerPoint.y, 
         zone.centerPoint.z + rack.centerPoint.z
     )
-    rackModel.mesh = auxMath.rotateMeshOnAllAxis(rackModel.mesh, auxMath.sumRotations([zone.rotation, rack.rotation]))
     let rotatedRackCenterGlobalCoordinate = auxMath.rotatePointAroundAxisMass(
         rackCenterGlobalCoordinate.clone(), 
         auxMath.translatePoint(zone.centerPoint.clone(), {x:-rackType.translation.x,y:-rackType.translation.y,z:-rackType.translation.z}), 
         zone.rotation
     )
+    rackModel.mesh = auxMath.rotateMeshOnAllAxis(rackModel.mesh, auxMath.sumRotations([zone.rotation, rack.rotation]))
+    
     rackModel.mesh.userData = rack
     rackModel.mesh.userData.goodsModels = []
     //shelfs
@@ -992,11 +1080,11 @@ function addRackWithGoodsOnScene(zone, rack, racksType, goodsType){
                 zone.centerPoint.y + rack.centerPoint.y, 
                 zone.centerPoint.z + rack.centerPoint.z
             )
-            let rotatedRackCenterGlobalCoordinate = auxMath.rotatePointAroundAxisMass(
-                rackCenterGlobalCoordinate.clone(), 
-                auxMath.translatePoint(zone.centerPoint.clone(), {x:-rackType.translation.x,y:-rackType.translation.y,z:-rackType.translation.z}), 
-                zone.rotation
-            )
+            // let rotatedRackCenterGlobalCoordinate = auxMath.rotatePointAroundAxisMass(
+            //     rackCenterGlobalCoordinate.clone(), 
+            //     auxMath.translatePoint(zone.centerPoint.clone(), {x:-rackType.translation.x,y:-rackType.translation.y,z:-rackType.translation.z}), 
+            //     zone.rotation
+            // )
 
             let good = shelf.space[0]
             let goodType = goodsType[`good_${good.goodTypeId}`]
@@ -1035,6 +1123,7 @@ function addRackWithGoodsOnScene(zone, rack, racksType, goodsType){
         rack.type
     )
     selectionLockedModels.push(rack.name+" "+rack.id)
+
     racks.push({
         id:rack.id, 
         centerPoint:new Vector3(
@@ -1042,11 +1131,14 @@ function addRackWithGoodsOnScene(zone, rack, racksType, goodsType){
             zone.centerPoint.y + rack.centerPoint.y, 
             zone.centerPoint.z + rack.centerPoint.z
         ), 
-        width:rackModel.width, 
-        length:rackModel.depth
+        width: rackModel.width, 
+        length: rackModel.depth,
+        freeSpaceX: rackType.freeSpaceX,
+        freeSpaceY: rackType.freeSpaceY,
     })
     return rackModel.mesh
 }
+
 //#endregion
 
 class AdministratorWarehouseCreating extends Component {
@@ -1370,7 +1462,10 @@ class AdministratorWarehouseCreating extends Component {
         let list = []
         Object.keys(this.state.racksType).map(key=>{
             let rackType = this.state.racksType[key]
-            list.push(modelCreator.createRack(key.split("_")[1], rackType.color, rackType.shelfWidth, rackType.shelfHeight, rackType.depth, rackType.columsAmount, rackType.rowsAmount, rackType.borderWidth, rackType.translation))
+            let buf = modelCreator.createRack(key.split("_")[1], rackType.color, rackType.shelfWidth, rackType.shelfHeight, rackType.depth, rackType.columsAmount, rackType.rowsAmount, rackType.borderWidth, rackType.translation)
+            buf.freeSpaceX = rackType.freeSpaceX
+            buf.freeSpaceY = rackType.freeSpaceY
+            list.push(buf)
         })
         return list
     }
@@ -1379,7 +1474,8 @@ class AdministratorWarehouseCreating extends Component {
         let list = []
         Object.keys(this.state.zonesType).map(key=>{
             let zoneType = this.state.zonesType[key]
-            list.push(modelCreator.createZoneBorder(key.split("_")[1], zoneType.color, zoneType.width, zoneType.length, zoneType.lineWidth, zoneType.chamferLendth, zoneType.message, zoneType.messageAlighment, font, zoneType.textSize, zoneType.gapLengthX, zoneType.gapLengthY, new Vector3(0,0,0)))
+            let buf = modelCreator.createZoneBorder(key.split("_")[1], zoneType.color, zoneType.width, zoneType.length, zoneType.lineWidth, zoneType.chamferLendth, zoneType.message, zoneType.messageAlighment, font, zoneType.textSize, zoneType.gapLengthX, zoneType.gapLengthY, new Vector3(0,0,0))
+            list.push(buf)
         })
         return list
     }
@@ -1462,11 +1558,17 @@ class AdministratorWarehouseCreating extends Component {
                             })
                         }
                         scene.remove(rackObj)
+                        let newRacks = []
+                        for(let j=0;j<racks.length;j++){
+                            let check = true
+                            if (racks[j].id == this.state.selectedRack.userData.id) check = false
+                            if (check) newRacks.push(racks[j])
+                        }
+                        racks = newRacks
                         this.state.warehouseSettings.zones[i].racks.splice(j,1)
                         break;
                     }
                 }
-                console.log(this.state.warehouseSettings.zones[i])
                 break;
             }
         }
@@ -1540,24 +1642,27 @@ class AdministratorWarehouseCreating extends Component {
                 </div>
                 <AlertMessagebox
                     title={"Внимание!"}
-                    message={"Вы действительно хотите изменить тип полки? В таком случае товары на ней станут считаться нераспределенными."}
+                    message={"Невозможно изменить тип стеллажа пока на нем есть товары!"}
                     isOpened={this.state.isAlertMessageboxOpened} 
-                    onAccept={()=>{this.setState({isAlertMessageboxOpened: false});this.setSelectedRackTypeIdFromBuf()}} 
-                    onCancel={()=>{this.setState({isAlertMessageboxOpened: false});this.setState({selectedRackTypeId: this.selectedRackTypeIdLast}); }}
+                    onOk={()=>{this.setState({isAlertMessageboxOpened: false});}} 
+                    // onAccept={()=>{this.setState({isAlertMessageboxOpened: false});this.setSelectedRackTypeIdFromBuf()}} 
+                    // onCancel={()=>{this.setState({isAlertMessageboxOpened: false});this.setState({selectedRackTypeId: this.selectedRackTypeIdLast}); }}
                 />
                 <AlertMessagebox
                     title={"Внимание!"}
-                    message={"Вы действительно хотите удалить выбранную зону? В таком случае товары на стеллажах станут считаться нераспределенными."}
+                    message={"Невозможно удалить зону пока на ней есть стеллажи с товарами!"}
                     isOpened={this.state.isAlertMessageboxOpened1} 
-                    onAccept={()=>{this.setState({isAlertMessageboxOpened1: false});this.deleteZone()}} 
-                    onCancel={()=>{this.setState({isAlertMessageboxOpened1: false});}}
+                    onOk={()=>{this.setState({isAlertMessageboxOpened1: false});}} 
+                    // onAccept={()=>{this.setState({isAlertMessageboxOpened1: false});this.deleteZone()}} 
+                    // onCancel={()=>{this.setState({isAlertMessageboxOpened1: false});}}
                 />
                 <AlertMessagebox
                     title={"Внимание!"}
-                    message={"Вы действительно хотите удалить выбранный стеллаж? В таком случае все товары на нем станут считаться нераспределенными."}
+                    message={"Невозможно удалить стеллаж пока на нем есть товары!"}
                     isOpened={this.state.isAlertMessageboxOpened2} 
-                    onAccept={()=>{this.setState({isAlertMessageboxOpened2: false});this.deleteRack()}} 
-                    onCancel={()=>{this.setState({isAlertMessageboxOpened2: false});}}
+                    onOk={()=>{this.setState({isAlertMessageboxOpened2: false});}} 
+                    // onAccept={()=>{this.setState({isAlertMessageboxOpened2: false});this.deleteRack()}} 
+                    // onCancel={()=>{this.setState({isAlertMessageboxOpened2: false});}}
                 />
                 {/* <DropdownListWithModels setModel={setModel}/> */}
         </>

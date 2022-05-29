@@ -264,6 +264,33 @@ export function TableComponent(props) {
         })),
       ];
 
+      // console.log("added[Number(startingAddedId)]")
+      // console.log([].concat(added))
+
+      // if (added != undefined){
+      //   columns.map(item=>{
+      //     var keys = Object.keys(rows[0])
+      //     keys.map(key=>{
+      //       if (added[0][key] != undefined){
+      //         if (item.name == key && item.isCurrency!=undefined && item.isCurrency){
+      //           added[0][key] = parseFloat(added[0][key])
+      //         }
+      //         if (item.name == key && item.mask!=undefined && added[0][key].match(item.mask)==null){
+      //           alert(`Значение в поле ${item.title} в строке №${added[0].id+1} должно ${item.maskExample}`)
+      //           console.log("+")
+      //           added[0][key] = ""
+      //         }
+      //       } else {
+      //         alert(`Значение в поле ${item.title} должно быть заполнено`)
+      //         added=[]
+      //       }
+      //     });
+      //   });
+      // }
+
+      // console.log("added[Number(startingAddedId)] 1")
+      console.log([].concat(added))
+
       if (columns[0].name=='number') changedRows.map(function(item,i){changedRows[i].number=i+1})
       
       columns.map(item=>{
@@ -306,8 +333,6 @@ export function TableComponent(props) {
           columns.map(item=>{
             var keys = Object.keys(changed[row.id])
             keys.map(key=>{
-              console.log(changedRows)
-              console.log(changedRows[row.id])
               if (item.name == key && item.isCurrency!=undefined && item.isCurrency){
                 changedRows[row.id][key] = parseFloat(changedRows[row.id][key])
               }
@@ -320,10 +345,6 @@ export function TableComponent(props) {
           });
         }
       });
-      rows.map(row =>{
-
-      })
-      
       
       let counter=0
       columns.map(item=>{

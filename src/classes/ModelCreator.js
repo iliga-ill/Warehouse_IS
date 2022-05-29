@@ -76,10 +76,10 @@ export default class ModelCreator {
         const fullRackHight = shelfHeight*rowsAmount + borderWidth*(rowsAmount+1)
 
         let frame = new THREE.Shape();
-        frame.moveTo( fullRackWidth/2,  0,               shelfDepth/2);
-        frame.lineTo( fullRackWidth/2,  fullRackHight,   shelfDepth/2);
-        frame.lineTo(-fullRackWidth/2,  fullRackHight,   shelfDepth/2);
-        frame.lineTo(-fullRackWidth/2,  0,               shelfDepth/2);
+        frame.moveTo( fullRackWidth/2,  0,               0);
+        frame.lineTo( fullRackWidth/2,  fullRackHight,   0);
+        frame.lineTo(-fullRackWidth/2,  fullRackHight,   0);
+        frame.lineTo(-fullRackWidth/2,  0,               0);
 
         for (let rowIndex = 0; rowIndex < rowsAmount; rowIndex++){
             for (let columnIndex = 0; columnIndex < columsAmount; columnIndex++){
@@ -88,10 +88,10 @@ export default class ModelCreator {
                 let xShift = (shelfWidth*columnIndex + borderWidth*(columnIndex+1)) - (fullRackWidth/2-shelfWidth/2)
                 
                 let hole = new THREE.Path();
-                hole.moveTo(xShift +   shelfWidth/2 ,  yShift, shelfDepth/2);
-                hole.lineTo(xShift +   shelfWidth/2 ,  yShift +  shelfHeight, shelfDepth/2);
-                hole.lineTo(xShift + -(shelfWidth/2),  yShift +  shelfHeight, shelfDepth/2);
-                hole.lineTo(xShift + -(shelfWidth/2),  yShift, shelfDepth/2);
+                hole.moveTo(xShift +   shelfWidth/2 ,  yShift, 0);
+                hole.lineTo(xShift +   shelfWidth/2 ,  yShift +  shelfHeight, 0);
+                hole.lineTo(xShift + -(shelfWidth/2),  yShift +  shelfHeight, 0);
+                hole.lineTo(xShift + -(shelfWidth/2),  yShift, 0);
                 frame.holes.push(hole);
             }
         }
@@ -104,7 +104,6 @@ export default class ModelCreator {
 
         let material = new THREE.MeshLambertMaterial( { color: color})
         let geometry = new THREE.ExtrudeGeometry(frame, extrudeSettings)
-
         let mesh = new THREE.Mesh(geometry, material)
 
         return {
@@ -118,6 +117,39 @@ export default class ModelCreator {
             mesh: mesh, 
             translation: translation,
             gridBorder:100,
+        }
+    }
+
+    createSpacelimiterBorder(width, depth, limiterX, limiterY, translation, style){
+        var points = [];
+        points.push(
+            new THREE.Vector3(width/2 + limiterX, 0, depth/2 + limiterY),
+            new THREE.Vector3(-width/2 - limiterX, 0, depth/2 + limiterY),
+            new THREE.Vector3(-width/2 - limiterX, 0, -depth/2 - limiterY),
+            new THREE.Vector3(width/2 + limiterX, 0, -depth/2 - limiterY),
+            new THREE.Vector3(width/2 + limiterX, 0, depth/2 + limiterY),
+        );
+        let material = new THREE.LineBasicMaterial({
+            color: style.color, 
+            opacity: style.opacity, 
+            transparent: style.transparent
+        })
+        var geometry = new THREE.BufferGeometry().setFromPoints( points );
+        // CREATE THE LINE
+        var line = new THREE.Line(geometry, material);
+
+        if (translation!=undefined)
+        line.position.set(translation.x, translation.y, translation.z)
+
+        return {
+            name: "limiterLine", 
+            modelName: "limiterLine",
+            material: material, 
+            geometry: geometry,
+            depth: depth + limiterY*2,
+            width: width + limiterX*2,
+            mesh: line, 
+            translation: new Vector3(0,1,0),
         }
     }
 

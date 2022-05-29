@@ -37,8 +37,9 @@ export default function AlertMessagebox(props) {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={props.onAccept}>Да</Button>
-          <Button onClick={props.onCancel}>Назад</Button>
+          {/* <Button onClick={props.onAccept}>Да</Button>
+          <Button onClick={props.onCancel}>Назад</Button> */}
+          <Button onClick={props.onOk}>Ок</Button>
           {/* <Button onClick={props.onCancel} autoFocus>Назад</Button> */}
         </DialogActions>
       </Dialog>

@@ -63,6 +63,8 @@ export default class WarehouseSettingsModel {
 					columsAmount:4,
 					rowsAmount:3,
 					borderWidth:2,
+					freeSpaceX:0,
+					freeSpaceY:50,
 					color:0x885aaa,
 					translation:new Vector3(0,0,-50/2),
 					shelfs:{
@@ -87,6 +89,8 @@ export default class WarehouseSettingsModel {
 					columsAmount:2,
 					rowsAmount:3,
 					borderWidth:2,
+					freeSpaceX:0,
+					freeSpaceY:20,
 					color:0x885aaa,
 					translation:new Vector3(0,0,-50/2),
 					shelfs:{
@@ -105,6 +109,8 @@ export default class WarehouseSettingsModel {
 					columsAmount:2,
 					rowsAmount:4,
 					borderWidth:2,
+					freeSpaceX:0,
+					freeSpaceY:20,
 					color:0x885aaa,
 					translation:new Vector3(0,0,-50/2),
 					shelfs:{
@@ -125,6 +131,8 @@ export default class WarehouseSettingsModel {
 					columsAmount:3,
 					rowsAmount:4,
 					borderWidth:2,
+					freeSpaceX:0,
+					freeSpaceY:20,
 					color:0x885aaa,
 					translation:new Vector3(0,0,-50/2),
 					shelfs:{

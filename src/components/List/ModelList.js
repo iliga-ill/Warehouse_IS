@@ -69,7 +69,7 @@ function init(width, minWidth, spaceBetweenItems, models){
         scene.add( plane );
 
         //model
-        const voxel = model.mesh
+        const voxel = model.mesh.clone()
         voxel.position.set(model.translation.x, model.translation.y, model.translation.z)
         scene.add(voxel);
 
