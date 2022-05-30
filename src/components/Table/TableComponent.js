@@ -256,53 +256,37 @@ export function TableComponent(props) {
 
     if (added) {
       const startingAddedId = rows.length > 0 ? rows[rows.length - 1].id + 1 : 0;
-      changedRows = [
-        ...rows,
-        ...added.map((row, index) => ({
-          id: startingAddedId + index,
-          ...row,
-        })),
-      ];
 
-      // console.log("added[Number(startingAddedId)]")
-      // console.log([].concat(added))
+      if (added != undefined){
+        columns.map(item=>{
+          var addedKeys = Object.keys(added[0])
+            console.log(addedKeys.includes(item.name))
+            if (addedKeys.includes(item.name)){
+              if (item.isCurrency!=undefined && item.isCurrency){
+                added[0][item.name] = parseFloat(added[0][item.name])
+              }
+              if (item.mask!=undefined && added[0][item.name].toString().match(item.mask)==null){
+                alert(`Значение в поле ${item.title} должно ${item.maskExample}`)
+                added[0][item.name] = item.basicValue
+              }
+            } else if (item.mask!=undefined) {
+              alert(`Значение в поле ${item.title} должно быть заполнено`)
+              added[0][item.name] = item.basicValue
+            }
+        });
+      }
 
-      // if (added != undefined){
-      //   columns.map(item=>{
-      //     var keys = Object.keys(rows[0])
-      //     keys.map(key=>{
-      //       if (added[0][key] != undefined){
-      //         if (item.name == key && item.isCurrency!=undefined && item.isCurrency){
-      //           added[0][key] = parseFloat(added[0][key])
-      //         }
-      //         if (item.name == key && item.mask!=undefined && added[0][key].match(item.mask)==null){
-      //           alert(`Значение в поле ${item.title} в строке №${added[0].id+1} должно ${item.maskExample}`)
-      //           console.log("+")
-      //           added[0][key] = ""
-      //         }
-      //       } else {
-      //         alert(`Значение в поле ${item.title} должно быть заполнено`)
-      //         added=[]
-      //       }
-      //     });
-      //   });
-      // }
-
-      // console.log("added[Number(startingAddedId)] 1")
-      console.log([].concat(added))
-
-      if (columns[0].name=='number') changedRows.map(function(item,i){changedRows[i].number=i+1})
+      if (columns[0].name=='number'){
+        added[0].number = Number(rows[rows.length-1].number) + 1
+      }
       
       columns.map(item=>{
-        if (item.name == "shipmentStatus")
-          changedRows.map(function(item,i){
-            if (item.shipmentStatus == "" || item.shipmentStatus == undefined)
-              changedRows[i].shipmentStatus = "Пустой"
-              changedRows[i].goodsInOrder = []
-          })
+        if (item.name == "shipmentStatus"){
+          added[0].shipmentStatus = "Пустой"
+          added[0].goodsInOrder = []
+        }
       })
-
-      if (columns[0].name=='number') 
+      //if (columns[0].name=='number') 
       var counter=0
       columns.map(item=>{
         if (item.name == "amount" || item.name == "cost" || item.name == "sumCost" ) counter++
@@ -315,18 +299,17 @@ export function TableComponent(props) {
         })
       }
       
-      // changedRows.map(function(item,i){
-      //   console.log(`${item.id} == ${startingAddedId}`)
-      //   if (item.id == startingAddedId){
-      //     changedRows[i].editingStatus = "added";
-      //     console.log("+")
-      //   }
-      // })
-      // console.log("changedRows")
-      // console.log(changedRows)
+      changedRows = [
+        ...rows,
+        ...added.map((row, index) => ({
+          id: startingAddedId + index,
+          ...row,
+        })),
+      ];
     }
     
     if (changed) {
+      console.log("4")
       changedRows = rows.map(row => (changed[row.id] ? { ...row, ...changed[row.id] } : row));
       rows.map(row =>{
         if (changed[row.id] != undefined){
@@ -463,7 +446,7 @@ export function TableComponent(props) {
   }
 
   const CurrencyFormatter = ({ value }) => (
-    value.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' })
+    value!=undefined?value.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB' }):rows.length-1
   );
   
   const CurrencyTypeProvider = props => (

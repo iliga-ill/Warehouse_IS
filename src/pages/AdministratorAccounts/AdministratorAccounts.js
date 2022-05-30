@@ -9,117 +9,139 @@ const styles = {
 
   }
 
-var isFirstTime = true
 var api = new Api()
 var buf = {value: []}
 
   
-export default function AdministratorAccounts(props){
+//export default function AdministratorAccounts(props){
+class AdministratorAccounts extends Component {
 
-    //-------------------------------------------------------------------------Блок 1
-    //-------------------------------------стол 1
-    
-    const [tableHeaders, setTableHeaders] = React.useState([
-        {name: 'number',            title:'№',                  editingEnabled:false,   width:40    }, 
-        {name: 'surname',           title:'Фамилия',            editingEnabled:true,    width:100,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                }, 
-        {name: 'name',              title:'Имя',                editingEnabled:true,    width:80,   mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                }, 
-        {name: 'patronymic',        title:'Отчество',           editingEnabled:true,    width:120,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                }, 
-        {name: 'phone',             title:'Номер телефона',     editingEnabled:true,    width:130,  mask:/^\+\d{1} \(\d{3}\) \d{3}-\d{4}$/i,    maskExample:"соответствовать шаблону +7 (930) 442-5665"     }, 
-        {name: 'email',             title:'Почта',              editingEnabled:true,    width:160,  mask:/^(.)(.*)(.@.*)\.(.)(.)$/i,            maskExample:"соответствовать шаблону example@service.ru"    }, 
-        {name: 'duty',              title:'Должность',          editingEnabled:false,   width:170                                                                                                           },
-        {name: 'login',             title:'Логин',              editingEnabled:true,    width:130,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                },
-        {name: 'password',          title:'Пароль',             editingEnabled:true,    width:130,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено"                                }
-    ])
+    lastSelectedItem = undefined
+    // tableListBuf = []
 
-    var tableSettings = {
-        add:true, 
-        edit:true, 
-        delete:true, 
-        select:true, 
-        cell:false
-    }
-
-    const [tableList, setTableList] = React.useState([])
-    const [selectedItem, setSelectedItem] = React.useState()
-
-    React.useEffect(() => {
-        // console.log("================================")
-        // console.log(tableList)
-        // console.log(tableList.length)
-        // console.log("================================")
-        // return () => {
-        //     React.effect()
-        //     .then((value) => setTableList({ status: 'fulfilled', value, error: null }))
-        //     .catch((error) => setTableList({ status: 'rejected', value: null, error }))
-        // }
-
-        async function apiGetClients(){
-            var result = await api.getClients()
-            console.log(result.length)
-            console.log(JSON.stringify(result))
-            setTableList(result)
+    constructor(props){
+        super(props)
+        this.state={
+            reload:0,
+            tableHeaders:[
+                {name: 'number',            title:'№',                  editingEnabled:false,   width:40    }, 
+                {name: 'surname',           title:'Фамилия',            editingEnabled:true,    width:100,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено", basicValue:"-"                                }, 
+                {name: 'name',              title:'Имя',                editingEnabled:true,    width:80,   mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено", basicValue:"-"                                }, 
+                {name: 'patronymic',        title:'Отчество',           editingEnabled:true,    width:120,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено", basicValue:"-"                                }, 
+                {name: 'phone',             title:'Номер телефона',     editingEnabled:true,    width:150,  mask:/^\+\d{1} \(\d{3}\) \d{3}-\d{4}$/i,    maskExample:"соответствовать шаблону +7 (930) 442-5665", basicValue:"+7 (930) 442-5665"     }, 
+                {name: 'email',             title:'Почта',              editingEnabled:true,    width:160,  mask:/^(.)(.*)(.@.*)\.(.)(.)$/i,            maskExample:"соответствовать шаблону example@service.ru", basicValue:"example@service.ru"    }, 
+                {name: 'duty',              title:'Должность',          editingEnabled:false,   width:170                                                                                                           },
+                {name: 'login',             title:'Логин',              editingEnabled:true,    width:130,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено", basicValue:"-"                                },
+                {name: 'password',          title:'Пароль',             editingEnabled:true,    width:130,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено", basicValue:"-"                                }
+            ],
+            tableSettings:{
+                add:true, 
+                edit:true, 
+                delete:true, 
+                select:true, 
+                cell:false
+            },
+            tableList:[],
+            selectedItem:undefined,
+            allDuties:["Администратор", "Кладовщик", "Менеджер", "Логист", "Бухгалтер"],
         }
-        apiGetClients()
-        // setTableList(result)
-    }, []);
 
-    if(tableList.length != 5 && isFirstTime == true) {
-        console.log(`isFirstTime ${isFirstTime}`)
-        isFirstTime = false
-        setTableList([])
     }
 
-    function btn_send_1() {
+
+    setReload = ()=>{this.setState({reload: this.state.reload+1});}
+    setTableHeaders = (value)=>{this.setState({tableHeaders: value});}
+    setTableList = (value)=>{this.setState({tableList: value});}
+    setSelectedItem = (value)=>{this.setState({selectedItem: value});}
+
+    componentDidMount(){
+        console.log("DidUpdate")
+        if (this.state.tableList == ""){
+            this.apiGetClients()
+        }
+    }
+
+    componentDidUpdate(){
+        console.log("DidUpdate")
+
+        if (this.lastSelectedItem != this.state.selectedItem){
+            let counter = 0
+            this.state.allDuties.map(duty=>{
+                document.getElementById("checkbox"+counter++).checked=this.state.selectedItem.duty.includes(duty)
+            })
+            this.lastSelectedItem = this.state.selectedItem
+        }
+    }
+
+    apiGetClients = async ()=>{
+        let result = await api.getClients()
+        console.log(result.length)
+        console.log(JSON.stringify(result))
+        this.setTableList(result)
+    }
+
+    btn_send_1=()=>{
         async function apiPostClients(value) {
             await api.postClients(value)
         }
-        apiPostClients(tableList)
-    }
-
-
-    //-------------------------------------стол 1 конец
-    //-------------------------------------------------------------------------Блок 1 конец
-    //-------------------------------------------------------------------------Блок 2 начало
-    var allDuties=["Администратор", "Кладовщик", "Менеджер", "Логист", "Бухгалтер"]
-    var isSelectedItemUndefined=()=>{return selectedItem==undefined}
-    var isSelectedItemIncludes=(value)=>{return !isSelectedItemUndefined()?selectedItem.duty.split(" ").includes(value):false}
-
-    function onAccessChange(duty){
-        var tableBuf = tableList.map(item=>{
-            if (item.id==selectedItem.id && isSelectedItemIncludes(duty))
-                item.duty = item.duty.replace(` ${duty}`,'');
-            else if (item.id==selectedItem.id && !isSelectedItemIncludes(duty))
-                item.duty = item.duty + ` ${duty}`
+        let buf = JSON.parse(JSON.stringify(this.state.tableList)).map(item=>{
+            if (item.duty.split(" ")[0]=="") {
+                let buf = ""
+                item.duty.split(" ").map(function(item,i){
+                    if (i!=0 && item!=""){
+                        buf+=item+" "
+                    }
+                        
+                })
+                item.duty = buf
+            }
             return item
         })
-        setTableList(tableBuf)
+        apiPostClients(buf)
     }
 
-    React.useEffect(() => {
-        allDuties.map(function(duty, i){
-            document.getElementById("checkbox"+i).checked=isSelectedItemIncludes(duty)
-        })
-    }, [selectedItem]);
-    //-------------------------------------------------------------------------Блок 2 конец
+    isSelectedItemUndefined=()=>{return this.state.selectedItem==undefined}
 
-    return (
-        <FlexibleBlocksPage marginTop={102}>
-            <FlexibleBlock>
-                <div class="header_text">Аккаунты</div>
-                <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent width={800} height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings} onSelect={setSelectedItem}/>
-                </div>
-                <div></div>
-                <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={btn_send_1}>Подтвердить</button>
-            </FlexibleBlock>
-            <FlexibleBlock>
-                <div class="header_text">Доступные АРМ</div>
-                <div><input id="checkbox0" type="checkbox" onChange={()=>onAccessChange(allDuties[0])}  disabled={isSelectedItemUndefined()}/> <a> {allDuties[0]}</a></div>
-                <div><input id="checkbox1" type="checkbox" onChange={()=>onAccessChange(allDuties[1])}  disabled={isSelectedItemUndefined()}/> <a> {allDuties[1]}</a></div>
-                <div><input id="checkbox2" type="checkbox" onChange={()=>onAccessChange(allDuties[2])}  disabled={isSelectedItemUndefined()}/> <a> {allDuties[2]}</a></div>
-                <div><input id="checkbox3" type="checkbox" onChange={()=>onAccessChange(allDuties[3])}  disabled={isSelectedItemUndefined()}/> <a> {allDuties[3]}</a></div>
-                <div><input id="checkbox4" type="checkbox" onChange={()=>onAccessChange(allDuties[4])}  disabled={isSelectedItemUndefined()}/> <a> {allDuties[4]}</a></div>
-            </FlexibleBlock>
-        </FlexibleBlocksPage>
-    )
+    onAccessChange=(duty)=>{
+        console.log()
+        let buf = JSON.parse(JSON.stringify(this.state.tableList)).map(item=>{
+            if (item.duty.split(" ")[0]!="")
+                item.duty = " " + item.duty
+            if (item.id==this.state.selectedItem.id && this.state.selectedItem.duty.includes(duty)){
+                item.duty = item.duty.replace(` ${duty}`,'');
+                this.state.selectedItem.duty = item.duty.replace(` ${duty}`,'')
+            } else if (item.id==this.state.selectedItem.id && !this.state.selectedItem.duty.includes(duty)){
+                item.duty = item.duty + ` ${duty}`
+                this.state.selectedItem.duty = item.duty + ` ${duty}`
+            } 
+            return item
+        })
+        this.state.tableList = buf
+        this.setReload()
+    }
+
+    render(){
+        return (
+            <FlexibleBlocksPage marginTop={102}>
+                <FlexibleBlock>
+                    <div class="header_text">Аккаунты</div>
+                    <div style={{width:800+'px', display:'inline-table'}} >
+                        <TableComponent width={800} height={500} columns={this.state.tableHeaders} rows={this.state.tableList} setNewTableList={this.setTableList} tableSettings={this.state.tableSettings} onSelect={this.setSelectedItem}/>
+                    </div>
+                    <div></div>
+                    <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={this.btn_send_1}>Подтвердить</button>
+                </FlexibleBlock>
+                <FlexibleBlock>
+                    <div class="header_text">Доступные АРМ</div>
+                    <div><input id="checkbox0" type="checkbox" onChange={()=>this.onAccessChange(this.state.allDuties[0])}  disabled={this.isSelectedItemUndefined()}/> <a> {this.state.allDuties[0]}</a></div>
+                    <div><input id="checkbox1" type="checkbox" onChange={()=>this.onAccessChange(this.state.allDuties[1])}  disabled={this.isSelectedItemUndefined()}/> <a> {this.state.allDuties[1]}</a></div>
+                    <div><input id="checkbox2" type="checkbox" onChange={()=>this.onAccessChange(this.state.allDuties[2])}  disabled={this.isSelectedItemUndefined()}/> <a> {this.state.allDuties[2]}</a></div>
+                    <div><input id="checkbox3" type="checkbox" onChange={()=>this.onAccessChange(this.state.allDuties[3])}  disabled={this.isSelectedItemUndefined()}/> <a> {this.state.allDuties[3]}</a></div>
+                    <div><input id="checkbox4" type="checkbox" onChange={()=>this.onAccessChange(this.state.allDuties[4])}  disabled={this.isSelectedItemUndefined()}/> <a> {this.state.allDuties[4]}</a></div>
+                </FlexibleBlock>
+            </FlexibleBlocksPage>
+        )
+    }
 }
+
+export default AdministratorAccounts

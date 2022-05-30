@@ -10,6 +10,7 @@ import { TableComponent } from "../../components/Table/TableComponent";
 import { Api } from "../../api/logisticianApi"
 
 var api = new Api()
+let date = new Date()
 var TableListIsAnswer = true
 var TableList1IsAnswer = true
 
@@ -57,9 +58,9 @@ export default function LogisticianOrders(props){
 
     const [tableHeaders, setTableHeaders] = React.useState([
         {name: 'number',            title:'№',                    editingEnabled:false,   width:40    }, 
-        {name: 'shipmentNumber',    title:'Номер доставки',       editingEnabled:true,    width:155, mask:/^(.)(.*)$/i, maskExample:"быть заполнено"   }, 
-        {name: 'shipmentDate',      title:'Дата доставки',        editingEnabled:true,    width:120, mask:/^[0-9]{4}\.[0-9]{2}\.[0-9]{2}$/i, maskExample:"соответствовать шаблону 2021.01.01"   }, 
-        {name: 'shipmentCost',      title:'Стоимость доставки',   editingEnabled:true,    width:200, mask:/^[0-9]{0,10}$/i, maskExample:"быть числом больше нуля", isCurrency:true   }, 
+        {name: 'shipmentNumber',    title:'Номер доставки',       editingEnabled:true,    width:155, mask:/^(.)(.*)$/i, maskExample:"быть заполнено", basicValue:"-"}, 
+        {name: 'shipmentDate',      title:'Дата доставки',        editingEnabled:true,    width:120, mask:/^[0-9]{4}\.[0-9]{2}\.[0-9]{2}$/i, maskExample:"соответствовать шаблону 2021.01.01", basicValue:`${date.getFullYear()}.${date.getMonth()+1<10?`0${date.getMonth()+1}`:date.getMonth()+1}.${date.getDate()<10?`0${date.getDate()}`:date.getDate()}`}, 
+        {name: 'shipmentCost',      title:'Стоимость доставки',   editingEnabled:true,    width:200, mask:/^[0-9]{0,10}$/i, maskExample:"быть числом больше нуля", isCurrency:true, basicValue: 0}, 
         {name: 'shipmentStatus',    title:'Статус',               editingEnabled:false,   width:110   }, 
     ]) 
     var tableSettings
