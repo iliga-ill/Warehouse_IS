@@ -77,14 +77,16 @@ export default function ManagerProducts(props){
         setGoodCharacteristics(value.description)
     }
 
+    // let pageHeight = (document.documentElement.clientHeight-props.marginTop).toString() + "px"
+    // console.log(pageHeight)
     //-------------------------------------------------------------------------Блок 3 конец
 
     return (
-        <FlexibleBlocksPage  marginTop={102}>
+        <FlexibleBlocksPage marginTop={102}>
             <FlexibleBlock>
                 <div class="header_text">Товары</div>
                 <div style={{width:800+'px', display:'inline-table'}}>
-                    <TableComponent height={'calc(100% - 750px)'} columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
+                    <TableComponent height={500} columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
                 </div>
             </FlexibleBlock>
             <FlexibleBlock>
