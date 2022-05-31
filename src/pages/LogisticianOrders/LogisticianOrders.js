@@ -64,22 +64,10 @@ export default function LogisticianOrders(props){
         {name: 'shipmentStatus',    title:'Статус',               editingEnabled:false,   width:110   }, 
     ]) 
     var tableSettings
-    if (isCurrent){
-        tableSettings = {
-            add:true, 
-            edit:true, 
-            delete:true, 
-            select:true
-        }
-    }
-    else {
-        tableSettings = {
-            add:false, 
-            edit:false, 
-            delete:false, 
-            select:true
-        }
-    }
+    if (isCurrent)
+        tableSettings = {add:true, edit:true, delete:true, select:true}
+    else
+        tableSettings = {add:false, edit:false, delete:false, select:true}
     
     const [tableList, setTableList] = React.useState([])
     const [selectedItemId, setSelectedItemId] = React.useState(undefined)
@@ -139,13 +127,11 @@ export default function LogisticianOrders(props){
         {name: 'realAmount',      title:'Пришедшее кол-во',      editingEnabled:false,   width:144   }, 
         
     ]) 
-    var tableSettings1 = {
-        editColumnWidth: 100,
-        add:false, 
-        edit:false, 
-        delete:true,
-        cell:true,
-    }
+    var tableSettings1
+    if (isCurrent)
+        tableSettings1 = {editColumnWidth: 100, add:false, edit:false, delete:true, cell:true}
+    else
+        tableSettings1 = {editColumnWidth: 100, add:false, edit:false, delete:false, cell:false}
 
     const [tableList1, setTableList1] = React.useState([])
     React.useEffect(() => {
@@ -194,6 +180,12 @@ export default function LogisticianOrders(props){
         {name: 'weight',            title:'Вес ед продукции (кг)',  editingEnabled:false,   width:159   }, 
     ])
     var tableSettings2 = {add:false, edit:false, delete:false, select:true}
+
+    var tableSettings2
+    if (isCurrent)
+        tableSettings2 = {add:false, edit:false, delete:false, select:true}
+    else
+        tableSettings2 = {add:false, edit:false, delete:false, select:false}
 
     // const [tableList2, setTableList2] = React.useState([{number:1, goodsType:"bb", goodsCost:100, shipmentProgress:"10/100", weight:10}])
     const [tableList2, setTableList2] = React.useState([])

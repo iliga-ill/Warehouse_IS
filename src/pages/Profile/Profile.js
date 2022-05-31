@@ -112,11 +112,11 @@ export default function Profile(props){
                             </table>
                             <div class="profile_data">
                                 <div style={{width:"250px"}} >
-                                    <InputText styles = "row_with_item_equal" label="Имя:&nbsp;" placeholder="имя" defValue={name} set={setName}/> 
-                                    <InputText styles = "row_with_item_equal" label="Фамилия:&nbsp;" placeholder="имя" defValue={surname} set={setSurname}/> 
-                                    <InputText styles = "row_with_item_equal" label="Отчество:&nbsp;" placeholder="имя" defValue={patronymic} set={setPatronymic}/> 
-                                    <InputText styles = "row_with_item_equal" label="Логин:&nbsp;" placeholder="имя" defValue={login} set={setLogin}/> 
-                                    <InputText styles = "row_with_item_equal" label="Пароль:&nbsp;" placeholder="имя" defValue={password} set={setPassword}/> 
+                                    <InputText styles = "row_with_item_equal" label="Имя:&nbsp;" placeholder="имя" defValue={name} set={setName} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
+                                    <InputText styles = "row_with_item_equal" label="Фамилия:&nbsp;" placeholder="имя" defValue={surname} set={setSurname} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
+                                    <InputText styles = "row_with_item_equal" label="Отчество:&nbsp;" placeholder="имя" defValue={patronymic} set={setPatronymic} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
+                                    <InputText styles = "row_with_item_equal" label="Логин:&nbsp;" placeholder="имя" defValue={login} set={setLogin} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
+                                    <InputText styles = "row_with_item_equal" label="Пароль:&nbsp;" placeholder="имя" defValue={password} set={setPassword} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
                                     <InputText styles = "row_with_item_equal" label="Телефон:&nbsp;" placeholder="имя" defValue={phoneNum} set={setPhoneNum} type="phone"/>
                                 </div> 
                                 <div class="low_text">Доступные&nbsp;АРМ: {accountData.roles.join(", ")}</div>

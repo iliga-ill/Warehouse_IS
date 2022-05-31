@@ -95,12 +95,11 @@ export default function StorekeeperExpend(props){
         {name: 'orderedAmount',     title:'Ожидаемое кол-во',   editingEnabled:false,   width:150   },
         {name: 'amount',            title:'Кол-во коробок',     editingEnabled:true,    width:130,  mask:/^[0-9]{0,10}$/i, maskExample:"быть числом больше нуля"   }
     ]) 
-    var  tableSettings = {
-        add:false, 
-        edit:false, 
-        delete:false,
-        cell:true, 
-    }
+    var tableSettings
+    if (isCurrent)
+        tableSettings = {add:false, edit:false, delete:false, cell:true}
+    else
+        tableSettings = {add:false, edit:false, delete:false, cell:false}
 
     const [tableList, setTableList] = React.useState([])
     

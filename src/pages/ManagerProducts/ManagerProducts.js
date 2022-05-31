@@ -84,12 +84,13 @@ export default function ManagerProducts(props){
             <FlexibleBlock>
                 <div class="header_text">Товары</div>
                 <div style={{width:800+'px', display:'inline-table'}}>
-                    <TableComponent height={500} columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
+                    <TableComponent height={'calc(100% - 750px)'} columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
                 </div>
             </FlexibleBlock>
             <FlexibleBlock>
-                <div style={{width:500+"px"}}>
-                    <div class="header_text">Товар:&nbsp;<label class="normal">{good}</label></div>
+                <div style={{width:350+"px"}}>
+                    <div class="header_text">Характеристики товара</div>
+                    <div class="low_text bold">Название:&nbsp;<label class="normal">{good}</label></div>
                     <div class="low_text bold">Категория:&nbsp;<label class="normal">{category}</label></div>
                     <div class="low_text bold">Подкатегория:&nbsp;<label class="normal">{subCategory}</label></div>
                     <div class="low_text bold">Цена&nbsp;ед&nbsp;товара&nbsp;<label class="normal">{cost} ₽</label></div>

@@ -1035,8 +1035,8 @@ class StorekeeperVirtualWarehouse extends Component {
                             <>
                                 <div class="header_text" style={{margin:"5px"}}>Поиск&nbsp;товара</div>
                                 <div style={{width:400+"px", margin:"5px"}}>
-                                    <InputText styles = "row_with_item_equal" Id={0} label="Название&nbsp;товара&nbsp;" placeholder="название товара" defValue={this.state.goodSearchTerm} set={this.setGoodSearchTerm}/> 
-                                    <InputText styles = "row_with_item_equal" Id={1} label="id&nbsp;товара&nbsp;" placeholder="id товара" defValue={this.state.idSearchTerm} set={this.setIdSearchTerm}/> 
+                                    <InputText styles = "row_with_item_equal" label="Название&nbsp;товара&nbsp;" placeholder="название товара" defValue={this.state.goodSearchTerm} set={this.setGoodSearchTerm}/> 
+                                    <InputText styles = "row_with_item_equal" label="id&nbsp;товара&nbsp;" placeholder="id товара" defValue={this.state.idSearchTerm} set={this.setIdSearchTerm} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
                                     <div class="low_text row_with_item_equal"><div>Категория&nbsp;</div><ExpandListInput width={300} defValue={this.state.categoryExpandList[0]} list={this.state.categoryExpandList} func={this.setCategorySearchTerm}/></div>
                                     <div class="low_text row_with_item_equal"><div>Подкатегория&nbsp;</div><ExpandListInput width={300} defValue={this.state.subCategoryExpandList[0]} list={this.state.subCategoryExpandList} func={this.setSubCategorySearchTerm}/></div>
                                     <div style={{width:"min-content", display:'inline-table', marginLeft:"-4px" }} >

@@ -49,8 +49,8 @@ export default function ManagerOrderCreation(props){
     const [tableHeaders, setTableHeaders] = React.useState([
         {name: 'number',            title:'№',                  editingEnabled:false,   width:40    }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,     width:120   }, 
-        {name: 'amount',            title:'Кол-во',             editingEnabled:true,     width:70,  mask:/^[0-9]{0,10}$/i, maskExample:"быть числом больше нуля"    }, 
-        {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:120,  mask:/^[0-9]{0,10}$/i, maskExample:"быть числом больше нуля", isCurrency:true   },
+        {name: 'amount',            title:'Кол-во',             editingEnabled:true,     width:70,  mask:/^[1-9][0-9]{0,10}$/i, maskExample:"быть числом больше единицы"    }, 
+        {name: 'cost',              title:'Цена ед товара',     editingEnabled:true,     width:120,  mask:/^[1-9][0-9]{0,10}$/i, maskExample:"быть числом больше единицы", isCurrency:true   },
         {name: 'sumCost',           title:'Итог цена',          editingEnabled:false,     width:120, totalCount:{type:['sum'], expantionAlign: 'right'}, isCurrency:true   },
     ]) 
     var tableSettings = {
@@ -77,7 +77,7 @@ export default function ManagerOrderCreation(props){
 
     //-------------------------------------------------------------------------Блок 2
     const [tableHeaders1, setTableHeaders1] = React.useState([
-        {name: 'number',            title:'№',                  editingEnabled:false,    width:30, dropdownList:[]   }, 
+        {name: 'number',            title:'№',                  editingEnabled:false,    width:40, dropdownList:[]   }, 
         {name: 'goodsCategories2',  title:'Категория',          editingEnabled:false,    width:190, dropdownList:[]   }, 
         {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,    width:168, dropdownList:[]   }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,    width:310, dropdownList:[]   }, 
@@ -111,13 +111,10 @@ export default function ManagerOrderCreation(props){
             //     buf.push(element)
             // })
 
-            var sumCost = 0
-            if (!isNaN(parseInt(0)) && !isNaN(parseInt(selectedItemId1.cost)))
-                sumCost=0*selectedItemId1.cost
             if (tableList == "")
-                selectedRow = {id: 0, number: 1, goodsType: selectedItemId1.goodsType, amount: 0, cost: parseFloat(selectedItemId1.cost), sumCost: sumCost, goodCode: selectedItemId1.code}
+                selectedRow = {id: 0, number: 1, goodsType: selectedItemId1.goodsType, amount: 1, cost: parseFloat(selectedItemId1.cost), sumCost: parseFloat(selectedItemId1.cost), goodCode: selectedItemId1.code}
             else 
-                selectedRow = {id: tableList[tableList.length-1].id+1, number: tableList[tableList.length-1].number+1, goodsType: selectedItemId1.goodsType, amount: 0, cost: parseFloat(selectedItemId1.cost), sumCost: sumCost, goodCode: selectedItemId1.code}
+                selectedRow = {id: tableList[tableList.length-1].id+1, number: tableList[tableList.length-1].number+1, goodsType: selectedItemId1.goodsType, amount: 1, cost: parseFloat(selectedItemId1.cost), sumCost: parseFloat(selectedItemId1.cost), goodCode: selectedItemId1.code}
             var check = true
             buf.map(function(element,i){
                 if (element.goodCode == selectedRow.goodCode) check = false
@@ -143,25 +140,13 @@ export default function ManagerOrderCreation(props){
             var accounts = tableList
             var check=true
 
-            if (check && (orderNumber == "" || orderNumber == null)){
-                check=false
-                alert("Ошибка, номер заказа не может быть пустым");
-            }
             console.log("shipmentDate")
             console.log(shipmentDate)
             if (check && (shipmentDate == ""|| shipmentDate == null)){
                 check=false
                 alert("Ошибка, дата доставки не может быть пустой");
             }
-            if (check && (shipmentAddress == ""|| shipmentAddress == null)){
-                check=false
-                alert("Ошибка, адрес не может быть пустым");
-            }
             tableList.map(item=>{
-                if (check && (item.amount == "" || item.amount == 0 || item.amount == null)){
-                    check=false
-                    alert("Ошибка, количество товара не может быть пустым");
-                }
                 if (check && (item.cost == "" || item.cost == 0 || item.cost == null)){
                     check=false
                     alert("Ошибка, цена товара не может быть пустой");
@@ -206,10 +191,10 @@ export default function ManagerOrderCreation(props){
             <FlexibleBlock>
                 <div class="header_text">Создание заказа</div>
                 <div class="low_text row_with_item_wide"><div>Тип&nbsp;заказа&nbsp;</div><ExpandListInput defValue={orderTypeList[0]} list={orderTypeList} func={setOrderTypeListValue}/></div> 
-                <InputText styles = "row_with_item_wide" Id={getId()} label="Заказ&nbsp;№&nbsp;" placeholder="номер заказа" set={setOrderNumber}/> 
+                <InputText styles = "row_with_item_wide" label="Заказ&nbsp;№&nbsp;" placeholder="номер заказа" defValue={"Заказ № "} set={setOrderNumber} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
                 <div class="low_text row_with_item_wide"><div>Дата&nbsp;доставки&nbsp;</div><InputDate Id={getId()} defValue={shipmentDate} func={setShipmentDate}/></div>
-                <InputTextArea styles = "" Id={getId()} label="Адрес доставки:" placeholder="адрес" set={setShipmentAddress} defValue={shipmentAddress}/>
-                <InputTextArea styles = "" Id={getId()} label="Примечание:" placeholder="примечание" set={setNote} defValue={note}/>
+                <InputTextArea styles = "" label="Адрес доставки:" placeholder="адрес" set={setShipmentAddress} defValue={shipmentAddress} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/>
+                <InputTextArea styles = "" label="Примечание:" placeholder="примечание" set={setNote} defValue={note}/>
                 <div class="header_text">Заказываемые товары:</div>
                 <div style={{width:300+'px', display:'inline-table'}} >
                     <TableComponent height={300} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings}/>

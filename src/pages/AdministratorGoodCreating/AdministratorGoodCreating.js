@@ -284,14 +284,14 @@ class AdministratorGoodCreating extends Component {
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div class="header_text">Настройка</div>
-                    <InputTextArea styles = "" Id={0} label="Название&nbsp;товара&nbsp;:" placeholder="название товара" set={this.setGoodName} defValue={this.state.goodName}/>
-                    <InputText styles = "row_with_item_wide" Id={1}  label="Ширина&nbsp;товара&nbsp;(см)&nbsp;"     placeholder="ширина товара"         defValue={this.state.width}             set={this.setWidth}/> 
-                    <InputText styles = "row_with_item_wide" Id={2}  label="Глубина&nbsp;товара&nbsp;(см)&nbsp;"    placeholder="глубина товара"        defValue={this.state.depth}             set={this.setDepth}/> 
-                    <InputText styles = "row_with_item_wide" Id={3}  label="Высота&nbsp;товара&nbsp;(см)&nbsp;"     placeholder="высота товара"         defValue={this.state.height}            set={this.setHeight}/> 
+                    <InputTextArea styles = "" label="Название&nbsp;товара&nbsp;:" placeholder="название товара" set={this.setGoodName} defValue={this.state.goodName} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/>
+                    <InputText styles = "row_with_item_wide" label="Ширина&nbsp;товара&nbsp;(см)&nbsp;"     placeholder="ширина товара"         defValue={this.state.width}             set={this.setWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                    <InputText styles = "row_with_item_wide" label="Глубина&nbsp;товара&nbsp;(см)&nbsp;"    placeholder="глубина товара"        defValue={this.state.depth}             set={this.setDepth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                    <InputText styles = "row_with_item_wide" label="Высота&nbsp;товара&nbsp;(см)&nbsp;"     placeholder="высота товара"         defValue={this.state.height}            set={this.setHeight} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
                     <div class = "low_text row_with_item_wide"><div>Цвет&nbsp;товара:&nbsp;</div><InputColor initialValue={this.state.color.hex} onChange={this.setColor} placement="right"/></div>
-                    <InputText styles = "row_with_item_wide" Id={4}  label="Смещение&nbsp;по&nbsp;x&nbsp;"          placeholder="смещение по x"         defValue={this.state.translationX}      set={this.setTranslationX}/> 
-                    <InputText styles = "row_with_item_wide" Id={5}  label="Смещение&nbsp;по&nbsp;y&nbsp;"          placeholder="смещение по y"         defValue={this.state.translationY}      set={this.setTranslationY}/> 
-                    <InputText styles = "row_with_item_wide" Id={6}  label="Смещение&nbsp;по&nbsp;z&nbsp;"          placeholder="смещение по z"         defValue={this.state.translationZ}      set={this.setTranslationZ}/> 
+                    <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;x&nbsp;"          placeholder="смещение по x"         defValue={this.state.translationX}      set={this.setTranslationX} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
+                    <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;y&nbsp;"          placeholder="смещение по y"         defValue={this.state.translationY}      set={this.setTranslationY} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
+                    <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;z&nbsp;"          placeholder="смещение по z"         defValue={this.state.translationZ}      set={this.setTranslationZ} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
                     <div style={{width:'370px'}}></div>
                     <button class="bt_send_AdministratorGoodCreating1" onClick={this.btn_send_1}>Создать новый товар</button>
                     <div class="place_holder_AdministratorGoodCreating"/>

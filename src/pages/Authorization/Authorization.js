@@ -10,7 +10,6 @@ var accounts = [
 // {name: "Сергей", password:"3"}
 ];
 var api = new Api()
-var authorizated = false 
 
 const host = 'http://localhost:5000';
 
@@ -25,7 +24,7 @@ export default function Authorization(props){
     accounts = result
   }
 
-  if (!authorizated) {
+  if (props.cookies.accountData == undefined) {
     apiGetClients()
   }
 
@@ -36,7 +35,6 @@ export default function Authorization(props){
     accounts.map(item=>{
       if (item.login==login && item.password==password){
         passCheck=false
-        authorizated = true
 
         var access_token = -1;
         var accountData = {

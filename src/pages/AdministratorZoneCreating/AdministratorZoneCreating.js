@@ -337,15 +337,15 @@ onMessageAlighment=()=>{
                     </FlexibleBlock>
                     <FlexibleBlock>
                         <div class="header_text">Настройка</div>
-                        <InputText styles = "row_with_item_wide" Id={1}  label="Длинна&nbsp;зоны&nbsp;(см)&nbsp;"       placeholder="длинна зоны"           defValue={this.state.length}            set={this.setLength}/> 
-                        <InputText styles = "row_with_item_wide" Id={2}  label="Ширина&nbsp;зоны&nbsp;(см)&nbsp;"       placeholder="ширина зоны"           defValue={this.state.width}             set={this.setWidth}/>
+                        <InputText styles = "row_with_item_wide" label="Длинна&nbsp;зоны&nbsp;(см)&nbsp;"       placeholder="длинна зоны"           defValue={this.state.length}            set={this.setLength} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                        <InputText styles = "row_with_item_wide" label="Ширина&nbsp;зоны&nbsp;(см)&nbsp;"       placeholder="ширина зоны"           defValue={this.state.width}             set={this.setWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/>
                         <div class = "low_text row_with_item_wide"><div>Цвет&nbsp;границы&nbsp;зоны:&nbsp;</div><InputColor initialValue={this.state.color.hex} onChange={this.setColor} placement="right"/></div>
-                        <InputText styles = "row_with_item_wide" Id={3}  label="Ширина&nbsp;границы&nbsp;зоны&nbsp;"    placeholder="ширина границы зоны"   defValue={this.state.lineWidth}         set={this.setLineWidth}/> 
-                        <InputText styles = "row_with_item_wide" Id={4}  label="Длинна&nbsp;фаски&nbsp;"                placeholder="длинна фаски"          defValue={this.state.chamferLendth}     set={this.setChamferLendth}/> 
-                        <InputText styles = "row_with_item_wide" Id={5}  label="Надпись&nbsp;зоны&nbsp;"                placeholder="надпись зоны"          defValue={this.state.message}           set={this.setMessage}/> 
-                        <InputText styles = "row_with_item_wide" Id={6}  label="Размер&nbsp;текста&nbsp;надписи&nbsp;"  placeholder="размер текста надписи" defValue={this.state.textSize}          set={this.setTextSize}/> 
-                        <InputText styles = "row_with_item_wide" Id={7}  label="Вырез&nbsp;по&nbsp;оси&nbsp;x&nbsp;"    placeholder="вырез по оси x"        defValue={this.state.gapLengthX}        set={this.setGapLengthX}/> 
-                        <InputText styles = "row_with_item_wide" Id={8}  label="Вырез&nbsp;по&nbsp;оси&nbsp;y&nbsp;"    placeholder="вырез по оси y"        defValue={this.state.gapLengthY}        set={this.setGapLengthY}/> 
+                        <InputText styles = "row_with_item_wide" label="Ширина&nbsp;границы&nbsp;зоны&nbsp;"    placeholder="ширина границы зоны"   defValue={this.state.lineWidth}         set={this.setLineWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                        <InputText styles = "row_with_item_wide" label="Длинна&nbsp;фаски&nbsp;"                placeholder="длинна фаски"          defValue={this.state.chamferLendth}     set={this.setChamferLendth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                        <InputText styles = "row_with_item_wide" label="Надпись&nbsp;зоны&nbsp;"                placeholder="надпись зоны"          defValue={this.state.message}           set={this.setMessage} /> 
+                        <InputText styles = "row_with_item_wide" label="Размер&nbsp;текста&nbsp;надписи&nbsp;"  placeholder="размер текста надписи" defValue={this.state.textSize}          set={this.setTextSize} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                        <InputText styles = "row_with_item_wide" label="Вырез&nbsp;по&nbsp;оси&nbsp;x&nbsp;"    placeholder="вырез по оси x"        defValue={this.state.gapLengthX}        set={this.setGapLengthX} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                        <InputText styles = "row_with_item_wide" label="Вырез&nbsp;по&nbsp;оси&nbsp;y&nbsp;"    placeholder="вырез по оси y"        defValue={this.state.gapLengthY}        set={this.setGapLengthY} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
                         
                         <div class = "low_text">Положение&nbsp;надписей:
                             <label><input type="checkbox" defaultChecked={this.state.isAighmentTop}    onChange={()=>{this.onCheckbox(0)}}/>Сверху</label>
