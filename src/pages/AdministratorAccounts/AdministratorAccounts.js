@@ -23,6 +23,7 @@ class AdministratorAccounts extends Component {
         super(props)
         this.state={
             reload:0,
+            tabsHeight:102,
             tableHeaders:[
                 {name: 'number',            title:'№',                  editingEnabled:false,   width:40    }, 
                 {name: 'surname',           title:'Фамилия',            editingEnabled:true,    width:100,  mask:/^(.)(.*)$/i,                          maskExample:"быть заполнено", basicValue:"-"                                }, 
@@ -122,11 +123,11 @@ class AdministratorAccounts extends Component {
 
     render(){
         return (
-            <FlexibleBlocksPage marginTop={102}>
+            <FlexibleBlocksPage marginTop={this.state.tabsHeight}>
                 <FlexibleBlock>
                     <div class="header_text">Аккаунты</div>
                     <div style={{width:800+'px', display:'inline-table'}} >
-                        <TableComponent width={800} height={500} columns={this.state.tableHeaders} rows={this.state.tableList} setNewTableList={this.setTableList} tableSettings={this.state.tableSettings} onSelect={this.setSelectedItem}/>
+                        <TableComponent height={document.documentElement.clientHeight - this.state.tabsHeight - 100} columns={this.state.tableHeaders} rows={this.state.tableList} setNewTableList={this.setTableList} tableSettings={this.state.tableSettings} onSelect={this.setSelectedItem}/>
                     </div>
                     <div></div>
                     <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={this.btn_send_1}>Подтвердить</button>

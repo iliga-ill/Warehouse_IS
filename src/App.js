@@ -101,6 +101,7 @@ const supportTabsArray = [
     {title: "Изменение конфигурации склада", roleHref:"/Administrator",  subHref:"/AdministratorCreating", supportHref:"/WarehouseCreating"},
 ]
 
+//JSON.parse(JSON.stringify(this.state.itemList))
 
 export default function App() {
   const navigate = useNavigate();

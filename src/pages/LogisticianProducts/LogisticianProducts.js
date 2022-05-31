@@ -38,8 +38,9 @@ export default function LogisticianProducts(props){
         add:false, 
         edit:false, 
         delete:false, 
-        select:true,
+        select:true, 
         defaultSelection:true,
+        filter: true
     }
     const [tableList, setTableList] = React.useState([])
     if (tableList.toString()=="")
@@ -58,7 +59,7 @@ export default function LogisticianProducts(props){
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец
 
-    //-------------------------------------------------------------------------Блок 3
+    //-------------------------------------------------------------------------Блок 2
     const [good, setGood] = React.useState("")
     const [category, setCategory] = React.useState("")
     const [subCategory, setSubCategory] = React.useState("")
@@ -69,23 +70,25 @@ export default function LogisticianProducts(props){
 
     
     function setDataInTable2(value) {
-        setGood(value.goodsType)
-        setCategory(value.goodsCategories2)
-        setSubCategory(value.goodsCategories3)
-        setCost(value.cost)
-        setAmountInStore(value.amountOnWarehouse)
-        setWeight(value.weight)
-        setGoodCharacteristics(value.description)
+        if (value!=undefined){
+            setGood(value.goodsType)
+            setCategory(value.goodsCategories2)
+            setSubCategory(value.goodsCategories3)
+            setCost(value.cost)
+            setAmountInStore(value.amountOnWarehouse)
+            setWeight(value.weight)
+            setGoodCharacteristics(value.description)
+        }
     }
 
-    //-------------------------------------------------------------------------Блок 3 конец
-
+    //-------------------------------------------------------------------------Блок 2 конец
+    let tabsHeight = 102
     return (
-        <FlexibleBlocksPage marginTop={102}>
+        <FlexibleBlocksPage marginTop={tabsHeight}>
             <FlexibleBlock>
                 <div class="header_text">Товары</div>
                 <div style={{width:800+'px', display:'inline-table'}} >
-                    <TableComponent height={500}  columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
+                    <TableComponent height={document.documentElement.clientHeight - tabsHeight - 80}  columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
                 </div>
             </FlexibleBlock>
             <FlexibleBlock>

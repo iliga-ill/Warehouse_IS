@@ -16,13 +16,14 @@ export default function StorekeeperInventory(props){
     var id=0
     function getId(){return id++}
 
-
+    const [reload, setReload] = React.useState(0)
+    function reloadPage(){setReload(reload+1)}
     //-------------------------------------------------------------------------query
     const [zones, setZones] = React.useState([])
     const [racks, setRacks] = React.useState([])
     const [shelfs, setShelfs] = React.useState([])
     const [goodsType, setGoodsType] = React.useState([])
-    const [shelfsSpace, setShelfsSpace] = React.useState([])
+    let [shelfsSpace, setShelfsSpace] = React.useState([])
 
     if (zones.toString()=="") {
         async function startGettingAnswers() {
@@ -61,7 +62,7 @@ export default function StorekeeperInventory(props){
         defaultSelection:true,
     }
 
-    const [tableList, setTableList] = React.useState([])
+    let [tableList, setTableList] = React.useState([])
     const [selectedItemId, setSelectedItemId] = React.useState()
 
     if (tableList.toString()=="" && shelfsSpace.toString()!=""){
@@ -122,11 +123,10 @@ export default function StorekeeperInventory(props){
     }
 
     // const [tableList1, setTableList1] = React.useState([{number:1, goodsType:"вв", amount:10, cost:10, sumCost:10}])
-    const [tableList1, setTableList1] = React.useState([])
+    let [tableList1, setTableList1] = React.useState([])
 
     React.useEffect(() => {
         var buf=[]
-        var buf1=[]
         var counter = 0
         shelfsSpace.map(function(item, i){
             if (i == selectedItemId.id){
@@ -148,15 +148,57 @@ export default function StorekeeperInventory(props){
         }
     }
 
-    async function updateOrders(selected, tableList) {
-        var res = await api.updateOrderStatus(selected, tableList)
-        console.log("ОТВЕТ НА ИЗМЕНЕНИЕ СТАТУСОВ")
-        console.log(res)
+    async function updateOrders(selected, list) {
+        // console.log(selected)
+        // console.log(list)
+        var res = await api.updateOrderStatus(selected, list)
+        // console.log("ответ на изменение статусов")
+        // console.log(res)
+        if (res != ""){
+            setTableList(JSON.parse(JSON.stringify(tableList)).map(shelf=>{
+                if (shelf.id == selected.id) {
+                    let confirmedAmount = 0
+                    list.map(good=>{
+                        if (good.inventaryzationStatus == "Проинвентаризирован") confirmedAmount++
+                    })
+                    if (confirmedAmount == list.length)
+                        shelf.inventorysationStatus = "Проинвентаризировано" /*"Проинвентаризировано", "Не проверено" */
+                    else if (confirmedAmount == 0)
+                        shelf.inventorysationStatus = "Не проверено"
+                    else 
+                        shelf.inventorysationStatus = "Частично проверено"
+                }
+                return shelf
+            }))
+
+            setShelfsSpace(JSON.parse(JSON.stringify(shelfsSpace)).map(function(shelf, i){
+                if (i == selected.id){
+                    shelf.shelf_space.map(function(originalGood,i){
+                        let newStatus = undefined
+                        tableList1.map(newGood=>{
+                            console.log(originalGood.id)
+                            // console.log(newGood)
+                            // console.log(originalGood)
+                            if (i == newGood.id) {
+                                newStatus = newGood.inventaryzationStatus
+                            }
+                        })
+                        originalGood.status = newStatus
+                        originalGood.inventaryzationStatus = newStatus
+                        return originalGood
+                    })
+                }
+                return shelf
+            }))
+            alert("Статусы успешно сохранены")
+        } else {
+            alert("При сохранении статусов произошла ошибка")
+        }
     }
     //-------------------------------------------------------------------------Блок 2 конец
 
     return (
-        <FlexibleBlocksPage  marginTop={102}>
+        <FlexibleBlocksPage marginTop={102}>
             <FlexibleBlock>
                 <div class="header_text">Инвентаризация</div>
                 <div style={{width:400+'px', display:'inline-table'}} >

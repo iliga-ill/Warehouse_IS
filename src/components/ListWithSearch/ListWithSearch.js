@@ -29,6 +29,7 @@ class ListWithSearch extends Component {
         super(props)
         //let searchRes
         this.state = {
+            reload:0,
             styles:{
                 scroll: {
                     height: this.props.height,
@@ -38,24 +39,23 @@ class ListWithSearch extends Component {
                     borderRadius: "5px"
                 }
             },
-            searchTerm:"",
             searchResults:this.props.item_list,
             itemList:this.props.item_list,
         }
         //this.sortList()
     }
 
-    setSearchTerm = (value)=>{
-        this.setState({searchTerm: value});
-        this.sortList()
-    }
-    setSearchResults = (value)=>{this.setState({searchResults: value});}
+    setReload=()=>{this.setState({reload: this.state.reload+1});}
 
-    sortList = ()=>{
-        let buf = this.state.itemList.filter(item =>
-            item.text.toLowerCase().includes(this.state.searchTerm)
+    setSearchTerm = (value)=>{
+        this.sortList(value)
+        this.setReload()
+    }
+
+    sortList = (value)=>{
+        this.state.searchResults = JSON.parse(JSON.stringify(this.state.itemList)).filter(item =>
+            item.text.toLowerCase().includes(value)
         )
-        this.setSearchResults(buf);
     }
 
     onItemClick = (item)=>{
@@ -66,7 +66,7 @@ class ListWithSearch extends Component {
         return (
             <>
             <div class="search_wrap">
-                <input type="text" placeholder="Search" value={this.searchTerm} onChange={event => {this.setSearchTerm(event.target.value)}} class="search_field" />
+                <input type="text" placeholder="Search" onChange={event => {this.setSearchTerm(event.target.value)}} class="search_field" />
             </div>
             <div class="placeholder"/>
             <div class="white" style={this.state.styles.scroll}>

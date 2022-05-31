@@ -311,22 +311,24 @@ export default function LogisticianOrders(props){
     }
         
 //#endregion
-
+    let tabsHeight = 152
     return (
         <>
-            <FlexibleBlocksPage marginTop={152}>
+            <FlexibleBlocksPage marginTop={tabsHeight}>
                 <FlexibleBlock>
-                    <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={"200px"} height={"525px"}/>
+                    <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={"200px"} height={`${document.documentElement.clientHeight - tabsHeight - 80}px`}/>
                 </FlexibleBlock>
                 <FlexibleBlock>
-                    <div class="header_text">Доставка товаров</div>
-                    <div style={{height:20+"px"}}/>
+                    <div class="header_text">Список доставок товаров по заказу</div>
+                    <div style={{height:10+"px"}}/>
                     <div style={{width:isCurrent?300:400+'px', display:'inline-table'}} >
-                        <TableComponent height={245} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings} onSelect={setSelectedItemId}/>
+                        <TableComponent height={(document.documentElement.clientHeight - tabsHeight - 123)/2} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings} onSelect={setSelectedItemId}/>
                     </div>
-                    <div style={{height:20+"px"}}/>
+                    <div style={{height:10+"px"}}/>
+                    <div class="header_text">Список товаров в выбранной доставке</div>
+                    <div style={{height:10+"px"}}/>
                     <div style={{width:300+'px', display:'inline-table'}} >
-                        <TableComponent height={250} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} tableSettings={tableSettings1}/>
+                        <TableComponent height={(document.documentElement.clientHeight - tabsHeight - 123)/2} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} tableSettings={tableSettings1}/>
                     </div>
                 </FlexibleBlock>
                 <FlexibleBlock>
@@ -339,7 +341,7 @@ export default function LogisticianOrders(props){
                         <div class="low_text bold">Товары&nbsp;в&nbsp;заказе:&nbsp;</div>
                     </div>
                     <div style={{width:300+'px', display:'inline-table'}} >
-                        <TableComponent height={425} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} tableSettings={tableSettings2} onSelect={setSelectedItemId2}/>
+                        <TableComponent height={document.documentElement.clientHeight - tabsHeight - 180} columns={tableHeaders2} rows={tableList2} setNewTableList={setTableList2} tableSettings={tableSettings2} onSelect={setSelectedItemId2}/>
                     </div>
                 </FlexibleBlock>
             </FlexibleBlocksPage>

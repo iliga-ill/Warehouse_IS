@@ -93,14 +93,14 @@ export default function ManagerShipmentOrders(props){
     }
 
     //-------------------------------------------------------------------------Блок 2 конец
-
+    let tabsHeight = 152
     return (
         <>
-            <FlexibleBlocksPage marginTop={152}>
+            <FlexibleBlocksPage marginTop={tabsHeight}>
                 <FlexibleBlock>
                     <div class="header_text">Заказы на продажу</div>
                     <div style={{width:470+'px', display:'inline-table'}} >
-                        <TableComponent height={525} columns={tableHeaders} rows={tableList}  onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
+                        <TableComponent height={document.documentElement.clientHeight - tabsHeight - 80} columns={tableHeaders} rows={tableList}  onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
                     </div>
                 </FlexibleBlock>
                 <FlexibleBlock>
@@ -112,7 +112,7 @@ export default function ManagerShipmentOrders(props){
                         <div class="low_text bold">Товары&nbsp;в&nbsp;заказе:&nbsp;</div>
                     </div>
                     <div style={{width:350+'px', display:'inline-table'}} >
-                        <TableComponent height={390} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} tableSettings={tableSettings1}/>
+                        <TableComponent height={document.documentElement.clientHeight - tabsHeight - 216} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} tableSettings={tableSettings1}/>
                     </div>
                     {isCurrent
                     &&<>

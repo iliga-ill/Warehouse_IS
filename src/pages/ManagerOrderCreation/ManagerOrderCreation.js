@@ -186,8 +186,9 @@ export default function ManagerOrderCreation(props){
         // reloadPage())
     }
 
+    let tabsHeight = 102
     return (
-        <FlexibleBlocksPage  marginTop={102}>
+        <FlexibleBlocksPage marginTop={tabsHeight}>
             <FlexibleBlock>
                 <div class="header_text">Создание заказа</div>
                 <div class="low_text row_with_item_wide"><div>Тип&nbsp;заказа&nbsp;</div><ExpandListInput defValue={orderTypeList[0]} list={orderTypeList} func={setOrderTypeListValue}/></div> 
@@ -196,8 +197,8 @@ export default function ManagerOrderCreation(props){
                 <InputTextArea styles = "" label="Адрес доставки:" placeholder="адрес" set={setShipmentAddress} defValue={shipmentAddress} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/>
                 <InputTextArea styles = "" label="Примечание:" placeholder="примечание" set={setNote} defValue={note}/>
                 <div class="header_text">Заказываемые товары:</div>
-                <div style={{width:300+'px', display:'inline-table'}} >
-                    <TableComponent height={300} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings}/>
+                <div id="table1" style={{width:300+'px', display:'inline-table'}}>
+                    <TableComponent height={document.documentElement.clientHeight - tabsHeight - 320} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings}/>
                 </div>
                 <div></div>
                 <div class="place_holder_ManagerOrderCreation"/><button class="bt_send_ManagerOrderCreation" onClick={btn_send_1}>Создать&nbsp;заказ</button>
@@ -205,7 +206,7 @@ export default function ManagerOrderCreation(props){
             <FlexibleBlock>
                 <div class="header_text">Виды товаров:</div>
                 <div style={{width:500+'px', display:'inline-table'}} >
-                    <TableComponent height={547} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} tableSettings={tableSettings1} onSelect={setSelectedItemId1}/>
+                    <TableComponent height={document.documentElement.clientHeight - tabsHeight - 71} columns={tableHeaders1} rows={tableList1} setNewTableList={setTableList1} tableSettings={tableSettings1} onSelect={setSelectedItemId1}/>
                 </div>
             </FlexibleBlock>
         </FlexibleBlocksPage>

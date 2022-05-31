@@ -34,7 +34,7 @@ export default function ManagerProducts(props){
     ]) 
     var tableSettings = {
         add:false, 
-        edit:true, 
+        edit:false, 
         delete:false, 
         select:true, 
         defaultSelection:true,
@@ -49,7 +49,7 @@ export default function ManagerProducts(props){
      }, [tableList]);
 
     React.useEffect(() => {
-       if (selectedItemId != undefined && tableList.length > 0) setDataInTable2(selectedItemId)
+       if (tableList.length > 0) setDataInTable2(selectedItemId)
     }, [selectedItemId]);
 
     if (tableList.toString()=="")
@@ -68,25 +68,25 @@ export default function ManagerProducts(props){
     const [goodCharacteristics, setGoodCharacteristics] = React.useState("")
 
     function setDataInTable2(value) {
-        setGood(value.goodsType)
-        setCategory(value.goodsCategories2)
-        setSubCategory(value.goodsCategories3)
-        setCost(value.cost)
-        setAmountInStore(value.amountOnWarehouse)
-        setGoodLimit(value.goodsLimit)
-        setGoodCharacteristics(value.description)
+        if (value != undefined){
+            setGood(value.goodsType)
+            setCategory(value.goodsCategories2)
+            setSubCategory(value.goodsCategories3)
+            setCost(value.cost)
+            setAmountInStore(value.amountOnWarehouse)
+            setGoodLimit(value.goodsLimit)
+            setGoodCharacteristics(value.description)
+        }
     }
 
-    // let pageHeight = (document.documentElement.clientHeight-props.marginTop).toString() + "px"
-    // console.log(pageHeight)
     //-------------------------------------------------------------------------Блок 3 конец
-
+    let tabsHeight = 102
     return (
-        <FlexibleBlocksPage marginTop={102}>
+        <FlexibleBlocksPage marginTop={tabsHeight}>
             <FlexibleBlock>
                 <div class="header_text">Товары</div>
                 <div style={{width:800+'px', display:'inline-table'}}>
-                    <TableComponent height={500} columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
+                    <TableComponent height={document.documentElement.clientHeight - tabsHeight - 70} columns={tableHeaders} rows={tableList} onSelect={setSelectedItemId} setNewTableList={setTableList} tableSettings={tableSettings}/>
                 </div>
             </FlexibleBlock>
             <FlexibleBlock>
