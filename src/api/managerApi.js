@@ -70,8 +70,8 @@ export class Api {
                     buffer.push({
                         id:i,
                         number:i+1, 
-                        goodsCategories2: element.category, 
-                        goodsCategories3: element.subcategory_2, 
+                        goodsCategories2: element.subcategory_2, 
+                        goodsCategories3: element.subcategory_3, 
                         goodsType: element.name, 
                         amountOnWarehouse: element.amount, 
                         cost: parseFloat(element.price), 

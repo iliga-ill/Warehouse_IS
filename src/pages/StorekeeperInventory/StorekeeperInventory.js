@@ -162,7 +162,7 @@ export default function StorekeeperInventory(props){
                         if (good.inventaryzationStatus == "Проинвентаризирован") confirmedAmount++
                     })
                     if (confirmedAmount == list.length)
-                        shelf.inventorysationStatus = "Проинвентаризировано" /*"Проинвентаризировано", "Не проверено" */
+                        shelf.inventorysationStatus = "Проинвентаризировано"
                     else if (confirmedAmount == 0)
                         shelf.inventorysationStatus = "Не проверено"
                     else 

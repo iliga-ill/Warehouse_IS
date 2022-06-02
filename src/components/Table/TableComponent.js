@@ -113,6 +113,13 @@ const [tableHeaders, setTableHeaders] = React.useState([
     {name: 'password',          title:'Пароль',             editingEnabled:true,    width:130, dropdownList: dropdownList                                                   }
 ]) 
 
+mask={/^(.)(.*)$/i} maskExample="быть заполнено"
+mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"
+mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"
+mask={/^[1-9][0-9]{0,10}$/i} maskExample="быть числом больше единицы"
+mask={/^\+\d{1} \(\d{3}\) \d{3}-\d{4}$/i} maskExample="соответствовать шаблону +7 (930) 442-5665"
+mask={/^(.)(.*)(.@.*)\.(.)(.)$/i} maskExample="соответствовать шаблону example@service.ru"
+
 var tableSettings = {
   editColumnWidth: 220, 
   add:true, edit:true, 
@@ -175,6 +182,7 @@ export function TableComponent(props) {
     if (JSON.stringify(rows) != JSON.stringify(props.rows)) {setRows(props.rows)}
     if (editingStateColumnExtensions.toString()=="" && columnWidths.toString()=="")
     props.columns.map(function(item, i){
+      if (item.dropdownlistAmount!=undefined){dropdownlistAmount++}
       editingStateColumnExtensions[i] = {  columnName: item.name, editingEnabled: item.editingEnabled }
       columnWidths[i] = { columnName: item.name, width: item.width}
       if (item.totalCount!=undefined){
@@ -298,6 +306,13 @@ export function TableComponent(props) {
           else changedRows[i].sumCost=0
         })
       }
+
+      columns.map(item=>{
+        var addedKeys = Object.keys(added[0])
+        if (!addedKeys.includes(item.name) && item.basicValue != undefined) {
+          added[0][item.name] = item.basicValue
+        }
+      })
       
       changedRows = [
         ...rows,
@@ -360,18 +375,38 @@ export function TableComponent(props) {
     
   };
 
+  let dropdownlistAmount = 0
+  let dropdownlistIndexes = []
+  let dropdownlistIndex = 0
+
+
   function getColumn(value){
-    var column = {dropdownList:[]}
-    if (value!=undefined){
-      columns.map(item=>{
-        if (item.dropdownList != undefined && item.dropdownList.length>0) {
-          item.dropdownList.map(item2=>{
-            if (item2.menuItem == value)
-              column=item
-          })
-        }
-      })
-    }
+    dropdownlistIndex++
+    columns.map(function(item, i){
+      if (item.dropdownList!=undefined){
+        dropdownlistAmount++
+        dropdownlistIndexes.push(i)
+      }
+    })
+    var column = columns[dropdownlistIndexes[dropdownlistIndex-1]]
+    // console.log(`value: ${value}`)
+    // console.log(`dropdownlistAmount: ${dropdownlistAmount}`)
+    // if (value!=undefined){
+    //   columns.map(item=>{
+    //     if (item.dropdownList != undefined && item.dropdownList.length>0) {
+    //       item.dropdownList.map(item2=>{
+    //         if (item2.menuItem == value)
+    //           column=item
+    //       })
+    //     }
+    //   })
+    // }
+    // if (column.dropdownList == ""){
+    //   alert("в таблицу приходят значения, отсутствующие в выпадающем списке эл-та таблицы!")
+    // }
+    
+    if (dropdownlistIndex == dropdownlistAmount)
+      dropdownlistIndex = 0
     return column
   }
   
