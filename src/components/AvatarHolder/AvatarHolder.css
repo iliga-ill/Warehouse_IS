@@ -1,11 +1,3 @@
-.userAvatar{
-    width: 49px;
-    height: 49px;
-    display: inline-block;
-    
-    border-bottom: 1px solid darkgray;
-}
-
 .avatarHolder{
     width: max-content;
     height: 50px;
@@ -18,16 +10,7 @@
 }
 
 .avatarHolder:hover{
-    background-color: rgba(228, 228, 228, 0.842);
-}
-
-.icon{
-    width: 47px;
-    height: 47px;
-    border-radius: 50%;
-    background-color: white;
-    border: 1px solid black;
-    display: block;
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 .dropdownMenu{
@@ -53,5 +36,5 @@
 }
 
 .menuItem:hover{
-    background-color: rgba(228, 228, 228, 0.842);
+    background-color: rgba(0, 0, 0, 0.1);
 }

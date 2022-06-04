@@ -116,6 +116,7 @@ export default function App() {
       var mainTabsBuff = []
       var subTabsBuff = []
       var admin = false
+      console.log(cookies.accountData)
       JSON.parse(JSON.stringify(cookies.accountData.roles))[0].split(" ").map(role=>{
         if (role!=""){
           if (role==="Администратор"){admin=true}
@@ -176,11 +177,12 @@ export default function App() {
   if (cookies.access_token !== undefined){
     return (
       <div id="page">
-        <div className="header">
+        <div style={{listStyle: "none", width: "100%", height: "51px", backgroundColor: "white", fontSize: "1.25rem"}}>
           <div className="homePage" onClick={()=>{navigate("/Home")}}>
-            <img src={WarehouseISicon} className="homeIcon"/>
+            <div className="selectedBlock" style={{width:"100%", height:"50px"}}/>
+            <img src={WarehouseISicon} style={{width: "50px", height: "50px", marginLeft: "9px", marginTop:"-50px", display: "block"}}/>
           </div>
-          <div className="headTabs">
+          <div style={{width: "calc(100% - 121px)", display: "inline-block"}}>
             <TabHolder tabs={mainTabs}/>
           </div>
             <AvatarHolder cookies={cookies} setCookie={setCookie}/>
