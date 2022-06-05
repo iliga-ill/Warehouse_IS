@@ -329,8 +329,8 @@ class AdministratorRackCreating extends Component {
         return (
             <div id = "pageWrap">
             <FlexibleBlocksPage marginTop={152}>
-                <FlexibleBlock>
-                    <ListWithSearch item_list={this.state.racks} selItem={this.state.selRack} func={this.setRack} width={"200px"} height={"390px"}/>
+                <FlexibleBlock background={false} paddings={false}>
+                    <ListWithSearch item_list={this.state.racks} selItem={this.state.selRack} func={this.setRack} width={200} height={430}/>
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div class="header_text">Настройка</div>

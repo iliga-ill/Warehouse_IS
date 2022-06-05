@@ -1588,8 +1588,8 @@ class AdministratorWarehouseCreating extends Component {
                 
                 <div id="warehouseSceneWrap">
                     <div id="warehouseScene" onContextMenu={(e)=> e.preventDefault()}/>
-                    <SideBlock isOpened={this.isSideBlockOpened} onRightClosed="-502px" onRightOpened="-1px" styles={{top:"150px",width:"505px", height:"100%"}}>
-                        <UniversalTabHolder tabs={this.state.panelTabs} style={{marginLeft:"1px" }} setTab={this.setPanelSelTab} selTab={this.state.panelSelTab}/>
+                    <SideBlock isOpened={this.isSideBlockOpened} onRightClosed="-502px" onRightOpened="-1px" styles={{top:"130px",width:"505px", height:"100%"}}>
+                        <UniversalTabHolder tabs={this.state.panelTabs} setTab={this.setPanelSelTab} selTab={this.state.panelSelTab}/>
                         {this.state.panelSelTab.id==0&&(
                             <div style={{marginLeft:"5px", marginTop:"5px"}}>
                                 <div className="header_text" >Хар-ки склада</div>

@@ -279,8 +279,8 @@ class AdministratorGoodCreating extends Component {
         return (
             <>
             <FlexibleBlocksPage marginTop={152}>
-                <FlexibleBlock>
-                    <ListWithSearch item_list={this.state.goods} selItem={this.state.selGood} func={this.setSelGood} width={"200px"} height={"390px"}/>
+                <FlexibleBlock background={false} paddings={false}>
+                    <ListWithSearch item_list={this.state.goods} selItem={this.state.selGood} func={this.setSelGood} width={200} height={430}/>
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div class="header_text">Настройка</div>

@@ -1,5 +1,6 @@
 import { React, Component, Fragment } from "react";
 import './ListWithSearch.css';
+import SearchIcon from '../../images/SearchIcon.svg';
 
 /*
 //component
@@ -23,32 +24,38 @@ setRacks = (value)=>{this.setState({racks: value});}
 
 <ListWithSearch item_list={this.state.racks} selItem={this.state.selRack} func={this.setRack} width={"200px"} height={"390px"}/>
 */
+const styles={
+    listItem:{
+        borderBottom: "1px solid darkgray",
+        height:"25px",
+    }
+}
 
 class ListWithSearch extends Component {
+
+    lastTerm=""
+
     constructor(props){
         super(props)
         //let searchRes
         this.state = {
             reload:0,
-            styles:{
-                scroll: {
-                    height: this.props.height,
-                    width:this.props.width,
-                    overflowY: "scroll",
-                    border: "1px solid darkgray",
-                    borderRadius: "5px"
-                }
-            },
             searchResults:this.props.item_list,
             itemList:this.props.item_list,
         }
         //this.sortList()
     }
 
+    componentDidUpdate(){
+        // console.log("+")
+        this.sortList(this.lastTerm)
+    }
+
     setReload=()=>{this.setState({reload: this.state.reload+1});}
 
     setSearchTerm = (value)=>{
         this.sortList(value)
+        this.lastTerm = value
         this.setReload()
     }
 
@@ -64,21 +71,35 @@ class ListWithSearch extends Component {
 
     render(){
         return (
-            <>
-            <div class="search_wrap">
-                <input type="text" placeholder="Search" onChange={event => {this.setSearchTerm(event.target.value)}} class="search_field" />
+            <div style={{width: "100%"}}>
+                <div style={{paddingLeft:"5px", paddingBottom:"5px", borderBottom: "1px solid darkgray",}}>
+                    <img src={SearchIcon} style={{width: "20px", height: "20px", display: "inline", verticalAlign: "middle"}}/>
+                    <input style={{display: "inline", verticalAlign: "middle"}} className="listWithSearch_input no-outline" type="text" placeholder="Search" onChange={event => {this.setSearchTerm(event.target.value)}} />
+                </div>
+                <div style={{height: `${this.props.height}px`, width:`${this.props.width}px`, overflowY: "scroll"}}>
+                    {this.state.searchResults.map(item=>{
+                        if (this.props.selItem!=undefined?item.id == this.props.selItem.id:item.id==0){
+                            return (
+                                <div style={{...styles.listItem}} key={item.id} onClick={e=>this.onItemClick(item)}>
+                                    <div className="listWithSearch_selected" style={{paddingLeft: "5px", width:"100%", height:"100%"}}/>
+                                    <div className="noselect" style={{paddingLeft: "5px", marginTop: "-24px", fontSize:"15px"}}>{item.text}</div>
+                                </div>
+                            )
+                        }else{
+                            return (
+                                <div style={styles.listItem} key={item.id}>
+                                    <div className="main_unselected" style={{paddingLeft: "5px", width:"100%", height:"100%"}}
+                                        onMouseDown={e=>this.onItemClick(item)}
+                                    />
+                                    <div className="noselect" style={{paddingLeft: "5px", marginTop: "-24px", fontSize:"15px"}}
+                                        onMouseDown={e=>this.onItemClick(item)}
+                                    >{item.text}</div>
+                                </div>
+                            )
+                        }
+                    })}
+                </div>
             </div>
-            <div class="placeholder"/>
-            <div class="white" style={this.state.styles.scroll}>
-                {this.state.searchResults.map(item=>{
-                    if (this.props.selItem!=undefined?item.id == this.props.selItem.id:item.id==0){
-                        return <div class='block_wrap_1 darkgray' key={item.id} onClick={e=>this.onItemClick(item)}>{item.text}</div>
-                    }else{
-                        return <div class='block_wrap_1 white' key={item.id} onClick={e=>this.onItemClick(item)}>{item.text}</div>
-                    }
-                })}
-            </div>
-            </>
         );
     }
 

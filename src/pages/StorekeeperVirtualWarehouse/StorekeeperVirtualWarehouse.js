@@ -97,7 +97,7 @@ let lookedPoint
 //#endregion
 
 function init(warehouseSettings) { 
-    sceneMarginTop = document.getElementById('toolbar').offsetTop + document.getElementById('toolbar').offsetHeight -1
+    sceneMarginTop = document.getElementById('warehouseSceneWrap').offsetTop -1
     width =  window.innerWidth
     height = window.innerHeight - sceneMarginTop - 4
 
@@ -1000,14 +1000,14 @@ class StorekeeperVirtualWarehouse extends Component {
     render(){
         return (
             <>
-                <div id="toolbar" style={{display: "table", width:"100%"}}>
+                {/* <div id="toolbar" style={{display: "table", width:"100%"}}>
                     <UniversalTabHolder tabs={this.state.tabs} setTab={this.setSelTab} selTab={this.state.selTab}/>
-                </div>
+                </div> */}
                 
                 <div id="warehouseSceneWrap">
                     <div id="warehouseScene" onContextMenu={(e)=> e.preventDefault()}/>
-                    <SideBlock isOpened={this.isSideBlockOpened} onRightClosed="-497px" onRightOpened="-1px" styles={{top:"100px",width:"500px", height:"100%"}}>
-                        <UniversalTabHolder tabs={this.state.panelTabs} style={{marginLeft:"1px" }} setTab={this.setPanelSelTab} selTab={this.state.panelSelTab}/>
+                    <SideBlock isOpened={this.isSideBlockOpened} onRightClosed="-497px" onRightOpened="-1px" styles={{top:"90px",width:"500px", height:"100%"}}>
+                        <UniversalTabHolder tabs={this.state.panelTabs} setTab={this.setPanelSelTab} selTab={this.state.panelSelTab}/>
                         {this.state.panelSelTab.id==0&&(
                             <>
                                 <div class="header_text" style={{margin:"5px"}}>Товары на полке</div>

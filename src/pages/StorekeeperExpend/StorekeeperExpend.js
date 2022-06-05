@@ -30,9 +30,6 @@ export default function StorekeeperExpend(props){
 
 //#region блоки
     //-------------------------------------------------------------------------Блок 1
-   
-    var list_with_search_width = "200px"
-    var list_with_search_height = "335px"
 
     const [orders, setOrders] = React.useState([])
     const [selOrder, setSelOrder] = React.useState(undefined)
@@ -225,8 +222,8 @@ export default function StorekeeperExpend(props){
     return (
         <>
             <FlexibleBlocksPage  marginTop={152}>
-                <FlexibleBlock>
-                    <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={list_with_search_width} height={list_with_search_height}/>
+                <FlexibleBlock background={false} paddings={false}>
+                    <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={200} height={363}/>
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div class="header_text">Списывание товаров</div>

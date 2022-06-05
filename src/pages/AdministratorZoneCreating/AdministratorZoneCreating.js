@@ -332,8 +332,8 @@ onMessageAlighment=()=>{
         return (
             <>
                 <FlexibleBlocksPage marginTop={152}>
-                    <FlexibleBlock>
-                        <ListWithSearch item_list={this.state.zones} selItem={this.state.selZone} func={this.setSelZone} width={"200px"} height={"390px"}/>
+                    <FlexibleBlock background={false} paddings={false}>
+                        <ListWithSearch item_list={this.state.zones} selItem={this.state.selZone} func={this.setSelZone} width={200} height={430}/>
                     </FlexibleBlock>
                     <FlexibleBlock>
                         <div class="header_text">Настройка</div>

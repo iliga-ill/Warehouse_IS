@@ -32,9 +32,6 @@ export default function StorekeeperAdvent(props){
     
 //#region блоки
     //-------------------------------------------------------------------------Блок 1
-   
-    const list_with_search_width = "200px"
-    const list_with_search_height = "335px"
     
      // {id: 0, text: "Заказ №1143", selected: false},
         // {id: 0, text: "Заказ №1346", selected: false},
@@ -317,12 +314,11 @@ async function apiUpdateOrderGoods(selected, value) {
 //#endregion Страница 1 подстраница 1 конец
 //#endregion
 
-
     return (
         <>
             <FlexibleBlocksPage marginTop={152}>
-                <FlexibleBlock>
-                    <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={list_with_search_width} height={list_with_search_height}/>
+                <FlexibleBlock background={false} paddings={false}>
+                    <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={200} height={363}/>
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div class="header_text">Прием товаров</div>

@@ -19,6 +19,7 @@ export default function FlexibleBlocksPage(props){
             fontSize: "1.25rem",
             overflowX: "scroll",
             overflowY: "scroll",
+            verticalAlign: "top",
         }
     )
 

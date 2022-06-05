@@ -315,8 +315,8 @@ export default function LogisticianOrders(props){
     return (
         <>
             <FlexibleBlocksPage marginTop={tabsHeight}>
-                <FlexibleBlock>
-                    <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={"200px"} height={`${document.documentElement.clientHeight - tabsHeight - 80}px`}/>
+                <FlexibleBlock background={false} paddings={false}>
+                    <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={200} height={document.documentElement.clientHeight - tabsHeight - 48}/>
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div class="header_text">Список доставок товаров по заказу</div>

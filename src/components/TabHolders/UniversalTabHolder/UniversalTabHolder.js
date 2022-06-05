@@ -14,20 +14,24 @@ setSelTab = (value)=>{this.setState({selTab: value});}
 
 export default function UniversalTabHolder(props){
     return (
-        <div className="main_UniversalTabHolder">
+        <div style={{width: "100%", height: "fit-content", overflowX: "scroll", overflowY: "hidden", backgroundColor: "white", verticalAlign: "middle", whiteSpace: "nowrap", borderBottom: "1px solid #ccc"}}>
             {props.tabs.map(function(item,i){
                 if (props.selTab.id == item.id && item.selection){
                     return (
-                        <div className="main_tab_UniversalTabHolder selected" key={i} style={item.style!=undefined?item.style:{}}>
-                            {item.title}
+                        <div className="universalTabHolder_tab" key={i} style={props.style!=undefined?props.style:{}}>
+                            <div className="universalTabHolder_selected" style={{width:"calc(100%)", height:"40px"}}/>
+                            <div className="noselect" style={{marginTop: "-35px", paddingLeft:"5px", paddingRight:"5px"}}>{item.title}</div>
                         </div>
                     )
                 }else{
                     return(
-                        <div className="main_tab_UniversalTabHolder unselected" key={i} style={item.style!=undefined?item.style:{}}
-                            onClick={()=>{props.setTab(item); item.func()}}
-                        >
-                            {item.title}
+                        <div className="universalTabHolder_tab" key={i} style={props.style!=undefined?props.style:{}}>
+                            <div className="universalTabHolder_unselected" style={{width:"calc(100%)", height:"40px"}}
+                                onMouseDown={()=>{props.setTab(item); item.func()}}
+                            />
+                            <div className="noselect" style={{marginTop: "-35px", paddingLeft:"5px", paddingRight:"5px"}}
+                                onMouseDown={()=>{props.setTab(item); item.func()}}
+                            >{item.title}</div>
                         </div>
                     )
                 }
