@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 import { Vector2, Vector3 } from "three";
+import { Api } from "../../src/api/administatoApi"
+
+var api = new Api()
 
 export default class WarehouseSettingsModel {
-
     constructor(){
         
     }
@@ -53,67 +55,39 @@ export default class WarehouseSettingsModel {
 		)
 	}
 
-	getRacksType(){
-		return(
-			{
-				rack_0001:{
-					depth:50,
-					shelfWidth:50,
-					shelfHeight:50,
-					columsAmount:4,
-					rowsAmount:3,
-					borderWidth:2,
-					freeSpaceX:0,
-					freeSpaceY:50,
-					color:0x885aaa,
-					translation:new Vector3(0,0,-50/2),
-					shelfs:{
-						shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
-						shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
-						shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:0, column:2},
-						shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:0, column:3},
-						shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:1, column:0},
-						shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:1, column:1},
-						shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:1, column:2},
-						shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:1, column:3},
-						shelf_9:{name:"Полка 9", 	liftingCapacity:50, row:2, column:0},
-						shelf_10:{name:"Полка 10", 	liftingCapacity:50, row:2, column:1},
-						shelf_11:{name:"Полка 11", 	liftingCapacity:50, row:2, column:2},
-						shelf_12:{name:"Полка 12", 	liftingCapacity:50, row:2, column:3},
-					}
-				},
-				rack_0002:{
-					depth:50,
-					shelfWidth:50,
-					shelfHeight:50,
-					columsAmount:2,
-					rowsAmount:3,
-					borderWidth:2,
-					freeSpaceX:0,
-					freeSpaceY:20,
-					color:0x885aaa,
-					translation:new Vector3(0,0,-50/2),
-					shelfs:{
+	getRacksType = async ()=>{
+		var res = []
+		res = await api.getRacksType()
+		res.map((item, i) => {
+			if (i == 0) {
+				item.shelfs = {
+					shelf_1:{
+							name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+							shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+							shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:0, column:2},
+							shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:0, column:3},
+							shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:1, column:0},
+							shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:1, column:1},
+							shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:1, column:2},
+							shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:1, column:3},
+							shelf_9:{name:"Полка 9", 	liftingCapacity:50, row:2, column:0},
+							shelf_10:{name:"Полка 10", 	liftingCapacity:50, row:2, column:1},
+							shelf_11:{name:"Полка 11", 	liftingCapacity:50, row:2, column:2},
+							shelf_12:{name:"Полка 12", 	liftingCapacity:50, row:2, column:3},
+				}
+			}
+			if (i == 1) {
+				item.shelfs = {
 						shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
 						shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
 						shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:1, column:0},
 						shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:1},
 						shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:2, column:0},
 						shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:2, column:1},
-					}
-				},
-				rack_0003:{
-					depth:50,
-					shelfWidth:50,
-					shelfHeight:50,
-					columsAmount:2,
-					rowsAmount:4,
-					borderWidth:2,
-					freeSpaceX:0,
-					freeSpaceY:20,
-					color:0x885aaa,
-					translation:new Vector3(0,0,-50/2),
-					shelfs:{
+				}
+			}
+			if (i == 2) {
+				item.shelfs = {
 						shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
 						shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
 						shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:1, column:0},
@@ -122,20 +96,10 @@ export default class WarehouseSettingsModel {
 						shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:2, column:1},
 						shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:3, column:0},
 						shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:3, column:1},
-					}
-				},
-				rack_0004:{
-					depth:50,
-					shelfWidth:50,
-					shelfHeight:50,
-					columsAmount:3,
-					rowsAmount:4,
-					borderWidth:2,
-					freeSpaceX:0,
-					freeSpaceY:20,
-					color:0x885aaa,
-					translation:new Vector3(0,0,-50/2),
-					shelfs:{
+				}
+			}
+			if (i == 3) {
+				item.shelfs = {
 						shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
 						shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
 						shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:0, column:2},
@@ -148,10 +112,11 @@ export default class WarehouseSettingsModel {
 						shelf_10:{name:"Полка 10", 	liftingCapacity:50, row:3, column:0},
 						shelf_11:{name:"Полка 11", 	liftingCapacity:50, row:3, column:1},
 						shelf_12:{name:"Полка 12", 	liftingCapacity:50, row:3, column:2},
-					}
-				},
+				}
 			}
-		)
+			
+		})
+		return res
 	}
 
 	getGoodsType(){
@@ -202,7 +167,7 @@ export default class WarehouseSettingsModel {
 								/*rackCode*/id:1,
 								centerPoint:new Vector3(120,0,-120),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, /*shelfCode*/id:1, space:[
@@ -232,7 +197,7 @@ export default class WarehouseSettingsModel {
 								id:2,
 								centerPoint:new Vector3(-120,0,-120),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:13, space:[]},
@@ -260,7 +225,7 @@ export default class WarehouseSettingsModel {
 								id:3,
 								centerPoint:new Vector3(-245,0,20),
 								rotation:{x:0,y:90,z:0},
-								racksTypeId: "0002",
+								racksTypeId: "2",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:25, space:[]},
@@ -280,7 +245,7 @@ export default class WarehouseSettingsModel {
 								id:4,
 								centerPoint:new Vector3(-120,0,110),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:31, space:[]},
@@ -313,7 +278,7 @@ export default class WarehouseSettingsModel {
 								id:5,
 								centerPoint:new Vector3(55,0,110),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0002",
+								racksTypeId: "2",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:43, space:[]},
@@ -334,7 +299,7 @@ export default class WarehouseSettingsModel {
 								id:6,
 								centerPoint:new Vector3(180,0,110),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0002",
+								racksTypeId: "2",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:49, space:[]},
@@ -364,7 +329,7 @@ export default class WarehouseSettingsModel {
 								id:7,
 								centerPoint:new Vector3(120,0,-120),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:55, space:[]},
@@ -396,7 +361,7 @@ export default class WarehouseSettingsModel {
 								id:8,
 								centerPoint:new Vector3(-180,0,-120),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0002",
+								racksTypeId: "2",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:67, space:[]},
@@ -417,7 +382,7 @@ export default class WarehouseSettingsModel {
 								id:9,
 								centerPoint:new Vector3(-60,0,-120),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0002",
+								racksTypeId: "2",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:73, space:[]},
@@ -439,7 +404,7 @@ export default class WarehouseSettingsModel {
 								id:10,
 								centerPoint:new Vector3(-245,0,20),
 								rotation:{x:0,y:90,z:0},
-								racksTypeId: "0002",
+								racksTypeId: "2",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:79, space:[]},
@@ -459,7 +424,7 @@ export default class WarehouseSettingsModel {
 								id:11,
 								centerPoint:new Vector3(-120,0,110),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:85, space:[]},
@@ -488,7 +453,7 @@ export default class WarehouseSettingsModel {
 								id:12,
 								centerPoint:new Vector3(120,0,110),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:97, space:[]},
@@ -528,7 +493,7 @@ export default class WarehouseSettingsModel {
 								id:13,
 								centerPoint:new Vector3(120,0,-120),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:109, space:[]},
@@ -559,7 +524,7 @@ export default class WarehouseSettingsModel {
 								id:14,
 								centerPoint:new Vector3(-120,0,-120),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:121, space:[
@@ -589,7 +554,7 @@ export default class WarehouseSettingsModel {
 								id:15,
 								centerPoint:new Vector3(-245,0,20),
 								rotation:{x:0,y:90,z:0},
-								racksTypeId: "0002",
+								racksTypeId: "2",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:133, space:[]},
@@ -609,7 +574,7 @@ export default class WarehouseSettingsModel {
 								id:16,
 								centerPoint:new Vector3(-120,0,110),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:139, space:[]},
@@ -638,7 +603,7 @@ export default class WarehouseSettingsModel {
 								id:17,
 								centerPoint:new Vector3(120,0,110),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:151, space:[]},
@@ -676,3 +641,102 @@ export default class WarehouseSettingsModel {
 
 
 }
+
+// return(
+// 	{
+// 		rack_0001:{
+// 			depth:50,
+// 			shelfWidth:50,
+// 			shelfHeight:50,
+// 			columsAmount:4,
+// 			rowsAmount:3,
+// 			borderWidth:2,
+// 			freeSpaceX:0,
+// 			freeSpaceY:50,
+// 			color:0x885aaa,
+// 			translation:new Vector3(0,0,-50/2),
+// 			shelfs:{
+// 				shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+// 				shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+// 				shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:0, column:2},
+// 				shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:0, column:3},
+// 				shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:1, column:0},
+// 				shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:1, column:1},
+// 				shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:1, column:2},
+// 				shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:1, column:3},
+// 				shelf_9:{name:"Полка 9", 	liftingCapacity:50, row:2, column:0},
+// 				shelf_10:{name:"Полка 10", 	liftingCapacity:50, row:2, column:1},
+// 				shelf_11:{name:"Полка 11", 	liftingCapacity:50, row:2, column:2},
+// 				shelf_12:{name:"Полка 12", 	liftingCapacity:50, row:2, column:3},
+// 			}
+// 		},
+// 		rack_0002:{
+// 			depth:50,
+// 			shelfWidth:50,
+// 			shelfHeight:50,
+// 			columsAmount:2,
+// 			rowsAmount:3,
+// 			borderWidth:2,
+// 			freeSpaceX:0,
+// 			freeSpaceY:20,
+// 			color:0x885aaa,
+// 			translation:new Vector3(0,0,-50/2),
+// 			shelfs:{
+// 				shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+// 				shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+// 				shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:1, column:0},
+// 				shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:1},
+// 				shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:2, column:0},
+// 				shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:2, column:1},
+// 			}
+// 		},
+// 		rack_0003:{
+// 			depth:50,
+// 			shelfWidth:50,
+// 			shelfHeight:50,
+// 			columsAmount:2,
+// 			rowsAmount:4,
+// 			borderWidth:2,
+// 			freeSpaceX:0,
+// 			freeSpaceY:20,
+// 			color:0x885aaa,
+// 			translation:new Vector3(0,0,-50/2),
+// 			shelfs:{
+// 				shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+// 				shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+// 				shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:1, column:0},
+// 				shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:1},
+// 				shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:2, column:0},
+// 				shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:2, column:1},
+// 				shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:3, column:0},
+// 				shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:3, column:1},
+// 			}
+// 		},
+// 		rack_0004:{
+// 			depth:50,
+// 			shelfWidth:50,
+// 			shelfHeight:50,
+// 			columsAmount:3,
+// 			rowsAmount:4,
+// 			borderWidth:2,
+// 			freeSpaceX:0,
+// 			freeSpaceY:20,
+// 			color:0x885aaa,
+// 			translation:new Vector3(0,0,-50/2),
+// 			shelfs:{
+// 				shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+// 				shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+// 				shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:0, column:2},
+// 				shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:0},
+// 				shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:1, column:1},
+// 				shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:1, column:2},
+// 				shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:2, column:0},
+// 				shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:2, column:1},
+// 				shelf_9:{name:"Полка 9", 	liftingCapacity:50, row:2, column:2},
+// 				shelf_10:{name:"Полка 10", 	liftingCapacity:50, row:3, column:0},
+// 				shelf_11:{name:"Полка 11", 	liftingCapacity:50, row:3, column:1},
+// 				shelf_12:{name:"Полка 12", 	liftingCapacity:50, row:3, column:2},
+// 			}
+// 		},
+// 	}
+// )

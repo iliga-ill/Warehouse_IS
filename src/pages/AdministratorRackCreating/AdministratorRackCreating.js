@@ -17,11 +17,10 @@ import zIndex from "@material-ui/core/styles/zIndex";
 
 const styles = {
 
-  }
+}
 
 let modelCreator = new ModelCreator()
 let auxMath = new AuxiliaryMath()
-
 
 //#region Scene settings -------------------------------------------------
 

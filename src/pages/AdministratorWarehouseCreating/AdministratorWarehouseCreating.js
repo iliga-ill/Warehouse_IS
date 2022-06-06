@@ -18,7 +18,9 @@ import WarehouseSettingsModel from "../../classes/WarehouseSettingsModel.js";
 import FirstPersonControls from "../../classes/FirstPersonControls.js";
 import zIndex from "@material-ui/core/styles/zIndex";
 
+import { Api } from "../../api/administatoApi"
 
+var api = new Api()
 const styles = {
 
   }
@@ -1057,6 +1059,9 @@ function addZoneOnScene(zone, zonesType){
 
 function addRackWithGoodsOnScene(zone, rack, racksType, goodsType){
     let rackType = racksType[`rack_${rack.racksTypeId}`]
+    console.log('racksType')
+    console.log(racksType)
+    console.log(rackType)
     let rackModel = modelCreator.createRack(rack.name+" "+rack.id, rackType.color, rackType.shelfWidth, rackType.shelfHeight, rackType.depth, rackType.columsAmount, rackType.rowsAmount, rackType.borderWidth, rackType.translation)
     let rackCenterGlobalCoordinate = new Vector3(
         zone.centerPoint.x + rack.centerPoint.x, 
@@ -1160,7 +1165,7 @@ class AdministratorWarehouseCreating extends Component {
             reload:0,
             //настройки склада
             zonesType: warehouseSettingsModel.getZonesType(),
-            racksType: warehouseSettingsModel.getRacksType(),
+            racksType: undefined,
             goodsType: warehouseSettingsModel.getGoodsType(),
             warehouseSettings: warehouseSettingsModel.getWarehouseSettings(),
             //табы toolbar'a
@@ -1385,32 +1390,15 @@ class AdministratorWarehouseCreating extends Component {
     componentDidMount(){
         var manager = new THREE.LoadingManager();
         manager.onLoad = () => { // when all resources are loaded
-            init(this.state.warehouseSettings)
-            // createHint()
-            warehouseGeneration(this.state.warehouseSettings, this.state.zonesType, this.state.racksType, this.state.goodsType)
-            this.allGoods = []
-            this.state.warehouseSettings.zones.map(zone=>{
-                zone.racks.map(rack=>{
-                    rack.shelfs.map(shelf=>{
-                        shelf.space.map(good=>{
-                            this.allGoods.push(good)
-                        })
-                    })
-                })
+            var res = this.getRacksType()
+
+            res.then(res => {
+                console.log("Res")
+                console.log(res)
+                this.state.racksType = res
+                this.buildWarehouse()
             })
-            let buf = structuredClone(this.allGoods).map(function(good,i){
-                let goodBuf = good
-                goodBuf.goodId = good.id
-                goodBuf.id = i
-                goodBuf.number = i+1
-                goodBuf.goodsType = good.name
-                goodBuf.weight = good.weight
-                return goodBuf
-            })
-            this.state.tableList1 = buf
-            this.state.warehouseWidth = this.state.warehouseSettings.width
-            //this.state.warehouseLength = this.state.warehouseSettings.length
-            this.setWarehouseLength(this.state.warehouseSettings.length)
+          
         }
         let fontWeight = 'regular';
         //fontWeight = 'bold';
@@ -1421,30 +1409,125 @@ class AdministratorWarehouseCreating extends Component {
         });
     }
 
-    componentDidUpdate(){
-        if (this.state.isSideBlockOpened==true){
-            this.setState({isSideBlockOpened: !this.state.isSideBlockOpened})
-        }
-        if (this.state.selectedItem!=undefined && this.state.id!=this.state.selectedItem.goodId){
-            this.state.good = this.state.selectedItem.goodsType
-            this.state.id = this.state.selectedItem.goodId
-            this.state.category = this.state.selectedItem.category
-            this.state.subCategory = this.state.selectedItem.subCategory
-            this.state.cost = this.state.selectedItem.cost
-            this.state.weight = this.state.selectedItem.weight
-            this.state.goodCharacteristics = this.state.selectedItem.goodCharacteristics
-            this.setReload()
-        }
-        if (this.state.selectedZone!=undefined && this.state.selectedZone.userData != undefined){
-            this.state.warehouseSettings.zones.map(zone=>{
-                zone.racks.map(rack=>{
-                    if (!selectionLockedModels.includes(rack.name+" "+rack.id))
-                        selectionLockedModels.push(rack.name+" "+rack.id)
+    buildWarehouse = () =>{
+        init(this.state.warehouseSettings)
+        // createHint()
+        warehouseGeneration(this.state.warehouseSettings, this.state.zonesType, this.state.racksType, this.state.goodsType)
+        this.allGoods = []
+        this.state.warehouseSettings.zones.map(zone=>{
+            zone.racks.map(rack=>{
+                rack.shelfs.map(shelf=>{
+                    shelf.space.map(good=>{
+                        this.allGoods.push(good)
+                    })
                 })
             })
-            this.state.selectedZone.userData.racks.map(rack=>{
-                selectionLockedModels.splice(selectionLockedModels.indexOf(rack.name+" "+rack.id),1)
-            })
+        })
+        let buf = structuredClone(this.allGoods).map(function(good,i){
+            let goodBuf = good
+            goodBuf.goodId = good.id
+            goodBuf.id = i
+            goodBuf.number = i+1
+            goodBuf.goodsType = good.name
+            goodBuf.weight = good.weight
+            return goodBuf
+        })
+        this.state.tableList1 = buf
+        this.state.warehouseWidth = this.state.warehouseSettings.width
+        //this.state.warehouseLength = this.state.warehouseSettings.length
+        this.setWarehouseLength(this.state.warehouseSettings.length)
+    }
+
+    getRacksType = async ()=>{
+		var res = {}
+		res = await api.getRacksType()
+		res.map((item, i) => {
+			if (i == 0) {
+				item.shelfs = {
+					shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+							shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+							shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:0, column:2},
+							shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:0, column:3},
+							shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:1, column:0},
+							shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:1, column:1},
+							shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:1, column:2},
+							shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:1, column:3},
+							shelf_9:{name:"Полка 9", 	liftingCapacity:50, row:2, column:0},
+							shelf_10:{name:"Полка 10", 	liftingCapacity:50, row:2, column:1},
+							shelf_11:{name:"Полка 11", 	liftingCapacity:50, row:2, column:2},
+							shelf_12:{name:"Полка 12", 	liftingCapacity:50, row:2, column:3},
+				}
+			}
+			if (i == 1) {
+				item.shelfs = {
+						shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+						shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+						shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:1, column:0},
+						shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:1},
+						shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:2, column:0},
+						shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:2, column:1},
+				}
+			}
+			if (i == 2) {
+				item.shelfs = {
+						shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+						shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+						shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:1, column:0},
+						shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:1},
+						shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:2, column:0},
+						shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:2, column:1},
+						shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:3, column:0},
+						shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:3, column:1},
+				}
+			}
+			if (i == 3) {
+				item.shelfs = {
+						shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+						shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+						shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:0, column:2},
+						shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:0},
+						shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:1, column:1},
+						shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:1, column:2},
+						shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:2, column:0},
+						shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:2, column:1},
+						shelf_9:{name:"Полка 9", 	liftingCapacity:50, row:2, column:2},
+						shelf_10:{name:"Полка 10", 	liftingCapacity:50, row:3, column:0},
+						shelf_11:{name:"Полка 11", 	liftingCapacity:50, row:3, column:1},
+						shelf_12:{name:"Полка 12", 	liftingCapacity:50, row:3, column:2},
+				}
+			}
+			
+		})
+		return res
+	}
+
+    componentDidUpdate(){
+        console.log("componentDidUpdate")
+        if (this.state.zonesType != undefined && this.state.racksType != undefined && this.state.warehouseSettings != undefined && this.state.goodsType != undefined) {
+            if (this.state.isSideBlockOpened==true){
+                this.setState({isSideBlockOpened: !this.state.isSideBlockOpened})
+            }
+            if (this.state.selectedItem!=undefined && this.state.id!=this.state.selectedItem.goodId){
+                this.state.good = this.state.selectedItem.goodsType
+                this.state.id = this.state.selectedItem.goodId
+                this.state.category = this.state.selectedItem.category
+                this.state.subCategory = this.state.selectedItem.subCategory
+                this.state.cost = this.state.selectedItem.cost
+                this.state.weight = this.state.selectedItem.weight
+                this.state.goodCharacteristics = this.state.selectedItem.goodCharacteristics
+                this.setReload()
+            }
+            if (this.state.selectedZone!=undefined && this.state.selectedZone.userData != undefined){
+                this.state.warehouseSettings.zones.map(zone=>{
+                    zone.racks.map(rack=>{
+                        if (!selectionLockedModels.includes(rack.name+" "+rack.id))
+                            selectionLockedModels.push(rack.name+" "+rack.id)
+                    })
+                })
+                this.state.selectedZone.userData.racks.map(rack=>{
+                    selectionLockedModels.splice(selectionLockedModels.indexOf(rack.name+" "+rack.id),1)
+                })
+            }
         }
     }
 
