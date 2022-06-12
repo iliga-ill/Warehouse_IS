@@ -15,7 +15,9 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
 import AuxiliaryMath from "../../classes/AuxiliaryMath.js";
 import zIndex from "@material-ui/core/styles/zIndex";
+import { Api } from "../../api/administatoApi"
 
+var api = new Api()
 const styles = {
 
   }
@@ -162,20 +164,20 @@ class AdministratorZoneCreating extends Component {
         super(props)
         this.state = {
             zones:[
-                {id: 0, text: "Зона 1"},
-                {id: 1, text: "Зона 2"},
-                {id: 2, text: "Зона 3"},
+                {id: 0, text: "Загрузка"},
+                // {id: 1, text: "Зона 2"},
+                // {id: 2, text: "Зона 3"},
             ],
-            selZone:{id: 0, text: "Зона 1"},
+            selZone:{id: 0, text: "Загрузка"},
             length:500,
             width:300,
             color:{a: 100, b: 170, g: 90, h: 275, hex: "#ffffff", r: 136, rgba: "rgba(136,90,170,1)", s: 47, v: 67},
             lineWidth:1,
             chamferLendth:10,
-            message:"Зона 1",
+            message:"Загрузка",
             textSize:15,
-            gapLengthX: "Зона 1".length * 15,
-            gapLengthY: "Зона 1".length * 15,
+            gapLengthX: "Загрузка".length * 15,
+            gapLengthY: "Загрузка".length * 15,
             messageAlighment:["right"],
             isAighmentTop:false,
             isAighmentBottom:false,
@@ -186,7 +188,27 @@ class AdministratorZoneCreating extends Component {
     }
 
     setZones = (value)=>{this.setState({zones: value});}
-    setSelZone = (value)=>{this.setState({selZone: value});}
+    setSelZone = (value)=>{
+        let obj = value
+
+        this.state.length = obj.length
+        this.state.width = obj.width
+        this.state.color = obj.color
+        this.state.lineWidth = obj.lineWidth
+        this.state.chamferLendth = obj.chamferLendth
+        this.state.message = obj.message
+        this.state.textSize = obj.textSize
+        this.state.gapLengthX = obj.gapLengthX
+        this.state.gapLengthY = obj.gapLengthY
+        this.state.freeSpaceX = obj.freeSpaceX
+        this.state.freeSpaceY = obj.freeSpaceY
+        this.state.messageAlighment = obj.messageAlighment
+        this.state.isAighmentTop = obj.isAighmentTop
+        this.state.isAighmentBottom = obj.isAighmentBottom
+        this.state.isAighmentRight = obj.isAighmentRight
+        this.state.isAighmentLeft = obj.isAighmentLeft
+
+        this.setState({selZone: value});}
     setLength = (value)=>{this.setState({length: Number(value)});}
     setWidth = (value)=>{this.setState({width: Number(value)});}
     setColor = (value)=>{this.setState({color: value});}
@@ -203,10 +225,23 @@ class AdministratorZoneCreating extends Component {
     setIsAighmentLeft = (value)=>{this.setState({isAighmentLeft: value})}
     setIsAighmentRight = (value)=>{this.setState({isAighmentRight: value})}
 
+    getZones = async() => {
+        let res = []
+        res = await api.getVirtualZones()
+        // this.state.goods = res
+        // this.state.selGood = res[0]
+
+        console.log(res)
+        
+        structuredClone(this.state.zones).map(()=>{this.state.zones.pop()})
+        res.map(item=>{this.state.zones.push(item)})
+        this.setSelZone(res[0])
+    }
 
     componentDidMount(){
         var manager = new THREE.LoadingManager();
         manager.onLoad = () => { // when all resources are loaded
+            if (this.state.zones[0].text == "Загрузка") this.getZones()
             init(
                 this.state.width, 
                 this.state.length, 
@@ -355,7 +390,7 @@ onMessageAlighment=()=>{
                         </div>
 
                         <div style={{width:'485px'}}></div>
-                        <button class="bt_send_AdministratorZoneCreating1" onClick={this.btn_send_1}>Создать новый товар</button>
+                        <button class="bt_send_AdministratorZoneCreating1" onClick={this.btn_send_1}>Создать новую зону</button>
                         <div class="place_holder_AdministratorZoneCreating"/>
                         <button class="bt_send_AdministratorZoneCreating2" style={{marginRight:"5px"}} onClick={this.btn_send_2}>Построить</button>
                         <button class="bt_send_AdministratorZoneCreating2" onClick={this.btn_send_3}>Сохранить</button>
@@ -363,7 +398,7 @@ onMessageAlighment=()=>{
 
                     </FlexibleBlock>
                     <FlexibleBlock>
-                        <div class="header_text">Товар</div>
+                        <div class="header_text">Зона</div>
                         <div id="warehouseSceneWrap">
                             <div id="warehouseScene"  style={{border: "1px solid #ccc", width:"min-content"}} onContextMenu={(e)=> e.preventDefault()}/>
                         </div>

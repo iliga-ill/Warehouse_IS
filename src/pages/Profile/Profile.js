@@ -4,7 +4,11 @@ import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPa
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import Avatar from 'react-avatar-edit'
 import InputText from "../../components/InputText/InputText";
+import { Api } from "../../api/profileApi"
+import ManIcon from '../../images/ManIcon.svg'
 
+var api = new Api()
+var isStart = true
 const styles = {
 
 }
@@ -23,9 +27,22 @@ export default function Profile(props){
     var id=1300
     function getId(){return ++id-1;}
 
-    const [avatar, setAvatar] = React.useState(accountData.avatar)
+    const [avatar, setAvatar] = React.useState(ManIcon)
     const [preview, setPreview] = React.useState(null)
 
+    async function getAvatar() {
+        var res = await api.getProfileAvatar(accountData.operator_id)
+        setAvatar(res)
+        setPreview(res)
+        console.log(res)
+        console.log(avatar)
+    }
+
+    if (isStart) {
+        getAvatar()
+        isStart = false
+    }
+    
     function onClose() {
         setPreview({preview: null})
       }
@@ -42,13 +59,40 @@ export default function Profile(props){
     }
 
     function onSave(){
-        console.log("preview: " + preview)
-        console.log("name: " + name)
-        console.log("surname: " + surname)
-        console.log("patronymic: " + patronymic)
-        console.log("login: " + login)
-        console.log("password: " + password)
-        console.log("phoneNum: " + phoneNum)
+        let body = {
+            code: accountData.operator_id,
+            name: name,
+            surname: surname,
+            patronymic: patronymic,
+            login: login,
+            password: password,
+            phone_num: phoneNum,
+            duty: "",
+            preview: preview.preview
+        }
+        console.log(preview.preview)
+        updateProfile(body)
+    }
+
+    async function updateProfile(value) {
+        let res = await api.updateProfile(value)
+
+        var accountData = {
+            // roles: ["Логист", "Менеджер", "Администратор"], 
+            roles: accountData.roles, 
+            avatar: preview.preview, 
+            name: name, 
+            surname: surname, 
+            patronymic: patronymic,
+            login:  login,
+            password: password,
+            phone_num: phoneNum,
+            operator_id: accountData.operator_id
+          }
+        
+        let expires = new Date()
+        expires.setTime(expires.getTime() + (30 * 60 * 1000))
+        props.setCookie('accountData', accountData, { path: '/',  expires})
     }
 
     return (

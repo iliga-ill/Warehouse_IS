@@ -12,9 +12,12 @@ import { MapControls, OrbitControls } from 'three/examples/jsm/controls/OrbitCon
 import ModelCreator from "../../classes/ModelCreator.js";
 import { Color, MOUSE, Vector2, Vector3 } from "three";
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { Api } from '../../api/administatoApi'
 
 import AuxiliaryMath from "../../classes/AuxiliaryMath.js";
 import zIndex from "@material-ui/core/styles/zIndex";
+
+
 
 const styles = {
 
@@ -157,16 +160,17 @@ function setModelOnCoordinates(model, coordinates, inObjects){
 }
 
 class AdministratorGoodCreating extends Component {
-
+    selectedItemId = -1
     constructor(props){
         super(props)
         this.state = {
+            reload:0,
             goods:[
-                {id: 0, text: "Товар 1"},
-                {id: 1, text: "Товар 2"},
-                {id: 2, text: "Товар 3"},
+                {id: -1, text: "Загрузка"},
+                // {id: 1, text: "Товар 2"},
+                // {id: 2, text: "Товар 3"},
             ],
-            selGood:{id: 0, text: "Товар 1"},
+            selGood:{id: -1, text: "Загрузка"},
             goodName:"Варочная поверхность Bosch PKE 645 B17E",
             depth:16,
             width:16,
@@ -178,8 +182,30 @@ class AdministratorGoodCreating extends Component {
         }
     }
 
+    setReload = ()=>{this.setState({reload: this.state.reload+1});}
     setGoods = (value)=>{this.setState({goods: value});}
-    setSelGood = (value)=>{this.setState({selGood: value});}
+    setSelGood = (value)=>{
+        // this.state.goodName = undefined
+        // this.state.depth = undefined
+        // this.state.width = undefined
+        // this.state.height = undefined
+        // this.state.color = undefined
+        // this.state.translationX = undefined
+        // this.state.translationY = undefined
+        // this.state.translationZ = undefined
+
+        let obj = value
+
+        this.state.goodName = obj.goodName
+        this.state.depth = obj.depth
+        this.state.width = obj.width
+        this.state.height = obj.height
+        this.state.color = obj.color
+        this.state.translationX = obj.translationX
+        this.state.translationY = obj.translationY
+        this.state.translationZ = obj.translationZ
+
+        this.setState({selGood: value});}
     setGoodName = (value)=>{this.setState({goodName: value});}
     setDepth = (value)=>{this.setState({depth: Number(value)});}
     setWidth = (value)=>{this.setState({width: Number(value)});}
@@ -189,11 +215,25 @@ class AdministratorGoodCreating extends Component {
     setTranslationY = (value)=>{this.setState({translationY: Number(value)});}
     setTranslationZ = (value)=>{this.setState({translationZ: Number(value)});}
     
+    getTypes = async() => {
+        let api = new Api()
+        let res = []
+        res = await api.getVirtualGoodsType()
+        // this.state.goods = res
+        // this.state.selGood = res[0]
+       
 
+        console.log(res)
+        
+        structuredClone(this.state.goods).map(()=>{this.state.goods.pop()})
+        res.map(item=>{this.state.goods.push(item)})
+        this.setSelGood(res[0])
+    }
 
     componentDidMount(){
         var manager = new THREE.LoadingManager();
         manager.onLoad = () => { // when all resources are loaded
+            if (this.state.goods[0].text == "Загрузка") this.getTypes()
             init(
                 this.state.width, 
                 this.state.depth, 
@@ -223,6 +263,26 @@ class AdministratorGoodCreating extends Component {
         loader.load('https://threejs.org/examples/fonts/droid/droid_serif_bold.typeface.json', function(response) {
             font = response;
         });
+    }
+
+    componentDidUpdate() {
+        // if (this.state.goodName == undefined) {
+        //     let obj = this.state.selGood
+
+        //     this.state.goodName = obj.goodName
+        //     this.state.depth = obj.depth
+        //     this.state.width = obj.width
+        //     this.state.height = obj.height
+        //     this.state.color = obj.color
+        //     this.state.translationX = obj.translationX
+        //     this.state.translationY = obj.translationY
+        //     this.state.translationZ = obj.translationZ
+
+        //     this.selectedItemId = this.state.selGood.id
+        //     console.log("УСЛОВИЕ")
+        //     this.setReload()
+        // }
+        console.log(this.state)
     }
 
     componentWillUnmount() {clearInterval(this.timerID);}
@@ -259,20 +319,58 @@ class AdministratorGoodCreating extends Component {
     }
 
     btn_send_1=()=> {
+        let id = (Number(this.state.goods[this.state.goods.length - 1].id) + 1)
         this.state.goods.push(
             {
-                id: (Number(this.state.goods[this.state.goods.length - 1].id) + 1),
+                id: id,
                 text: `Товар ${Number(this.state.goods[this.state.goods.length - 1].text.split(" ")[1])+1}`, 
+                goodName: `Товар ${id}`,
+                depth:16,
+                width:16,
+                height:16,
+                color:{a: 100, b: 170, g: 90, h: 275, hex: "#885aaa", r: 136, rgba: "rgba(136,90,170,1)", s: 47, v: 67},
+                translationX:0,
+                translationY:8,
+                translationZ:0,
             }
         )
         this.setSelGood(this.state.goods[this.state.goods.length-1])
+        let api = new Api()
+        let body = {
+            id: id,
+            name: `Товар ${id}`,
+            depth:16,
+            width:16,
+            height:16,
+            color: "rgba(136,90,170,1)",
+            translation: `${this.state.translationX}/${this.state.translationY}/${this.state.translationZ}`,
+        }
+        api.postVirtualGoodsType(body)
     }
 
     btn_send_2=()=> {
-
+        let api = new Api()
+        let body = {
+            id: this.state.selGood.id,
+            width: this.state.width,
+            height: this.state.height,
+            depth: this.state.depth,
+            color: this.state.color.rgba,
+            translation: `${this.state.translationX}/${this.state.translationY}/${this.state.translationZ}`,
+            good_name: this.state.selGood.goodName
+        }
+        let res = api.updateVirtualGoodsType(body)
     }
     btn_send_3=()=> {
+        this.deleteVirtualGoodsType(this.state.selGood.id)
+    }
 
+    deleteVirtualGoodsType = async(value) => {
+        let api = new Api()
+        let res = api.deleteVirtualGoodsType(value)
+        res.then(res=> {
+            alert(res)
+        })
     }
 
     render(){

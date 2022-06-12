@@ -30,7 +30,7 @@ export default function StorekeeperAllocation(props){
     
     if (zones.toString()=="")
     apiGetZones()
-    
+
     const [racks, setRacks] = React.useState([])
     async function apiGetRacks(zonesAnswer) {
         var buf = await api.getRacks(zonesAnswer)
@@ -103,6 +103,7 @@ export default function StorekeeperAllocation(props){
         {menuItem:""},
         {menuItem:"Зона 1"},
         {menuItem:"Зона 2"},
+        {menuItem:"Зона 3"},
     ])
 
 
@@ -118,6 +119,8 @@ export default function StorekeeperAllocation(props){
         {menuItem:"Стеллаж 8"},
         {menuItem:"Стеллаж 9"},
         {menuItem:"Стеллаж 10"},
+        {menuItem:"Стеллаж 11"},
+        {menuItem:"Стеллаж 12"},
     ])
 
     const [dropdownList3, setDropdownList3] = React.useState([
@@ -125,6 +128,15 @@ export default function StorekeeperAllocation(props){
         {menuItem:"Полка 1"},
         {menuItem:"Полка 2"},
         {menuItem:"Полка 3"},
+        {menuItem:"Полка 4"},
+        {menuItem:"Полка 5"},
+        {menuItem:"Полка 6"},
+        {menuItem:"Полка 7"},
+        {menuItem:"Полка 8"},
+        {menuItem:"Полка 9"},
+        {menuItem:"Полка 10"},
+        {menuItem:"Полка 11"},
+        {menuItem:"Полка 12"},
     ])
 
     const [tableHeaders, setTableHeaders] = React.useState([

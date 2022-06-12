@@ -32,22 +32,6 @@ export default function StorekeeperAdvent(props){
     
 //#region блоки
     //-------------------------------------------------------------------------Блок 1
-    
-     // {id: 0, text: "Заказ №1143", selected: false},
-        // {id: 0, text: "Заказ №1346", selected: false},
-        // {id: 0, text: "Заказ №3543", selected: false},
-        // {id: 0, text: "Заказ №3156", selected: false},
-        // {id: 0, text: "Заказ №6243", selected: false},
-        // {id: 0, text: "Заказ №6546", selected: false},
-        // {id: 0, text: "Заказ №6547", selected: false},
-        // {id: 0, text: "Заказ №6548", selected: false},
-        // {id: 0, text: "Заказ №6549", selected: false},
-        // {id: 0, text: "Заказ №6540", selected: false},
-        // {id: 0, text: "Заказ №6526", selected: false},
-        // {id: 0, text: "Заказ №6536", selected: false},
-        // {id: 0, text: "Заказ №6556", selected: false},
-        // {id: 0, text: "Заказ №6566", selected: false},
-
     const [orders, setOrders] = React.useState([])
     const [selOrder, setSelOrder] = React.useState(undefined)
 
@@ -73,24 +57,6 @@ export default function StorekeeperAdvent(props){
         setGoodsCategories2(goods)
         apiGetGoodsSubCat3()
     }
-    // var table_list_value = [
-    //     {value: "Встраиваемая техника", selected: true},
-    //     {value: "Стиральные машины", selected: false},
-    //     {value: "Сушильные машины", selected: false},
-    //     {value: "Холодильники", selected: false},
-    //     {value: "Морозильные камеры", selected: false},
-    //     {value: "Винные шкафы", selected: false},
-    //     {value: "Вытяжки", selected: false},
-    //     {value: "Плиты", selected: false},
-    //     {value: "Посудомоечные машины", selected: false},
-    //     {value: "Мелкая бытовая техника", selected: false},
-    //     {value: "Микроволновые печи", selected: false},
-    //     {value: "Электродуховки", selected: false},
-    //     {value: "Пылесосы", selected: false},
-    //     {value: "Водонагреватели", selected: false},
-    //     {value: "Кулеры и пурифайеры", selected: false},
-    //     {value: "Швейные машины, оверлоки", selected: false}
-    // ]
 
     const [goodsCategories3, setGoodsCategories3] = React.useState([])
     async function apiGetGoodsSubCat3() {
@@ -99,48 +65,12 @@ export default function StorekeeperAdvent(props){
         apiGetShipmentOrders()
     }
 
-    // var table_list_value_2 = [
-    //     {value: "Варочные поверхности", selected: true},
-    //     {value: "Духовые шкафы", selected: false},
-    //     {value: "Вытяжки", selected: false},
-    //     {value: "Встраиваемые посудомоечные машины", selected: false},
-    //     {value: "Встраиваемые холодильники", selected: false},
-    //     {value: "Встраиваемые морозильные камеры", selected: false},
-    //     {value: "Встраиваемые микроволновые печи", selected: false},
-    //     {value: "Кухонные мойки", selected: false},
-    //     {value: "Измельчители отходов", selected: false},
-    //     {value: "Кухня", selected: false},
-    //     {value: "Бытовые приборы для дома", selected: false},
-    //     {value: "Красота и гигиена", selected: false},
-    //     {value: "Косметические приборы", selected: false},
-    //     {value: "Медицина и реабилитация", selected: false},
-    // ]
-
     const [goodsType, setGoodsType] = React.useState([])
     async function apiGetGoodsType() {
         var goods = await api.getGoodsType()
         setGoodsType(goods)
         apiGetGoodsSubCat2()
     }
-    // var goods_type_list = [
-    //     {value: "Варочная поверхность Bosch PKE 645 B17E", selected: true},
-    //     {value: "Варочная поверхность Bosch PKE 645 B18E", selected: false},
-    //     {value: "Варочная поверхность Bosch PKE 645 B19E", selected: false},
-    //     {value: "Варочная поверхность Bosch PKE 645 B20E", selected: false},
-    //     {value: "Варочная поверхность Bosch PKE 645 B21E", selected: false},
-    //     {value: "Варочная поверхность Bosch PKE 645 B22E", selected: false},
-    //     {value: "Варочная поверхность Bosch PKE 645 B23E", selected: false},
-    // ]
-
-    // const [tableHeaders, setTableHeaders] = React.useState([
-    //     {title:"№", mode:"text", column_width: "30px", listValue: []}, 
-    //     {title:"Категория", mode:"inputList", column_width: "130px", listValue: goodsCategories2}, 
-    //     {title:"Подкатегория", mode:"inputList", column_width: "130px", listValue: goodsCategories3}, 
-    //     {title:"Наименование", mode:"inputList", column_width: "110px", listValue: goodsType}, 
-    //     {title:"Ожидаемое количество", mode:"input", column_width: "70px", listValue: []},
-    //     {title:"Кол-во коробок", mode:"input", column_width: "70px", listValue: []},
-    //     {title:"", mode:"remove", column_width: "50px", listValue: []},
-    // ]) 
 
     const [tableHeaders, setTableHeaders] = React.useState([
         {name: 'number',            title:'№',                  editingEnabled:false,   width:40    }, 

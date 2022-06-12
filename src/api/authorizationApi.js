@@ -28,7 +28,8 @@ export class Api {
                           login: item.login, 
                           password: item.password, 
                           phone_num: item.phone_num, 
-                          duty: item.duty
+                          duty: item.duty,
+                          avatar: item.avatar
                         }) 
                     })
                     resolve(accounts)

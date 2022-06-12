@@ -103,9 +103,7 @@ export default function LogisticianOrders(props){
         var elm = await api.postShipments(selected, tableList)
         if (elm != undefined && elm != [] && elm != "[]") {
             result.push(elm)
-            console.log("ЖЕКИ был здесь")
             result.map(id => {
-                console.log(id[0])
                 tableList[tableList.length-1].code = id[0]
             })
         }
@@ -176,7 +174,7 @@ export default function LogisticianOrders(props){
         {name: 'number',            title:'№',                      editingEnabled:false,   width:40    }, 
         {name: 'goodsType',         title:'Товар',                  editingEnabled:false,   width:140   }, 
         {name: 'goodsCost',         title:'Цена продукции',         editingEnabled:false,   width:124, isCurrency:true   }, 
-        {name: 'shipmentProgress',  title:'Прогресс доставки',      editingEnabled:false,   width:142   }, 
+        {name: 'amount',            title:'Заказанное количество',  editingEnabled:false,   width:142   }, 
         {name: 'weight',            title:'Вес ед продукции (кг)',  editingEnabled:false,   width:159   }, 
     ])
     var tableSettings2 = {add:false, edit:false, delete:false, select:true}

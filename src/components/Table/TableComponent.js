@@ -284,8 +284,10 @@ export function TableComponent(props) {
         });
       }
 
-      if (columns[0].name=='number'){
+      if (columns[0].name=='number' && rows.length > 1){
         added[0].number = Number(rows[rows.length-1].number) + 1
+      } else {
+        added[0].number = 1
       }
       
       columns.map(item=>{

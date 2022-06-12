@@ -14,7 +14,9 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
 import AuxiliaryMath from "../../classes/AuxiliaryMath.js";
 import zIndex from "@material-ui/core/styles/zIndex";
+import { Api } from "../../api/administatoApi"
 
+var api = new Api()
 const styles = {
 
 }
@@ -161,11 +163,11 @@ class AdministratorRackCreating extends Component {
         this.state = {
             reload:0,
             racks:[
-                {id: 0, text: "Стеллаж 1"},
-                {id: 1, text: "Стеллаж 2"},
-                {id: 2, text: "Стеллаж 3"},
+                {id: 0, text: "Загрузка"},
+                // {id: 1, text: "Стеллаж 2"},
+                // {id: 2, text: "Стеллаж 3"},
             ],
-            selRack:{id: 0, text: "Стеллаж 1"},
+            selRack:{id: 0, text: "Загрузка"},
             depth:50,
             shelfWidth:50,
             shelfHeight:50,
@@ -183,7 +185,26 @@ class AdministratorRackCreating extends Component {
     }
 
     setReload = ()=>{this.setState({reload: this.state.reload+1});}
-    setRacks = (value)=>{this.setState({racks: value});}
+    setRacks = (value)=>{
+        let obj = value
+
+        this.state.depth = obj.depth
+        this.state.shelfWidth = obj.width
+        this.state.shelfWidth = obj.height
+        this.state.columsAmount = obj.columsAmount
+        this.state.rowsAmount = obj.rows_amount
+        this.state.borderWidth = obj.borderWidth
+        this.state.color = obj.color
+        this.state.liftingCapacity = obj.liftingCapacity
+        this.state.freeSpaceX = obj.freeSpaceX
+        this.state.freeSpaceY = obj.freeSpaceY
+        this.state.translationX = obj.translationX
+        this.state.translationY = obj.translationY
+        this.state.translationZ = obj.translationZ
+
+
+        this.setState({racks: value});
+    }
     setRack = (value)=>{this.setState({selRack: value});}
     setDepth = (value)=>{this.setState({depth: Number(value)});}
     setShelfWidth = (value)=>{this.setState({shelfWidth: Number(value)});}
@@ -199,10 +220,25 @@ class AdministratorRackCreating extends Component {
     setFreeSpaceX = (value)=>{this.setState({freeSpaceX: Number(value)});}
     setFreeSpaceY = (value)=>{this.setState({freeSpaceY: Number(value)});}
 
+    getRacks = async() => {
+        let api = new Api()
+        let res = []
+        res = await api.getVirtualRacks()
+        // this.state.goods = res
+        // this.state.selGood = res[0]
+
+        console.log(res)
+        
+        structuredClone(this.state.racks).map(()=>{this.state.racks.pop()})
+        res.map(item=>{this.state.racks.push(item)})
+        this.setRack(res[0])
+    }
+
 
     componentDidMount(){
         var manager = new THREE.LoadingManager();
         manager.onLoad = () => { // when all resources are loaded
+            if (this.state.racks[0].text == "Загрузка") this.getRacks()
             init(
                 this.state.shelfWidth*this.state.columsAmount + this.state.borderWidth*(this.state.columsAmount+1), 
                 this.state.depth, 
@@ -307,21 +343,77 @@ class AdministratorRackCreating extends Component {
     }
 
     btn_send_1=()=> {
+        let new_id = Number(this.state.racks[this.state.racks.length - 1].id) + 1 
         this.state.racks.push(
             {
-                id: (Number(this.state.racks[this.state.racks.length - 1].id) + 1),
+                id: new_id,
                 text: `Стеллаж ${Number(this.state.racks[this.state.racks.length - 1].text.split(" ")[1])+1}`, 
+                depth:50,
+                shelfWidth:50,
+                shelfHeight:50,
+                columsAmount:4,
+                rowsAmount:3,
+                borderWidth:2,
+                color:{a: 100, b: 170, g: 90, h: 275, hex: "#885aaa", r: 136, rgba: "rgba(136,90,170,1)", s: 47, v: 67},
+                translationX:0,
+                translationY:0,
+                translationZ:-50/2,
+                liftingCapacity:50,
+                freeSpaceX:0,
+                freeSpaceY:50,
             }
         )
         this.setRack(this.state.racks[this.state.racks.length-1])
+
+        let body = {
+            id: new_id,
+            depth: 50,
+            shelf_width: 50,
+            shelf_height: 50,
+            columns_amount: 4,
+            rows_amount: 3,
+            border_width: 2,
+            color: "rgba(136,90,170,1)",
+            translation: `0/0/-25`,
+            lifting_capacity: 50,
+            free_space_x: 0,
+            free_space_y: 50
+        }
+        api.insertVirtualRacks(body)
     }
 
     btn_send_2=()=> {
-
+        console.log(this.state.selRack)
+        let rack = this.state
+        let body = {
+            id: rack.selRack.id,
+            depth: rack.depth,
+            shelf_width: rack.shelfWidth,
+            shelf_height: rack.shelfHeight,
+            columns_amount: rack.columsAmount,
+            rows_amount: rack.rowsAmount,
+            border_width: rack.borderWidth,
+            color: rack.color.rgba,
+            translation: `${rack.translationX}/${rack.translationY}/${rack.translationZ}`,
+            free_space_x: rack.freeSpaceX,
+            free_space_y: rack.freeSpaceY,
+            lifting_capacity: rack.liftingCapacity
+        }
+        api.updateVirtualRacks(body)
     }
 
     btn_send_3=()=> {
+        let body = {
+            id: this.state.selRack.id,
+        }
+        this.deleteVirtualRacks(body)
+    }
 
+    deleteVirtualRacks = async(value) => {
+        let res = api.deleteVirtualRacks(value)
+        res.then(res=> {
+            alert(res)
+        })
     }
 
     render(){
