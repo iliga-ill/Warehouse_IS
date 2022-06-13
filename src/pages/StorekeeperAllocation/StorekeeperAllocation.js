@@ -30,7 +30,7 @@ export default function StorekeeperAllocation(props){
     
     if (zones.toString()=="")
     apiGetZones()
-    
+
     const [racks, setRacks] = React.useState([])
     async function apiGetRacks(zonesAnswer) {
         var buf = await api.getRacks(zonesAnswer)
@@ -72,10 +72,7 @@ export default function StorekeeperAllocation(props){
     async function apiGetGoodsSubCat3(goodsTypeAnswer, goodsCategories2Answer) {
         var buf = await api.getGoodsSubCat3()
         setGoodsCategories3(buf)
-        // TODO ПОМОГИТЕ
-        // console.log("CATEGOE")               ОНО ПУСТОЕ
-        // console.log(goodsCategories2)
-        // console.log(goodsCategories3)
+
         apiGetShipmentOrdersGoods(goodsTypeAnswer, goodsCategories2Answer, buf)
     }
 
@@ -103,11 +100,12 @@ export default function StorekeeperAllocation(props){
         {menuItem:""},
         {menuItem:"Зона 1"},
         {menuItem:"Зона 2"},
+        {menuItem:"Зона 3"},
     ])
 
 
     const [dropdownList2, setDropdownList2] = React.useState([
-        {menuItem:" "},
+        {menuItem:""},
         {menuItem:"Стеллаж 1"},
         {menuItem:"Стеллаж 2"},
         {menuItem:"Стеллаж 3"},
@@ -118,13 +116,24 @@ export default function StorekeeperAllocation(props){
         {menuItem:"Стеллаж 8"},
         {menuItem:"Стеллаж 9"},
         {menuItem:"Стеллаж 10"},
+        {menuItem:"Стеллаж 11"},
+        {menuItem:"Стеллаж 12"},
     ])
 
     const [dropdownList3, setDropdownList3] = React.useState([
-        {menuItem:"  "},
+        {menuItem:""},
         {menuItem:"Полка 1"},
         {menuItem:"Полка 2"},
         {menuItem:"Полка 3"},
+        {menuItem:"Полка 4"},
+        {menuItem:"Полка 5"},
+        {menuItem:"Полка 6"},
+        {menuItem:"Полка 7"},
+        {menuItem:"Полка 8"},
+        {menuItem:"Полка 9"},
+        {menuItem:"Полка 10"},
+        {menuItem:"Полка 11"},
+        {menuItem:"Полка 12"},
     ])
 
     const [tableHeaders, setTableHeaders] = React.useState([
@@ -150,18 +159,18 @@ export default function StorekeeperAllocation(props){
             var counter = 0;
             shipmentOrdersGoods.map(function(item,i){
                 for (let i=0;i<(item.amount_real-item.placed_amount);i++){
-                    buf.push({id: getId(), shipmentOrderGoodsCode:item.code, goodCode:item.goodCode, number:++counter, goodsCategories2: item.goodsCategories2, goodsCategories3: item.goodsCategories3, goodsType:item.good_name, weight:item.weight, zone:"", rack:" ", shelf:"  "})
+                    buf.push({id: getId(), shipmentOrderGoodsCode:item.code, goodCode:item.goodCode, number:++counter, goodsCategories2: item.goodsCategories2, goodsCategories3: item.goodsCategories3, goodsType:item.good_name, weight:item.weight, zone:"", rack:"", shelf:""})
                 }
             })
-            console.log("buf")
-            console.log(buf)
+            // console.log("buf")
+            // console.log(buf)
             setTableList(buf)
         }
     }, [shipmentOrdersGoods]);
 
     async function apiPostGoodsToShelfs(value) {
         var response = await api.postGoodsToShelfs(value)
-        console.log(response)
+        //console.log(response)
         setTableList([])
         setTableList2([])
 
@@ -171,33 +180,9 @@ export default function StorekeeperAllocation(props){
         apiGetGoodsType()
         apiGetZones()
     }
-    //{id: counter++, amount: item.amount, amount_real: item.amount_real, placed_amount:item.placed_amount, code: item.code, good_name: goodsTypeAnswer[item.goods-1].name, goodsCategories2:goodsCategories2Answer[goodsTypeAnswer[item.goods-1].subcategory_2-1].name, goodsCategories3:goodsCategories3Answer[goodsTypeAnswer[item.goods-1].subcategory_3-1].name , order_num: item.order_num}
-    
-    // function apiGetClients() {
-    //     var xhr = new XMLHttpRequest();
-    //     xhr.open('GET', host+'/clients', true);
-    //     console.log("Authorization apiGetClients was launched")
-    //     xhr.onreadystatechange = function() {
-    //       if (xhr.readyState == XMLHttpRequest.DONE) {
-    //         var answer = JSON.parse(this.response)
-    //         console.log("Authorization apiGetClients answer: ")
-    //         console.log(answer)
-    //         var buffer = []
-    //         answer.map( function(item, i) {
-    //             buffer[i] = {number:i+1, name: item.name, surname: item.surname, patronymic: item.patronymic, login: item.login, password: item.password, phone_num: item.phone_num, duty: item.duty}
-    //             buffer[i].id = 'string_' + i;
-    //         })
-    //         if (JSON.stringify(tableList)!=JSON.stringify(buffer))
-    //             setTableList(buffer)
-    //       }
-    //     } 
-    //     xhr.send(null);
-    //   }
-    //   if(tableList.toString()=="")
-    //     apiGetClients()
 
     function btn_send_1() {
-        console.log(tableList)
+        //console.log(tableList)
         apiPostGoodsToShelfs(tableList)
     }
     //-------------------------------------стол 1 конец
@@ -225,8 +210,8 @@ export default function StorekeeperAllocation(props){
                 else
                     buf.push({id:i, number:(i+1), zone: item.zone_num, rack: item.rack_num, shelf: item.name, loadСapacity: item.capacity, fillStatus:item.shelf_space.length})
             })
-            console.log("buf2")
-            console.log(buf)
+            // console.log("buf2")
+            // console.log(buf)
             setTableList2(buf)
         }
     }, [shelfsSpace]);

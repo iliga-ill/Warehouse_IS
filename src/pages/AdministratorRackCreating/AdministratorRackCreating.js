@@ -14,14 +14,15 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
 import AuxiliaryMath from "../../classes/AuxiliaryMath.js";
 import zIndex from "@material-ui/core/styles/zIndex";
+import { Api } from "../../api/administatoApi"
 
+var api = new Api()
 const styles = {
 
-  }
+}
 
 let modelCreator = new ModelCreator()
 let auxMath = new AuxiliaryMath()
-
 
 //#region Scene settings -------------------------------------------------
 
@@ -157,16 +158,17 @@ function setModelOnCoordinates(model, coordinates, inObjects){
 
 class AdministratorRackCreating extends Component {
 
+    lastSelId
     constructor(props){
         super(props)
         this.state = {
             reload:0,
             racks:[
-                {id: 0, text: "Стеллаж 1"},
-                {id: 1, text: "Стеллаж 2"},
-                {id: 2, text: "Стеллаж 3"},
+                {id: 0, text: "Загрузка"},
+                // {id: 1, text: "Стеллаж 2"},
+                // {id: 2, text: "Стеллаж 3"},
             ],
-            selRack:{id: 0, text: "Стеллаж 1"},
+            selRack:{id: 0, text: "Загрузка"},
             depth:50,
             shelfWidth:50,
             shelfHeight:50,
@@ -180,6 +182,7 @@ class AdministratorRackCreating extends Component {
             liftingCapacity:50,
             freeSpaceX:0,
 			freeSpaceY:50,
+            shownPanel:true,
         }
     }
 
@@ -200,10 +203,48 @@ class AdministratorRackCreating extends Component {
     setFreeSpaceX = (value)=>{this.setState({freeSpaceX: Number(value)});}
     setFreeSpaceY = (value)=>{this.setState({freeSpaceY: Number(value)});}
 
+    setShownPanel = (value)=>{this.setState({shownPanel: value})}
+
+    getRacks = async() => {
+        let api = new Api()
+        let res = []
+        res = await api.getVirtualRacks()
+        // this.state.goods = res
+        // this.state.selGood = res[0]
+        
+        structuredClone(this.state.racks).map(()=>{this.state.racks.pop()})
+        res.map(item=>{this.state.racks.push(item)})
+        this.setRack(res[0])
+    }
+
+    componentDidUpdate(){
+
+        if (this.state.selRack.id!=this.lastSelId && this.state.selRack.depth!=undefined){
+            let obj = this.state.selRack
+
+            this.state.depth = obj.depth
+            this.state.shelfWidth = obj.width
+            this.state.shelfHeight = obj.height
+            this.state.columsAmount = obj.columsAmount
+            this.state.rowsAmount = obj.rowsAmount
+            this.state.borderWidth = obj.borderWidth
+            this.state.color = obj.color
+            this.state.liftingCapacity = obj.liftingCapacity
+            this.state.freeSpaceX = obj.freeSpaceX
+            this.state.freeSpaceY = obj.freeSpaceY
+            this.state.translationX = obj.translationX
+            this.state.translationY = obj.translationY
+            this.state.translationZ = obj.translationZ
+
+            this.lastSelId = this.state.selRack.id
+            this.setShownPanel(!this.state.shownPanel)
+        }
+    }
 
     componentDidMount(){
         var manager = new THREE.LoadingManager();
         manager.onLoad = () => { // when all resources are loaded
+            if (this.state.racks[0].text == "Загрузка") this.getRacks()
             init(
                 this.state.shelfWidth*this.state.columsAmount + this.state.borderWidth*(this.state.columsAmount+1), 
                 this.state.depth, 
@@ -308,21 +349,77 @@ class AdministratorRackCreating extends Component {
     }
 
     btn_send_1=()=> {
+        let new_id = Number(this.state.racks[this.state.racks.length - 1].id) + 1 
         this.state.racks.push(
             {
-                id: (Number(this.state.racks[this.state.racks.length - 1].id) + 1),
+                id: new_id,
                 text: `Стеллаж ${Number(this.state.racks[this.state.racks.length - 1].text.split(" ")[1])+1}`, 
+                depth:50,
+                shelfWidth:50,
+                shelfHeight:50,
+                columsAmount:4,
+                rowsAmount:3,
+                borderWidth:2,
+                color:{a: 100, b: 170, g: 90, h: 275, hex: "#885aaa", r: 136, rgba: "rgba(136,90,170,1)", s: 47, v: 67},
+                translationX:0,
+                translationY:0,
+                translationZ:-50/2,
+                liftingCapacity:50,
+                freeSpaceX:0,
+                freeSpaceY:50,
             }
         )
         this.setRack(this.state.racks[this.state.racks.length-1])
+
+        let body = {
+            id: new_id,
+            depth: 50,
+            shelf_width: 50,
+            shelf_height: 50,
+            columns_amount: 4,
+            rows_amount: 3,
+            border_width: 2,
+            color: "rgba(136,90,170,1)",
+            translation: `0/0/-25`,
+            lifting_capacity: 50,
+            free_space_x: 0,
+            free_space_y: 50
+        }
+        api.insertVirtualRacks(body)
     }
 
     btn_send_2=()=> {
-
+        console.log(this.state.selRack)
+        let rack = this.state
+        let body = {
+            id: rack.selRack.id,
+            depth: rack.depth,
+            shelf_width: rack.shelfWidth,
+            shelf_height: rack.shelfHeight,
+            columns_amount: rack.columsAmount,
+            rows_amount: rack.rowsAmount,
+            border_width: rack.borderWidth,
+            color: rack.color.rgba,
+            translation: `${rack.translationX}/${rack.translationY}/${rack.translationZ}`,
+            free_space_x: rack.freeSpaceX,
+            free_space_y: rack.freeSpaceY,
+            lifting_capacity: rack.liftingCapacity
+        }
+        api.updateVirtualRacks(body)
     }
 
     btn_send_3=()=> {
+        let body = {
+            id: this.state.selRack.id,
+        }
+        this.deleteVirtualRacks(body)
+    }
 
+    deleteVirtualRacks = async(value) => {
+        let res = api.deleteVirtualRacks(value)
+        res.then(res=> {
+            alert(res)
+        })
     }
 
     render(){
@@ -333,27 +430,57 @@ class AdministratorRackCreating extends Component {
                     <ListWithSearch item_list={this.state.racks} selItem={this.state.selRack} func={this.setRack} width={200} height={430}/>
                 </FlexibleBlock>
                 <FlexibleBlock>
-                    <div class="header_text">Настройка</div>
-                    <InputText styles = "row_with_item_wide" label="Глубина&nbsp;полки&nbsp;(см)&nbsp;" placeholder="глубина полки"   defValue={this.state.depth}            set={this.setDepth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
-                    <InputText styles = "row_with_item_wide" label="Ширина&nbsp;полки&nbsp;(см)&nbsp;"  placeholder="ширина полки"    defValue={this.state.shelfWidth}       set={this.setShelfWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
-                    <InputText styles = "row_with_item_wide" label="Высота&nbsp;полки&nbsp;(см)&nbsp;"  placeholder="высота полки"    defValue={this.state.shelfHeight}      set={this.setShelfHeight} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
-                    <InputText styles = "row_with_item_wide" label="Количество&nbsp;столбцов&nbsp;"     placeholder="кол-во столбцов" defValue={this.state.columsAmount}     set={this.setColumsAmount} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
-                    <InputText styles = "row_with_item_wide" label="Количество&nbsp;рядов&nbsp;"        placeholder="кол-во рядов"    defValue={this.state.rowsAmount}       set={this.setRowsAmount} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
-                    <InputText styles = "row_with_item_wide" label="Толщина&nbsp;стенки&nbsp;(см)&nbsp;" placeholder="толщина стенки" defValue={this.state.borderWidth}      set={this.setBorderWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
-                    <div class = "low_text row_with_item_wide">
-                        <div>Цвет&nbsp;стеллажа:&nbsp;</div>
-                        <InputColor initialValue={this.state.color.hex} onChange={this.setColor} placement="right"/>
-                    </div>
-                    <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;x&nbsp;"                 placeholder="смещение по x"          defValue={this.state.translationX}     set={this.setTranslationX} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
-                    <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;y&nbsp;"                 placeholder="смещение по y"          defValue={this.state.translationY}     set={this.setTranslationY} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
-                    <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;z&nbsp;"                 placeholder="смещение по z"          defValue={this.state.translationZ}     set={this.setTranslationZ} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
-                    <InputText styles = "row_with_item_wide" label="Грузоподьемность&nbsp;полки&nbsp;(кг)&nbsp;"   placeholder="грузоподьемность полки" defValue={this.state.liftingCapacity}  set={this.setLiftingCapacity} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
-                    <InputText styles = "row_with_item_wide" label="Свободная&nbsp;зона&nbsp;вокруг&nbsp;полки&nbsp;по&nbsp;Х&nbsp;(см)"   placeholder="cвободная зона вокруг полки по Х" defValue={this.state.freeSpaceX} set={this.setFreeSpaceX} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
-                    <InputText styles = "row_with_item_wide" label="Свободная&nbsp;зона&nbsp;вокруг&nbsp;полки&nbsp;по&nbsp;Y&nbsp;(см)"   placeholder="cвободная зона вокруг полки по Y" defValue={this.state.freeSpaceY} set={this.setFreeSpaceY} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
-                    <div></div>
-                    <button class="bt_send_AdministratorRackCreating1" onClick={this.btn_send_1}>Создать новую полку</button>
-                    <div class="place_holder_AdministratorRackCreating"/><button class="bt_send_AdministratorRackCreating2" onClick={this.btn_send_2}>Сохранить</button>
-                    <button class="bt_send_AdministratorRackCreating3" onClick={this.btn_send_3}>Удалить</button>
+                    {this.state.shownPanel
+                        &&<>
+                            <div class="header_text">Настройка</div>
+                            <InputText styles = "row_with_item_wide" label="Глубина&nbsp;полки&nbsp;(см)&nbsp;" placeholder="глубина полки"   defValue={this.state.depth}            set={this.setDepth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Ширина&nbsp;полки&nbsp;(см)&nbsp;"  placeholder="ширина полки"    defValue={this.state.shelfWidth}       set={this.setShelfWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Высота&nbsp;полки&nbsp;(см)&nbsp;"  placeholder="высота полки"    defValue={this.state.shelfHeight}      set={this.setShelfHeight} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Количество&nbsp;столбцов&nbsp;"     placeholder="кол-во столбцов" defValue={this.state.columsAmount}     set={this.setColumsAmount} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Количество&nbsp;рядов&nbsp;"        placeholder="кол-во рядов"    defValue={this.state.rowsAmount}       set={this.setRowsAmount} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Толщина&nbsp;стенки&nbsp;(см)&nbsp;" placeholder="толщина стенки" defValue={this.state.borderWidth}      set={this.setBorderWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <div class = "low_text row_with_item_wide">
+                                <div>Цвет&nbsp;стеллажа:&nbsp;</div>
+                                <InputColor initialValue={this.state.color.hex} onChange={this.setColor} placement="right"/>
+                            </div>
+                            <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;x&nbsp;"                 placeholder="смещение по x"          defValue={this.state.translationX}     set={this.setTranslationX} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
+                            <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;y&nbsp;"                 placeholder="смещение по y"          defValue={this.state.translationY}     set={this.setTranslationY} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
+                            <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;z&nbsp;"                 placeholder="смещение по z"          defValue={this.state.translationZ}     set={this.setTranslationZ} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
+                            <InputText styles = "row_with_item_wide" label="Грузоподьемность&nbsp;полки&nbsp;(кг)&nbsp;"   placeholder="грузоподьемность полки" defValue={this.state.liftingCapacity}  set={this.setLiftingCapacity} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Свободная&nbsp;зона&nbsp;вокруг&nbsp;полки&nbsp;по&nbsp;Х&nbsp;(см)"   placeholder="cвободная зона вокруг полки по Х" defValue={this.state.freeSpaceX} set={this.setFreeSpaceX} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Свободная&nbsp;зона&nbsp;вокруг&nbsp;полки&nbsp;по&nbsp;Y&nbsp;(см)"   placeholder="cвободная зона вокруг полки по Y" defValue={this.state.freeSpaceY} set={this.setFreeSpaceY} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <div></div>
+                            <button class="bt_send_AdministratorRackCreating1" onClick={this.btn_send_1}>Создать новую полку</button>
+                            <div class="place_holder_AdministratorRackCreating"/><button class="bt_send_AdministratorRackCreating2" onClick={this.btn_send_2}>Сохранить</button>
+                            <button class="bt_send_AdministratorRackCreating3" onClick={this.btn_send_3}>Удалить</button>
+                        </>
+                    }
+                    {!this.state.shownPanel
+                        &&<>
+                            <div class="header_text">Настройка</div>
+                            <InputText styles = "row_with_item_wide" label="Глубина&nbsp;полки&nbsp;(см)&nbsp;" placeholder="глубина полки"   defValue={this.state.depth}            set={this.setDepth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Ширина&nbsp;полки&nbsp;(см)&nbsp;"  placeholder="ширина полки"    defValue={this.state.shelfWidth}       set={this.setShelfWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Высота&nbsp;полки&nbsp;(см)&nbsp;"  placeholder="высота полки"    defValue={this.state.shelfHeight}      set={this.setShelfHeight} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Количество&nbsp;столбцов&nbsp;"     placeholder="кол-во столбцов" defValue={this.state.columsAmount}     set={this.setColumsAmount} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Количество&nbsp;рядов&nbsp;"        placeholder="кол-во рядов"    defValue={this.state.rowsAmount}       set={this.setRowsAmount} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Толщина&nbsp;стенки&nbsp;(см)&nbsp;" placeholder="толщина стенки" defValue={this.state.borderWidth}      set={this.setBorderWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <div class = "low_text row_with_item_wide">
+                                <div>Цвет&nbsp;стеллажа:&nbsp;</div>
+                                <InputColor initialValue={this.state.color.hex} onChange={this.setColor} placement="right"/>
+                            </div>
+                            <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;x&nbsp;"                 placeholder="смещение по x"          defValue={this.state.translationX}     set={this.setTranslationX} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
+                            <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;y&nbsp;"                 placeholder="смещение по y"          defValue={this.state.translationY}     set={this.setTranslationY} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
+                            <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;z&nbsp;"                 placeholder="смещение по z"          defValue={this.state.translationZ}     set={this.setTranslationZ} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
+                            <InputText styles = "row_with_item_wide" label="Грузоподьемность&nbsp;полки&nbsp;(кг)&nbsp;"   placeholder="грузоподьемность полки" defValue={this.state.liftingCapacity}  set={this.setLiftingCapacity} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Свободная&nbsp;зона&nbsp;вокруг&nbsp;полки&nbsp;по&nbsp;Х&nbsp;(см)"   placeholder="cвободная зона вокруг полки по Х" defValue={this.state.freeSpaceX} set={this.setFreeSpaceX} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Свободная&nbsp;зона&nbsp;вокруг&nbsp;полки&nbsp;по&nbsp;Y&nbsp;(см)"   placeholder="cвободная зона вокруг полки по Y" defValue={this.state.freeSpaceY} set={this.setFreeSpaceY} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <div></div>
+                            <button class="bt_send_AdministratorRackCreating1" onClick={this.btn_send_1}>Создать новую полку</button>
+                            <div class="place_holder_AdministratorRackCreating"/><button class="bt_send_AdministratorRackCreating2" onClick={this.btn_send_2}>Сохранить</button>
+                            <button class="bt_send_AdministratorRackCreating3" onClick={this.btn_send_3}>Удалить</button>
+                        </>
+                    }
+                    
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div class="header_text">Стеллаж</div>

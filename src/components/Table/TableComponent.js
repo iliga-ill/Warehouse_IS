@@ -215,13 +215,11 @@ export function TableComponent(props) {
   const exporterRef = useRef(null);
 
   const startExport = useCallback((options) => {
-    console.log(options)
     exporterRef.current.exportGrid(options);
   }, [exporterRef]);
 
   const onSave = (workbook) => {
     if (onSaveCheck++==0){
-      console.log("exported")
       counter = 0
       numberCounter=0
       workbook.xlsx.writeBuffer().then((buffer) => {
@@ -280,7 +278,6 @@ export function TableComponent(props) {
       if (added != undefined){
         columns.map(item=>{
           var addedKeys = Object.keys(added[0])
-            console.log(addedKeys.includes(item.name))
             if (addedKeys.includes(item.name)){
               if (item.isCurrency!=undefined && item.isCurrency){
                 added[0][item.name] = parseFloat(added[0][item.name])
@@ -296,8 +293,10 @@ export function TableComponent(props) {
         });
       }
 
-      if (columns[0].name=='number'){
+      if (columns[0].name=='number' && rows.length > 1){
         added[0].number = Number(rows[rows.length-1].number) + 1
+      } else {
+        added[0].number = 1
       }
       
       columns.map(item=>{
@@ -336,7 +335,6 @@ export function TableComponent(props) {
     }
     
     if (changed) {
-      console.log("4")
       changedRows = rows.map(row => (changed[row.id] ? { ...row, ...changed[row.id] } : row));
       rows.map(row =>{
         if (changed[row.id] != undefined){
@@ -395,13 +393,12 @@ export function TableComponent(props) {
   function getColumn(value){
     dropdownlistIndex++
     columns.map(function(item, i){
-      if (item.dropdownList!=undefined){
+      if (item.dropdownList!=undefined && item.dropdownList!=""){
         dropdownlistAmount++
         dropdownlistIndexes.push(i)
       }
     })
     var column = columns[dropdownlistIndexes[dropdownlistIndex-1]]
-    // console.log(`value: ${value}`)
     // console.log(`dropdownlistAmount: ${dropdownlistAmount}`)
     // if (value!=undefined){
     //   columns.map(item=>{

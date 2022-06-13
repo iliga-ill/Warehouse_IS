@@ -66,8 +66,8 @@ export default function StorekeeperInventory(props){
     const [selectedItemId, setSelectedItemId] = React.useState()
 
     if (tableList.toString()=="" && shelfsSpace.toString()!=""){
-        console.log("shelfsSpace")
-        console.log(shelfsSpace)
+        // console.log("shelfsSpace")
+        // console.log(shelfsSpace)
         var buf=[]
         var counter = 0
         shelfsSpace.map(function(item, i){
@@ -85,8 +85,7 @@ export default function StorekeeperInventory(props){
                     //buf.push({id:counter, number:++counter, shelfSpaceCode:item.shelfCode, zone:item.zone_num, rack:item.rack_num, shelf:item.name, goodsType:" ", amount:0, inventaryzationStatus:"Пусто"}) 
             }
         })
-        console.log('BUF')
-        console.log(buf)
+        console.log('buf')
         console.log(buf)
         setTableList(buf)
         setSelectedItemId(buf[0])
@@ -176,7 +175,7 @@ export default function StorekeeperInventory(props){
                     shelf.shelf_space.map(function(originalGood,i){
                         let newStatus = undefined
                         tableList1.map(newGood=>{
-                            console.log(originalGood.id)
+                            // console.log(originalGood.id)
                             // console.log(newGood)
                             // console.log(originalGood)
                             if (i == newGood.id) {

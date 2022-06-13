@@ -243,7 +243,7 @@ export class Api {
                     console.log(answer)
                     var buffer = []
                     answer.map(function( element, i) {
-                        buffer.push({number:i+1, goodsType: element.name, weight: element.weight, goodsCost: parseFloat(element.price), shipmentProgress:"10/100", goodCode:element.code})
+                        buffer.push({number:i+1, goodsType: element.name, weight: element.weight, goodsCost: parseFloat(element.price), amount:element.amount, goodCode:element.code})
                         buffer[i].id = Api.getId()
                         buffer[i].code = element.code;
                     });

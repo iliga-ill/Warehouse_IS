@@ -23,8 +23,10 @@ export default function InputFile(props){
         var curFiles = input.files;
         if(curFiles.length === 0) {
           var para = document.createElement('p');
-          para.textContent = 'Не были выбраны файлы для загрузки';
-          para.preview.appendChild(para);
+          if (para != undefined) {
+            para.textContent = 'Не были выбраны файлы для загрузки';
+            para.preview.appendChild(para);
+          }        
         } else {
           var list = document.createElement('ol');
           preview.appendChild(list);
