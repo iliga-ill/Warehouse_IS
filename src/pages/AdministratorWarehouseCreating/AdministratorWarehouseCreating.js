@@ -18,7 +18,9 @@ import WarehouseSettingsModel from "../../classes/WarehouseSettingsModel.js";
 import FirstPersonControls from "../../classes/FirstPersonControls.js";
 import zIndex from "@material-ui/core/styles/zIndex";
 
+import { Api } from "../../api/administatoApi"
 
+var api = new Api()
 const styles = {
 
   }
@@ -888,6 +890,7 @@ function onPointerDown( event ) {
 
             page.state.warehouseSettings.zones.push(userData)
             zones.push({id:userData.id, centerPoint:userData.centerPoint, width:zoneType.width, length:zoneType.length})
+            api.postZones(userData)
             render();
         }
     }
@@ -920,6 +923,7 @@ function onPointerDown( event ) {
                 }
                 newObject.type = "rack"
                 page.state.selectedZone.userData.racks.push(newObject.userData)
+            
                 let rackType = page.state.racksType[`rack_${page.state.installedModel.name}`]
                 racks.push({
                     id:newObject.userData.id,
@@ -945,6 +949,8 @@ function onPointerDown( event ) {
                     ),
                     "rack"
                 )
+
+                api.postRacks(newObject.userData, page.state.selectedZone)
             }
         }
         if (intersect.object.type == "zone" && (page.state.selectedZone==undefined || intersect.object.userData.id != page.state.selectedZone.userData.id) && !isShiftDown && !isCtrlDown) selectZone(intersect)
@@ -1040,8 +1046,11 @@ function addFloorOnScene(warehouseSettings){
     selectionLockedModels.push(floorModel.name)
 }
 
-function addZoneOnScene(zone, zonesType){
+function addZoneOnScene(zone, zonesType){  
     let zoneType = zonesType[`zone_${zone.zoneTypeId}`]
+    console.log(zoneType)
+    console.log(zone.zoneTypeId)
+    console.log(zonesType)
     let zoneBorderModel = modelCreator.createZoneBorder(zone.name, zoneType.color, zoneType.width, zoneType.length, zoneType.lineWidth, zoneType.chamferLendth, zoneType.message, zoneType.messageAlighment, font, zoneType.textSize, zoneType.gapLengthX, zoneType.gapLengthY, new Vector3(0,0,0))
     let zoneFillModel = modelCreator.zoneFillModel(`${zone.name}_fillament`, zoneType.color, zoneType.width, zoneType.length, zoneType.lineWidth, zoneType.chamferLendth, new Vector3(0,0,0))
     zoneBorderModel.mesh = auxMath.rotateMeshOnAllAxis(zoneBorderModel.mesh, zone.rotation)
@@ -1057,6 +1066,9 @@ function addZoneOnScene(zone, zonesType){
 
 function addRackWithGoodsOnScene(zone, rack, racksType, goodsType){
     let rackType = racksType[`rack_${rack.racksTypeId}`]
+    console.log('racksType')
+    console.log(racksType)
+    console.log(rackType)
     let rackModel = modelCreator.createRack(rack.name+" "+rack.id, rackType.color, rackType.shelfWidth, rackType.shelfHeight, rackType.depth, rackType.columsAmount, rackType.rowsAmount, rackType.borderWidth, rackType.translation)
     let rackCenterGlobalCoordinate = new Vector3(
         zone.centerPoint.x + rack.centerPoint.x, 
@@ -1159,10 +1171,10 @@ class AdministratorWarehouseCreating extends Component {
         this.state={
             reload:0,
             //настройки склада
-            zonesType: warehouseSettingsModel.getZonesType(),
-            racksType: warehouseSettingsModel.getRacksType(),
-            goodsType: warehouseSettingsModel.getGoodsType(),
-            warehouseSettings: warehouseSettingsModel.getWarehouseSettings(),
+            zonesType: undefined,
+            racksType: undefined,
+            goodsType: undefined,
+            warehouseSettings: undefined,
             //табы toolbar'a
             // tabs:[
             //     {id:0, title:"Вид", func:()=>{onChangeViewMode()}, selection:false, style:{fontSize:"15px", height:"20px"}},
@@ -1184,14 +1196,14 @@ class AdministratorWarehouseCreating extends Component {
             selectedZoneCenterX:undefined, //хар-ки выделенной зоны склада
             selectedZoneCenterZ:undefined, //хар-ки выделенной зоны склада
             selectedZoneRotation:undefined, //хар-ки выделенной зоны склада
-            zoneTypeIdExpandList: Object.keys(warehouseSettingsModel.getZonesType()).map(zoneType=>{return {value: zoneType.split("_")[1]}}), //хар-ки выделенной зоны склада
+            zoneTypeIdExpandList: {value: "загрузка"}, //хар-ки выделенной зоны склада
             selectedZoneTypeId: {value: "0001"},//хар-ки выделенной зоны склада
             selectedRack:undefined, //выделенный стеллаж
             selectedRackName:undefined, //хар-ки выделенного стеллажа
             selectedRackCenterX:undefined, //хар-ки выделенного стеллажа
             selectedRackCenterZ:undefined, //хар-ки выделенного стеллажа
             selectedRackRotation:undefined, //хар-ки выделенного стеллажа
-            rackTypeIdExpandList: Object.keys(warehouseSettingsModel.getRacksType()).map(rackType=>{return {value: rackType.split("_")[1]}}), //хар-ки выделенного стеллажа
+            rackTypeIdExpandList: {value: "загрузка"}, //хар-ки выделенного стеллажа
             selectedRackTypeId: {value: "0001"},//хар-ки выделенного стеллажа
             isAlertMessageboxOpened: false,
             installedModel:undefined,
@@ -1214,11 +1226,11 @@ class AdministratorWarehouseCreating extends Component {
         this.setState({panelSelTab: value});
     }                //табы выезжающей панельки
     setIsSideBlockOpened = (value)=>{this.setState({isSideBlockOpened: value});}    //табы выезжающей панельки
-
+    
     setWarehouseWidth = (value)=>{this.state.warehouseSettings.width = Number(value); this.setState({warehouseWidth: Number(value)});this.recreateFloor()} //хар-ки склада
     setWarehouseLength = (value)=>{this.state.warehouseSettings.length = Number(value); this.setState({warehouseLength: Number(value)});this.recreateFloor()} //хар-ки склада
 
-    setSelectedZone = (value)=>{this.setState({selectedZone: value});}       //выделенная зона
+    setSelectedZone = (value)=>{this.setState({selectedZone: value})}       //выделенная зона
     setSelectedZoneName = (value)=>{this.state.selectedZone.userData.name = value; this.setState({selectedZoneName: value});this.recreateZone()}       //хар-ки выделенной зоны
     setSelectedZoneCenterX = (value)=>{this.state.selectedZone.userData.centerPoint.x = Number(value); this.setState({selectedZoneCenterX: Number(value)});this.recreateZone()}     //хар-ки выделенной зоны
     setSelectedZoneCenterZ = (value)=>{this.state.selectedZone.userData.centerPoint.z = Number(value); this.setState({selectedZoneCenterZ: Number(value)});this.recreateZone()}     //хар-ки выделенной зоны
@@ -1267,10 +1279,13 @@ class AdministratorWarehouseCreating extends Component {
     recreateZone=()=>{
         let newZoneMesh = undefined
         let newRackMesh = undefined
+        let newZoneBuf = undefined
         this.state.warehouseSettings.zones.map(zone=>{
             if (zone.id === this.state.selectedZone.userData.id && zone.type === "zone"){
                 let newZoneObj = this.getSceneElmByIdAndType(zone.id, "zone")
+                console.log(newZoneObj.userData)
                 let newZone = newZoneObj.userData
+                newZoneBuf = newZone
                 scene.remove(newZoneObj)
                 scene.remove(newZone.borderModel)
                 newZone.racks.map(rack=>{
@@ -1299,7 +1314,7 @@ class AdministratorWarehouseCreating extends Component {
         })
         scene.remove(zoneHintMesh)
         zoneHintMesh = addHintOnScene(newZoneMesh)
-        
+        api.updateZones(newZoneBuf)
         if (rackHintMesh!=undefined && this.state.selectedRack!=undefined){
             newRackMesh=this.getSceneElmByIdAndType(this.state.selectedRack.userData.id, "rack")
             scene.remove(rackHintMesh)
@@ -1309,6 +1324,7 @@ class AdministratorWarehouseCreating extends Component {
     }
 
     recreateRack=(isTypeChanged)=>{
+        let newRackBuf = undefined
         this.state.warehouseSettings.zones.map(zone=>{
             if (zone.id === this.state.selectedZone.userData.id && zone.type === "zone"){
                 let newZoneObj = this.getSceneElmByIdAndType(zone.id, "zone")
@@ -1317,6 +1333,7 @@ class AdministratorWarehouseCreating extends Component {
                     if (rack.id === this.state.selectedRack.userData.id && rack.type === "rack"){
                         let newRackObj = this.getSceneElmByIdAndType(rack.id, "rack")
                         let newRack = newRackObj.userData
+                        newRackBuf = newRack
                         if (newRackObj.userData.goodsModels!=undefined) {
                             newRackObj.userData.goodsModels.map(goodObj=>{
                                 scene.remove(goodObj)
@@ -1338,6 +1355,7 @@ class AdministratorWarehouseCreating extends Component {
             }
             return zone
         })
+        api.updateRacks(newRackBuf)
         let newRackMesh=this.getSceneElmByIdAndType(this.state.selectedRack.userData.id, "rack")
         scene.remove(rackHintMesh)
         rackHintMesh = addHintOnScene(newRackMesh)
@@ -1385,32 +1403,32 @@ class AdministratorWarehouseCreating extends Component {
     componentDidMount(){
         var manager = new THREE.LoadingManager();
         manager.onLoad = () => { // when all resources are loaded
-            init(this.state.warehouseSettings)
-            // createHint()
-            warehouseGeneration(this.state.warehouseSettings, this.state.zonesType, this.state.racksType, this.state.goodsType)
-            this.allGoods = []
-            this.state.warehouseSettings.zones.map(zone=>{
-                zone.racks.map(rack=>{
-                    rack.shelfs.map(shelf=>{
-                        shelf.space.map(good=>{
-                            this.allGoods.push(good)
+            var racksWithShelfs = this.getRacksType()
+            racksWithShelfs.then(racksWithShelfs => {
+                console.log("racksWithShelfs")
+                console.log(racksWithShelfs)
+                this.state.racksType = racksWithShelfs
+                this.state.rackTypeIdExpandList = Object.keys(racksWithShelfs).map(rackType=>{return {value: rackType.split("_")[1]}})
+
+                var zones = this.getZonesType()
+                zones.then(zones => {
+                    this.state.zonesType = zones
+                    this.state.zoneTypeIdExpandList = Object.keys(zones).map(zoneType=>{return {value: zoneType.split("_")[1]}})
+
+                    var goods_type = this.getGoodsType()
+                    goods_type.then(goods_type => {
+                        this.state.goodsType = goods_type
+                        var warehouse_model = this.getWarehouseModel()
+                        warehouse_model.then(warehouse_model => {
+                            this.state.warehouseSettings = warehouse_model
+                            this.buildWarehouse()
                         })
+                      
                     })
                 })
             })
-            let buf = structuredClone(this.allGoods).map(function(good,i){
-                let goodBuf = good
-                goodBuf.goodId = good.id
-                goodBuf.id = i
-                goodBuf.number = i+1
-                goodBuf.goodsType = good.name
-                goodBuf.weight = good.weight
-                return goodBuf
-            })
-            this.state.tableList1 = buf
-            this.state.warehouseWidth = this.state.warehouseSettings.width
-            //this.state.warehouseLength = this.state.warehouseSettings.length
-            this.setWarehouseLength(this.state.warehouseSettings.length)
+            
+          
         }
         let fontWeight = 'regular';
         //fontWeight = 'bold';
@@ -1421,30 +1439,86 @@ class AdministratorWarehouseCreating extends Component {
         });
     }
 
-    componentDidUpdate(){
-        if (this.state.isSideBlockOpened==true){
-            this.setState({isSideBlockOpened: !this.state.isSideBlockOpened})
-        }
-        if (this.state.selectedItem!=undefined && this.state.id!=this.state.selectedItem.goodId){
-            this.state.good = this.state.selectedItem.goodsType
-            this.state.id = this.state.selectedItem.goodId
-            this.state.category = this.state.selectedItem.category
-            this.state.subCategory = this.state.selectedItem.subCategory
-            this.state.cost = this.state.selectedItem.cost
-            this.state.weight = this.state.selectedItem.weight
-            this.state.goodCharacteristics = this.state.selectedItem.goodCharacteristics
-            this.setReload()
-        }
-        if (this.state.selectedZone!=undefined && this.state.selectedZone.userData != undefined){
-            this.state.warehouseSettings.zones.map(zone=>{
-                zone.racks.map(rack=>{
-                    if (!selectionLockedModels.includes(rack.name+" "+rack.id))
-                        selectionLockedModels.push(rack.name+" "+rack.id)
+    buildWarehouse = () =>{
+        init(this.state.warehouseSettings)
+        // createHint()
+        warehouseGeneration(this.state.warehouseSettings, this.state.zonesType, this.state.racksType, this.state.goodsType)
+        this.allGoods = []
+        this.state.warehouseSettings.zones.map(zone=>{
+            zone.racks.map(rack=>{
+                rack.shelfs.map(shelf=>{
+                    shelf.space.map(good=>{
+                        this.allGoods.push(good)
+                    })
                 })
             })
-            this.state.selectedZone.userData.racks.map(rack=>{
-                selectionLockedModels.splice(selectionLockedModels.indexOf(rack.name+" "+rack.id),1)
-            })
+        })
+        let buf = structuredClone(this.allGoods).map(function(good,i){
+            let goodBuf = good
+            goodBuf.goodId = good.id
+            goodBuf.id = i
+            goodBuf.number = i+1
+            goodBuf.goodsType = good.name
+            goodBuf.weight = good.weight
+            return goodBuf
+        })
+        this.state.tableList1 = buf
+        this.state.warehouseWidth = this.state.warehouseSettings.width
+        //this.state.warehouseLength = this.state.warehouseSettings.length
+        this.setWarehouseLength(this.state.warehouseSettings.length)
+    }
+
+    getRacksType = async ()=>{
+		var res = {}
+		res = await api.getRacksType()
+		return res
+	}
+
+    getZonesType = async ()=>{
+		var res = {}
+		res = await api.getZones()
+		return res
+	}
+
+    getGoodsType = async ()=>{
+        var res = {}
+		res = await api.getGoodsType()
+		return res  
+    }
+
+    getWarehouseModel = async ()=>{
+        var res = {}
+		res = await api.getWarehouseModel()
+		return res  
+    }
+
+    componentDidUpdate(){
+        console.log("componentDidUpdate")
+        if (this.state.zonesType != undefined && this.state.racksType != undefined && this.state.warehouseSettings != undefined && this.state.goodsType != undefined) {
+            if (this.state.isSideBlockOpened==true){
+                this.setState({isSideBlockOpened: !this.state.isSideBlockOpened})
+            }
+            if (this.state.selectedItem!=undefined && this.state.id!=this.state.selectedItem.goodId){
+                this.state.good = this.state.selectedItem.goodsType
+                this.state.id = this.state.selectedItem.goodId
+                this.state.category = this.state.selectedItem.category
+                this.state.subCategory = this.state.selectedItem.subCategory
+                this.state.cost = this.state.selectedItem.cost
+                this.state.weight = this.state.selectedItem.weight
+                this.state.goodCharacteristics = this.state.selectedItem.goodCharacteristics
+                this.setReload()
+            }
+            if (this.state.selectedZone!=undefined && this.state.selectedZone.userData != undefined){
+                this.state.warehouseSettings.zones.map(zone=>{
+                    zone.racks.map(rack=>{
+                        if (!selectionLockedModels.includes(rack.name+" "+rack.id))
+                            selectionLockedModels.push(rack.name+" "+rack.id)
+                    })
+                })
+                this.state.selectedZone.userData.racks.map(rack=>{
+                    selectionLockedModels.splice(selectionLockedModels.indexOf(rack.name+" "+rack.id),1)
+                })
+            }
         }
     }
 
@@ -1519,6 +1593,7 @@ class AdministratorWarehouseCreating extends Component {
         }
         
         scene.remove(zoneHintMesh)
+        api.deleteZones(this.state.selectedZone.userData)
         this.state.selectedZone = undefined
         zoneHintMesh = undefined
         
@@ -1573,6 +1648,7 @@ class AdministratorWarehouseCreating extends Component {
             }
         }
         scene.remove(rackHintMesh)
+        api.deleteRacks(this.state.selectedRack.userData)
         this.state.selectedRack = undefined
         rackHintMesh = undefined
         this.setReload()

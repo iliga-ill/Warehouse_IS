@@ -1,3 +1,4 @@
+import { Vector3 } from 'three';
 import {Host} from './host'
 var hostObj = new Host()
 var host = hostObj.getHost()
@@ -174,6 +175,7 @@ export class Api {
         console.log(account)
         console.log(document)
         console.log(date)
+        date = date.replace(/-/g,".")
         var body = array
         var type = ""
         var doc = ''
@@ -193,7 +195,7 @@ export class Api {
 
         body.forEach(element => {
             element.orderCode = selected.code
-            element.account = account.access_token
+            element.account = account.accountData.operator_id
             element.type = type
             element.doc = doc
             element.date = date
@@ -237,6 +239,30 @@ export class Api {
         }) 
     }
 
+    getZonesVirtual() {
+        var xhr = new XMLHttpRequest();
+
+        return new Promise(function(resolve, reject){
+            xhr.open('GET', host+'zones/', true);
+            //Send the proper header information along with the request
+            xhr.onreadystatechange = function() {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                    var answer = JSON.parse(this.response)
+                    //console.log("StorekeeperAllocation apiGetZones answer: ")
+                    //console.log(answer)
+                    var buf = []
+                    answer.map( function(item, i) {
+                        var alighnment = toString(item.message_alighment).split(' ')
+                        buf[i] = {width: item.width, length: item.length, color: item.color, lineWidth: item.line_width, chamferLendth: item.chamfer_length, message: item.name, 
+                                  textSize: item.text_size, gapLengthX: toString(item.name).length*15, gapLengthY: toString(item.name).length*15, messageAlighment: alighnment }
+                    })
+                    resolve(buf)
+                }
+            }
+            xhr.send(null);
+        }) 
+    }
+
     getRacks(zonesAnswer) {
         var xhr = new XMLHttpRequest();
 
@@ -250,6 +276,31 @@ export class Api {
                     var buf = []
                     answer.map( function(item, i) {
                         buf[i] = {code: item.code, name: item.name, racks_num: item.racks_num, zone_num: zonesAnswer[item.zone_num-1].name}
+                    })
+                    resolve(buf)
+                }
+            }
+            xhr.send(null);
+        
+        }) 
+    }
+    
+    getRacksVirtual() {
+        var xhr = new XMLHttpRequest();
+
+        return new Promise(function(resolve, reject){
+            xhr.open('GET', host+'racks/', true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    var answer = JSON.parse(this.response)
+                    console.log("StorekeeperAllocation apiGetRacks answer: ")
+                    console.log(answer)
+                    var buf = []
+                    answer.map( function(item, i) {
+                        var transition = toString(item).split('/')
+                        buf[i] = {depth: item.depth, shelfWidth: item.shelf_width, shelfHeight: item.shelf_height, columnsAmount: item.columns_amount,
+                                  rowsAmount: item.rows_amount, borderWidth: item.border_width, freeSpaceX: item.free_space_x, freeSpaceY: item.free_space_y,
+                                  color: item.color, translation: new Vector3(transition[0], transition[1], transition[2])}
                     })
                     resolve(buf)
                 }
@@ -352,9 +403,9 @@ export class Api {
                 if (xhr.readyState == XMLHttpRequest.DONE) {
                     var answer = JSON.parse(this.response)
                     console.log("StorekeeperAllocation apiGetShipmentOrdersGoods answer: ")
-                    console.log(answer)
-                    console.log(goodsCategories2Answer)
-                    console.log(goodsCategories3Answer)
+                    // console.log(answer)
+                    // console.log(goodsCategories2Answer)
+                    // console.log(goodsCategories3Answer)
                     var buf = []
                     var counter = 0
                     answer.map( function(item, i) {
@@ -364,7 +415,6 @@ export class Api {
                                 if (item1.code == item.goods)
                                     good=item1
                             })
-                            console.log(good)
                             buf[counter] = {id: counter++, code:item.code, goodCode:item.goods, amount: item.amount, amount_real: item.amount_real, weight:good.weight, placed_amount:item.placed_amount , code: item.code, good_name: good.name, goodsCategories2: goodsCategories2Answer[good.subcategory_2-1].text, goodsCategories3:goodsCategories3Answer[good.subcategory_3-1].text , order_num: item.order_num}
                         }
                     })

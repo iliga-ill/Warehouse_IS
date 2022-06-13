@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 import { Vector2, Vector3 } from "three";
+import { Api } from "../../src/api/administatoApi"
+
+var api = new Api()
 
 export default class WarehouseSettingsModel {
-
     constructor(){
         
     }
@@ -53,105 +55,67 @@ export default class WarehouseSettingsModel {
 		)
 	}
 
-	getRacksType(){
-		return(
-			{
-				rack_0001:{
-					depth:50,
-					shelfWidth:50,
-					shelfHeight:50,
-					columsAmount:4,
-					rowsAmount:3,
-					borderWidth:2,
-					freeSpaceX:0,
-					freeSpaceY:50,
-					color:0x885aaa,
-					translation:new Vector3(0,0,-50/2),
-					shelfs:{
-						shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
-						shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
-						shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:0, column:2},
-						shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:0, column:3},
-						shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:1, column:0},
-						shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:1, column:1},
-						shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:1, column:2},
-						shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:1, column:3},
-						shelf_9:{name:"Полка 9", 	liftingCapacity:50, row:2, column:0},
-						shelf_10:{name:"Полка 10", 	liftingCapacity:50, row:2, column:1},
-						shelf_11:{name:"Полка 11", 	liftingCapacity:50, row:2, column:2},
-						shelf_12:{name:"Полка 12", 	liftingCapacity:50, row:2, column:3},
-					}
-				},
-				rack_0002:{
-					depth:50,
-					shelfWidth:50,
-					shelfHeight:50,
-					columsAmount:2,
-					rowsAmount:3,
-					borderWidth:2,
-					freeSpaceX:0,
-					freeSpaceY:20,
-					color:0x885aaa,
-					translation:new Vector3(0,0,-50/2),
-					shelfs:{
-						shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
-						shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
-						shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:1, column:0},
-						shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:1},
-						shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:2, column:0},
-						shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:2, column:1},
-					}
-				},
-				rack_0003:{
-					depth:50,
-					shelfWidth:50,
-					shelfHeight:50,
-					columsAmount:2,
-					rowsAmount:4,
-					borderWidth:2,
-					freeSpaceX:0,
-					freeSpaceY:20,
-					color:0x885aaa,
-					translation:new Vector3(0,0,-50/2),
-					shelfs:{
-						shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
-						shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
-						shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:1, column:0},
-						shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:1},
-						shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:2, column:0},
-						shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:2, column:1},
-						shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:3, column:0},
-						shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:3, column:1},
-					}
-				},
-				rack_0004:{
-					depth:50,
-					shelfWidth:50,
-					shelfHeight:50,
-					columsAmount:3,
-					rowsAmount:4,
-					borderWidth:2,
-					freeSpaceX:0,
-					freeSpaceY:20,
-					color:0x885aaa,
-					translation:new Vector3(0,0,-50/2),
-					shelfs:{
-						shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
-						shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
-						shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:0, column:2},
-						shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:0},
-						shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:1, column:1},
-						shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:1, column:2},
-						shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:2, column:0},
-						shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:2, column:1},
-						shelf_9:{name:"Полка 9", 	liftingCapacity:50, row:2, column:2},
-						shelf_10:{name:"Полка 10", 	liftingCapacity:50, row:3, column:0},
-						shelf_11:{name:"Полка 11", 	liftingCapacity:50, row:3, column:1},
-						shelf_12:{name:"Полка 12", 	liftingCapacity:50, row:3, column:2},
-					}
-				},
-			}
-		)
+	getRacksType = async ()=>{
+		var res = []
+		res = await api.getRacksType()
+		// res.map((item, i) => {
+		// 	if (i == 0) {
+		// 		item.shelfs = {
+		// 			shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+		// 			shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+		// 			shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:0, column:2},
+		// 			shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:0, column:3},
+		// 			shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:1, column:0},
+		// 			shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:1, column:1},
+		// 			shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:1, column:2},
+		// 			shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:1, column:3},
+		// 			shelf_9:{name:"Полка 9", 	liftingCapacity:50, row:2, column:0},
+		// 			shelf_10:{name:"Полка 10", 	liftingCapacity:50, row:2, column:1},
+		// 			shelf_11:{name:"Полка 11", 	liftingCapacity:50, row:2, column:2},
+		// 			shelf_12:{name:"Полка 12", 	liftingCapacity:50, row:2, column:3},
+		// 		}
+		// 	}
+		// 	if (i == 1) {
+		// 		item.shelfs = {
+		// 				shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+		// 				shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+		// 				shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:1, column:0},
+		// 				shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:1},
+		// 				shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:2, column:0},
+		// 				shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:2, column:1},
+		// 		}
+		// 	}
+		// 	if (i == 2) {
+		// 		item.shelfs = {
+		// 				shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+		// 				shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+		// 				shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:1, column:0},
+		// 				shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:1},
+		// 				shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:2, column:0},
+		// 				shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:2, column:1},
+		// 				shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:3, column:0},
+		// 				shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:3, column:1},
+		// 		}
+		// 	}
+		// 	if (i == 3) {
+		// 		item.shelfs = {
+		// 				shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+		// 				shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+		// 				shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:0, column:2},
+		// 				shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:0},
+		// 				shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:1, column:1},
+		// 				shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:1, column:2},
+		// 				shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:2, column:0},
+		// 				shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:2, column:1},
+		// 				shelf_9:{name:"Полка 9", 	liftingCapacity:50, row:2, column:2},
+		// 				shelf_10:{name:"Полка 10", 	liftingCapacity:50, row:3, column:0},
+		// 				shelf_11:{name:"Полка 11", 	liftingCapacity:50, row:3, column:1},
+		// 				shelf_12:{name:"Полка 12", 	liftingCapacity:50, row:3, column:2},
+		// 		}
+		// 	}
+			
+		// })
+		// return res
 	}
 
 	getGoodsType(){
@@ -194,7 +158,7 @@ export default class WarehouseSettingsModel {
 						/*zoneCode*/id:1,
 						centerPoint:new Vector3(-240,0,-340),
 						rotation:{x:0,y:0,z:0},
-						zoneTypeId: "0001",
+						zoneTypeId: "1",
 						type:"zone",
 						racks:[
 							{
@@ -202,11 +166,11 @@ export default class WarehouseSettingsModel {
 								/*rackCode*/id:1,
 								centerPoint:new Vector3(120,0,-120),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, /*shelfCode*/id:1, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", /*goodCode*/id: 0, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов", goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", /*goodCode*/id: 0, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов", goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 2", number:2, id:2, space:[]},
 									{name:"Полка 3", number:3, id:3, space:[]},
@@ -216,14 +180,14 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 7", number:7, id:7, space:[]},
 									{name:"Полка 8", number:8, id:8, space:[]},
 									{name:"Полка 9", number:9, id:9, space:[
-										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 1, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "3", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 1, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 10", number:10, id:10, space:[]},
 									{name:"Полка 11", number:11, id:11, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 2, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 2, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 12", number:12, id:12, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 3, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 3, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 								]
 							},
@@ -232,12 +196,12 @@ export default class WarehouseSettingsModel {
 								id:2,
 								centerPoint:new Vector3(-120,0,-120),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:13, space:[]},
 									{name:"Полка 2", number:2, id:14, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 4, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 4, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 3", number:3, id:15, space:[]},
 									{name:"Полка 4", number:4, id:16, space:[]},
@@ -245,12 +209,12 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 6", number:6, id:18, space:[]},
 									{name:"Полка 7", number:7, id:19, space:[]},
 									{name:"Полка 8", number:8, id:20, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 5, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 5, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 9", number:9, id:21, space:[]},
 									{name:"Полка 10", number:10, id:22, space:[]},
 									{name:"Полка 11", number:11, id:23, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 6, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 6, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 12", number:12, id:24, space:[]},
 								]
@@ -260,18 +224,18 @@ export default class WarehouseSettingsModel {
 								id:3,
 								centerPoint:new Vector3(-245,0,20),
 								rotation:{x:0,y:90,z:0},
-								racksTypeId: "0002",
+								racksTypeId: "2",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:25, space:[]},
 									{name:"Полка 2", number:2, id:26, space:[]},
 									{name:"Полка 3", number:3, id:27, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 7, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 7, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 4", number:4, id:28, space:[]},
 									{name:"Полка 5", number:5, id:29, space:[]},
 									{name:"Полка 6", number:6, id:30, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 8, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 8, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 								]
 							},
@@ -280,22 +244,22 @@ export default class WarehouseSettingsModel {
 								id:4,
 								centerPoint:new Vector3(-120,0,110),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:31, space:[]},
 									{name:"Полка 2", number:2, id:32, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 9, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 9, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 3", number:3, id:33, space:[
-										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 10, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "3", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 10, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 4", number:4, id:34, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 11, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 11, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 5", number:5, id:35, space:[]},
 									{name:"Полка 6", number:6, id:36, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 12, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 12, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 7", number:7, id:37, space:[]},
 									{name:"Полка 8", number:8, id:38, space:[]},
@@ -303,7 +267,7 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 10", number:10, id:40, space:[]},
 									{name:"Полка 11", number:11, id:41, space:[]},
 									{name:"Полка 12", number:12, id:42, space:[
-										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 13, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "3", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 13, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 								]
 							},
@@ -313,18 +277,18 @@ export default class WarehouseSettingsModel {
 								id:5,
 								centerPoint:new Vector3(55,0,110),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0002",
+								racksTypeId: "2",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:43, space:[]},
 									{name:"Полка 2", number:2, id:44, space:[]},
 									{name:"Полка 3", number:3, id:45, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 14, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 14, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 4", number:4, id:46, space:[]},
 									{name:"Полка 5", number:5, id:47, space:[]},
 									{name:"Полка 6", number:6, id:48, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 15, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 15, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 								]
 							},
@@ -334,18 +298,18 @@ export default class WarehouseSettingsModel {
 								id:6,
 								centerPoint:new Vector3(180,0,110),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0002",
+								racksTypeId: "2",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:49, space:[]},
 									{name:"Полка 2", number:2, id:50, space:[]},
 									{name:"Полка 3", number:3, id:51, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 16, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 16, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 4", number:4, id:52, space:[]},
 									{name:"Полка 5", number:5, id:53, space:[]},
 									{name:"Полка 6", number:6, id:54, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 17, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 17, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 								]
 							},
@@ -356,7 +320,7 @@ export default class WarehouseSettingsModel {
 						id:2,
 						centerPoint:new Vector3(-240,0,0),
 						rotation:{x:0,y:0,z:0},
-						zoneTypeId: "0002",
+						zoneTypeId: "2",
 						type:"zone",
 						racks:[
 							{
@@ -364,28 +328,28 @@ export default class WarehouseSettingsModel {
 								id:7,
 								centerPoint:new Vector3(120,0,-120),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:55, space:[]},
 									{name:"Полка 2", number:2, id:56, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 18, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 18, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 3", number:3, id:57, space:[]},
 									{name:"Полка 4", number:4, id:58, space:[]},
 									{name:"Полка 5", number:5, id:59, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 19, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 19, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 6", number:6, id:60, space:[
-										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 20, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "3", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 20, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 7", number:7, id:61, space:[]},
 									{name:"Полка 8", number:8, id:62, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 21, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 21, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 9", number:9, id:63, space:[]},
 									{name:"Полка 10", number:10, id:64, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 22, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 22, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 11", number:11, id:65, space:[]},
 									{name:"Полка 12", number:12, id:66, space:[]},
@@ -396,18 +360,18 @@ export default class WarehouseSettingsModel {
 								id:8,
 								centerPoint:new Vector3(-180,0,-120),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0002",
+								racksTypeId: "2",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:67, space:[]},
 									{name:"Полка 2", number:2, id:68, space:[]},
 									{name:"Полка 3", number:3, id:69, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 23, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 23, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 4", number:4, id:70, space:[]},
 									{name:"Полка 5", number:5, id:71, space:[]},
 									{name:"Полка 6", number:6, id:72, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 24, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 24, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 								]
 							},
@@ -417,20 +381,20 @@ export default class WarehouseSettingsModel {
 								id:9,
 								centerPoint:new Vector3(-60,0,-120),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0002",
+								racksTypeId: "2",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:73, space:[]},
 									{name:"Полка 2", number:2, id:74, space:[]},
 									{name:"Полка 3", number:3, id:75, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 25, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 25, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 4", number:4, id:76, space:[
-										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 26, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "3", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 26, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 5", number:5, id:77, space:[]},
 									{name:"Полка 6", number:6, id:78, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 27, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 27, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 								]
 							},
@@ -439,18 +403,18 @@ export default class WarehouseSettingsModel {
 								id:10,
 								centerPoint:new Vector3(-245,0,20),
 								rotation:{x:0,y:90,z:0},
-								racksTypeId: "0002",
+								racksTypeId: "2",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:79, space:[]},
 									{name:"Полка 2", number:2, id:80, space:[]},
 									{name:"Полка 3", number:3, id:81, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 28, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 28, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 4", number:4, id:82, space:[]},
 									{name:"Полка 5", number:5, id:83, space:[]},
 									{name:"Полка 6", number:6, id:84, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 29, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 29, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 								]
 							},
@@ -459,23 +423,23 @@ export default class WarehouseSettingsModel {
 								id:11,
 								centerPoint:new Vector3(-120,0,110),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:85, space:[]},
 									{name:"Полка 2", number:2, id:86, space:[]},
 									{name:"Полка 3", number:3, id:87, space:[]},
 									{name:"Полка 4", number:4, id:88, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 30, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 30, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 5", number:5, id:89, space:[]},
 									{name:"Полка 6", number:6, id:90, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 31, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 31, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 7", number:7, id:91, space:[]},
 									{name:"Полка 8", number:8, id:92, space:[]},
 									{name:"Полка 9", number:9, id:93, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 32, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 32, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 10", number:10, id:94, space:[]},
 									{name:"Полка 11", number:11, id:95, space:[]},
@@ -488,7 +452,7 @@ export default class WarehouseSettingsModel {
 								id:12,
 								centerPoint:new Vector3(120,0,110),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:97, space:[]},
@@ -496,19 +460,19 @@ export default class WarehouseSettingsModel {
 									{name:"Полка 3", number:3, id:99, space:[]},
 									{name:"Полка 4", number:4, id:100, space:[]},
 									{name:"Полка 5", number:5, id:101, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 33, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 33, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 6", number:6, id:102, space:[]},
 									{name:"Полка 7", number:7, id:103, space:[
-										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 34, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "3", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 34, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 8", number:8, id:104, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 35, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 35, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 9", number:9, id:105, space:[]},
 									{name:"Полка 10", number:10, id:106, space:[]},
 									{name:"Полка 11", number:11, id:107, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 36, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 36, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 12", number:12, id:108, space:[]},
 								]
@@ -520,7 +484,7 @@ export default class WarehouseSettingsModel {
 						id:3,
 						centerPoint:new Vector3(-240,0,340),
 						rotation:{x:0,y:0,z:0},
-						zoneTypeId: "0003",
+						zoneTypeId: "3",
 						type:"zone",
 						racks:[
 							{
@@ -528,28 +492,28 @@ export default class WarehouseSettingsModel {
 								id:13,
 								centerPoint:new Vector3(120,0,-120),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:109, space:[]},
 									{name:"Полка 2", number:2, id:110, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 37, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 38, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 37, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 38, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 3", number:3, id:111, space:[]},
 									{name:"Полка 4", number:4, id:112, space:[]},
 									{name:"Полка 5", number:5, id:113, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 39, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 39, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 6", number:6, id:114, space:[]},
 									{name:"Полка 7", number:7, id:115, space:[]},
 									{name:"Полка 8", number:8, id:116, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 40, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 40, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 9", number:9, id:117, space:[]},
 									{name:"Полка 10", number:10, id:118, space:[]},
 									{name:"Полка 11", number:11, id:119, space:[
-										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 41, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "3", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 41, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 12", number:12, id:120, space:[]},
 								]
@@ -559,25 +523,25 @@ export default class WarehouseSettingsModel {
 								id:14,
 								centerPoint:new Vector3(-120,0,-120),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:121, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 42, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 42, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 2", number:2, id:122, space:[]},
 									{name:"Полка 3", number:3, id:123, space:[]},
 									{name:"Полка 4", number:4, id:124, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 43, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 43, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 5", number:5, id:125, space:[]},
 									{name:"Полка 6", number:6, id:126, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 44, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 44, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 7", number:7, id:127, space:[]},
 									{name:"Полка 8", number:8, id:128, space:[]},
 									{name:"Полка 9", number:9, id:129, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 45, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 45, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 10", number:10, id:130, space:[]},
 									{name:"Полка 11", number:11, id:131, space:[]},
@@ -589,18 +553,18 @@ export default class WarehouseSettingsModel {
 								id:15,
 								centerPoint:new Vector3(-245,0,20),
 								rotation:{x:0,y:90,z:0},
-								racksTypeId: "0002",
+								racksTypeId: "2",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:133, space:[]},
 									{name:"Полка 2", number:2, id:134, space:[]},
 									{name:"Полка 3", number:3, id:135, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 46, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 46, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 4", number:4, id:136, space:[]},
 									{name:"Полка 5", number:5, id:137, space:[]},
 									{name:"Полка 6", number:6, id:138, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 47, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 47, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 								]
 							},
@@ -609,23 +573,23 @@ export default class WarehouseSettingsModel {
 								id:16,
 								centerPoint:new Vector3(-120,0,110),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:139, space:[]},
 									{name:"Полка 2", number:2, id:140, space:[]},
 									{name:"Полка 3", number:3, id:141, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 48, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 48, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 4", number:4, id:142, space:[]},
 									{name:"Полка 5", number:5, id:143, space:[]},
 									{name:"Полка 6", number:6, id:144, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 49, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 49, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 7", number:7, id:145, space:[]},
 									{name:"Полка 8", number:8, id:146, space:[]},
 									{name:"Полка 9", number:9, id:147, space:[
-										{goodTypeId: "0002", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 50, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "2", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 50, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 10", number:10, id:148, space:[]},
 									{name:"Полка 11", number:11, id:149, space:[]},
@@ -638,28 +602,28 @@ export default class WarehouseSettingsModel {
 								id:17,
 								centerPoint:new Vector3(120,0,110),
 								rotation:{x:0,y:0,z:0},
-								racksTypeId: "0001",
+								racksTypeId: "1",
 								type:"rack",
 								shelfs:[
 									{name:"Полка 1", number:1, id:151, space:[]},
 									{name:"Полка 2", number:2, id:152, space:[]},
 									{name:"Полка 3", number:3, id:153, space:[
-										{goodTypeId: "0003", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 51, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "3", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 51, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 4", number:4, id:154, space:[]},
 									{name:"Полка 5", number:5, id:155, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 52, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 52, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 6", number:6, id:156, space:[]},
 									{name:"Полка 7", number:7, id:157, space:[]},
 									{name:"Полка 8", number:8, id:158, space:[
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 53, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 54, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 55, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 56, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 57, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 58, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
-										{goodTypeId: "0001", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 59, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 53, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 54, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 55, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 56, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 57, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 58, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
+										{goodTypeId: "1", name: 'Варочная поверхность Bosch PKE 645 B17E', type:"good", id: 59, cost:Number("10000"), subCategory: "Варочные поверхности", category:"Встраиваемая техника", weight: 44, status: 'Проинвентаризирован', goodCharacteristics:"4 электрические конфорки, предусмотренные в конструкции данной варочной поверхности, выполнены по технологии Hi-Light, что обеспечивает быстрый разогрев, а индикатор остаточного тепла позволяет оценивать состояние конфорок и сводит к минимуму риск ожогов"},
 									]},
 									{name:"Полка 9", number:9, id:159, space:[]},
 									{name:"Полка 10", number:10, id:160, space:[]},
@@ -676,3 +640,102 @@ export default class WarehouseSettingsModel {
 
 
 }
+
+// return(
+// 	{
+// 		rack_0001:{
+// 			depth:50,
+// 			shelfWidth:50,
+// 			shelfHeight:50,
+// 			columsAmount:4,
+// 			rowsAmount:3,
+// 			borderWidth:2,
+// 			freeSpaceX:0,
+// 			freeSpaceY:50,
+// 			color:0x885aaa,
+// 			translation:new Vector3(0,0,-50/2),
+// 			shelfs:{
+// 				shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+// 				shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+// 				shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:0, column:2},
+// 				shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:0, column:3},
+// 				shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:1, column:0},
+// 				shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:1, column:1},
+// 				shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:1, column:2},
+// 				shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:1, column:3},
+// 				shelf_9:{name:"Полка 9", 	liftingCapacity:50, row:2, column:0},
+// 				shelf_10:{name:"Полка 10", 	liftingCapacity:50, row:2, column:1},
+// 				shelf_11:{name:"Полка 11", 	liftingCapacity:50, row:2, column:2},
+// 				shelf_12:{name:"Полка 12", 	liftingCapacity:50, row:2, column:3},
+// 			}
+// 		},
+// 		rack_0002:{
+// 			depth:50,
+// 			shelfWidth:50,
+// 			shelfHeight:50,
+// 			columsAmount:2,
+// 			rowsAmount:3,
+// 			borderWidth:2,
+// 			freeSpaceX:0,
+// 			freeSpaceY:20,
+// 			color:0x885aaa,
+// 			translation:new Vector3(0,0,-50/2),
+// 			shelfs:{
+// 				shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+// 				shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+// 				shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:1, column:0},
+// 				shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:1},
+// 				shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:2, column:0},
+// 				shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:2, column:1},
+// 			}
+// 		},
+// 		rack_0003:{
+// 			depth:50,
+// 			shelfWidth:50,
+// 			shelfHeight:50,
+// 			columsAmount:2,
+// 			rowsAmount:4,
+// 			borderWidth:2,
+// 			freeSpaceX:0,
+// 			freeSpaceY:20,
+// 			color:0x885aaa,
+// 			translation:new Vector3(0,0,-50/2),
+// 			shelfs:{
+// 				shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+// 				shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+// 				shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:1, column:0},
+// 				shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:1},
+// 				shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:2, column:0},
+// 				shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:2, column:1},
+// 				shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:3, column:0},
+// 				shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:3, column:1},
+// 			}
+// 		},
+// 		rack_0004:{
+// 			depth:50,
+// 			shelfWidth:50,
+// 			shelfHeight:50,
+// 			columsAmount:3,
+// 			rowsAmount:4,
+// 			borderWidth:2,
+// 			freeSpaceX:0,
+// 			freeSpaceY:20,
+// 			color:0x885aaa,
+// 			translation:new Vector3(0,0,-50/2),
+// 			shelfs:{
+// 				shelf_1:{name:"Полка 1", 	liftingCapacity:50, row:0, column:0},
+// 				shelf_2:{name:"Полка 2", 	liftingCapacity:50, row:0, column:1},
+// 				shelf_3:{name:"Полка 3", 	liftingCapacity:50, row:0, column:2},
+// 				shelf_4:{name:"Полка 4", 	liftingCapacity:50, row:1, column:0},
+// 				shelf_5:{name:"Полка 5", 	liftingCapacity:50, row:1, column:1},
+// 				shelf_6:{name:"Полка 6", 	liftingCapacity:50, row:1, column:2},
+// 				shelf_7:{name:"Полка 7", 	liftingCapacity:50, row:2, column:0},
+// 				shelf_8:{name:"Полка 8", 	liftingCapacity:50, row:2, column:1},
+// 				shelf_9:{name:"Полка 9", 	liftingCapacity:50, row:2, column:2},
+// 				shelf_10:{name:"Полка 10", 	liftingCapacity:50, row:3, column:0},
+// 				shelf_11:{name:"Полка 11", 	liftingCapacity:50, row:3, column:1},
+// 				shelf_12:{name:"Полка 12", 	liftingCapacity:50, row:3, column:2},
+// 			}
+// 		},
+// 	}
+// )

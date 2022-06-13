@@ -44,7 +44,10 @@ export default function ManagerSellOrders(props){
     const [selectedItemId, setSelectedItemId] = React.useState()
 
     React.useEffect(() => {
-        if (tableList.length > 0) apiGetOrderGoods(selectedItemId)
+        if (tableList.length > 0 && selectedItemId != undefined) {
+            apiGetOrderGoods(selectedItemId)
+        }
+    
     }, [selectedItemId]);
     //-------------------------------------стол 1 конец
     //-------------------------------------------------------------------------Блок 1 конец
@@ -84,8 +87,24 @@ export default function ManagerSellOrders(props){
 
     //{number:i+1, orderNumber: element.name, orderCost: element.cost, address: element.address, cost:element.cost, deadline:element.deadline}
 
-    function btn_send_2(){
-
+    async function btn_send_2(){
+        if (selectedItemId != undefined) {
+            let res = await api.closeOrder(selectedItemId.code)
+            let buf = [] 
+            let tableList_buf = []
+            tableList_buf = tableList
+            tableList_buf.map(elm => {
+                if (elm.code != selectedItemId.code) buf.push(elm)
+            })
+            setTableList(buf)
+            setTableList1([])
+            setOrder("")
+            setShipmentAddress("")
+            setShipmentDeadline("")
+            setOrderCost("")
+            setSelectedItemId(undefined)
+            alert(res)
+        }
     }
 
     //-------------------------------------------------------------------------Блок 2 конец

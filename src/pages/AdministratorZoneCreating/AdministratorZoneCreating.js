@@ -15,7 +15,9 @@ import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 
 import AuxiliaryMath from "../../classes/AuxiliaryMath.js";
 import zIndex from "@material-ui/core/styles/zIndex";
+import { Api } from "../../api/administatoApi"
 
+var api = new Api()
 const styles = {
 
   }
@@ -158,33 +160,37 @@ function setModelOnCoordinates(model, coordinates, inObjects){
 
 class AdministratorZoneCreating extends Component {
 
+    lastSelId
     constructor(props){
         super(props)
         this.state = {
+            reload:0,
             zones:[
-                {id: 0, text: "Зона 1"},
-                {id: 1, text: "Зона 2"},
-                {id: 2, text: "Зона 3"},
+                {id: 0, text: "Загрузка"},
+                // {id: 1, text: "Зона 2"},
+                // {id: 2, text: "Зона 3"},
             ],
-            selZone:{id: 0, text: "Зона 1"},
+            selZone:{id: 0, text: "Загрузка"},
             length:500,
             width:300,
             color:{a: 100, b: 170, g: 90, h: 275, hex: "#ffffff", r: 136, rgba: "rgba(136,90,170,1)", s: 47, v: 67},
             lineWidth:1,
             chamferLendth:10,
-            message:"Зона 1",
+            message:"Загрузка",
             textSize:15,
-            gapLengthX: "Зона 1".length * 15,
-            gapLengthY: "Зона 1".length * 15,
+            gapLengthX: "Загрузка".length * 15,
+            gapLengthY: "Загрузка".length * 15,
             messageAlighment:["right"],
             isAighmentTop:false,
             isAighmentBottom:false,
             isAighmentLeft:false,
             isAighmentRight:true,
+            shownPanel:true,
             // messageAlighment:["top", "bottom", "left", "right"],
         }
     }
 
+    setReload = ()=>{this.setState({reload: this.state.reload+1});}
     setZones = (value)=>{this.setState({zones: value});}
     setSelZone = (value)=>{this.setState({selZone: value});}
     setLength = (value)=>{this.setState({length: Number(value)});}
@@ -197,16 +203,53 @@ class AdministratorZoneCreating extends Component {
     setGapLengthX = (value)=>{this.setState({gapLengthX: Number(value)});}
     setGapLengthY = (value)=>{this.setState({gapLengthY: Number(value)});}
     setMessageAlighment = (value)=>{this.setState({messageAlighment: value});}
-    
     setIsAighmentTop = (value)=>{this.setState({isAighmentTop: value})}
     setIsAighmentBottom = (value)=>{this.setState({isAighmentBottom: value})}
     setIsAighmentLeft = (value)=>{this.setState({isAighmentLeft: value})}
     setIsAighmentRight = (value)=>{this.setState({isAighmentRight: value})}
 
+    setShownPanel = (value)=>{this.setState({shownPanel: value})}
+
+    getZones = async() => {
+        let res = []
+        res = await api.getVirtualZones()
+        // this.state.goods = res
+        // this.state.selGood = res[0]
+        
+        structuredClone(this.state.zones).map(()=>{this.state.zones.pop()})
+        res.map(item=>{this.state.zones.push(item)})
+        this.setSelZone(res[0])
+    }
+
+    componentDidUpdate(){
+
+        if (this.state.selZone.id!=this.lastSelId && this.state.selZone.chamferLendth!=undefined){
+            let obj = this.state.selZone
+
+            this.state.length = Number(obj.length)
+            this.state.width = Number(obj.width)
+            this.state.lineWidth = Number(obj.lineWidth)
+            this.state.chamferLendth = Number(obj.chamferLendth)
+            this.state.color = obj.color
+            this.state.message = obj.message
+            this.state.textSize = Number(obj.textSize)
+            this.state.gapLengthX = Number(obj.gapLengthX)
+            this.state.gapLengthY = Number(obj.gapLengthY)
+            this.state.messageAlighment = obj.messageAlighment
+            this.state.isAighmentTop = Boolean(obj.isAighmentTop)
+            this.state.isAighmentBottom = Boolean(obj.isAighmentBottom)
+            this.state.isAighmentRight = Boolean(obj.isAighmentRight)
+            this.state.isAighmentLeft = Boolean(obj.isAighmentLeft)
+
+            this.lastSelId = this.state.selZone.id
+            this.setShownPanel(!this.state.shownPanel)
+        }
+    }
 
     componentDidMount(){
         var manager = new THREE.LoadingManager();
         manager.onLoad = () => { // when all resources are loaded
+            if (this.state.zones[0].text == "Загрузка") this.getZones()
             init(
                 this.state.width, 
                 this.state.length, 
@@ -310,9 +353,45 @@ onMessageAlighment=()=>{
             {
                 id: (Number(this.state.zones[this.state.zones.length - 1].id) + 1),
                 text: `Зона ${Number(this.state.zones[this.state.zones.length - 1].text.split(" ")[1]) + 1}`, 
+                length:500,
+                width:300,
+                color:{a: 100, b: 170, g: 90, h: 275, hex: "#ffffff", r: 136, rgba: "rgba(136,90,170,1)", s: 47, v: 67},
+                lineWidth:1,
+                chamferLendth:10,
+                message:"Загрузка",
+                textSize:15,
+                gapLengthX: "Загрузка".length * 15,
+                gapLengthY: "Загрузка".length * 15,
+                messageAlighment:["right"],
+                isAighmentTop:false,
+                isAighmentBottom:false,
+                isAighmentLeft:false,
+                isAighmentRight:true,
             }
         )
         this.setSelZone(this.state.zones[this.state.zones.length-1])
+        let zone = this.state
+        let alighments = ""
+        let iter = 0
+        for (let item of zone.messageAlighment){
+            if (iter != zone.messageAlighment.length-1) alighments += `${item}/`
+            else alighments += `${item}`
+            iter += 1
+        }
+
+        let body = {
+            id: zone.zones[zone.zones.length-1].id,
+            width: zone.width,
+            height: zone.length,
+            color: zone.color.rgba,
+            line_width: zone.lineWidth,
+            chamfer_length: zone.chamferLendth,
+            name: "Зона -",
+            text_size: zone.textSize,
+            message_alighment: alighments,
+        }
+        //console.log(body)
+        api.postVirtualZones(body)
     }
 
     btn_send_2=()=> {
@@ -321,11 +400,43 @@ onMessageAlighment=()=>{
     }
 
     btn_send_3=()=> {
+        let zone = this.state
+        let alighments = ""
+        let iter = 0
+        for (let item of zone.messageAlighment){
+            if (iter != zone.messageAlighment.length-1) alighments += `${item}/`
+            else alighments += `${item}`
+            iter += 1
+        }
 
+        let body = {
+            id: zone.selZone.id,
+            width: zone.width,
+            height: zone.length,
+            color: zone.color.rgba,
+            line_width: zone.lineWidth,
+            chamfer_length: zone.chamferLendth,
+            name: zone.message,
+            text_size: zone.textSize,
+            message_alighment: alighments,
+        }
+        //console.log(body)
+        api.updateVirtualZones(body)
     }
 
     btn_send_4=()=> {
+        let body = {
+            id: this.state.selZone.id,
+        }
+        //console.log(body)
+        this.deleteVirtualZones(body)
+    }
 
+    deleteVirtualZones = async(value) => {
+        let res = api.deleteVirtualZones(value)
+        res.then(res=> {
+            alert(res)
+        })
     }
 
     render(){
@@ -336,6 +447,36 @@ onMessageAlighment=()=>{
                         <ListWithSearch item_list={this.state.zones} selItem={this.state.selZone} func={this.setSelZone} width={200} height={430}/>
                     </FlexibleBlock>
                     <FlexibleBlock>
+                        {this.state.shownPanel
+                        &&<>
+                            <div class="header_text">Настройка</div>
+                            <InputText styles = "row_with_item_wide" label="Длинна&nbsp;зоны&nbsp;(см)&nbsp;"       placeholder="длинна зоны"           defValue={this.state.length}            set={this.setLength} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Ширина&nbsp;зоны&nbsp;(см)&nbsp;"       placeholder="ширина зоны"           defValue={this.state.width}             set={this.setWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/>
+                            <div class = "low_text row_with_item_wide"><div>Цвет&nbsp;границы&nbsp;зоны:&nbsp;</div><InputColor initialValue={this.state.color.hex} onChange={this.setColor} placement="right"/></div>
+                            <InputText styles = "row_with_item_wide" label="Ширина&nbsp;границы&nbsp;зоны&nbsp;"    placeholder="ширина границы зоны"   defValue={this.state.lineWidth}         set={this.setLineWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Длинна&nbsp;фаски&nbsp;"                placeholder="длинна фаски"          defValue={this.state.chamferLendth}     set={this.setChamferLendth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Надпись&nbsp;зоны&nbsp;"                placeholder="надпись зоны"          defValue={this.state.message}           set={this.setMessage} /> 
+                            <InputText styles = "row_with_item_wide" label="Размер&nbsp;текста&nbsp;надписи&nbsp;"  placeholder="размер текста надписи" defValue={this.state.textSize}          set={this.setTextSize} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Вырез&nbsp;по&nbsp;оси&nbsp;x&nbsp;"    placeholder="вырез по оси x"        defValue={this.state.gapLengthX}        set={this.setGapLengthX} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Вырез&nbsp;по&nbsp;оси&nbsp;y&nbsp;"    placeholder="вырез по оси y"        defValue={this.state.gapLengthY}        set={this.setGapLengthY} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            
+                            <div class = "low_text">Положение&nbsp;надписей:
+                                <label><input type="checkbox" defaultChecked={this.state.isAighmentTop}    onChange={()=>{this.onCheckbox(0)}}/>Сверху</label>
+                                <label><input type="checkbox" defaultChecked={this.state.isAighmentBottom} onChange={()=>{this.onCheckbox(1)}}/>Снизу</label>
+                                <label><input type="checkbox" defaultChecked={this.state.isAighmentLeft}   onChange={()=>{this.onCheckbox(2)}}/>Слева</label>
+                                <label><input type="checkbox" defaultChecked={this.state.isAighmentRight}  onChange={()=>{this.onCheckbox(3)}}/>Справа</label>
+                            </div>
+
+                            <div style={{width:'485px'}}></div>
+                            <button class="bt_send_AdministratorZoneCreating1" onClick={this.btn_send_1}>Создать новую зону</button>
+                            <div class="place_holder_AdministratorZoneCreating"/>
+                            <button class="bt_send_AdministratorZoneCreating2" style={{marginRight:"5px"}} onClick={this.btn_send_2}>Построить</button>
+                            <button class="bt_send_AdministratorZoneCreating2" onClick={this.btn_send_3}>Сохранить</button>
+                            <button class="bt_send_AdministratorZoneCreating3" onClick={this.btn_send_4}>Удалить</button>
+                        </>
+                        }
+                        {!this.state.shownPanel
+                        &&<>
                         <div class="header_text">Настройка</div>
                         <InputText styles = "row_with_item_wide" label="Длинна&nbsp;зоны&nbsp;(см)&nbsp;"       placeholder="длинна зоны"           defValue={this.state.length}            set={this.setLength} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
                         <InputText styles = "row_with_item_wide" label="Ширина&nbsp;зоны&nbsp;(см)&nbsp;"       placeholder="ширина зоны"           defValue={this.state.width}             set={this.setWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/>
@@ -355,15 +496,18 @@ onMessageAlighment=()=>{
                         </div>
 
                         <div style={{width:'485px'}}></div>
-                        <button class="bt_send_AdministratorZoneCreating1" onClick={this.btn_send_1}>Создать новый товар</button>
+                        <button class="bt_send_AdministratorZoneCreating1" onClick={this.btn_send_1}>Создать новую зону</button>
                         <div class="place_holder_AdministratorZoneCreating"/>
                         <button class="bt_send_AdministratorZoneCreating2" style={{marginRight:"5px"}} onClick={this.btn_send_2}>Построить</button>
                         <button class="bt_send_AdministratorZoneCreating2" onClick={this.btn_send_3}>Сохранить</button>
-                        <button class="bt_send_AdministratorZoneCreating3" onClick={this.btn_send_3}>Удалить</button>
+                        <button class="bt_send_AdministratorZoneCreating3" onClick={this.btn_send_4}>Удалить</button>
+                    </>
+                        }
+                        
 
                     </FlexibleBlock>
                     <FlexibleBlock>
-                        <div class="header_text">Товар</div>
+                        <div class="header_text">Зона</div>
                         <div id="warehouseSceneWrap">
                             <div id="warehouseScene"  style={{border: "1px solid #ccc", width:"min-content"}} onContextMenu={(e)=> e.preventDefault()}/>
                         </div>

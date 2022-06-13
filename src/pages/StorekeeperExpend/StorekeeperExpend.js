@@ -46,32 +46,33 @@ export default function StorekeeperExpend(props){
 
     //-------------------------------------------------------------------------Блок 2
     //-------------------------------------стол 1
-    
+    const [goodsType, setGoodsType] = React.useState([])
+    async function apiGetGoodsType() {
+        var goods = await api.getGoodsType()
+        setGoodsType(goods)
+        apiGetGoodsSubCat2()
+    }
+
     const [goodsCategories2, setGoodsCategories2] = React.useState([])
     async function apiGetGoodsSubCat2() {
         var goods = await api.getGoodsSubCat2()
-        console.log("subcat2")
-        console.log(goods)
         setGoodsCategories2(goods)
         apiGetGoodsSubCat3()
     }
-
+   
     const [goodsCategories3, setGoodsCategories3] = React.useState([])
     async function apiGetGoodsSubCat3() {
         var goods = await api.getGoodsSubCat3()
-        console.log("subcat3")
-        console.log(goods)
         setGoodsCategories3(goods)
         apiGetShipmentOrders()
     }
 
-    const [goodsType, setGoodsType] = React.useState([])
-    async function apiGetGoodsType() {
-        var goods = await api.getGoodsType()
-        console.log('goodsType')
-        console.log(goods)
-        setGoodsType(goods)
-        apiGetGoodsSubCat2()
+    async function apiUpdateOrderGoods(selected, value) {
+        var response = await api.updateOrderGoods(selected, value, props.cookies, documents, date, 'expend')
+        setOrders([])
+        setTableList([])
+        apiGetGoodsType()
+        alert("Изменения успешно приняты")
     }
 
     const [isStart, setIsStart] = React.useState(true)
@@ -101,7 +102,7 @@ export default function StorekeeperExpend(props){
         if (selOrder != undefined){
             var buffer = await api.getGoodsByShipmentOrder(selOrder, goodsType, goodsCategories2, goodsCategories3)
             setTableList(buffer)
-        }  
+        }
     }
         
     //-------------------------------------стол 1 конец
@@ -151,9 +152,8 @@ export default function StorekeeperExpend(props){
             }
         })
 
-        if (check) tableList.forEach( item => {
-            apiUpdateOrderGoods(item.amount, item.code)
-        }) 
+        if (check)
+            apiUpdateOrderGoods(selOrder, tableList)
         else apiGetGoodsByShipmentOrder()
     }
     //-------------------------------------------------------------------------Блок 2 конец
@@ -212,6 +212,14 @@ export default function StorekeeperExpend(props){
         console.log("provider_2 = " + provider_2)
         console.log(table_list_2)
 
+    }
+
+    async function apiUpdateOrderGoods(selected, value) {
+        var response = await api.updateOrderGoods(selected, value, props.cookies, documents, date, 'expend')
+        setOrders([])
+        setTableList([])
+        apiGetGoodsType()
+        alert("Изменения успешно приняты")
     }
     //-------------------------------------------------------------------------Блок 3 конец
 //#endregion

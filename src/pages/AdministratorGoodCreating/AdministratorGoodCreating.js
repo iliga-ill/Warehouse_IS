@@ -12,9 +12,12 @@ import { MapControls, OrbitControls } from 'three/examples/jsm/controls/OrbitCon
 import ModelCreator from "../../classes/ModelCreator.js";
 import { Color, MOUSE, Vector2, Vector3 } from "three";
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { Api } from '../../api/administatoApi'
 
 import AuxiliaryMath from "../../classes/AuxiliaryMath.js";
 import zIndex from "@material-ui/core/styles/zIndex";
+
+
 
 const styles = {
 
@@ -157,16 +160,18 @@ function setModelOnCoordinates(model, coordinates, inObjects){
 }
 
 class AdministratorGoodCreating extends Component {
-
+    selectedItemId = -1
+    lastSelId = undefined
     constructor(props){
         super(props)
         this.state = {
+            reload:0,
             goods:[
-                {id: 0, text: "Товар 1"},
-                {id: 1, text: "Товар 2"},
-                {id: 2, text: "Товар 3"},
+                {id: 0, text: "Загрузка"},
+                // {id: 1, text: "Товар 2"},
+                // {id: 2, text: "Товар 3"},
             ],
-            selGood:{id: 0, text: "Товар 1"},
+            selGood:{id: 0, text: "Загрузка"},
             goodName:"Варочная поверхность Bosch PKE 645 B17E",
             depth:16,
             width:16,
@@ -175,9 +180,11 @@ class AdministratorGoodCreating extends Component {
             translationX:0,
             translationY:8,
             translationZ:0,
+            shownPanel:true,
         }
     }
 
+    setReload = ()=>{this.setState({reload: this.state.reload+1});}
     setGoods = (value)=>{this.setState({goods: value});}
     setSelGood = (value)=>{this.setState({selGood: value});}
     setGoodName = (value)=>{this.setState({goodName: value});}
@@ -188,12 +195,45 @@ class AdministratorGoodCreating extends Component {
     setTranslationX = (value)=>{this.setState({translationX: Number(value)});}
     setTranslationY = (value)=>{this.setState({translationY: Number(value)});}
     setTranslationZ = (value)=>{this.setState({translationZ: Number(value)});}
-    
 
+    setShownPanel = (value)=>{this.setState({shownPanel: value})}
+    
+    getTypes = async() => {
+        let api = new Api()
+        let res = []
+        res = await api.getVirtualGoodsType()
+        // this.state.goods = res
+        // this.state.selGood = res[0]
+        
+        structuredClone(this.state.goods).map(()=>{this.state.goods.pop()})
+        res.map(item=>{this.state.goods.push(item)})
+        this.setSelGood(res[0])
+    }
+
+    componentDidUpdate(){
+        if (this.state.selGood.id!=this.lastSelId && this.state.selGood.depth!=undefined){
+            let obj = this.state.selGood
+
+            this.state.goodName = obj.goodName
+            this.state.depth = obj.depth
+            this.state.width = obj.width
+            this.state.height = obj.height
+            this.state.color = obj.color
+            this.state.translationX = obj.translationX
+            this.state.translationY = obj.translationY
+            this.state.translationZ = obj.translationZ
+
+            console.log(this.state)
+
+            this.lastSelId = this.state.selGood.id
+            this.setShownPanel(!this.state.shownPanel)
+        }
+    }
 
     componentDidMount(){
         var manager = new THREE.LoadingManager();
         manager.onLoad = () => { // when all resources are loaded
+            if (this.state.goods[0].text == "Загрузка") this.getTypes()
             init(
                 this.state.width, 
                 this.state.depth, 
@@ -259,20 +299,58 @@ class AdministratorGoodCreating extends Component {
     }
 
     btn_send_1=()=> {
+        let id = (Number(this.state.goods[this.state.goods.length - 1].id) + 1)
         this.state.goods.push(
             {
-                id: (Number(this.state.goods[this.state.goods.length - 1].id) + 1),
+                id: id,
                 text: `Товар ${Number(this.state.goods[this.state.goods.length - 1].text.split(" ")[1])+1}`, 
+                goodName: `Товар ${id}`,
+                depth:16,
+                width:16,
+                height:16,
+                color:{a: 100, b: 170, g: 90, h: 275, hex: "#885aaa", r: 136, rgba: "rgba(136,90,170,1)", s: 47, v: 67},
+                translationX:0,
+                translationY:8,
+                translationZ:0,
             }
         )
         this.setSelGood(this.state.goods[this.state.goods.length-1])
+        let api = new Api()
+        let body = {
+            id: id,
+            name: `Товар ${id}`,
+            depth:16,
+            width:16,
+            height:16,
+            color: "rgba(136,90,170,1)",
+            translation: `${this.state.translationX}/${this.state.translationY}/${this.state.translationZ}`,
+        }
+        api.postVirtualGoodsType(body)
     }
 
     btn_send_2=()=> {
-
+        let api = new Api()
+        let body = {
+            id: this.state.selGood.id,
+            width: this.state.width,
+            height: this.state.height,
+            depth: this.state.depth,
+            color: this.state.color.rgba,
+            translation: `${this.state.translationX}/${this.state.translationY}/${this.state.translationZ}`,
+            good_name: this.state.selGood.goodName
+        }
+        let res = api.updateVirtualGoodsType(body)
     }
     btn_send_3=()=> {
+        this.deleteVirtualGoodsType(this.state.selGood.id)
+    }
 
+    deleteVirtualGoodsType = async(value) => {
+        let api = new Api()
+        let res = api.deleteVirtualGoodsType(value)
+        res.then(res=> {
+            alert(res)
+        })
     }
 
     render(){
@@ -283,20 +361,43 @@ class AdministratorGoodCreating extends Component {
                     <ListWithSearch item_list={this.state.goods} selItem={this.state.selGood} func={this.setSelGood} width={200} height={430}/>
                 </FlexibleBlock>
                 <FlexibleBlock>
-                    <div class="header_text">Настройка</div>
-                    <InputTextArea styles = "" label="Название&nbsp;товара&nbsp;:" placeholder="название товара" set={this.setGoodName} defValue={this.state.goodName} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/>
-                    <InputText styles = "row_with_item_wide" label="Ширина&nbsp;товара&nbsp;(см)&nbsp;"     placeholder="ширина товара"         defValue={this.state.width}             set={this.setWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
-                    <InputText styles = "row_with_item_wide" label="Глубина&nbsp;товара&nbsp;(см)&nbsp;"    placeholder="глубина товара"        defValue={this.state.depth}             set={this.setDepth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
-                    <InputText styles = "row_with_item_wide" label="Высота&nbsp;товара&nbsp;(см)&nbsp;"     placeholder="высота товара"         defValue={this.state.height}            set={this.setHeight} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
-                    <div class = "low_text row_with_item_wide"><div>Цвет&nbsp;товара:&nbsp;</div><InputColor initialValue={this.state.color.hex} onChange={this.setColor} placement="right"/></div>
-                    <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;x&nbsp;"          placeholder="смещение по x"         defValue={this.state.translationX}      set={this.setTranslationX} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
-                    <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;y&nbsp;"          placeholder="смещение по y"         defValue={this.state.translationY}      set={this.setTranslationY} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
-                    <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;z&nbsp;"          placeholder="смещение по z"         defValue={this.state.translationZ}      set={this.setTranslationZ} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
-                    <div style={{width:'370px'}}></div>
-                    <button class="bt_send_AdministratorGoodCreating1" onClick={this.btn_send_1}>Создать новый товар</button>
-                    <div class="place_holder_AdministratorGoodCreating"/>
-                    <button class="bt_send_AdministratorGoodCreating2" onClick={this.btn_send_2}>Сохранить</button>
-                    <button class="bt_send_AdministratorGoodCreating3" onClick={this.btn_send_3}>Удалить</button>
+                    {this.state.shownPanel
+                        &&<>
+                            <div class="header_text">Настройка 1</div>
+                            <InputTextArea styles = "" label="Название&nbsp;товара&nbsp;:" placeholder="название товара" set={this.setGoodName} defValue={this.state.goodName} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/>
+                            <InputText styles = "row_with_item_wide" label="Ширина&nbsp;товара&nbsp;(см)&nbsp;"     placeholder="ширина товара"         defValue={this.state.width}             set={this.setWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Глубина&nbsp;товара&nbsp;(см)&nbsp;"    placeholder="глубина товара"        defValue={this.state.depth}             set={this.setDepth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Высота&nbsp;товара&nbsp;(см)&nbsp;"     placeholder="высота товара"         defValue={this.state.height}            set={this.setHeight} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <div class = "low_text row_with_item_wide"><div>Цвет&nbsp;товара:&nbsp;</div><InputColor initialValue={this.state.color.hex} onChange={this.setColor} placement="right"/></div>
+                            <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;x&nbsp;"          placeholder="смещение по x"         defValue={this.state.translationX}      set={this.setTranslationX} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
+                            <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;y&nbsp;"          placeholder="смещение по y"         defValue={this.state.translationY}      set={this.setTranslationY} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
+                            <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;z&nbsp;"          placeholder="смещение по z"         defValue={this.state.translationZ}      set={this.setTranslationZ} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
+                            <div style={{width:'370px'}}></div>
+                            <button class="bt_send_AdministratorGoodCreating1" onClick={this.btn_send_1}>Создать новый товар</button>
+                            <div class="place_holder_AdministratorGoodCreating"/>
+                            <button class="bt_send_AdministratorGoodCreating2" onClick={this.btn_send_2}>Сохранить</button>
+                            <button class="bt_send_AdministratorGoodCreating3" onClick={this.btn_send_3}>Удалить</button>
+                        </>
+                    }
+                    {!this.state.shownPanel
+                        &&<>
+                            <div class="header_text">Настройка 2</div>
+                            <InputTextArea styles = "" label="Название&nbsp;товара&nbsp;:" placeholder="название товара" set={this.setGoodName} defValue={this.state.goodName} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/>
+                            <InputText styles = "row_with_item_wide" label="Ширина&nbsp;товара&nbsp;(см)&nbsp;"     placeholder="ширина товара"         defValue={this.state.width}             set={this.setWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Глубина&nbsp;товара&nbsp;(см)&nbsp;"    placeholder="глубина товара"        defValue={this.state.depth}             set={this.setDepth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <InputText styles = "row_with_item_wide" label="Высота&nbsp;товара&nbsp;(см)&nbsp;"     placeholder="высота товара"         defValue={this.state.height}            set={this.setHeight} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
+                            <div class = "low_text row_with_item_wide"><div>Цвет&nbsp;товара:&nbsp;</div><InputColor initialValue={this.state.color.hex} onChange={this.setColor} placement="right"/></div>
+                            <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;x&nbsp;"          placeholder="смещение по x"         defValue={this.state.translationX}      set={this.setTranslationX} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
+                            <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;y&nbsp;"          placeholder="смещение по y"         defValue={this.state.translationY}      set={this.setTranslationY} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
+                            <InputText styles = "row_with_item_wide" label="Смещение&nbsp;по&nbsp;z&nbsp;"          placeholder="смещение по z"         defValue={this.state.translationZ}      set={this.setTranslationZ} mask={/^[-0-9]{0,10}$/i} maskExample="быть числом"/> 
+                            <div style={{width:'370px'}}></div>
+                            <button class="bt_send_AdministratorGoodCreating1" onClick={this.btn_send_1}>Создать новый товар</button>
+                            <div class="place_holder_AdministratorGoodCreating"/>
+                            <button class="bt_send_AdministratorGoodCreating2" onClick={this.btn_send_2}>Сохранить</button>
+                            <button class="bt_send_AdministratorGoodCreating3" onClick={this.btn_send_3}>Удалить</button>
+                        </>
+                    }
+                    
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div class="header_text">Товар</div>

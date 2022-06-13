@@ -157,5 +157,19 @@ export class Api {
         })       
     }
 
+    closeOrder(id) {
+        var xhr = new XMLHttpRequest();
+        let value = {id: id}
+        return new Promise(function(resolve, reject){
+            xhr.open("POST", host+'update_order_status/', true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() { // Call a function when the state changes.
+                if (this.readyState === XMLHttpRequest.DONE) {
+                    resolve("Заказ завершен")
+                }
+            }
+            xhr.send(JSON.stringify(value));
+        })       
+    }
 }
 

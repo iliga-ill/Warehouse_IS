@@ -37,16 +37,27 @@ export default function Authorization(props){
         passCheck=false
 
         var access_token = -1;
+        let preview = ManIcon
+        if (item.avatar != ""  && item.avatar != null) {
+          preview = new Image();
+          preview.src = item.avatar
+        }
+      
+        console.log("avatar")
+        console.log(item.avatar)
+        console.log(preview.src)
+
         var accountData = {
           // roles: ["Логист", "Менеджер", "Администратор"], 
           roles: [item.duty], 
-          avatar: ManIcon, 
+          avatar: preview, 
           name: item.name, 
           surname: item.surname, 
           patronymic: item.patronymic,
           login:  item.login,
           password: item.password,
-          phone_num: item.phone_num
+          phone_num: item.phone_num,
+          operator_id: item.code
         }
         if (item.duty == "Кладовщик")  {
           access_token = 0

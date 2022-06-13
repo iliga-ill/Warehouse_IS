@@ -230,7 +230,7 @@ export default function App() {
           <Route path="/Administrator/AdministratorCreating/ZoneCreating" element={wrapErrorBoundary(<AdministratorZoneCreating/>)}/>
           <Route path="/Administrator/AdministratorCreating/WarehouseCreating" element={wrapErrorBoundary(<AdministratorWarehouseCreating/>)}/>
           
-          <Route path="/Profile" element={wrapErrorBoundary(<Profile cookies={cookies}/>)}/>
+          <Route path="/Profile" element={wrapErrorBoundary(<Profile setCookie={setCookie} cookies={cookies}/>)}/>
           <Route path="/Home" element={wrapErrorBoundary(<Home cookies={cookies}/>)}/>
         </Routes>
       </div>
