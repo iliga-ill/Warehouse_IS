@@ -14,7 +14,7 @@ export default function InputDate(props){
     */
    //pattern
    /*
-   <InputDate Id={getId()} defValue={"2022-01-14"} func={set_date}/>
+   <InputDate defValue={"2022-01-14"} func={set_date}/>
    */
 
     return (

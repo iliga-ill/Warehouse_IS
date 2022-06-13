@@ -7,8 +7,6 @@ import SearchIcon from '../../images/SearchIcon.svg';
 const [orders, setOrders] = React.useState([])
 const [selOrder, setSelOrder] = React.useState([])
 
-
-
 <ListWithSearch item_list={orders} selItem={selOrder} func={setSelOrder} width={list_with_search_width} height={list_with_search_height}/>
 
 //class
@@ -19,7 +17,6 @@ racks:[
 ],
 selRack:{id: 0, text: "Стеллаж 2"},
 
-setReload = ()=>{this.setState({reload: this.state.reload+1});}
 setRacks = (value)=>{this.setState({racks: value});}
 
 <ListWithSearch item_list={this.state.racks} selItem={this.state.selRack} func={this.setRack} width={"200px"} height={"390px"}/>
@@ -74,7 +71,10 @@ class ListWithSearch extends Component {
             <div style={{width: "100%"}}>
                 <div style={{paddingLeft:"5px", paddingBottom:"5px", borderBottom: "1px solid darkgray",}}>
                     <img src={SearchIcon} style={{width: "20px", height: "20px", display: "inline", verticalAlign: "middle"}}/>
-                    <input style={{display: "inline", verticalAlign: "middle"}} className="listWithSearch_input no-outline" type="text" placeholder="Search" onChange={event => {this.setSearchTerm(event.target.value)}} />
+                    <input style={{display: "inline", verticalAlign: "middle"}} 
+                        className="listWithSearch_input no-outline" type="text" placeholder="Search" 
+                        onChange={event => {this.setSearchTerm(event.target.value)}} 
+                    />
                 </div>
                 <div style={{height: `${this.props.height}px`, width:`${this.props.width}px`, overflowY: "scroll"}}>
                     {this.state.searchResults.map(item=>{

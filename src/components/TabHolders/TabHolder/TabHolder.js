@@ -6,7 +6,16 @@ export default function TabHolder(props){
     const location = useLocation();
     const navigate = useNavigate();
     return (
-        <div style={{width: "100%", height: "50px", overflowX: "scroll", overflowY: "hidden", backgroundColor: "white", verticalAlign: "middle", whiteSpace: "nowrap", borderBottom: "1px solid #ccc"}}>
+        <div style={{
+            width: "100%", 
+            height: "50px", 
+            overflowX: "scroll", 
+            overflowY: "hidden", 
+            backgroundColor: "white",
+            verticalAlign: "middle", 
+            whiteSpace: "nowrap", 
+            borderBottom: "1px solid #ccc"
+        }}>
             {props.tabs.map(function(item,i){
                 if (location.pathname.split("/")[1] == item.href.split("/")[1]){
                     return (

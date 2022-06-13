@@ -92,13 +92,25 @@ import saveAs from 'file-saver';
       },
   }
 
+var customizationSettings={
+      customizeCell:(exportVariables, cell, row, column)=>{
+          return cell
+      },
+      customizeSummaryCell: (exportVariables, cell, isExportSeletedRows, selection, rows)=>{
+          return cell
+      },
+      customizeHeader: (exportVariables, worksheet)=>{
+          return worksheet
+      },
+      customizeFooter:(exportVariables, worksheet, isExportSeletedRows, selection, rows)=>{
+          return worksheet
+      },
+  }
+
 const [dropdownList, setDropdownList] = React.useState([
     {menuItem:""},
     {menuItem:"Не инвентаризирован"},
     {menuItem:"Проинвентаризирован"},
-    {menuItem:"Потерян"},
-    {menuItem:"Найден"},
-    {menuItem:"Пусто"},
 ])
 
 const [tableHeaders, setTableHeaders] = React.useState([

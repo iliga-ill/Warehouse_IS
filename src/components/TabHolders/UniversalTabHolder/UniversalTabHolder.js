@@ -14,7 +14,16 @@ setSelTab = (value)=>{this.setState({selTab: value});}
 
 export default function UniversalTabHolder(props){
     return (
-        <div style={{width: "100%", height: "fit-content", overflowX: "scroll", overflowY: "hidden", backgroundColor: "white", verticalAlign: "middle", whiteSpace: "nowrap", borderBottom: "1px solid #ccc"}}>
+        <div style={{
+            width: "100%", 
+            height: "fit-content", 
+            overflowX: "scroll", 
+            overflowY: "hidden", 
+            backgroundColor: "white", 
+            verticalAlign: "middle", 
+            whiteSpace: "nowrap", 
+            borderBottom: "1px solid #ccc"
+        }}>
             {props.tabs.map(function(item,i){
                 if (props.selTab.id == item.id && item.selection){
                     return (

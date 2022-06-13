@@ -198,8 +198,8 @@ export default function App() {
           <Route path="/Storekeeper/StorekeeperAllocation" element={wrapErrorBoundary(<StorekeeperAllocation/>)}/>
           <Route path="/Storekeeper/StorekeeperInventory" element={wrapErrorBoundary(<StorekeeperInventory/>)}/>
           <Route path="/Storekeeper/StorekeeperVirtualWarehouse" element={wrapErrorBoundary(<StorekeeperVirtualWarehouse/>)}/>
-          <Route path="/Manager/ManagerProducts" element={wrapErrorBoundary(<ManagerProducts/>)}/>
 
+          <Route path="/Manager/ManagerProducts" element={wrapErrorBoundary(<ManagerProducts/>)}/>
           <Route path="/Manager/ManagerOrderCreation" element={wrapErrorBoundary(<ManagerOrderCreation/>)}/>
           <Route path="/Manager/ManagerSellOrders/Current" element={wrapErrorBoundary(<ManagerSellOrders isCurrent={true}/>)}/>
           <Route path="/Manager/ManagerSellOrders/Completed" element={wrapErrorBoundary(<ManagerSellOrders isCurrent={false}/>)}/>

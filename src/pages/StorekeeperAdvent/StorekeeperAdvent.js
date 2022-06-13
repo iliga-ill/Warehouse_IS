@@ -33,21 +33,6 @@ export default function StorekeeperAdvent(props){
 //#region блоки
     //-------------------------------------------------------------------------Блок 1
     
-     // {id: 0, text: "Заказ №1143", selected: false},
-        // {id: 0, text: "Заказ №1346", selected: false},
-        // {id: 0, text: "Заказ №3543", selected: false},
-        // {id: 0, text: "Заказ №3156", selected: false},
-        // {id: 0, text: "Заказ №6243", selected: false},
-        // {id: 0, text: "Заказ №6546", selected: false},
-        // {id: 0, text: "Заказ №6547", selected: false},
-        // {id: 0, text: "Заказ №6548", selected: false},
-        // {id: 0, text: "Заказ №6549", selected: false},
-        // {id: 0, text: "Заказ №6540", selected: false},
-        // {id: 0, text: "Заказ №6526", selected: false},
-        // {id: 0, text: "Заказ №6536", selected: false},
-        // {id: 0, text: "Заказ №6556", selected: false},
-        // {id: 0, text: "Заказ №6566", selected: false},
-
     const [orders, setOrders] = React.useState([])
     const [selOrder, setSelOrder] = React.useState(undefined)
 
@@ -322,33 +307,14 @@ async function apiUpdateOrderGoods(selected, value) {
                 </FlexibleBlock>
                 <FlexibleBlock>
                     <div class="header_text">Прием товаров</div>
-                    <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={date} func={setDate}/></div>
-                    {/* <div class="low_text row_with_item_wide"><div>Товар&nbsp;</div><ExpandListInputRegular Id={getId()} defValue={expand_imput_list_1[3].value} list={expand_imput_list_1} func={set_expand_list_input_1}  i={0} j={0}/></div> */}
-                    {/* <InputText styles = "row_with_ite   m_wide" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_1}/> */}
-                    <div class="low_text"><InputFile Id={getId()} func={setDocuments}/></div>
-                    {/* <Table Id={getId()} table_headers={tableHeaders} table_field_height={table_field_height} table_list={tableList} func={setTableList} numb={0} search="true" add="true" delete="true"/> */}
-                
+                    <div class="low_text row_with_item_wide"><div>Дата&nbsp;приема&nbsp;</div><InputDate defValue={date} func={setDate}/></div>
+                    <div class="low_text"><InputFile func={setDocuments}/></div>
                     <div style={{width:"min-content", display:'inline-table'}} >
                         <TableComponent height={245} columns={tableHeaders} rows={tableList} setNewTableList={setTableList}  tableSettings={tableSettings}/>
                     </div>
                     <div></div>
                     <div class="place_holder"/><button class="bt_send" onClick={btn_send_1}>Отправить</button>
                 </FlexibleBlock>
-                    {/* <FlexibleBlock>
-                    <div class="header_text">Заказ 1</div>
-                    <InputText styles = "row_with_item_equal" Id={getId()} label="Категория" placeholder="Категория товара" set={set_good_category}/>
-                    <InputText styles = "row_with_item_equal" Id={getId()} label="Кол-во товара в поставке&nbsp;" placeholder="Кол-во товара в поставке" set={set_one_shipment_amount}/>
-                    <InputText styles = "row_with_item_equal" Id={getId()} label="Гарантия" placeholder="Гарантия" set={set_warranty_good}/>
-                    <div class="low_text row_with_item_equal"><div>Крайний срок поставки&nbsp;</div><InputDate Id="2" func={set_shipment_deadline}/></div>
-                    <InputText styles = "row_with_item_equal" Id={getId()} label="Кол-во партий товара&nbsp;" placeholder="Кол-во партий товара" set={set_amount_of_shipments}/>
-                    <InputText styles = "row_with_item_equal" Id={getId()} label="Цена&nbsp;" placeholder="Цена" set={set_good_cost}/>
-                    <InputText styles = "row_with_item_equal" Id={getId()} label="Поставщик" placeholder="Поставщик" set={set_provider_2}/>
-                    <div class="low_text"><InputFile Id={getId()} func={onBlock3FileUploaded}/></div>
-                    <Table Id={getId()} table_headers={table_headers_2} table_field_height={table_field_height_2} table_list={table_list_2} func={set_table_list_2} numb={1} search="true" add="false" delete="false"/>
-                </FlexibleBlock> */}
-                    {/* <div style={{width:800+'px', display:'block'}} >
-                        <Table2 columns={tableHeaders2} rows={table_list} setNewTableList={setTableList2}/>
-                    </div> */}
             </FlexibleBlocksPage>
         </>
     )

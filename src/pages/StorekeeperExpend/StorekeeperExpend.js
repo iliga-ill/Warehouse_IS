@@ -4,16 +4,13 @@ import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPa
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
 import InputDate from "../../components/InputDate/InputDate";
 import InputFile from "../../components/InputFile/InputFile";
-import InputText from "../../components/InputText/InputText";
 import ListWithSearch from "../../components/ListWithSearch/ListWithSearch";
 import { TableComponent } from "../../components/Table/TableComponent";
 import { Api } from "../../api/storekeeperApi"
 import { useLocation } from "react-router-dom"
 
 var api = new Api()
-const styles = {
-
-  }
+const styles = {}
 
 export default function StorekeeperExpend(props){
     const location = useLocation();
