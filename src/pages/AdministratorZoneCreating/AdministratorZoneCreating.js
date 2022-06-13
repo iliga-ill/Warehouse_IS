@@ -345,9 +345,45 @@ onMessageAlighment=()=>{
             {
                 id: (Number(this.state.zones[this.state.zones.length - 1].id) + 1),
                 text: `Зона ${Number(this.state.zones[this.state.zones.length - 1].text.split(" ")[1]) + 1}`, 
+                length:500,
+                width:300,
+                color:{a: 100, b: 170, g: 90, h: 275, hex: "#ffffff", r: 136, rgba: "rgba(136,90,170,1)", s: 47, v: 67},
+                lineWidth:1,
+                chamferLendth:10,
+                message:"Загрузка",
+                textSize:15,
+                gapLengthX: "Загрузка".length * 15,
+                gapLengthY: "Загрузка".length * 15,
+                messageAlighment:["right"],
+                isAighmentTop:false,
+                isAighmentBottom:false,
+                isAighmentLeft:false,
+                isAighmentRight:true,
             }
         )
         this.setSelZone(this.state.zones[this.state.zones.length-1])
+        let zone = this.state
+        let alighments = ""
+        let iter = 0
+        for (let item of zone.messageAlighment){
+            if (iter != zone.messageAlighment.length-1) alighments += `${item}/`
+            else alighments += `${item}`
+            iter += 1
+        }
+
+        let body = {
+            id: zone.zones[zone.zones.length-1].id,
+            width: zone.width,
+            height: zone.length,
+            color: zone.color.rgba,
+            line_width: zone.lineWidth,
+            chamfer_length: zone.chamferLendth,
+            name: "Зона -",
+            text_size: zone.textSize,
+            message_alighment: alighments,
+        }
+        console.log(body)
+        api.postVirtualZones(body)
     }
 
     btn_send_2=()=> {
@@ -356,11 +392,43 @@ onMessageAlighment=()=>{
     }
 
     btn_send_3=()=> {
+        let zone = this.state
+        let alighments = ""
+        let iter = 0
+        for (let item of zone.messageAlighment){
+            if (iter != zone.messageAlighment.length-1) alighments += `${item}/`
+            else alighments += `${item}`
+            iter += 1
+        }
 
+        let body = {
+            id: zone.selZone.id,
+            width: zone.width,
+            height: zone.length,
+            color: zone.color.rgba,
+            line_width: zone.lineWidth,
+            chamfer_length: zone.chamferLendth,
+            name: zone.message,
+            text_size: zone.textSize,
+            message_alighment: alighments,
+        }
+        console.log(body)
+        api.updateVirtualZones(body)
     }
 
     btn_send_4=()=> {
+        let body = {
+            id: this.state.selZone.id,
+        }
+        console.log(body)
+        this.deleteVirtualZones(body)
+    }
 
+    deleteVirtualZones = async(value) => {
+        let res = api.deleteVirtualZones(value)
+        res.then(res=> {
+            alert(res)
+        })
     }
 
     render(){
@@ -394,7 +462,7 @@ onMessageAlighment=()=>{
                         <div class="place_holder_AdministratorZoneCreating"/>
                         <button class="bt_send_AdministratorZoneCreating2" style={{marginRight:"5px"}} onClick={this.btn_send_2}>Построить</button>
                         <button class="bt_send_AdministratorZoneCreating2" onClick={this.btn_send_3}>Сохранить</button>
-                        <button class="bt_send_AdministratorZoneCreating3" onClick={this.btn_send_3}>Удалить</button>
+                        <button class="bt_send_AdministratorZoneCreating3" onClick={this.btn_send_4}>Удалить</button>
 
                     </FlexibleBlock>
                     <FlexibleBlock>

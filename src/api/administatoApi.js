@@ -741,6 +741,53 @@ export class Api {
             xhr.send(null);
         }) 
     }
+
+    postVirtualZones(value) {
+        var xhr = new XMLHttpRequest();
+      
+        return new Promise(function(resolve, reject){
+            xhr.open("POST", host+"zones_virtual_post/", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() {
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    var answer = JSON.parse(this.response)
+                    resolve(answer)
+                }
+            }
+            xhr.send(JSON.stringify(value));
+        }) 
+    }
+
+    updateVirtualZones(value) {
+        var xhr = new XMLHttpRequest();
+      
+        return new Promise(function(resolve, reject){
+            xhr.open("POST", host+"zones_virtual_update/", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() {
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    var answer = JSON.parse(this.response)
+                    resolve(answer)
+                }
+            }
+            xhr.send(JSON.stringify(value));
+        }) 
+    }
+
+    deleteVirtualZones(value) {
+        var xhr = new XMLHttpRequest();
+      
+        return new Promise(function(resolve, reject){
+            xhr.open("POST", host+"zones_virtual_delete/", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() {
+                if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    resolve(this.response)
+                }
+            }
+            xhr.send(JSON.stringify(value));
+        }) 
+    }
 }
   
   
