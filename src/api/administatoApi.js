@@ -4,6 +4,10 @@ import {Host} from './host'
 var hostObj = new Host()
 var host = hostObj.getHost()
 
+function rgbToHex(r, g, b) {
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+
 export class Api {
 
     getClients () {
@@ -698,8 +702,9 @@ export class Api {
                     var answer = JSON.parse(this.response)
                     let buf = []
                     answer.map(elm => {
-                        let color = elm.color.replace(/^rgba?(|\s+|)$/g, '').split(',');
-                        const hex = `#${((1 << 24) + (parseInt(color[0]) << 16) + (parseInt(color[1]) << 8) + parseInt(color[2])).toString(16).slice(1)}`;
+                        // let color = elm.color.replace(/^rgba?(|\s+|)$/g, '').split(',');
+                        // const hex = `#${((1 << 24) + (parseInt(color[0]) << 16) + (parseInt(color[1]) << 8) + parseInt(color[2])).toString(16).slice(1)}`;
+                        const hex = rgbToHex(elm.color)
                         let alighments = []
                         alighments.push(elm.message_alighment.split('/'))
                         let isAighmentTop = false
