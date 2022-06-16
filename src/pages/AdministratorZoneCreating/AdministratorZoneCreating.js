@@ -243,6 +243,8 @@ class AdministratorZoneCreating extends Component {
 
             this.lastSelId = this.state.selZone.id
             this.setShownPanel(!this.state.shownPanel)
+            this.updateModel()
+            this.updateModel()
         }
     }
 
