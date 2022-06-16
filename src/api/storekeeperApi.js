@@ -320,7 +320,6 @@ export class Api {
                     var answer = JSON.parse(this.response)
                     console.log("StorekeeperAllocation apiGetShelfs answer: ")
                     console.log(answer)
-                    console.log(racksAnswer)
                     var buf = []
                     answer.map( function(item, i) {
                         buf[i] = {shelfCode: item.code, name: item.name, shelfCode: item.code, rack_num: racksAnswer[item.rack_num-1].name, zone_num: racksAnswer[item.rack_num-1].zone_num, capacity: item.capacity, shelf_space: item.shelf_space}
