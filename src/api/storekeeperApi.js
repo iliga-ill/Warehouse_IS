@@ -323,7 +323,12 @@ export class Api {
                     console.log(racksAnswer)
                     var buf = []
                     answer.map( function(item, i) {
-                        buf[i] = {shelfCode: item.code, name: item.name, shelfCode: item.code, rack_num: racksAnswer[item.rack_num-1].name, zone_num: racksAnswer[item.rack_num-1].zone_num, capacity: item.capacity, shelf_space: item.shelf_space}
+                        racksAnswer.map( function(item2,j) {
+                            if (item.rack_num == item2.code) {
+                                buf[i] = {shelfCode: item.code, name: item.name, shelfCode: item.code, rack_num: item2.name, zone_num: item2.zone_num, capacity: item.capacity, shelf_space: item.shelf_space}
+                            }
+                           
+                        })
                     })
                     resolve(buf)
                 }
