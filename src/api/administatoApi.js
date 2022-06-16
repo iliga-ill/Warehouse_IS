@@ -4,8 +4,23 @@ import {Host} from './host'
 var hostObj = new Host()
 var host = hostObj.getHost()
 
-function rgbToHex(r, g, b) {
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+function rgbToHex(color) {
+    // let parsed_color = color.replace(/^rgba?(|\s+|)$/g, '').split(',');
+    // let parsed_color = color.replace("rgba(", '').replace(")", '').split(',');
+    // let r = parsed_color[0]
+    // let g = parsed_color[1]
+    // let b = parsed_color[2]
+    // return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+
+    let rgba = color.match(
+        /^rgba?[\s+]?\([\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?,[\s+]?(\d+)[\s+]?/i
+      );
+      return rgba && rgba.length === 4
+        ? "#" +
+            ("0" + parseInt(rgba[1], 10).toString(16)).slice(-2) +
+            ("0" + parseInt(rgba[2], 10).toString(16)).slice(-2) +
+            ("0" + parseInt(rgba[3], 10).toString(16)).slice(-2)
+        : "";
 }
 
 export class Api {
@@ -246,7 +261,7 @@ export class Api {
                     // Request finished. Do processing here.
                     var answer = JSON.parse(this.response)
                     var buf = {}
-
+                  
                     answer.map((item, i) => {
                         var messageAlighment = item.message_alighment.split('/') 
                         buf[`zone_${item.code}`] = {
