@@ -103,7 +103,8 @@ export default function Profile(props){
                             <table>
                                 <tr>
                                     <td>
-                                        <img src={accountData.avatar} class="profile_icon"/>
+                                        {/* <img src={accountData.avatar} class="profile_icon"/> */}
+                                        <img src={ManIcon} class="profile_icon"/>
                                     </td>
                                     <td>
                                         <div class="profile_data">
@@ -131,7 +132,8 @@ export default function Profile(props){
                                                 onCrop={onCrop}
                                                 onClose={onClose}
                                                 onBeforeFileLoad={onBeforeFileLoad}
-                                                src={avatar}
+                                                // src={avatar}
+                                                src={ManIcon}
                                             />
                                         </div>
                                     </td>

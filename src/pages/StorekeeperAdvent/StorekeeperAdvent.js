@@ -158,9 +158,7 @@ export default function StorekeeperAdvent(props){
             // tableList.forEach( item => {
             //     apiUpdateOrderGoods(item.amount, item.code)
             // }) 
-           
             apiUpdateOrderGoods(selOrder, tableList)
-            
         else apiGetGoodsByShipmentOrder()
         //if (check) props.func2(temp_table_list)
         //console.log(temp_table_list)
@@ -231,11 +229,19 @@ async function apiGetGoodsSubCat4() {
 }
 
 async function apiUpdateOrderGoods(selected, value) {
-    var response = await api.updateOrderGoods(selected, value, props.cookies, documents, date, 'advent')
-    setOrders([])
-    setTableList([])
-    apiGetGoodsType()
     alert("Изменения успешно приняты")
+    console.log("selected")
+    console.log(selected)
+    console.log(value)
+    console.log(orders)
+    var response = await api.updateOrderGoods(selected, value, props.cookies, documents, date, 'advent')
+    // setTableList([])
+    // apiGetGoodsType()
+    //apiGetShipmentOrders()
+    var order = structuredClone(orders)
+    structuredClone(orders).map(()=>{orders.pop()})
+    order.map(item=>{if (item.code!=selected.code) orders.push(item)})
+    setSelOrder(order[0])
 }
 
 //#endregion категории с первой вкладки конец

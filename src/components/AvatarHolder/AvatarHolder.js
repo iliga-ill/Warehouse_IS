@@ -29,7 +29,8 @@ export default function AvatarHolder(props){
     return (
         <div style={{width: "49px", height: "49px", display: "inline-block", borderBottom: "1px solid darkgray"}}>
             <div className="avatarHolder" onClick={()=>{styles.join(' ') == "dropdownMenu open"?closeDropdown():openDropdown()}}>
-                <img src={accountData != undefined? accountData.avatar.src: ManIcon} style={{width: "47px", height: "47px", borderRadius: "50%", backgroundColor: "white", border: "1px solid black", display: "block"}}/>
+                {/* <img src={accountData != undefined? accountData.avatar.src: ManIcon} style={{width: "47px", height: "47px", borderRadius: "50%", backgroundColor: "white", border: "1px solid black", display: "block"}}/> */}
+                <img src={ManIcon} style={{width: "47px", height: "47px", borderRadius: "50%", backgroundColor: "white", border: "1px solid black", display: "block"}}/>
             </div>
             <div className={styles.join(' ')}>
                 <div className="menuItem" onClick={profile}>Профиль</div>

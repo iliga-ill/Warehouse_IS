@@ -65,7 +65,7 @@ class AdministratorAccounts extends Component {
     componentDidUpdate(){
         console.log("DidUpdate")
 
-        if (this.lastSelectedItem != this.state.selectedItem){
+        if (this.state.selectedItem != undefined && this.lastSelectedItem != this.state.selectedItem){
             let counter = 0
             this.state.allDuties.map(duty=>{
                 document.getElementById("checkbox"+counter++).checked=this.state.selectedItem.duty.includes(duty)
