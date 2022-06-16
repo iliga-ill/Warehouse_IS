@@ -566,7 +566,8 @@ export class Api {
                         translation = translation.toString().split('/')
                         // let color = elm.color.toString().replace("rgba(", "").replace(")", "").split(',')
                         let color = elm.color.replace(/^rgba?(|\s+|)$/g, '').split(',');
-                        const hex = `#${((1 << 24) + (parseInt(color[0]) << 16) + (parseInt(color[1]) << 8) + parseInt(color[2])).toString(16).slice(1)}`;
+                        // const hex = `#${((1 << 24) + (parseInt(color[0]) << 16) + (parseInt(color[1]) << 8) + parseInt(color[2])).toString(16).slice(1)}`;
+                        const hex = rgbToHex(elm.color)
 
                         let body = {
                             id: elm.virtual_id,
@@ -605,7 +606,8 @@ export class Api {
                     console.log(answer)
                     answer.map(elm => {
                         let color = elm.color.replace(/^rgba?(|\s+|)$/g, '').split(',');
-                        const hex = `#${((1 << 24) + (parseInt(color[0]) << 16) + (parseInt(color[1]) << 8) + parseInt(color[2])).toString(16).slice(1)}`;
+                        // const hex = `#${((1 << 24) + (parseInt(color[0]) << 16) + (parseInt(color[1]) << 8) + parseInt(color[2])).toString(16).slice(1)}`;
+                        const hex = rgbToHex(elm.color)
                         let translation = elm.translation.split('/')
                         let body = {
                             id: elm.code,
