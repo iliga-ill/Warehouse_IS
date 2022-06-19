@@ -207,7 +207,7 @@ export class Api {
                             elm2.shelfs.map(elm3 => {
                                 shelves.push({
                                     name: elm3.name,
-                                    number: elm3.code,
+                                    number: elm3.shelf_num,
                                     id: elm3.code,
                                     space: elm3.space
                                 })

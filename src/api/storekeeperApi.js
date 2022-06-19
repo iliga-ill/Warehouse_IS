@@ -324,7 +324,10 @@ export class Api {
                     answer.map( function(item, i) {
                         racksAnswer.map( function(item2,j) {
                             if (item.rack_num == item2.code) {
-                                buf[i] = {shelfCode: item.code, name: item.name, shelfCode: item.code, rack_num: item2.name, zone_num: item2.zone_num, capacity: item.capacity, shelf_space: item.shelf_space}
+                                console.log("item2 and item")
+                                console.log(item)
+                                console.log(item2)
+                                buf[i] = {shelfCode: item.code, name: item.name, rack_num: item2.name, zone_num: item2.zone_num, capacity: item.capacity, shelf_space: item.shelf_space}
                             }
                            
                         })
