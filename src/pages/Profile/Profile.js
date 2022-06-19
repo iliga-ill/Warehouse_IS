@@ -1,4 +1,4 @@
-import React from "react";
+import { React, Component, Fragment } from "react";
 import './Profile.css';
 import FlexibleBlocksPage from "../../components/FlexibleBlocks/FlexibleBlocksPage/FlexibleBlocksPage";
 import FlexibleBlock from "../../components/FlexibleBlocks/FlexibleBlock/FlexibleBlock";
@@ -8,171 +8,186 @@ import { Api } from "../../api/profileApi"
 import ManIcon from '../../images/ManIcon.svg'
 
 var api = new Api()
-var isStart = true
 const styles = {
 
 }
 
-export default function Profile(props){
-    var accountData = props.cookies.accountData
-    const [onChange, setOnChange] = React.useState(false)
+// let avatar = null
 
-    const [name, setName] = React.useState(accountData.name)
-    const [surname, setSurname] = React.useState(accountData.surname)
-    const [patronymic, setPatronymic] = React.useState(accountData.patronymic)
-    const [login, setLogin] = React.useState(accountData.login)
-    const [password, setPassword] = React.useState(accountData.password)
-    const [phoneNum, setPhoneNum] = React.useState(accountData.phone_num)
+class Profile extends Component {
 
-    var id=1300
-    function getId(){return ++id-1;}
-
-    const [avatar, setAvatar] = React.useState(ManIcon)
-    const [preview, setPreview] = React.useState(null)
-
-    async function getAvatar() {
-        var res = await api.getProfileAvatar(accountData.operator_id)
-        setAvatar(res)
-        setPreview(res)
-        console.log(res)
-        console.log(avatar)
+    constructor(props){
+        super(props)
+        this.state = {
+            reload:0,
+            accountData: props.cookies.accountData,
+            onChange:false,
+            name: props.cookies.accountData.name,
+            surname: props.cookies.accountData.surname,
+            patronymic: props.cookies.accountData.patronymic,
+            login: props.cookies.accountData.login,
+            password: props.cookies.accountData.password,
+            phoneNum: props.cookies.accountData.phone_num,
+            onLoad:false,
+            avatar:null,
+            preview:null,
+        }
     }
 
-    if (isStart) {
-        getAvatar()
-        isStart = false
+    setReload = ()=>{this.setState({reload: this.state.reload+1});}
+    setOnChange = (value)=>{this.setState({onChange: value});}
+    setName = (value)=>{this.setState({name: value});}
+    setSurname = (value)=>{this.setState({surname: value});}
+    setPatronymic = (value)=>{this.setState({patronymic: value});}
+    setLogin = (value)=>{this.setState({login: value});}
+    setPassword = (value)=>{this.setState({password: value});}
+    setPhoneNum = (value)=>{this.setState({phoneNum: value});}
+    setOnLoad = (value)=>{this.setState({onLoad: value});}
+    setAvatar = (value)=>{this.setState({avatar: value});}
+    setPreview = (value)=>{this.setState({preview: value});}
+
+    getAvatar = async () => {
+        var res = await api.getProfileAvatar(this.state.accountData.operator_id)
+        this.setAvatar(res)
+        this.setPreview(res)
+        this.setOnChange(!this.state.onChange)
+        this.setOnChange(!this.state.onChange)
+    }
+
+    componentDidMount(){
+        console.log("DidMount")
+        this.getAvatar()
     }
     
-    function onClose() {
-        setPreview({preview: null})
-      }
+    onClose = () => {this.setPreview({preview: null})}
       
-    function onCrop(preview) {
-        setPreview({preview})
-    }
+    onCrop = (preview) => {this.setPreview({preview})}
 
-    function onBeforeFileLoad(elem) {
+    onBeforeFileLoad = (elem) => {
         if(elem.target.files[0].size > 71680){
             alert("File is too big!");
             elem.target.value = "";
         };
     }
 
-    function onSave(){
+    onSave = () => {
         let body = {
-            code: accountData.operator_id,
-            name: name,
-            surname: surname,
-            patronymic: patronymic,
-            login: login,
-            password: password,
-            phone_num: phoneNum,
+            code: this.state.accountData.operator_id,
+            name: this.state.name,
+            surname: this.state.surname,
+            patronymic: this.state.patronymic,
+            login: this.state.login,
+            password: this.state.password,
+            phone_num: this.state.phoneNum,
             duty: "",
-            preview: preview.preview
+            preview: this.state.preview.preview
         }
-        console.log(preview.preview)
-        updateProfile(body)
+        this.state.avatar = this.state.preview.preview
+        // handleFileUpload(preview.preview)
+        this.updateProfile(body)
+        this.setOnChange(false)
     }
 
-    async function updateProfile(value) {
+    updateProfile = async (value) => {
         let res = await api.updateProfile(value)
 
         var accountData = {
             // roles: ["Логист", "Менеджер", "Администратор"], 
-            roles: accountData.roles, 
-            avatar: preview.preview, 
-            name: name, 
-            surname: surname, 
-            patronymic: patronymic,
-            login:  login,
-            password: password,
-            phone_num: phoneNum,
-            operator_id: accountData.operator_id
+            roles: this.state.accountData.roles, 
+            avatar: this.state.avatar, 
+            name: this.state.name, 
+            surname: this.state.surname, 
+            patronymic: this.state.patronymic,
+            login:  this.state.login,
+            password: this.state.password,
+            phone_num: this.state.phoneNum,
+            operator_id: this.state.accountData.operator_id
           }
         
         let expires = new Date()
         expires.setTime(expires.getTime() + (30 * 60 * 1000))
-        props.setCookie('accountData', accountData, { path: '/',  expires})
+        this.props.setCookie('accountData', accountData, { path: '/',  expires})
     }
 
-    return (
-        <FlexibleBlocksPage marginTop={51}>
-            <FlexibleBlock>
-                    {!onChange
-                        ?<>
-                            <table>
-                                <tr>
-                                    <td>
-                                        {/* <img src={accountData.avatar} class="profile_icon"/> */}
-                                        <img src={ManIcon} class="profile_icon"/>
-                                    </td>
-                                    <td>
-                                        <div class="profile_data">
-                                            <div class="header_text">
-                                                {accountData.surname}&nbsp;{accountData.name}&nbsp;{accountData.patronymic}
+    render(){
+        return (
+            <FlexibleBlocksPage marginTop={51}>
+                <FlexibleBlock>
+                        {!this.state.onChange
+                            ?<>
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <img src={this.state.avatar!=null?this.state.avatar:ManIcon} class="profile_icon"/>
+                                        </td>
+                                        <td>
+                                            <div class="profile_data">
+                                                <div class="header_text">
+                                                    {this.state.accountData.surname}&nbsp;{this.state.accountData.name}&nbsp;{this.state.accountData.patronymic}
+                                                </div>
+                                                <div>Логин: {this.state.accountData.login}</div>
+                                                <div>Пароль: {this.state.accountData.password}</div>
+                                                <div>Телефон: +{this.state.accountData.phone_num}</div>
+                                                <div>Доступные&nbsp;АРМ: {this.state.accountData.roles.join(", ")}</div>
                                             </div>
-                                            <div>Логин: {accountData.login}</div>
-                                            <div>Пароль: {accountData.password}</div>
-                                            <div>Телефон: +{accountData.phone_num}</div>
-                                            <div>Доступные&nbsp;АРМ: {accountData.roles.join(", ")}</div>
-                                        </div>
-                                        <div class="place_holder"/><button class="bt_send" onClick={()=>{setOnChange(true)}}>Изменить</button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </>
-                        :<>
-                            <table>
-                                <tr>
-                                    <td style={{width:"200px"}}>
-                                        <div style={{width:"200px"}}>
-                                            <Avatar
-                                                width={200}
-                                                height={200}
-                                                onCrop={onCrop}
-                                                onClose={onClose}
-                                                onBeforeFileLoad={onBeforeFileLoad}
-                                                // src={avatar}
-                                                src={ManIcon}
-                                            />
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div style={{width:"200px"}}>
-                                            {preview==null||preview.preview==null
+                                            <div class="place_holder"/><button class="bt_send" onClick={()=>{this.setOnChange(true);}}>Изменить</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </>
+                            :<>
+                                <table>
+                                    <tr>
+                                        <td style={{width:"200px"}}>
+                                            <div style={{width:"200px"}}>
+                                                <Avatar
+                                                    width={200}
+                                                    height={200}
+                                                    onCrop={this.onCrop}
+                                                    onClose={this.onClose}
+                                                    onBeforeFileLoad={this.onBeforeFileLoad}
+                                                    src={this.state.avatar}
+                                                    // src={ManIcon}
+                                                />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div style={{width:"200px"}}>
+                                                {this.state.preview==null||this.state.preview.preview==null
+                                                    ?<></>
+                                                    :<img src={this.state.preview.preview} alt="Preview" class="preview"/>
+
+                                                }
+                                            </div>
+                                        </td>
+                                        <td style={{width:"200px", textAlign: "center"}}>
+                                            {this.state.preview==null||this.state.preview.preview==null
                                                 ?<></>
-                                                :<img src={preview.preview} alt="Preview" class="preview"/>
-
+                                                :<img src={this.state.preview.preview} alt="Preview" class="preview_small"/>
                                             }
-                                        </div>
-                                    </td>
-                                    <td style={{width:"200px", textAlign: "center"}}>
-                                        {preview==null||preview.preview==null
-                                            ?<></>
-                                            :<img src={preview.preview} alt="Preview" class="preview_small"/>
-
-                                        }
-                                    </td>
-                                    
-                                </tr>
-                            </table>
-                            <div class="profile_data">
-                                <div style={{width:"250px"}} >
-                                    <InputText styles = "row_with_item_equal" label="Имя:&nbsp;" placeholder="имя" defValue={name} set={setName} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
-                                    <InputText styles = "row_with_item_equal" label="Фамилия:&nbsp;" placeholder="имя" defValue={surname} set={setSurname} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
-                                    <InputText styles = "row_with_item_equal" label="Отчество:&nbsp;" placeholder="имя" defValue={patronymic} set={setPatronymic} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
-                                    <InputText styles = "row_with_item_equal" label="Логин:&nbsp;" placeholder="имя" defValue={login} set={setLogin} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
-                                    <InputText styles = "row_with_item_equal" label="Пароль:&nbsp;" placeholder="имя" defValue={password} set={setPassword} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
-                                    <InputText styles = "row_with_item_equal" label="Телефон:&nbsp;" placeholder="имя" defValue={phoneNum} set={setPhoneNum} type="phone"/>
-                                </div> 
-                                <div class="low_text">Доступные&nbsp;АРМ: {accountData.roles.join(", ")}</div>
-                            </div>
-                            <div class="place_holder double"/>
-                            <button class="bt_send" onClick={()=>{setOnChange(false)}}>Отмена</button>
-                            <button class="bt_send second"onClick={()=>{onSave()}}>Сохранить</button>
-                        </>
-                    }
-            </FlexibleBlock>
-        </FlexibleBlocksPage>
-    )
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="profile_data">
+                                    <div style={{width:"250px"}} >
+                                        <InputText styles = "row_with_item_equal" label="Имя:&nbsp;" placeholder="имя" defValue={this.state.name} set={this.setName} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
+                                        <InputText styles = "row_with_item_equal" label="Фамилия:&nbsp;" placeholder="имя" defValue={this.state.surname} set={this.setSurname} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
+                                        <InputText styles = "row_with_item_equal" label="Отчество:&nbsp;" placeholder="имя" defValue={this.state.patronymic} set={this.setPatronymic} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
+                                        <InputText styles = "row_with_item_equal" label="Логин:&nbsp;" placeholder="имя" defValue={this.state.login} set={this.setLogin} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
+                                        <InputText styles = "row_with_item_equal" label="Пароль:&nbsp;" placeholder="имя" defValue={this.state.password} set={this.setPassword} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/> 
+                                        <InputText styles = "row_with_item_equal" label="Телефон:&nbsp;" placeholder="имя" defValue={this.state.phoneNum} set={this.setPhoneNum} type="phone"/>
+                                    </div> 
+                                    <div class="low_text">Доступные&nbsp;АРМ: {this.state.accountData.roles.join(", ")}</div>
+                                </div>
+                                <div class="place_holder double"/>
+                                <button class="bt_send" onClick={()=>{this.setOnChange(false)}}>Отмена</button>
+                                <button class="bt_send second"onClick={()=>{this.onSave()}}>Сохранить</button>
+                            </>
+                        }
+                </FlexibleBlock>
+            </FlexibleBlocksPage>
+        )
+    }
 }
+
+export default Profile

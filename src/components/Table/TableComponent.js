@@ -31,6 +31,7 @@ import {
   ExportPanel,
 } from '@devexpress/dx-react-grid-material-ui';
 import saveAs from 'file-saver';
+import AlertMessagebox from "../../components/Messagebox/AlertMessagebox.js";
 
 
 /* example
@@ -156,6 +157,7 @@ const [selectedItem, setSelectedItem] = React.useState()
 */
 
 const getRowId = row => row.id
+let isAlertMessageboxText = ""
 
 export function TableComponent(props) {
 //---------------------------настройка параметров-------------------------------
@@ -169,6 +171,7 @@ export function TableComponent(props) {
   const [tableColumnExtensions] = useState([]);
   const [totalSummaryItems] = useState([]);
   const [currencyColumns] = useState([]);
+  const [isAlertMessageboxOpened, setIsAlertMessageboxOpened] = React.useState(false)
 
   var onSaveCheck = 0
   var onCustomizeHeaderCheck = 0
@@ -283,15 +286,18 @@ export function TableComponent(props) {
                 added[0][item.name] = parseFloat(added[0][item.name])
               }
               if (item.mask!=undefined && added[0][item.name].toString().match(item.mask)==null){
-                alert(`Значение в поле ${item.title} должно ${item.maskExample}`)
+                
+                isAlertMessageboxText+= `Значение в поле ${item.title} должно ${item.maskExample}. `
                 added[0][item.name] = item.basicValue
               }
             } else if (item.mask!=undefined) {
-              alert(`Значение в поле ${item.title} должно быть заполнено`)
+              isAlertMessageboxText+= `Значение в поле ${item.title} должно быть заполнено. `
               added[0][item.name] = item.basicValue
             }
         });
       }
+
+      if (isAlertMessageboxText!="") setIsAlertMessageboxOpened(true)
 
       if (columns[0].name=='number' && rows.length > 1){
         added[0].number = Number(rows[rows.length-1].number) + 1
@@ -345,7 +351,7 @@ export function TableComponent(props) {
                 changedRows[row.id][key] = parseFloat(changedRows[row.id][key])
               }
               if (item.name == key && item.mask!=undefined && changed[row.id][key].match(item.mask)==null){
-                alert(`Значение в поле ${item.title} в строке №${row.number} должно ${item.maskExample}`)
+                isAlertMessageboxText+= `Значение в поле ${item.title} в строке №${row.number} должно ${item.maskExample}. `
                 changedRows[row.id][key] = rows[row.id][key]
               }
               
@@ -353,6 +359,8 @@ export function TableComponent(props) {
           });
         }
       });
+
+      if (isAlertMessageboxText!="") setIsAlertMessageboxOpened(true)
       
       let counter=0
       columns.map(item=>{
@@ -515,86 +523,99 @@ const DateTypeProvider = props => (
 //---------------------------эксперименты-------------------------
 
     return (
-      <Paper>
-        <div className="card">
-          <Grid
-            rows={rows}
-            columns={columns}
-            getRowId={getRowId}
-          >
-            {props.columns.map(item=>{
-              if (item.dropdownList != undefined && item.dropdownList.length>0 && item.editingEnabled) {
-                return <DropdownProvider
-                  for={[item.name]}
-                />
-              }
-            })}
-            {settings.filter==true?<FilteringState filters={filters} onFiltersChange={setFilters}/>:<></>}
-            {settings.filter==true?<IntegratedFiltering />:<></>}
-            <EditingState
-              editingRowIds={editingRowIds}
-              onEditingRowIdsChange={setEditingRowIds}
-              rowChanges={rowChanges}
-              onRowChangesChange={setRowChanges}
-              onCommitChanges={commitChanges}
-              columnExtensions={editingStateColumnExtensions}
-            />
-            <SelectionState
-              selection={selection}
-              onSelectionChange={onSelected}
-            />
-            <CurrencyTypeProvider for={currencyColumns}/>
+      <>
+        <Paper>
+          <div className="card">
+            <Grid
+              rows={rows}
+              columns={columns}
+              getRowId={getRowId}
+            >
+              {props.columns.map(item=>{
+                if (item.dropdownList != undefined && item.dropdownList.length>0 && item.editingEnabled) {
+                  return <DropdownProvider
+                    for={[item.name]}
+                  />
+                }
+              })}
+              {settings.filter==true?<FilteringState filters={filters} onFiltersChange={setFilters}/>:<></>}
+              {settings.filter==true?<IntegratedFiltering />:<></>}
+              <EditingState
+                editingRowIds={editingRowIds}
+                onEditingRowIdsChange={setEditingRowIds}
+                rowChanges={rowChanges}
+                onRowChangesChange={setRowChanges}
+                onCommitChanges={commitChanges}
+                columnExtensions={editingStateColumnExtensions}
+              />
+              <SelectionState
+                selection={selection}
+                onSelectionChange={onSelected}
+              />
+              <CurrencyTypeProvider for={currencyColumns}/>
 
-            <SummaryState
-              totalItems={totalSummaryItems}
+              <SummaryState
+                totalItems={totalSummaryItems}
+              />
+              <IntegratedSummary />
+              <Table
+                columnExtensions={tableColumnExtensions}
+              />
+              <VirtualTable 
+                height={props.height}
+                width={props.width}
+              />
+              <TableColumnResizing
+                columnWidths={columnWidths}
+                onColumnWidthsChange={setColumnWidths}
+              />
+              <TableHeaderRow />
+              <IntegratedSelection />
+              {settings.exportExel==true?<Toolbar/>:<></>}
+              {settings.exportExel==true?<ExportPanel startExport={startExport}/>:<></>}
+              {settings.filter==true?<TableFilterRow/>:<></>}
+              
+              <TableSelection
+                selectByRowClick
+                highlightRow
+                showSelectionColumn={false}
+              />
+              <TableEditRow />
+              <TableEditColumn
+                showAddCommand={settings.add}
+                showEditCommand={settings.edit}
+                showDeleteCommand={settings.delete}
+                messages={{editCommand: 'Правка', addCommand: 'Новая запись', commitCommand: 'Сохранить', cancelCommand: 'Отменить', deleteCommand: 'Удалить'}}
+                width={EditColumnWidth}
+              />
+              {settings.cell==true?<TableInlineCellEditing/>:<></>}
+              <TableSummaryRow />
+            </Grid>
+          </div>
+          <GridExporter
+              ref={exporterRef}
+              rows={rows}
+              columns={columns}
+              totalSummaryItems={totalSummaryItems}
+              customizeCell={customizeCell}
+              customizeSummaryCell={customizeSummaryCell}
+              customizeHeader={customizeHeader}
+              customizeFooter={customizeFooter}
+              selection={selection}
+              onSave={onSave}
             />
-            <IntegratedSummary />
-            <Table
-              columnExtensions={tableColumnExtensions}
-            />
-            <VirtualTable 
-              height={props.height}
-              width={props.width}
-            />
-            <TableColumnResizing
-              columnWidths={columnWidths}
-              onColumnWidthsChange={setColumnWidths}
-            />
-            <TableHeaderRow />
-            <IntegratedSelection />
-            {settings.exportExel==true?<Toolbar/>:<></>}
-            {settings.exportExel==true?<ExportPanel startExport={startExport}/>:<></>}
-            {settings.filter==true?<TableFilterRow/>:<></>}
-            
-            <TableSelection
-              selectByRowClick
-              highlightRow
-              showSelectionColumn={false}
-            />
-            <TableEditRow />
-            <TableEditColumn
-              showAddCommand={settings.add}
-              showEditCommand={settings.edit}
-              showDeleteCommand={settings.delete}
-              messages={{editCommand: 'Правка', addCommand: 'Новая запись', commitCommand: 'Сохранить', cancelCommand: 'Отменить', deleteCommand: 'Удалить'}}
-              width={EditColumnWidth}
-            />
-            {settings.cell==true?<TableInlineCellEditing/>:<></>}
-            <TableSummaryRow />
-          </Grid>
-        </div>
-        <GridExporter
-            ref={exporterRef}
-            rows={rows}
-            columns={columns}
-            totalSummaryItems={totalSummaryItems}
-            customizeCell={customizeCell}
-            customizeSummaryCell={customizeSummaryCell}
-            customizeHeader={customizeHeader}
-            customizeFooter={customizeFooter}
-            selection={selection}
-            onSave={onSave}
-          />
-      </Paper>
+        </Paper>
+        <AlertMessagebox
+          title={"Внимание!"}
+          message={isAlertMessageboxText}
+          isOpened={isAlertMessageboxOpened} 
+          onOk={()=>{
+            setIsAlertMessageboxOpened(false);
+            isAlertMessageboxText = ""
+          }} 
+          // onAccept={()=>{this.setState({isAlertMessageboxOpened: false});this.setSelectedRackTypeIdFromBuf()}} 
+          // onCancel={()=>{this.setState({isAlertMessageboxOpened: false});this.setState({selectedRackTypeId: this.selectedRackTypeIdLast}); }}
+        />
+      </>
     );
 };

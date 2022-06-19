@@ -221,10 +221,11 @@ class AdministratorRackCreating extends Component {
 
         if (this.state.selRack.id!=this.lastSelId && this.state.selRack.depth!=undefined){
             let obj = this.state.selRack
-
+            console.log("obj")
+            console.log(obj)
             this.state.depth = obj.depth
-            this.state.shelfWidth = obj.width
-            this.state.shelfHeight = obj.height
+            this.state.shelfWidth = obj.width!=undefined?obj.width:obj.shelfWidth
+            this.state.shelfHeight = obj.height!=undefined?obj.height:obj.shelfHeight
             this.state.columsAmount = obj.columsAmount
             this.state.rowsAmount = obj.rowsAmount
             this.state.borderWidth = obj.borderWidth
@@ -350,6 +351,23 @@ class AdministratorRackCreating extends Component {
 
     btn_send_1=()=> {
         let new_id = Number(this.state.racks[this.state.racks.length - 1].id) + 1 
+        
+        let body = {
+            id: new_id,
+            depth: 50,
+            shelf_width: 50,
+            shelf_height: 50,
+            columns_amount: 4,
+            rows_amount: 3,
+            border_width: 2,
+            color: "rgba(136,90,170,1)",
+            translation: `0/0/-25`,
+            lifting_capacity: 50,
+            free_space_x: 0,
+            free_space_y: 50
+        }
+        api.insertVirtualRacks(body)
+
         this.state.racks.push(
             {
                 id: new_id,
@@ -370,22 +388,6 @@ class AdministratorRackCreating extends Component {
             }
         )
         this.setRack(this.state.racks[this.state.racks.length-1])
-
-        let body = {
-            id: new_id,
-            depth: 50,
-            shelf_width: 50,
-            shelf_height: 50,
-            columns_amount: 4,
-            rows_amount: 3,
-            border_width: 2,
-            color: "rgba(136,90,170,1)",
-            translation: `0/0/-25`,
-            lifting_capacity: 50,
-            free_space_x: 0,
-            free_space_y: 50
-        }
-        api.insertVirtualRacks(body)
     }
 
     btn_send_2=()=> {
@@ -420,6 +422,10 @@ class AdministratorRackCreating extends Component {
         res.then(res=> {
             alert(res)
         })
+        let buf = structuredClone(this.state.racks)
+        structuredClone(this.state.racks).map(()=>{this.state.racks.pop()})
+        buf.map(item=>{if (item.id!=this.state.selRack.id) {this.state.racks.push(item)}})
+        this.setRack(this.state.racks[0])
     }
 
     render(){

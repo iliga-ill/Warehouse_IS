@@ -47,7 +47,7 @@ export class Api {
                           patronymic: item.patronymic, 
                           login: item.login, 
                           password: item.password, 
-                          phone_num: item.phone_num, 
+                          phone: item.phone_num, 
                           duty: item.duty
                         }) 
                     })
@@ -698,7 +698,7 @@ export class Api {
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onreadystatechange = function() {
                 if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
-                    var answer = JSON.parse(this.response)
+                    var answer = this.response
                     console.log('insertVirtualRacks answer')
                     console.log(answer)
                     resolve(answer)

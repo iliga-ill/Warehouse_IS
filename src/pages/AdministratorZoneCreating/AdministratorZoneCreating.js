@@ -173,13 +173,13 @@ class AdministratorZoneCreating extends Component {
             selZone:{id: 0, text: "Загрузка"},
             length:500,
             width:300,
-            color:{a: 100, b: 170, g: 90, h: 275, hex: "#ffffff", r: 136, rgba: "rgba(136,90,170,1)", s: 47, v: 67},
+            color:{a: 100, b: 170, g: 90, h: 275, hex: "#ffffff", r: 136, rgba: "rgba(255,255,255,1)", s: 47, v: 67},
             lineWidth:1,
             chamferLendth:10,
-            message:"Загрузка",
+            message:"",
             textSize:15,
-            gapLengthX: "Загрузка".length * 15,
-            gapLengthY: "Загрузка".length * 15,
+            gapLengthX: "".length * 15,
+            gapLengthY: "".length * 15,
             messageAlighment:["right"],
             isAighmentTop:false,
             isAighmentBottom:false,
@@ -251,7 +251,7 @@ class AdministratorZoneCreating extends Component {
     componentDidMount(){
         var manager = new THREE.LoadingManager();
         manager.onLoad = () => { // when all resources are loaded
-            if (this.state.zones[0].text == "Загрузка") this.getZones()
+            if (this.state.zones.length < 2) this.getZones()
             init(
                 this.state.width, 
                 this.state.length, 
@@ -354,16 +354,17 @@ onMessageAlighment=()=>{
         this.state.zones.push(
             {
                 id: (Number(this.state.zones[this.state.zones.length - 1].id) + 1),
-                text: `Зона ${Number(this.state.zones[this.state.zones.length - 1].text.split(" ")[1]) + 1}`, 
+                // text: `Зона ${Number(this.state.zones[this.state.zones.length - 1].text.split(" ")[1]) + 1}`, 
+                text: `Зона ${Number(this.state.zones[this.state.zones.length - 1].id) + 1}`, 
                 length:500,
                 width:300,
-                color:{a: 100, b: 170, g: 90, h: 275, hex: "#ffffff", r: 136, rgba: "rgba(136,90,170,1)", s: 47, v: 67},
+                color:{a: 100, b: 170, g: 90, h: 275, hex: "#ffffff", r: 136, rgba: "rgba(255,255,255,1)", s: 47, v: 67},
                 lineWidth:1,
                 chamferLendth:10,
-                message:"Загрузка",
+                message:"",
                 textSize:15,
-                gapLengthX: "Загрузка".length * 15,
-                gapLengthY: "Загрузка".length * 15,
+                gapLengthX: "".length * 15,
+                gapLengthY: "".length * 15,
                 messageAlighment:["right"],
                 isAighmentTop:false,
                 isAighmentBottom:false,
@@ -394,6 +395,8 @@ onMessageAlighment=()=>{
         }
         //console.log(body)
         api.postVirtualZones(body)
+        this.updateModel()
+        this.updateModel()
     }
 
     btn_send_2=()=> {
@@ -422,7 +425,6 @@ onMessageAlighment=()=>{
             text_size: zone.textSize,
             message_alighment: alighments,
         }
-        //console.log(body)
         api.updateVirtualZones(body)
     }
 
@@ -430,8 +432,11 @@ onMessageAlighment=()=>{
         let body = {
             id: this.state.selZone.id,
         }
-        //console.log(body)
         this.deleteVirtualZones(body)
+        let buf = structuredClone(this.state.zones)
+        structuredClone(this.state.zones).map(()=>{this.state.zones.pop()})
+        buf.map(item=>{if (item.id!=this.state.selZone.id) {this.state.zones.push(item)}})
+        this.setSelZone(this.state.zones[0])
     }
 
     deleteVirtualZones = async(value) => {

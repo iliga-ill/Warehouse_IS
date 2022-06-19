@@ -343,6 +343,10 @@ class AdministratorGoodCreating extends Component {
     }
     btn_send_3=()=> {
         this.deleteVirtualGoodsType(this.state.selGood.id)
+        let buf = structuredClone(this.state.goods)
+        structuredClone(this.state.goods).map(()=>{this.state.goods.pop()})
+        buf.map(item=>{if (item.id!=this.state.selGood.id) {this.state.goods.push(item)}})
+        this.setSelGood(this.state.goods[0])
     }
 
     deleteVirtualGoodsType = async(value) => {
@@ -363,7 +367,7 @@ class AdministratorGoodCreating extends Component {
                 <FlexibleBlock>
                     {this.state.shownPanel
                         &&<>
-                            <div class="header_text">Настройка 1</div>
+                            <div class="header_text">Настройка</div>
                             <InputTextArea styles = "" label="Название&nbsp;товара&nbsp;:" placeholder="название товара" set={this.setGoodName} defValue={this.state.goodName} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/>
                             <InputText styles = "row_with_item_wide" label="Ширина&nbsp;товара&nbsp;(см)&nbsp;"     placeholder="ширина товара"         defValue={this.state.width}             set={this.setWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
                             <InputText styles = "row_with_item_wide" label="Глубина&nbsp;товара&nbsp;(см)&nbsp;"    placeholder="глубина товара"        defValue={this.state.depth}             set={this.setDepth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
@@ -381,7 +385,7 @@ class AdministratorGoodCreating extends Component {
                     }
                     {!this.state.shownPanel
                         &&<>
-                            <div class="header_text">Настройка 2</div>
+                            <div class="header_text">Настройка</div>
                             <InputTextArea styles = "" label="Название&nbsp;товара&nbsp;:" placeholder="название товара" set={this.setGoodName} defValue={this.state.goodName} mask={/^(.)(.*)$/i} maskExample="быть заполнено"/>
                             <InputText styles = "row_with_item_wide" label="Ширина&nbsp;товара&nbsp;(см)&nbsp;"     placeholder="ширина товара"         defValue={this.state.width}             set={this.setWidth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
                             <InputText styles = "row_with_item_wide" label="Глубина&nbsp;товара&nbsp;(см)&nbsp;"    placeholder="глубина товара"        defValue={this.state.depth}             set={this.setDepth} mask={/^[0-9]{0,10}$/i} maskExample="быть числом больше нуля"/> 
