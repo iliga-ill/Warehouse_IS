@@ -175,7 +175,7 @@ export class Api {
         console.log(account)
         console.log(document)
         console.log(date)
-        date = date.replace(/-/g,".")
+        // date = date.replace(/-/g,".")
         var body = array
         var type = ""
         var doc = ''
