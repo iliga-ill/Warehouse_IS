@@ -171,5 +171,20 @@ export class Api {
             xhr.send(JSON.stringify(value));
         })       
     }
+
+    insertNewGoodType(value) {
+        var xhr = new XMLHttpRequest();
+
+        return new Promise(function(resolve, reject){
+            xhr.open("POST", host+'goods_type_post/', true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.onreadystatechange = function() { // Call a function when the state changes.
+                if (this.readyState === XMLHttpRequest.DONE) {
+                    resolve("Новый тип товара успешно добавлен")
+                }
+            }
+            xhr.send(JSON.stringify(value));
+        })       
+    }
 }
 

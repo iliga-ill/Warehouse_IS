@@ -156,10 +156,12 @@ class ManagerProducts extends Component {
                     code: good.code,
                     cost: this.state.cost
                 }
+                api.insertNewGoodType(good)
             }
             return good
         }))
         this.setIsRedacting(false)
+       
     }
 
     //-------------------------------------------------------------------------Блок 3 конец
