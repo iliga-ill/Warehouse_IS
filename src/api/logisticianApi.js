@@ -79,7 +79,7 @@ export class Api {
                                 number: counter1+++1, 
                                 shipmentNumber: shipment.name, 
                                 orderCode: shipment.order_id, 
-                                shipmentDate: shipment.shipment_date.split("T")[0], 
+                                shipmentDate: shipment.shipment_date.toString().replace("-",".").replace("-","."), 
                                 shipmentCost: parseFloat(shipment.shipment_price) , 
                                 shipmentStatus: shipment.shipment_payment, 
                                 code: shipment.code})

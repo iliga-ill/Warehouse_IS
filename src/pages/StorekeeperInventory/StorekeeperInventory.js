@@ -130,7 +130,7 @@ export default function StorekeeperInventory(props){
         shelfsSpace.map(function(item, i){
             if (i == selectedItemId.id){
                 console.log("тута")
-                console.log(item.shelf_space)
+                console.log(item)
                 setShelf(`${item.zone_num} ${item.rack_num} ${item.name}`)
                 setLiftingCapacity(`${item.capacity} кг`)
                 item.shelf_space.map(function(item1, j){
