@@ -1108,6 +1108,9 @@ function addRackWithGoodsOnScene(zone, rack, racksType, goodsType){
                 rackCenterGlobalCoordinate.y + rackType.borderWidth*2,
                 rackCenterGlobalCoordinate.z
             )
+            console.log("shelf")
+            console.log(shelf)
+            console.log(rackType)
             let shiftedFirstShelfCenterGlobalCoordinate = new Vector3(
                 firstShelfCenterGlobalCoordinate.x + (rackType.shelfWidth  + rackType.borderWidth)*rackType.shelfs[`shelf_${shelf.number}`].column,
                 firstShelfCenterGlobalCoordinate.y + (rackType.shelfHeight + rackType.borderWidth)*rackType.shelfs[`shelf_${shelf.number}`].row,
