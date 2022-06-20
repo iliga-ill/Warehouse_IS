@@ -7,6 +7,7 @@ let page = undefined
 let font = null
 let frameInnerMargin = 10
 let ModelNameHeight = 15
+let lastListBlocks = []
 
 function init(width, minWidth, spaceBetweenItems, models){
     var listBlock = document.getElementById("listBlock")
@@ -91,6 +92,7 @@ function init(width, minWidth, spaceBetweenItems, models){
         renderer.setSize( elmWidth-frameInnerMargin*2, elmWidth-frameInnerMargin*2 );
 
         canvasWrap.appendChild( renderer.domElement );
+        lastListBlocks.push(frame)
         listBlock.appendChild(frame);
         renderer.render( scene, camera );
 
@@ -156,6 +158,15 @@ class ModelList extends Component {
         loader.load('https://threejs.org/examples/fonts/droid/droid_serif_bold.typeface.json', function(response) {
             font = response;
         });
+    }
+
+    componentWillUnmount(){
+        if (lastListBlocks.length!=0) {
+            lastListBlocks.map(block=>{
+                document.getElementById("listBlock").removeChild(block)
+            })   
+            lastListBlocks = [] 
+        }
     }
 
     componentDidUpdate(){

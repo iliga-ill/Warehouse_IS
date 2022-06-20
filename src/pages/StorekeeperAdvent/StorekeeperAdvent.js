@@ -164,70 +164,9 @@ export default function StorekeeperAdvent(props){
         //console.log(temp_table_list)
     }
     //-------------------------------------------------------------------------Блок 2 конец
-    //-------------------------------------------------------------------------Блок 3
-    function onBlock3FileUploaded(files){
-        files.map(doc=>{
-            console.log("block 3 document: " + doc.name)
-        })
-    }
-    var good_category; function set_good_category(value) {good_category = value}
-    var one_shipment_amount; function set_one_shipment_amount(value) {one_shipment_amount = value}
-    var warranty_good; function set_warranty_good(value) {warranty_good = value}
-    var shipment_deadline; function set_shipment_deadline(value) {shipment_deadline = value}
-    var amount_of_shipments; function set_amount_of_shipments(value) {amount_of_shipments = value}
-    var good_cost; function set_good_cost(value) {good_cost = value}
-    var provider_2; function set_provider_2(value) {provider_2 = value}
-
-    //-------------------------------------стол 2
-    var table_headers_2 = [
-        {title:"№", mode:"text", column_width: "30px", listValue: []}, 
-        {title:"Наименование", mode:"text", column_width: "110px", listValue: []}, 
-        {title:"Прогресс доставки (шт)", mode:"text", column_width: "70px", listValue: []}, 
-        {title:"Вес (кг)", mode:"text", column_width: "70px", listValue: []}, 
-        {title:"", mode:"remove", column_width: "50px", listValue: []},
-    ]
-
-    var  table_field_height_2 = "100px"
-
-    var table_list_2 = [
-        [0, "Встраиваемая техника №5", "10/50", "50",  false],
-        [1, "Встраиваемая техника №6", "15/50", "40",  false],
-        [2, "Встраиваемая техника №7", "8/50", "71",  false],
-
-    ]
-    function set_table_list_2(value) {
-        table_list_2 =value
-    }
-    //-------------------------------------стол 2 конец
-
-    function btn_send_2() {
-        console.log("good_category = " + good_category)
-        console.log("one_shipment_amount = " + one_shipment_amount)
-        console.log("warranty_good = " + warranty_good)
-        console.log("shipment_deadline = " + shipment_deadline)
-        console.log("amount_of_shipments = " + amount_of_shipments)
-        console.log("good_cost = " + good_cost)
-        console.log("provider_2 = " + provider_2)
-        console.log(table_list_2)
-
-    }
-    //list_with_search_items.map(function(item,i){ item.id = i })
-    
-    //-------------------------------------------------------------------------Блок 3 конец
 //#endregion
     
 //#region api
-
-async function apiGetGoodsCat() {
-    var buffer = await api.getGoodsCat()
-    alert(buffer)
-}
-      
-async function apiGetGoodsSubCat4() {
-    var response = await api.getGoodsSubCat4()
-    alert(response)
-}
-
 async function apiUpdateOrderGoods(selected, value) {
     alert("Изменения успешно приняты")
     console.log("selected")

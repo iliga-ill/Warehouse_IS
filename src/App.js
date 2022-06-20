@@ -35,6 +35,9 @@ import WarehouseISicon from './images/WarehouseISicon.png';
 import React from 'react';
 import {Routes, Route, useLocation, useNavigate} from "react-router-dom"
 import {useCookies} from 'react-cookie'
+import { Api } from "./api/storekeeperApi"
+
+var api = new Api()
 
 const mainTabsArray = [
   {title: "АРМ Кладовщика",     href:"/Storekeeper",    basicHref:"/StorekeeperAdvent/Current"},
@@ -100,6 +103,8 @@ const supportTabsArray = [
     {title: "Создание товара",      roleHref:"/Administrator",  subHref:"/AdministratorCreating", supportHref:"/GoodCreating"},
     {title: "Изменение конфигурации склада", roleHref:"/Administrator",  subHref:"/AdministratorCreating", supportHref:"/WarehouseCreating"},
 ]
+
+let warehouseTypes = undefined
 
 //JSON.parse(JSON.stringify(this.state.itemList))
 
@@ -169,7 +174,15 @@ export default function App() {
       </ErrorBoundary>
     )
   }
-  
+
+  if (cookies.accountData!==undefined) apiGetWarehouseTypes()
+  async function apiGetWarehouseTypes() {
+      var zones = await api.warehouse_all_types()
+      console.log("zones")
+      console.log(zones)
+      warehouseTypes = zones
+  }
+
   //setCookie('access_token', undefined, { path: '/Storekeeper/StorekeeperAdvent',  expires})
 
   console.log("cookies.get('Authorization'): " + cookies.access_token)
@@ -195,7 +208,7 @@ export default function App() {
           <Route path="/Storekeeper/StorekeeperAdvent/Completed" element={wrapErrorBoundary(<StorekeeperAdvent isCurrent={false} cookies={cookies}/>)}/>
           <Route path="/Storekeeper/StorekeeperExpend/Current" element={wrapErrorBoundary(<StorekeeperExpend isCurrent={true} cookies={cookies}/>)}/>
           <Route path="/Storekeeper/StorekeeperExpend/Completed" element={wrapErrorBoundary(<StorekeeperExpend isCurrent={false} cookies={cookies}/>)}/>
-          <Route path="/Storekeeper/StorekeeperAllocation" element={wrapErrorBoundary(<StorekeeperAllocation/>)}/>
+          <Route path="/Storekeeper/StorekeeperAllocation" element={wrapErrorBoundary(<StorekeeperAllocation warehouseTypes={warehouseTypes}/>)}/>
           <Route path="/Storekeeper/StorekeeperInventory" element={wrapErrorBoundary(<StorekeeperInventory/>)}/>
           <Route path="/Storekeeper/StorekeeperVirtualWarehouse" element={wrapErrorBoundary(<StorekeeperVirtualWarehouse/>)}/>
 

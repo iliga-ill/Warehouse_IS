@@ -9,6 +9,8 @@ import { Api } from "../../api/storekeeperApi"
 
 var api = new Api()
 
+let zonesList = undefined
+
 export default function StorekeeperAllocation(props){
 
     var id=0
@@ -21,15 +23,50 @@ export default function StorekeeperAllocation(props){
     }
 
     //-------------------------------------------------------------------------query
+    let [isZonesLoaded, setIsZonesLoaded] = React.useState(false)
+    
+    console.log("zonesList")
+    console.log(zonesList)
+    if (zonesList==undefined) apiGetWarehouseTypes()
+    async function apiGetWarehouseTypes() {
+        var zones = await api.warehouse_all_types()
+        console.log("zones")
+        console.log(zones)
+
+        zonesList = [{menuItem:""}]
+        if (zones!=undefined){
+            zones.map(zone=>{
+                zone.menuItem = zone.name
+                zonesList.push(zone)
+            })
+        }
+        console.log("zonesList")
+        console.log(zonesList)
+        setTableHeaders([
+            {name: 'number',            title:'№',                  editingEnabled:false,    width:40,  dropdownList:[] }, 
+            {name: 'goodsCategories2',  title:'Категория',          editingEnabled:false,    width:160, dropdownList:[] }, 
+            {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,    width:160, dropdownList:[] }, 
+            {name: 'goodsType',         title:'Наименование',       editingEnabled:false,    width:170, dropdownList:[] }, 
+            {name: 'weight',            title:'Вес',                editingEnabled:false,    width:70,  dropdownList:[] }, 
+            {name: 'zone',              title:'Зона',               editingEnabled:true,     width:95,  dropdownList: zonesList },
+            {name: 'rack',              title:'Стеллаж',            editingEnabled:true,     width:125, dropdownList: [{menuItem:""}] },
+            {name: 'shelf',             title:'Полка',              editingEnabled:true,     width:105,  dropdownList: [{menuItem:""}] }
+        ])
+        setIsZonesLoaded(true)
+    }
+
+    
     const [zones, setZones] = React.useState([])
     async function apiGetZones() {
         var buf = await api.getZones()
         setZones(buf)
         apiGetRacks(buf)
     }
+
+    if (zones.toString()==""){
+        apiGetZones()
+    }
     
-    if (zones.toString()=="")
-    apiGetZones()
 
     const [racks, setRacks] = React.useState([])
     async function apiGetRacks(zonesAnswer) {
@@ -96,60 +133,22 @@ export default function StorekeeperAllocation(props){
     const [date, setDate] = React.useState("2022-01-14")
     //-------------------------------------дата конец
     //-------------------------------------стол 1
-    const [dropdownList1, setDropdownList1] = React.useState([
-        {menuItem:""},
-        {menuItem:"Зона 1"},
-        {menuItem:"Зона 2"},
-        {menuItem:"Зона 3"},
-    ])
 
-
-    const [dropdownList2, setDropdownList2] = React.useState([
-        {menuItem:""},
-        {menuItem:"Стеллаж 1"},
-        {menuItem:"Стеллаж 2"},
-        {menuItem:"Стеллаж 3"},
-        {menuItem:"Стеллаж 4"},
-        {menuItem:"Стеллаж 5"},
-        {menuItem:"Стеллаж 6"},
-        {menuItem:"Стеллаж 7"},
-        {menuItem:"Стеллаж 8"},
-        {menuItem:"Стеллаж 9"},
-        {menuItem:"Стеллаж 10"},
-        {menuItem:"Стеллаж 11"},
-        {menuItem:"Стеллаж 12"},
-    ])
-
-    const [dropdownList3, setDropdownList3] = React.useState([
-        {menuItem:""},
-        {menuItem:"Полка 1"},
-        {menuItem:"Полка 2"},
-        {menuItem:"Полка 3"},
-        {menuItem:"Полка 4"},
-        {menuItem:"Полка 5"},
-        {menuItem:"Полка 6"},
-        {menuItem:"Полка 7"},
-        {menuItem:"Полка 8"},
-        {menuItem:"Полка 9"},
-        {menuItem:"Полка 10"},
-        {menuItem:"Полка 11"},
-        {menuItem:"Полка 12"},
-    ])
-
-    const [tableHeaders, setTableHeaders] = React.useState([
+    let [tableHeaders, setTableHeaders] = React.useState([
         {name: 'number',            title:'№',                  editingEnabled:false,    width:40,  dropdownList:[] }, 
         {name: 'goodsCategories2',  title:'Категория',          editingEnabled:false,    width:160, dropdownList:[] }, 
         {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,    width:160, dropdownList:[] }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,    width:170, dropdownList:[] }, 
         {name: 'weight',            title:'Вес',                editingEnabled:false,    width:70,  dropdownList:[] }, 
-        {name: 'zone',              title:'Зона',               editingEnabled:true,     width:95,  dropdownList: dropdownList1 },
-        {name: 'rack',              title:'Стеллаж',            editingEnabled:true,     width:125, dropdownList: dropdownList2 },
-        {name: 'shelf',             title:'Полка',              editingEnabled:true,     width:105,  dropdownList: dropdownList3 }
+        {name: 'zone',              title:'Зона',               editingEnabled:true,     width:95,  dropdownList: [{menuItem:""}] },
+        {name: 'rack',              title:'Стеллаж',            editingEnabled:true,     width:125, dropdownList: [{menuItem:""}] },
+        {name: 'shelf',             title:'Полка',              editingEnabled:true,     width:105,  dropdownList: [{menuItem:""}] }
     ]) 
     var  tableSettings = {
         add:false, 
         edit:true, 
         delete:false,
+        allocation:true,
     }
 
     const [tableList, setTableList] = React.useState([])
@@ -230,9 +229,16 @@ export default function StorekeeperAllocation(props){
                     <div class="low_text row_with_item_wide"><div>&nbsp;&nbsp;&nbsp;&nbsp;Дата&nbsp;приема&nbsp;</div><InputDate Id={getId()} defValue={"2022-01-14"} func={setDate}/></div>
                 </div> */}
                 <div class="header_text">Расстановка&nbsp;товаров</div>
-                <div style={{width:400+'px', display:'inline-table'}} >
+                {!isZonesLoaded
+                &&<div style={{width:400+'px', display:'inline-table'}}>
                     <TableComponent height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings} isDropdownActive={true}/>
                 </div>
+                }
+                {isZonesLoaded
+                &&<div style={{width:400+'px', display:'inline-table'}} >
+                    <TableComponent height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings} isDropdownActive={true}/>
+                </div>
+                }
                 <div></div>
                 <div class="place_holder_administrator"/><button class="bt_send_administrator" onClick={btn_send_1}>Подтвердить</button>
             </FlexibleBlock>

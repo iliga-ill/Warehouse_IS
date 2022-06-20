@@ -364,7 +364,12 @@ function onDocumentKeyDown( event ) {
                                     )
                                     specificHintModel.mesh.add(limiterLineModel.mesh)
                                     checkOnIntersectionBuf.intersectedIdArr.map(rackId=>{
+                                        console.log("rackId")
+                                        console.log(rackId)
+                                        console.log(scene.children)
+
                                         let intersectedElm = page.getSceneElmByIdAndType(rackId, "rack")
+
                                         let rackType = page.state.racksType[`rack_${intersectedElm.userData.racksTypeId}`]
                                         let limiterLineModel = modelCreator.createSpacelimiterBorder(
                                             rackType.shelfWidth*rackType.columsAmount + rackType.borderWidth*(rackType.columsAmount+1), 
@@ -703,6 +708,8 @@ function onPointerMove(event) {
                                 )
                                 specificHintModel.mesh.add(limiterLineModel.mesh)
                                 checkOnIntersectionBuf.intersectedIdArr.map(rackId=>{
+                                    console.log("rackId2")
+                                    console.log(rackId)
                                     let intersectedElm = page.getSceneElmByIdAndType(rackId, "rack")
                                     let rackType = page.state.racksType[`rack_${intersectedElm.userData.racksTypeId}`]
                                     let limiterLineModel = modelCreator.createSpacelimiterBorder(
@@ -1400,6 +1407,7 @@ class AdministratorWarehouseCreating extends Component {
         scene.children.map(obj=>{
             if (obj.userData.id == id && obj.type == type) buf = obj;
         })
+        if (buf == undefined) buf = this.getSceneElmByIdAndType(id-1, type)
         return buf
     }
     

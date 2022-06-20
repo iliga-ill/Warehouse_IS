@@ -158,6 +158,9 @@ const [selectedItem, setSelectedItem] = React.useState()
 
 const getRowId = row => row.id
 let isAlertMessageboxText = ""
+let dropdownlistZoneIndex = undefined
+let dropdownlistRackIndex = undefined
+let dropdownlistShelvesIndex = undefined
 
 export function TableComponent(props) {
 //---------------------------настройка параметров-------------------------------
@@ -397,7 +400,6 @@ export function TableComponent(props) {
   let dropdownlistIndexes = []
   let dropdownlistIndex = 0
 
-
   function getColumn(value){
     dropdownlistIndex++
     columns.map(function(item, i){
@@ -407,20 +409,39 @@ export function TableComponent(props) {
       }
     })
     var column = columns[dropdownlistIndexes[dropdownlistIndex-1]]
-    // console.log(`dropdownlistAmount: ${dropdownlistAmount}`)
-    // if (value!=undefined){
-    //   columns.map(item=>{
-    //     if (item.dropdownList != undefined && item.dropdownList.length>0) {
-    //       item.dropdownList.map(item2=>{
-    //         if (item2.menuItem == value)
-    //           column=item
-    //       })
-    //     }
-    //   })
-    // }
-    // if (column.dropdownList == ""){
-    //   alert("в таблицу приходят значения, отсутствующие в выпадающем списке эл-та таблицы!")
-    // }
+
+    if (props.tableSettings.allocation){
+      console.log(column.name)
+      if (column.name=="rack"){ //стеллажи
+        console.log("racks")
+        columns[dropdownlistIndexes[0]].dropdownList.map(zone=>{
+          console.log(`${zone.menuItem} == ${dropdownlistZoneIndex}`)
+          if (dropdownlistZoneIndex=="") column.dropdownList = [{menuItem:""}]
+          else if (zone.menuItem == dropdownlistZoneIndex) {
+            zone.racks.map(rack=>{rack.menuItem = rack.name; return rack})
+            console.log(zone.racks)
+            column.dropdownList = zone.racks
+          }
+        })
+      }
+      if (column.name=="shelf"){ //полки
+        console.log("racks")
+        columns[dropdownlistIndexes[0]].dropdownList.map(zone=>{
+          console.log(`${zone.menuItem} == ${dropdownlistZoneIndex}`)
+          if (dropdownlistZoneIndex=="") column.dropdownList = [{menuItem:""}]
+          else if (zone.menuItem == dropdownlistZoneIndex) {
+            zone.racks.map(rack=>{
+              if (dropdownlistRackIndex=="") column.dropdownList = [{menuItem:""}]
+              else if (rack.menuItem == dropdownlistRackIndex) {
+                rack.shelves.map(shelf=>{shelf.menuItem = shelf.name; return shelf})
+                console.log(rack.racks)
+                column.dropdownList = rack.shelves
+              }
+            })
+          }
+        })
+      }
+    }
     
     if (dropdownlistIndex == dropdownlistAmount)
       dropdownlistIndex = 0
@@ -437,6 +458,24 @@ export function TableComponent(props) {
     })
     return buf
   }
+
+  let dropdownValueCounter=0
+//   let dropdownlistZoneIndex = undefined
+  // let dropdownlistRackIndex = undefined
+  // let dropdownlistShelvesIndex = undefined
+
+  function setValue(value){
+    console.log(value)
+    if (dropdownValueCounter==0) dropdownlistZoneIndex=value
+    if (dropdownValueCounter==1) dropdownlistRackIndex=value
+    if (dropdownValueCounter==2) dropdownlistShelvesIndex=value
+    // value!=""?
+    // dropdownlistZoneIndex = value:
+    // console.log(value)
+
+    dropdownValueCounter++
+    if (dropdownValueCounter==3) dropdownValueCounter=0
+  }
   
   const DropdownEditor = ({ value, onValueChange }) => (
     <Select
@@ -445,6 +484,7 @@ export function TableComponent(props) {
       onChange={event => {onValueChange(event.target.value)}}
       style={{ width: '100%' }}
     >
+      {setValue(value)}
       {getColumn(value).dropdownList.map(item=>{
         return <MenuItem value={item.menuItem}>{item.menuItem}</MenuItem>
       })}
