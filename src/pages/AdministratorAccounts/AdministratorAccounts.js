@@ -55,7 +55,7 @@ class AdministratorAccounts extends Component {
     setSelectedItem = (value)=>{this.setState({selectedItem: value});}
 
     componentDidMount(){
-        console.log("DidUpdate")
+        console.log("DidMount")
         if (this.state.tableList == ""){
             this.apiGetClients()
         }
@@ -71,6 +71,7 @@ class AdministratorAccounts extends Component {
             })
             this.lastSelectedItem = this.state.selectedItem
         }
+
     }
 
     apiGetClients = async ()=>{

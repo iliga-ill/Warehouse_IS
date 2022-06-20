@@ -70,7 +70,7 @@ export class Api {
           xhr.onreadystatechange = function() { // Call a function when the state changes.
               if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
                   // Request finished. Do processing here.
-                  alert("Данные успешно отправлены")
+                //   alert("Данные успешно отправлены")
                   console.log("Данные успешно отправлены")
                   resolve("Данные успешно отправлены")
               }

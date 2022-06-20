@@ -599,5 +599,23 @@ export class Api {
         })
     }
 
+    warehouse_all_types() {
+        var xhr = new XMLHttpRequest();
+
+        return new Promise(function(resolve, reject){
+            xhr.open('GET', host+`warehouse_all_types/`, true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState == XMLHttpRequest.DONE) {
+                    let answer = JSON.parse(this.responseText)
+                    console.log(this.responseText);
+                    
+                    resolve(answer)
+                }
+            }
+            xhr.send(null);
+        })
+    }
+
 }
 
