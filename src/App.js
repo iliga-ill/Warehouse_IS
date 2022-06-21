@@ -175,14 +175,6 @@ export default function App() {
     )
   }
 
-  if (cookies.accountData!==undefined) apiGetWarehouseTypes()
-  async function apiGetWarehouseTypes() {
-      var zones = await api.warehouse_all_types()
-      console.log("zones")
-      console.log(zones)
-      warehouseTypes = zones
-  }
-
   //setCookie('access_token', undefined, { path: '/Storekeeper/StorekeeperAdvent',  expires})
 
   console.log("cookies.get('Authorization'): " + cookies.access_token)
@@ -208,7 +200,7 @@ export default function App() {
           <Route path="/Storekeeper/StorekeeperAdvent/Completed" element={wrapErrorBoundary(<StorekeeperAdvent isCurrent={false} cookies={cookies}/>)}/>
           <Route path="/Storekeeper/StorekeeperExpend/Current" element={wrapErrorBoundary(<StorekeeperExpend isCurrent={true} cookies={cookies}/>)}/>
           <Route path="/Storekeeper/StorekeeperExpend/Completed" element={wrapErrorBoundary(<StorekeeperExpend isCurrent={false} cookies={cookies}/>)}/>
-          <Route path="/Storekeeper/StorekeeperAllocation" element={wrapErrorBoundary(<StorekeeperAllocation warehouseTypes={warehouseTypes}/>)}/>
+          <Route path="/Storekeeper/StorekeeperAllocation" element={wrapErrorBoundary(<StorekeeperAllocation/>)}/>
           <Route path="/Storekeeper/StorekeeperInventory" element={wrapErrorBoundary(<StorekeeperInventory/>)}/>
           <Route path="/Storekeeper/StorekeeperVirtualWarehouse" element={wrapErrorBoundary(<StorekeeperVirtualWarehouse/>)}/>
 

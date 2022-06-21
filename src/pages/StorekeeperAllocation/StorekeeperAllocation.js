@@ -9,7 +9,8 @@ import { Api } from "../../api/storekeeperApi"
 
 var api = new Api()
 
-let zonesList = undefined
+let zonesList = [{menuItem:""}]
+let isZonesLoaded = false
 
 export default function StorekeeperAllocation(props){
 
@@ -23,11 +24,10 @@ export default function StorekeeperAllocation(props){
     }
 
     //-------------------------------------------------------------------------query
-    let [isZonesLoaded, setIsZonesLoaded] = React.useState(false)
     
     console.log("zonesList")
     console.log(zonesList)
-    if (zonesList==undefined) apiGetWarehouseTypes()
+    if (zonesList.length<2) apiGetWarehouseTypes()
     async function apiGetWarehouseTypes() {
         var zones = await api.warehouse_all_types()
         console.log("zones")
@@ -42,6 +42,7 @@ export default function StorekeeperAllocation(props){
         }
         console.log("zonesList")
         console.log(zonesList)
+        isZonesLoaded = true
         setTableHeaders([
             {name: 'number',            title:'№',                  editingEnabled:false,    width:40,  dropdownList:[] }, 
             {name: 'goodsCategories2',  title:'Категория',          editingEnabled:false,    width:160, dropdownList:[] }, 
@@ -52,7 +53,6 @@ export default function StorekeeperAllocation(props){
             {name: 'rack',              title:'Стеллаж',            editingEnabled:true,     width:125, dropdownList: [{menuItem:""}] },
             {name: 'shelf',             title:'Полка',              editingEnabled:true,     width:105,  dropdownList: [{menuItem:""}] }
         ])
-        setIsZonesLoaded(true)
     }
 
     
@@ -140,7 +140,7 @@ export default function StorekeeperAllocation(props){
         {name: 'goodsCategories3',  title:'Подкатегория',       editingEnabled:false,    width:160, dropdownList:[] }, 
         {name: 'goodsType',         title:'Наименование',       editingEnabled:false,    width:170, dropdownList:[] }, 
         {name: 'weight',            title:'Вес',                editingEnabled:false,    width:70,  dropdownList:[] }, 
-        {name: 'zone',              title:'Зона',               editingEnabled:true,     width:95,  dropdownList: [{menuItem:""}] },
+        {name: 'zone',              title:'Зона',               editingEnabled:true,     width:95,  dropdownList: zonesList },
         {name: 'rack',              title:'Стеллаж',            editingEnabled:true,     width:125, dropdownList: [{menuItem:""}] },
         {name: 'shelf',             title:'Полка',              editingEnabled:true,     width:105,  dropdownList: [{menuItem:""}] }
     ]) 
@@ -231,7 +231,6 @@ export default function StorekeeperAllocation(props){
                 <div class="header_text">Расстановка&nbsp;товаров</div>
                 {!isZonesLoaded
                 &&<div style={{width:400+'px', display:'inline-table'}}>
-                    <TableComponent height={500} columns={tableHeaders} rows={tableList} setNewTableList={setTableList} tableSettings={tableSettings} isDropdownActive={true}/>
                 </div>
                 }
                 {isZonesLoaded

@@ -413,9 +413,7 @@ export function TableComponent(props) {
     if (props.tableSettings.allocation){
       console.log(column.name)
       if (column.name=="rack"){ //стеллажи
-        console.log("racks")
         columns[dropdownlistIndexes[0]].dropdownList.map(zone=>{
-          console.log(`${zone.menuItem} == ${dropdownlistZoneIndex}`)
           if (dropdownlistZoneIndex=="") column.dropdownList = [{menuItem:""}]
           else if (zone.menuItem == dropdownlistZoneIndex) {
             zone.racks.map(rack=>{rack.menuItem = rack.name; return rack})
@@ -425,9 +423,7 @@ export function TableComponent(props) {
         })
       }
       if (column.name=="shelf"){ //полки
-        console.log("racks")
         columns[dropdownlistIndexes[0]].dropdownList.map(zone=>{
-          console.log(`${zone.menuItem} == ${dropdownlistZoneIndex}`)
           if (dropdownlistZoneIndex=="") column.dropdownList = [{menuItem:""}]
           else if (zone.menuItem == dropdownlistZoneIndex) {
             zone.racks.map(rack=>{
