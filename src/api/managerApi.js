@@ -20,7 +20,8 @@ export class Api {
                     console.log(answer)
                     var buffer = []
                     answer.map(function( element, i) {
-                        buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, amountOnWarehouse: element.amount, cost: parseFloat(element.price), goodsLimit: element.amount_limit})
+                        buffer.push({number:i+1, goodsCategories2: element.category, goodsCategories3: element.subcategory_2, goodsType: element.name, 
+                            amountOnWarehouse: element.amount, cost: parseFloat(element.price), goodsLimit: element.amount_limit})
                         buffer[i].id = Api.getId()
                         buffer[i].code = element.code;
                         buffer[i].description = element.description
