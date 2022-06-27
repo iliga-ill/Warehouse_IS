@@ -4,7 +4,7 @@ export class Host {
     }
 
     getHost() {
-        const host = 'http://127.0.0.1:8000/';
+        const host = 'https://sklad.website/';
         // const host = 'http://localhost:5000/';
         return host
     }
