@@ -104,27 +104,27 @@ const supportTabsArray = [
     {title: "Изменение конфигурации склада", roleHref:"/Administrator",  subHref:"/AdministratorCreating", supportHref:"/WarehouseCreating"},
 ]
 
-let warehouseTypes = undefined
+// let warehouseTypes = undefined
 
-//JSON.parse(JSON.stringify(this.state.itemList))
+// //JSON.parse(JSON.stringify(this.state.itemList))
 
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+// // Import the functions you need from the SDKs you need
+// import { initializeApp } from "firebase/app";
+// // TODO: Add SDKs for Firebase products that you want to use
+// // https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyBqt19wTJyp2VXrLO88uEKtYvaSrydRNDE",
-  authDomain: "warehouseis.firebaseapp.com",
-  projectId: "warehouseis",
-  storageBucket: "warehouseis.appspot.com",
-  messagingSenderId: "289717888678",
-  appId: "1:289717888678:web:690767ed9fe5bb745db667"
-};
+// // Your web app's Firebase configuration
+// const firebaseConfig = {
+//   apiKey: "AIzaSyBqt19wTJyp2VXrLO88uEKtYvaSrydRNDE",
+//   authDomain: "warehouseis.firebaseapp.com",
+//   projectId: "warehouseis",
+//   storageBucket: "warehouseis.appspot.com",
+//   messagingSenderId: "289717888678",
+//   appId: "1:289717888678:web:690767ed9fe5bb745db667"
+// };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// // Initialize Firebase
+// const app = initializeApp(firebaseConfig);
 
 export default function App() {
   const navigate = useNavigate();
