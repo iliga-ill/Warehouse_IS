@@ -199,7 +199,7 @@ export class Api {
                     var answer = JSON.parse(this.response)
                     console.log("administratorApi getWarehouseModel answer")
                     console.log(answer)
-                    var buf = {width: 1500, length: 1500, zones: []}
+                    var buf = {width: 2000, length: 2000, zones: []}
                     answer.map(elm => {
                         var racks = []
                         elm.racks.map(elm2 => {
